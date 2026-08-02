@@ -11,12 +11,12 @@ Field Percentiles
 Top percentiles of the field (or field magnitude for vector fields)
 |Field |99.9%        |99.0%        |95.0%        |
 |------|-------------|-------------|-------------|
-|E     |1.92e+01 V/m |1.37e+01 V/m |1.10e+01 V/m |
+|E     |3.13e+01 V/m |2.36e+01 V/m |1.92e+01 V/m |
 
 Field Focality
 ---------------
 Mesh volume or area with a field >= X% of the 99.9th percentile
 |Field |75.0%        |50.0%        |
 |------|-------------|-------------|
-|E     |6.36e+02 mm³ |9.05e+03 mm³ |
+|E     |9.48e+02 mm³ |1.56e+04 mm³ |
 
