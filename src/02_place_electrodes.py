@@ -45,17 +45,53 @@ EAR_OFFSETS = {
     "post_lobule": (0.0, -12.0, -30.0),   # behind/below the lobule
 }
 
-# Jaw sites are anchored to their own structures rather than to the ear.
-# (label, description, offset_from_centroid_RAS)
-JAW_ANCHORS = {
-    "mental":        (36, "chin, anterior mandible",      (0.0,  30.0, -20.0)),
-    "submental_mid": (36, "under chin, midline",          (0.0,  18.0, -38.0)),
-    "submental_lat": (36, "under chin, lateral",          (22.0, 14.0, -36.0)),
-    "submaxillary":  (36, "under the jawline",            (34.0,  2.0, -30.0)),
-    "hyoid":         (87, "over the hyoid bone",          (0.0,   6.0,  -4.0)),
-    "throat_scm":    (68, "over sternocleidomastoid",     (0.0,   0.0,   0.0)),
-    "buccal":        (84, "cheek, over buccinator",       (0.0,   0.0,   0.0)),
-    "midjaw":        (66, "over masseter, mid-ramus",     (0.0,   0.0,   0.0)),
+# Jaw sites: NORMAL PROJECTION, no hand-tuned RAS offsets.
+#
+# Each site names a target structure (and, where several sites share one
+# structure, an anatomically-defined sub-region of it). The electrode is the
+# nearest point on the OUTER SKIN to that sub-region's centroid. The reported
+# distance is then depth of the structure below the skin, and nothing else --
+# previously it was depth plus whatever error my hand-chosen offset introduced.
+#
+# `region` selects a sub-region so that three mandible-anchored sites do not
+# collapse onto a single point. `skin` restricts which skin is eligible:
+# "inferior" keeps submental/submaxillary under the jaw rather than letting
+# them snap to the front of the chin, which is a different electrode.
+JAW_TARGETS = {
+    "mental":        dict(label=71, region=None,            skin=("midline",),
+                          desc="over mentalis (chin)"),
+    "submental_mid": dict(label=36, region="symphysis_mid", skin=("inferior", "midline"),
+                          desc="under chin at midline, mandibular symphysis"),
+    "submental_lat": dict(label=36, region="symphysis_lat", skin=("inferior",),
+                          desc="under chin, lateral to the symphysis"),
+    "submaxillary":  dict(label=36, region="body_lat",      skin=("inferior",),
+                          desc="under the jawline, mandibular body"),
+    "hyoid":         dict(label=87, region=None,            skin=("midline",),
+                          desc="over the hyoid bone"),
+    # region="side" matters: buccinator is bilateral, so an unrestricted
+    # centroid lands near midline and its nearest skin point is under the chin,
+    # not on the cheek. Same for masseter.
+    "buccal":        dict(label=84, region="side",          skin=None,
+                          desc="cheek, over buccinator"),
+    "midjaw":        dict(label=66, region="side",          skin=None,
+                          desc="over masseter"),
+}
+
+# HELD, not placed. Carl is measuring this on his own neck so the modelled
+# electrode sits where the physical one will. Deriving it from MIDA's SCM
+# centroid is wrong here: that compartment is truncated at the volume floor,
+# which drags its centroid posteriorly. Stage 3 must not solve it.
+HELD_POSITIONS = {
+    "throat_scm": "awaiting measured coordinate from the physical rig; "
+                  "MIDA's SCM is truncated at S=-116.2 so its centroid is biased",
+}
+
+# Tissue each ear site is supposed to sit over, for the same check the jaw
+# sites get. mastoid and post_lobule are deliberately absent: they sit over the
+# pooled Muscle (General) compartment and are handled by the ROI analysis.
+EAR_TISSUE_CHECK = {
+    "above_ear":  (63, "Muscle - Temporalis/Temporoparietalis"),
+    "pre_tragus": (66, "Muscle - Masseter"),
 }
 
 MIDA_BACKGROUND = 50
@@ -104,6 +140,37 @@ def outer_skin_points(np, ndimage, arr, affine):
 def nib_apply(np, affine, ijk):
     ijk = np.asarray(ijk, dtype=np.float64)
     return ijk @ affine[:3, :3].T + affine[:3, 3]
+
+
+def derive_midline(np, arr, affine, mandible_label=36, pct=88.0):
+    """Anatomical midline R, from the mandibular symphysis.
+
+    Assuming R=0 is midline is wrong for MIDA: the symphysis sits at R=-7.8
+    while the pinna-pair midpoint is at R=-1.3. Midline is derived, and the
+    disagreement between the two estimates is reported rather than hidden --
+    it is real facial asymmetry in a single-subject model.
+    """
+    idx = np.argwhere(arr == mandible_label)
+    ras = idx @ affine[:3, :3].T + affine[:3, 3]
+    symph = ras[ras[:, 1] >= np.percentile(ras[:, 1], pct)]
+    return float(symph[:, 0].mean()), len(symph)
+
+
+def region_points(np, ras, region, midline, sign):
+    """Anatomically-defined sub-region of a structure's point cloud."""
+    if region is None:
+        return ras
+    a = ras[:, 1]
+    dr = (ras[:, 0] - midline) * sign          # +ve = chosen side
+    if region == "symphysis_mid":
+        return ras[(a >= np.percentile(a, 88)) & (np.abs(ras[:, 0] - midline) <= 10)]
+    if region == "symphysis_lat":
+        return ras[(a >= np.percentile(a, 82)) & (dr >= 12) & (dr <= 34)]
+    if region == "body_lat":
+        return ras[(a >= np.percentile(a, 45)) & (a <= np.percentile(a, 75)) & (dr >= 10)]
+    if region == "side":
+        return ras[dr > 0]
+    raise ValueError(f"unknown region {region!r}")
 
 
 def project_out_to_skin(np, arr, affine, inv_affine, start, head_centre,
@@ -188,6 +255,16 @@ def place(volume_path: Path, side: str, out_csv: Path, qa_nifti: Path | None) ->
     del head_idx
     print(f"  head centre {fmt(head_centre)}")
 
+    midline, n_symph = derive_midline(np, arr, affine)
+    pin_l = side_split(np, arr, affine, MIDA_PINNA, "left")
+    pinna_mid = (pinna.mean(0)[0] + pin_l.mean(0)[0]) / 2 if pin_l is not None else float("nan")
+    print(f"  midline from mandibular symphysis: R = {midline:+.2f} "
+          f"(n={n_symph:,})")
+    print(f"  midline from pinna pair          : R = {pinna_mid:+.2f}")
+    disagree = abs(midline - pinna_mid)
+    print(f"  the two disagree by {disagree:.1f} mm"
+          + ("   <-- EXCEEDS 3 mm, see notes" if disagree > 3 else ""))
+
     rows = []
 
     def add(name, montage, target, anchor_desc, depth=None):
@@ -205,24 +282,50 @@ def place(volume_path: Path, side: str, out_csv: Path, qa_nifti: Path | None) ->
         add(name, "ear", anchor + np.array([sign * dr, da, ds]),
             f"pinna{'/tragus' if name=='pre_tragus' else ''} {dr:+.0f}R {da:+.0f}A {ds:+.0f}S")
 
-    for name, (label, desc, (dr, da, ds)) in JAW_ANCHORS.items():
-        c = centroid_ras(np, arr, affine, label)
-        if c is None:
+    for name, spec in JAW_TARGETS.items():
+        label, region, skinf, desc = (spec["label"], spec["region"],
+                                      spec["skin"], spec["desc"])
+        idx = np.argwhere(arr == label)
+        if len(idx) == 0:
             print(f"  WARNING: label {label} absent, skipping {name}")
             continue
-        # lateralise structures that are bilateral by using the chosen side
-        lat = side_split(np, arr, affine, label, side)
-        base = lat.mean(0) if (lat is not None and label in (68, 84, 66)) else c
-        seed = base + np.array([sign * dr, da, ds])
-        # Deep anchors: walk outward to the skin directly over the structure,
-        # rather than snapping to whichever skin voxel happens to be closest.
-        surf, depth = project_out_to_skin(np, arr, affine, inv_affine, seed, head_centre)
-        if surf is None:
-            print(f"  WARNING: outward projection failed for {name}, falling back to snap")
-            add(name, "jaw", seed, f"{desc} (label {label}) [SNAP FALLBACK]")
+        ras = idx @ affine[:3, :3].T + affine[:3, 3]
+        pts = region_points(np, ras, region, midline, sign)
+        if len(pts) == 0:
+            print(f"  WARNING: sub-region {region!r} empty for {name}, skipping")
+            continue
+        centre = pts.mean(0)
+
+        # Eligible skin. "inferior" keeps submental/submaxillary under the jaw
+        # instead of snapping to the front of the chin. "midline" pins the
+        # genuinely midline sites to the DERIVED midline rather than letting
+        # nearest-neighbour drift them a few mm off it.
+        keep = np.ones(len(skin_ras), dtype=bool)
+        for f in (skinf or ()):
+            if f == "inferior":
+                keep &= skin_ras[:, 2] <= centre[2] + 4.0
+            elif f == "midline":
+                keep &= np.abs(skin_ras[:, 0] - midline) <= 6.0
+            else:
+                raise ValueError(f"unknown skin filter {f!r}")
+        if keep.all():
+            cand, ctree = skin_ras, tree
         else:
-            add(name, "jaw", surf, f"{desc} (label {label}) projected out {depth:.0f}mm",
-                depth)
+            cand, ctree = skin_ras[keep], cKDTree(skin_ras[keep])
+        d, i = ctree.query(centre)
+        pos = cand[i]
+        add(name, "jaw", pos,
+            f"{desc} (label {label}"
+            + (f", {region}" if region else "") + f"), normal projection",
+            float(d))
+        print(f"  {name:<16} target {label:>3} n={len(pts):>7,} "
+              f"centroid {fmt(centre)} -> skin, depth {d:5.1f} mm")
+
+    for name, why in HELD_POSITIONS.items():
+        print(f"  {name:<16} HELD: {why}")
+        rows.append(dict(name=name, montage="jaw", side=side, R="", A="", S="",
+                         snap_mm="", depth_mm="",
+                         anchor=f"HELD - {why}", verified="held"))
 
     # --- cEEGrid C-path ---------------------------------------------------
     # 10 positions sweeping around the pinna, anterior-superior -> posterior
@@ -248,9 +351,15 @@ def place(volume_path: Path, side: str, out_csv: Path, qa_nifti: Path | None) ->
           f"{'depth':>6}  anchor")
     print("-" * 104)
     for r in rows:
+        if r["verified"] == "held":
+            print(f"{r['name']:<16} {r['montage']:<10} {'-':>8} {'-':>8} "
+                  f"{'-':>8} {'-':>6} {'-':>6}  {r['anchor']}")
+            continue
         dep = f"{r['depth_mm']:>6}" if r["depth_mm"] != "" else f"{'-':>6}"
         print(f"{r['name']:<16} {r['montage']:<10} {r['R']:>8.1f} {r['A']:>8.1f} "
               f"{r['S']:>8.1f} {r['snap_mm']:>6.1f} {dep}  {r['anchor']}")
+
+    _tissue_check(np, arr, affine, rows, side)
 
     _sanity(np, rows)
 
@@ -272,9 +381,46 @@ def place(volume_path: Path, side: str, out_csv: Path, qa_nifti: Path | None) ->
     return 0
 
 
+def _tissue_check(np, arr, affine, rows, side):
+    """Is each ear site actually over the muscle it targets?
+
+    Same test the jaw sites get. mastoid and post_lobule are excluded on
+    purpose: they sit over the pooled Muscle (General) compartment, which the
+    ROI corridor analysis handles instead.
+    """
+    from scipy.spatial import cKDTree
+
+    print("\nTISSUE UNDER THE EAR ELECTRODES")
+    inv = np.linalg.inv(affine)
+    pos = {r["name"]: np.array([float(r["R"]), float(r["A"]), float(r["S"])])
+           for r in rows if r["verified"] != "held"}
+    for name, (label, tissue) in EAR_TISSUE_CHECK.items():
+        if name not in pos:
+            continue
+        idx = np.argwhere(arr == label)
+        ras = idx @ affine[:3, :3].T + affine[:3, 3]
+        keep = ras[:, 0] > 0 if side == "right" else ras[:, 0] < 0
+        ras = ras[keep] if keep.any() else ras
+        d, i = cKDTree(ras).query(pos[name])
+        # does the straight segment to that tissue stay inside the head?
+        seg = (pos[name][None, :] * (1 - np.linspace(0, 1, 80)[:, None])
+               + ras[i][None, :] * np.linspace(0, 1, 80)[:, None])
+        ijk = np.rint(seg @ inv[:3, :3].T + inv[:3, 3]).astype(int)
+        ok = np.all((ijk >= 0) & (ijk < np.array(arr.shape)), axis=1)
+        lab = np.full(len(seg), MIDA_BACKGROUND, dtype=arr.dtype)
+        lab[ok] = arr[ijk[ok, 0], ijk[ok, 1], ijk[ok, 2]]
+        outside = int(((lab == MIDA_BACKGROUND) | ~ok).sum())
+        verdict = "ok" if (d < 35 and outside <= 1) else "*** CHECK ***"
+        print(f"  {name:<12} -> {tissue:<40} {d:5.1f} mm  "
+              f"path {'inside' if outside <= 1 else f'EXITS({outside})'}  {verdict}")
+    print("  mastoid, post_lobule: over pooled Muscle (General); "
+          "handled by the ROI corridor analysis")
+
+
 def _sanity(np, rows):
     """Flag positions that are obviously wrong before they reach stage 3."""
     print()
+    rows = [r for r in rows if r.get("verified") != "held"]
     problems = []
     # Jaw sites are projected onto the surface, so they should already sit on
     # skin; a large residual snap there means the projection missed.

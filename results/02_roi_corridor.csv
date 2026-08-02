@@ -1,0 +1,6 @@
+side,radius_mm,muscle_general_voxels,volume_mm3,tongue_voxels,frac_of_pool,corridor_length_mm
+right,8.0,17021,2127.3,2213,0.00862,85.05
+right,10.0,29363,3669.8,5164,0.01487,85.05
+right,12.0,46295,5785.9,9184,0.02344,85.05
+right,15.0,75366,9419.2,17697,0.03815,85.05
+right,18.0,109834,13726.9,29904,0.0556,85.05

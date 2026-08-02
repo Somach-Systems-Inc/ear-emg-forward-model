@@ -99,8 +99,14 @@ def main(argv=None) -> int:
     mand = ras_of(MIDA_MANDIBLE, 20000)
     print(f"  skin {len(skin):,}  pinna {len(pinna):,}  mandible {len(mand):,}")
 
+    # Held positions carry no coordinates by design (throat_scm awaits a
+    # measurement from the physical rig). Skip them, and say so on the figure
+    # rather than letting them vanish silently.
+    held = [r["name"] for r in rows if r.get("verified") == "held"]
     E = {r["name"]: (float(r["R"]), float(r["A"]), float(r["S"]), r["montage"])
-         for r in rows}
+         for r in rows if r.get("verified") != "held" and r["R"] != ""}
+    if held:
+        print(f"  held, not drawn: {', '.join(held)}")
 
     # (title, half-space selector, projected axes, axis labels, x-inverted)
     # Two selectors per view: a tight one for the anatomy silhouette, and a
@@ -175,9 +181,11 @@ def main(argv=None) -> int:
     fig.suptitle("Electrode positions on the MIDA skin surface — "
                  "ALL POSITIONS UNVERIFIED, for visual QA",
                  fontsize=13, color=INK_PRIMARY, y=0.975)
-    fig.text(0.5, 0.935, "grey = skin surface · mid grey = mandible · "
-                         "dark grey = pinna (auricular cartilage)",
-             ha="center", fontsize=9, color=INK_SECONDARY)
+    sub = ("grey = skin surface · mid grey = mandible · "
+           "dark grey = pinna (auricular cartilage)")
+    if held:
+        sub += f"   ·   HELD, not shown: {', '.join(held)}"
+    fig.text(0.5, 0.935, sub, ha="center", fontsize=9, color=INK_SECONDARY)
     fig.tight_layout(rect=[0, 0.05, 1, 0.92])
 
     # De-collide labels. The first render produced "above_ear" and "cg01"

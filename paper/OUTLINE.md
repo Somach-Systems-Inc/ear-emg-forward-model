@@ -102,11 +102,84 @@ Orbicularis oris is the clearest case: it is a sphincter whose fibres run in a r
 
 Reference points from the implementation's self-test: a perfectly aligned compartment yields a ~59 dB orientation envelope, a fully isotropic one ~0.3 dB. Real muscles fall between, and where they fall is a result.
 
+### Reporting a field, not eighteen numbers
+
+MIDA does not segment the suprahyoid group or the tongue muscles; they sit
+pooled inside `Muscle (General)` (label 38, 1,975,307 voxels) and `Tongue`
+(label 42, 521,131 voxels). We do **not** hand-segment them.
+
+The reason is that reciprocity gives **E** everywhere in the volume.
+Compartments are only how a result is *summarised*, never how it is computed,
+so pooling is a reporting problem rather than a computational one. We therefore
+report the field two ways:
+
+1. **Per-compartment medians** for the 10 muscles MIDA actually segments (Fig 2).
+2. **A spatial sensitivity field** over the pooled compartments, with
+   anatomically-defined ROI corridors overlaid (Fig 6).
+
+Each corridor is the subset of a pooled compartment lying inside a capsule
+between two landmarks MIDA *does* segment: the **mastoid notch**, taken as the
+inferior tip of `Air Internal - Mastoid` (30), and the **hyoid greater horn**,
+taken as the ipsilateral half of `Hyoid Bone` (87). Both muscles central to the
+argument run between these regions — digastric posterior belly from the mastoid
+notch to its intermediate tendon at the hyoid, stylohyoid from the styloid to
+the hyoid, nearly parallel and slightly anterior.
+
+**The styloid process is not segmented in MIDA.** We searched `Skull` (40) for
+an isolated process in every plausible box below and medial to the mastoid; the
+skull is a single connected component and no separable spike exists at 500 µm.
+So we build **one** corridor containing both muscles and report |E| as a
+function of position along and across it, rather than inventing a styloid
+coordinate. A reader with their own anatomical prior can read off the anterior
+sub-band where stylohyoid lies; we do not bake that prior in.
+
+Corridor geometry on the right side: length 85.1 mm; at the default 12 mm
+radius the ROI holds 46,295 `Muscle (General)` voxels (5,786 mm³, 2.3% of the
+pool). Radius is swept over 8–18 mm and the sensitivity reported, because the
+radius is a choice. Occupancy is continuous along the corridor with no empty
+bins, though the first 10% contains almost no muscle (6 voxels) — the mastoid
+air cells' inferior tip sits somewhat superior to the true digastric fossa, so
+the ROI effectively begins about 10 mm distal. That is a property of the
+landmark proxy and is reported, not hidden.
+
+**Why this is stronger than per-muscle numbers.** "We compute a spatial
+sensitivity field and show the retroauricular montage's peak within the
+suprahyoid corridor" is more falsifiable than "muscle X has sensitivity Y". It
+hands readers a field they can re-analyse under their own anatomical priors
+instead of eighteen numbers that bake in ours. And it retires the reviewer
+question "how confident are you in that segmentation?" by never making one.
+
+### The inferior boundary — a bias that runs one way
+
+MIDA is cut at S = −116.2 mm and SimNIBS applies an insulating boundary there,
+so current reflects at the cut face rather than continuing down the neck. The
+error is not uniform across the montage: `hyoid` sits ~8 mm from that face,
+`throat_scm` ~23 mm, and every ear site 80 mm or more. It therefore inflates
+the lead field at the jaw sites and leaves the ear sites essentially untouched,
+which biases this paper's headline jaw-versus-ear dB gap **in the flattering
+direction**. That is the one direction of bias a reviewer should care about.
+
+So it is measured, not argued about. `src/01c_extend_neck.py` extrudes the
+inferior cross-section 70 mm downward as a homogeneous slab carrying its own
+label (muscle-isotropic conductivity, documented as a choice: the point is to
+move the insulating boundary away from the electrodes, not to model neck
+anatomy MIDA does not contain). One representative montage is solved on both
+meshes and the dB change reported at every electrode. Under ~1 dB at `hyoid`
+and `throat_scm` and this is one paragraph in Limitations; 3 dB or more and the
+extension is mandatory and every result uses it. Either way it is a
+supplementary figure.
+
 ### Montages compared
 1. **Canonical jaw** — the Gaddy/Kapur regions: mental, submental, submaxillary, hyoid, throat/SCM, buccal
 2. **Retroauricular cluster** — above ear (temporalis), mastoid, behind/below earlobe (digastric + stylohyoid), anterior to tragus (masseter/TMJ)
 3. **cEEGrid-like C-path** — 10 positions at 12–18 mm spacing, for comparability with the ear-EEG literature
 4. Reference at contralateral earlobe; BIAS as in the physical rig
+
+**Placement rule.** Every jaw site is placed by *normal projection*: the target structure's centroid (or an anatomically-defined sub-region of it, where several sites share one structure) projected to the nearest point on the outer skin. No hand-tuned millimetre offsets. The reported distance is therefore the structure's **depth below the skin** and nothing else, which makes it a result rather than a residual: hyoid 28.2 mm, submaxillary 24.2 mm, midjaw 20.7 mm, buccal 19.6 mm, submental_mid 16.2 mm, submental_lat 15.3 mm, mental 13.2 mm. Depth predicts attenuation and pairs directly with each sensitivity number.
+
+**`pre_tragus` sits 14 mm anterior to the tragus**, further forward than the 10–13 mm pre-auricular convention. That convention is for pre-auricular *EEG references*; our target is the posterior border of masseter, which lies further forward. Verified: the electrode is 7.8 mm from the masseter compartment with the connecting path inside the head. This is a choice, not an oversight.
+
+**Midline is derived, not assumed.** MIDA's midline is not R = 0, and the estimates disagree: the mandibular symphysis gives R = −7.77, the pinna-pair midpoint R = −1.33, a **6.4 mm discrepancy**. The lower face is genuinely offset relative to the ear pair in this single subject. Midline sites (`mental`, `submental_mid`, `hyoid`) are pinned to the symphysis-derived midline. Report the discrepancy: it matters because the montage is run on one side.
 
 ---
 
@@ -122,7 +195,11 @@ Reference points from the implementation's self-test: a perfectly aligned compar
 
 **Fig 5** — Rank ordering: the top-N retroauricular positions by total articulator sensitivity. **This is the design table earbud teams actually need.**
 
+**Fig 6 — the suprahyoid sensitivity field. This is the figure the ear argument actually rests on.** Sagittal and coronal slices of |E| through the pooled `Muscle (General)` compartment, with the mastoid notch, hyoid and corridor overlaid, for the retroauricular montage. See "Reporting a field, not eighteen numbers" below.
+
 **Table 1** — Tissue conductivities used, with sources.
+
+**Supplementary figure — boundary-condition sensitivity.** dB change at every electrode between the native mesh and the neck-extended mesh. See "The inferior boundary" below.
 
 ---
 
@@ -142,7 +219,13 @@ Write the discussion so that either direction is publishable. A large loss says 
 1. **Design guidance** — a lookup table for anyone building an ear-worn ExG device.
 2. **Reframing artifact as signal** — the EEG field spent decades documenting mastoid EMG contamination as a nuisance (Yao et al. 2019; Goncharova et al. 2003). This model says what that contamination actually *is*, muscle by muscle.
 3. **A testable prediction for Paper 2** — the model predicts which sites and which phoneme classes survive at the ear. Your physical 8-channel jaw-vs-ear rig tests it directly. Modelling paper predicts, empirical paper confirms or refutes. That pairing is much stronger than either alone.
-4. **Limitations** — single anatomy (MIDA is one subject), static geometry (no articulation deformation), quasi-static assumption. Fibre orientation is *not* listed here any more: it moved out of limitations and into Methods as a bounded quantity ("Bounding fibre-orientation uncertainty"). Unknown-but-bounded is a result; unknown-and-assumed would have been a limitation.
+4. **Limitations** — single anatomy (MIDA is one subject), static geometry (no articulation deformation), quasi-static assumption. Fibre orientation is *not* listed here any more: it moved out of limitations and into Methods as a bounded quantity ("Bounding fibre-orientation uncertainty"). Unknown-but-bounded is a result; unknown-and-assumed would have been a limitation. Three further items belong here explicitly:
+
+   **Truncated cervical compartments.** MIDA's volume ends at S = −116.2 mm and two muscles run into it: sternocleidomastoid (lowest extent −116.0, a 0.1 mm gap) and platysma (−115.9, 0.3 mm). Every other segmented muscle clears by 13 mm or more. Absolute sensitivity for these two is computed over a *truncated* compartment and their PCA fibre axis is biased by the truncated shape, so **their numbers are lower bounds**. State plainly that this affects the **throat montage, not the ear argument**: SCM's mastoid end reaches S = −22 mm, well clear of the cut, and that is the end the retroauricular claim depends on.
+
+   **`throat_scm` is hand-specified, not derived.** This paper's job is to predict what the physical rig measures, so the modelled electrode must sit where the physical electrode will sit. Deriving it from MIDA's truncated SCM centroid would place it by an artefact. Coordinate pending measurement on the rig.
+
+   **`mentalis` is thinly resolved.** 1,786 voxels on the right versus 7,176 on the left, yielding 3,226 tetrahedra, the smallest compartment in the mesh. Its median is correspondingly noisy: report it with an explicitly wider uncertainty envelope than the others rather than dropping it.
 
 ---
 
