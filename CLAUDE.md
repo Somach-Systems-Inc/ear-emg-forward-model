@@ -68,6 +68,8 @@ Worked example, both directions. The hyoid depth band was specified 10–15 mm a
 
 **Ask before restructuring.** The pipeline stages exist for a reason — 01 mesh, 02 electrodes, 03 leadfields, 04 analysis. Don't merge or reorder them without checking.
 
+**When Carl's instructions conflict, the later one supersedes.** Flag the conflict explicitly, say which one you are following and why, then proceed. Do not block waiting for the contradiction to be resolved, and do not silently pick one. Worked example: one list said not to run the boundary experiment while a validation contradiction was open, a later list said to run it before any further validation. The right move was to follow the later ordering, state the technical reason the earlier caution mattered (the measured 0.43 dB noise floor sits close to the 1.0 dB decision threshold), and run it.
+
 ## Pipeline
 
 | Step | Script | Done when |
