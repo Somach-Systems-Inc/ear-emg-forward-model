@@ -253,6 +253,14 @@ Fat sits at **0.025 S/m against muscle at 0.355 S/m, a 14x contrast**, and gener
 
 **Table 2b (stage 4) — the sensitivity-weighted successor.** Path thickness is a geometric proxy. The physical quantity is the **fraction of each electrode's total sensitivity contributed by each compartment**, free once **E** exists: integrate the lead field over each compartment and normalise. Table 2 is retained as the *a priori* geometric prediction and Table 2b as its confirmation, so the paper contains a prediction and its test rather than either alone.
 
+**Fig 7 — superficial air voids at the ear.** dB change per ear site and per muscle compartment when the pneumatised temporal-bone voids (mastoid air cells, external auditory canal, pharyngotympanic tube) are filled with surrounding bone instead of air. **A numbered result, not a limitation.**
+
+The retroauricular region contains **the head's only large superficial, skin-adjacent air voids**, and they sit directly between the electrode and the target muscles. No jaw site has anything comparable. That makes them a candidate mechanism for ear-versus-jaw difference which, as far as we can find, the literature has not stated.
+
+The sign is left to fall where it falls. An insulator deflects current rather than simply attenuating it, so filling the voids may *raise* sensitivity at some sites and lower it at others; either outcome is reported.
+
+**Testable prediction for Paper 2, and a design warning.** Mastoid pneumatisation varies widely between individuals — from nearly solid to extensively cellular. If the voids materially shape the field, this predicts **elevated inter-subject variability at ear sites specifically**, over and above whatever variability the jaw sites show. Paper 2's physical rig tests exactly that, and for anyone building ear-worn ExG it means the mastoid is a site whose performance should be expected to vary more across users than a jaw site would.
+
 **Fig 6 — the suprahyoid sensitivity field. This is the figure the ear argument actually rests on.** Sagittal and coronal slices of |E| through the pooled `Muscle (General)` compartment, with the mastoid notch, hyoid and corridor overlaid, for the retroauricular montage. See "Reporting a field, not eighteen numbers" below.
 
 **Table 1** — Tissue conductivities used, with sources.

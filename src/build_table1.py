@@ -133,18 +133,29 @@ MAP: dict[int, object] = {
     # singular. config.SIGMA["air"] = 1e-15 exists precisely to avoid that, so
     # air lumens take the SimNIBS value even though the tissue identification
     # itself is a judgement.
-    # Range spans the two physically plausible states: an open air lumen and a
-    # collapsed, mucosa-lined one. That makes the judgement testable by the
-    # sensitivity bound rather than merely declared.
-    85:  (S, "air", "judgement", "external auditory canal is an air-filled "
-                                 "lumen; uses 1e-15 not IT'IS 0 S/m, which "
-                                 "would make the system singular. Range spans "
-                                 "open air to cerumen/mucosa-filled.",
-          ("air", "Mucous Membrane")),
-    86:  (S, "air", "judgement", "pharyngotympanic tube modelled as an air "
-                                 "lumen; 1e-15 for the same reason. The tube "
-                                 "is normally collapsed and mucosa-lined, so "
-                                 "the range spans air to mucous membrane.",
+    # The two air lumens are NOT the same case, and treating them alike was an
+    # error: the collapsed-mucosa argument holds for the tube and not for the
+    # canal. The canal is the judgement row closest to an electrode (7.76 mm),
+    # so an unphysical upper end there would have inflated the worst-case
+    # envelope through the single most influential row.
+    #
+    # External auditory canal: air-filled in a healthy ear, and it does not
+    # collapse. Degenerate range on purpose. The only realistic alternative is
+    # partial cerumen occlusion, and there is no sourced cerumen conductivity
+    # in IT'IS v4.2, so it is declared unmodelled rather than invented.
+    85:  (S, "air", "judgement", "external auditory canal, air-filled and "
+                                 "non-collapsing in a healthy ear. Uses 1e-15 "
+                                 "rather than IT'IS Air = 0 S/m, which would "
+                                 "make the system singular. No range: cerumen "
+                                 "occlusion has no sourced conductivity and is "
+                                 "not modelled.",
+          ("air", "air")),
+    # Pharyngotympanic tube: normally collapsed and mucosa-lined, so air and
+    # mucous membrane are both real states and the range is physical.
+    86:  (S, "air", "judgement", "pharyngotympanic tube, normally collapsed "
+                                 "and mucosa-lined, so the range spans an open "
+                                 "air lumen to a collapsed mucosal one. 1e-15 "
+                                 "for the same singularity reason.",
           ("air", "Mucous Membrane")),
     87:  J("Bone (Cortical)", "IT'IS has no hyoid entry; hyoid is a small "
                               "cortical-shelled bone"),

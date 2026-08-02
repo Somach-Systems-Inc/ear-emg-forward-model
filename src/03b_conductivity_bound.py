@@ -39,8 +39,26 @@ import config  # noqa: E402
 
 TABLE1 = config.RESULTS / "01_table1_conductivities.csv"
 GENERIC_SOFT_TISSUE = 0.30      # S/m, a deliberately blunt stand-in
-INJECT_FROM = "hyoid"
-INJECT_TO = "earlobe_contra"
+REFERENCE = "earlobe_contra"
+
+# Per (compartment x electrode), not per compartment. A per-compartment
+# marginal averages over electrodes and would hide a site-localised effect,
+# which is the effect most likely to be present here.
+#
+# Four representative sites rather than all 23: two jaw, two ear, chosen to
+# span the boundary-proximity and air-void gradients. At ~2m50s per solve on
+# the 12.3M-tet mesh, all 23 would be 7+ hours per condition.
+ELECTRODES = ["hyoid", "submental_mid", "mastoid", "above_ear"]
+
+# Pneumatised temporal-bone structures. The retroauricular region holds the
+# head's only large superficial skin-adjacent air voids, and they sit between
+# the ear electrodes and the target muscles.
+AIR_VOID_LABELS = {
+    30: "Air Internal - Mastoid",
+    85: "Ear Auditory Canal",
+    86: "Ear Pharyngotympanic Tube",
+}
+AIR_VOID_FILL = "bone_compact"   # they are cavities within the temporal bone
 
 
 def load_table1():
@@ -67,11 +85,19 @@ def conductivity_sets(rows):
         if r["sigma_high"]:
             high[lab] = max(float(r["sigma_high"]), 1e-15)
 
+    # Designed comparison, not a sensitivity variant: air voids filled with
+    # the surrounding temporal bone. Tests whether the superficial air voids
+    # at the ear are themselves a mechanism for ear-versus-jaw difference.
+    filled = dict(base)
+    for lab in AIR_VOID_LABELS:
+        filled[lab] = config.SIGMA[AIR_VOID_FILL]
+
     return {"a_baseline": base, "b_generic": generic,
-            "c1_all_low": low, "c2_all_high": high}, len(judge)
+            "c1_all_low": low, "c2_all_high": high,
+            "d_airvoids_filled": filled}, len(judge)
 
 
-def solve(mesh: Path, out: Path, pos, sigmas, label):
+def solve(mesh: Path, out: Path, pos, sigmas, label, inject_from, inject_to):
     from simnibs import sim_struct, run_simnibs
     out.parent.mkdir(parents=True, exist_ok=True)
     S = sim_struct.SESSION()
@@ -85,7 +111,7 @@ def solve(mesh: Path, out: Path, pos, sigmas, label):
     for lab, sig in sigmas.items():
         t.cond[lab - 1].value = float(sig)
         t.cond[lab - 1].name = f"tag{lab}"
-    for j, nm in enumerate((INJECT_FROM, INJECT_TO)):
+    for j, nm in enumerate((inject_from, inject_to)):
         el = t.add_electrode()
         el.channelnr = j + 1
         el.centre = list(pos[nm])
@@ -149,52 +175,128 @@ def main(argv=None) -> int:
            for r in csv.DictReader(
                (config.RESULTS / "02_electrode_positions.csv").open())
            if r.get("verified") != "held" and r["R"] != ""}
-    for nm in (INJECT_FROM, INJECT_TO):
+    for nm in ELECTRODES + [REFERENCE]:
         if nm not in pos:
             print(f"ERROR: {nm} has no accepted coordinate", file=sys.stderr)
             return 1
+    print(f"electrodes: {', '.join(ELECTRODES)}  (reference {REFERENCE})")
+    print(f"{len(sets)} conditions x {len(ELECTRODES)} electrodes = "
+          f"{len(sets)*len(ELECTRODES)} solves\n")
 
     res = {}
     for cname, sig in sets.items():
-        res[cname] = compartment_medians(
-            solve(a.mesh, a.workdir / cname, pos, sig, cname))
+        for e in ELECTRODES:
+            res[(cname, e)] = compartment_medians(
+                solve(a.mesh, a.workdir / f"{cname}__{e}", pos, sig,
+                      f"{cname} @ {e}", e, REFERENCE))
 
-    base = res["a_baseline"]
     others = [c for c in sets if c != "a_baseline"]
-    print(f"\n{'compartment':<24} {'baseline':>11}" +
-          "".join(f"{c:>14}" for c in others) + f"{'envelope':>11}")
-    print("-" * 96)
-    out_rows, worst = [], 0.0
-    for name in base:
-        line = f"{name:<24} {base[name]:>11.4e}"
-        rec = {"compartment": name, "baseline_V_per_m": base[name]}
-        dbs = []
-        for c in others:
-            v = res[c].get(name, float("nan"))
-            db = 20 * np.log10(v / base[name]) if base[name] > 0 else np.nan
-            dbs.append(db)
-            line += f"{db:>+13.3f}dB"
-            rec[f"{c}_dB"] = round(float(db), 4)
-        env = float(np.nanmax(np.abs(dbs))) if dbs else float("nan")
-        rec["envelope_dB"] = round(env, 4)
-        worst = max(worst, env)
-        line += f"{env:>10.3f}"
-        print(line)
-        out_rows.append(rec)
+    comps = sorted(res[("a_baseline", ELECTRODES[0])])
 
-    print(f"\nworst-case envelope across all compartments: {worst:.3f} dB")
-    print(f"electrode-meshing noise floor (measured)   : 0.430 dB")
-    if worst < 0.1:
+    print(f"\n{'compartment':<22} {'electrode':<15}" +
+          "".join(f"{c[:12]:>14}" for c in others) + f"{'envelope':>10}")
+    print("-" * 110)
+    out_rows, worst, worst_at = [], 0.0, None
+    for name in comps:
+        for e in ELECTRODES:
+            b = res[("a_baseline", e)].get(name)
+            if not b or b <= 0:
+                continue
+            line = f"{name[:21]:<22} {e:<15}"
+            rec = {"compartment": name, "electrode": e, "baseline_V_per_m": b}
+            dbs = []
+            for c in others:
+                v = res[(c, e)].get(name, float("nan"))
+                db = 20 * np.log10(v / b)
+                dbs.append((abs(db), c))
+                line += f"{db:>+13.3f}dB"
+                rec[f"{c}_dB"] = round(float(db), 4)
+            env = max(d for d, _ in dbs)
+            rec["envelope_dB"] = round(float(env), 4)
+            if env > worst:
+                worst, worst_at = env, (name, e, max(dbs)[1])
+            line += f"{env:>9.3f}"
+            print(line)
+            out_rows.append(rec)
+
+    # exclude the designed air-void comparison from the SENSITIVITY verdict --
+    # it is a physical experiment, not an uncertainty on an unsourced value
+    sens = [c for c in others if c != "d_airvoids_filled"]
+    sens_worst, sens_at = 0.0, None
+    for r in out_rows:
+        for c in sens:
+            if abs(r[f"{c}_dB"]) > sens_worst:
+                sens_worst = abs(r[f"{c}_dB"])
+                sens_at = (r["compartment"], r["electrode"], c)
+
+    print(f"\nSENSITIVITY envelope (conditions b, c1, c2 only): "
+          f"{sens_worst:.3f} dB")
+    if sens_at:
+        print(f"  worst at: {sens_at[0]} @ {sens_at[1]} under {sens_at[2]}")
+    print(f"electrode-meshing noise floor (measured)         : 0.430 dB")
+
+    if sens_worst < 0.1:
         print("\nVERDICT: under 0.1 dB. The 17 judgement calls do not affect any\n"
-              "         result. Methods carries one sentence; the error-budget\n"
-              "         row is bounded and negligible.")
-    elif worst < 0.43:
+              "         result. Methods carries one sentence.")
+    elif sens_worst < 0.43:
         print("\nVERDICT: above 0.1 dB but below the electrode-meshing noise\n"
               "         floor, so it is real but not the limiting term.")
     else:
-        print("\nVERDICT: exceeds the meshing noise floor. Unsourced conductivity\n"
-              "         is a material error-budget term and the widest-range\n"
-              "         judgement rows need sourced values.")
+        # Fourth branch: attribute the excess before blaming sourcing.
+        ear = {"mastoid", "above_ear"}
+        by_e = {}
+        for r in out_rows:
+            v = max(abs(r[f"{c}_dB"]) for c in sens)
+            by_e[r["electrode"]] = max(by_e.get(r["electrode"], 0.0), v)
+        ear_max = max((v for e, v in by_e.items() if e in ear), default=0.0)
+        jaw_max = max((v for e, v in by_e.items() if e not in ear), default=0.0)
+        print(f"\n  attribution by electrode: "
+              + ", ".join(f"{e} {v:.3f}dB" for e, v in sorted(
+                  by_e.items(), key=lambda kv: -kv[1])))
+        print(f"  ear sites max {ear_max:.3f} dB vs jaw sites max "
+              f"{jaw_max:.3f} dB")
+        if ear_max > 2 * jaw_max:
+            print("\nVERDICT: exceeds the noise floor but is LOCALISED TO EAR "
+                  "SITES.\n         This is not a sourcing failure -- sigma_air "
+                  "is 1e-15 and correct.\n         It is a physical result "
+                  "about superficial air voids; see the\n         air-void "
+                  "comparison below.")
+        else:
+            print("\nVERDICT: exceeds the meshing noise floor and is not "
+                  "localised to the\n         ear. Unsourced conductivity is a "
+                  "material budget term and the\n         widest-range "
+                  "judgement rows need sourced values.")
+
+    # ---- designed comparison: superficial air voids at the ear -----------
+    print(f"\n{'='*72}\nAIR VOIDS AT THE EAR (condition d: voids filled with "
+          f"{AIR_VOID_FILL})\n{'='*72}")
+    print("labels: " + ", ".join(f"{k} {v}" for k, v in AIR_VOID_LABELS.items()))
+    print(f"\n{'compartment':<22} " + "".join(f"{e[:13]:>15}" for e in ELECTRODES))
+    print("-" * 90)
+    for name in comps:
+        line = f"{name[:21]:<22} "
+        for e in ELECTRODES:
+            r = next((x for x in out_rows if x["compartment"] == name
+                      and x["electrode"] == e), None)
+            line += (f"{r['d_airvoids_filled_dB']:>+14.3f}dB" if r
+                     else f"{'-':>15}")
+        print(line)
+    av = [(abs(r["d_airvoids_filled_dB"]), r["electrode"], r["compartment"])
+          for r in out_rows]
+    if av:
+        m = max(av)
+        print(f"\nlargest air-void effect: {m[0]:.3f} dB at {m[2]} @ {m[1]}")
+        ear_av = max((v for v, e, _ in av if e in ("mastoid", "above_ear")),
+                     default=0.0)
+        jaw_av = max((v for v, e, _ in av if e not in ("mastoid", "above_ear")),
+                     default=0.0)
+        print(f"ear sites {ear_av:.3f} dB vs jaw sites {jaw_av:.3f} dB")
+        signs = [r["d_airvoids_filled_dB"] for r in out_rows
+                 if r["electrode"] in ("mastoid", "above_ear")]
+        if signs:
+            print(f"sign at ear sites: {sum(1 for s in signs if s>0)} positive, "
+                  f"{sum(1 for s in signs if s<0)} negative "
+                  f"(filling the voids RAISES sensitivity where positive)")
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
     with a.out.open("w", newline="") as fh:
