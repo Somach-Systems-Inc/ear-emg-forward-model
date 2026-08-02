@@ -1,0 +1,77 @@
+[ simnibs 4.6.0 - 2026-08-02 14:45:56,843 - 33282 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-02 14:45:56,844 - 33282 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-02 14:45:56,844 - 33282 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/mida_headneck.msh
+[ simnibs 4.6.0 - 2026-08-02 14:45:56,844 - 33282 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-02 14:45:56,844 - 33282 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/truncated
+[ simnibs 4.6.0 - 2026-08-02 14:45:57,255 - 33282 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/truncated
+[ simnibs 4.6.0 - 2026-08-02 14:45:57,334 - 33282 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 14:45:57,334 - 33282 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-02 14:45:57,334 - 33282 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-02 14:45:57,334 - 33282 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-02 14:46:28,449 - 33282 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-9.33), np.float64(42.74), np.float64(-108.23)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 14:46:35,132 - 33282 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-71.65), np.float64(7.94), np.float64(-33.44)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 2
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 14:47:14,835 - 33282 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-02 14:47:15,193 - 33282 ]DEBUG: Traceback
+Traceback (most recent call last):
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/utils/cond_utils.py", line 182, in test_numerical
+    c = float(v)
+        ^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/carl/CODELocalProjects/ear-emg-forward-model/src/03a_boundary_run.py", line 192, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/carl/CODELocalProjects/ear-emg-forward-model/src/03a_boundary_run.py", line 140, in main
+    solve(a.truncated, a.workdir / "truncated", pos, None, "truncated"))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/carl/CODELocalProjects/ear-emg-forward-model/src/03a_boundary_run.py", line 86, in solve
+    run_simnibs(S)
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/simulation/run_simnibs.py", line 23, in run_simnibs
+    out = p.run(cpus=cpus)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/simulation/sim_struct.py", line 282, in run
+    fn, fn_geo = PL.run_simulation(simu_name, cpus=cpus, view=self.open_in_gmsh)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/simulation/sim_struct.py", line 1853, in run_simulation
+    cond = self.cond2elmdata(mesh_elec)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/simulation/sim_struct.py", line 854, in cond2elmdata
+    return simnibs.utils.cond_utils.cond2elmdata(mesh, cond_list)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/utils/cond_utils.py", line 199, in cond2elmdata
+    c = test_numerical(cond_list[t - 1], t - 1)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/utils/cond_utils.py", line 184, in test_numerical
+    raise TypeError("The value {0} in cond_list is not numerical".format(i))
+TypeError: The value 12 in cond_list is not numerical
+[ simnibs 4.6.0 - 2026-08-02 14:47:15,195 - 33282 ]CRITICAL: Uncaught exception
+Traceback (most recent call last):
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/utils/cond_utils.py", line 182, in test_numerical
+    c = float(v)
+        ^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+
+During handling of the above exception, another exception occurred:
+
+TypeError: The value 12 in cond_list is not numerical

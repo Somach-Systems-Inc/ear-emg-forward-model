@@ -265,18 +265,27 @@ Fat sits at **0.025 S/m against muscle at 0.355 S/m, a 14x contrast**, and gener
 
 One row per term. Each is filled in only when its run completes, and any row still reading TODO at submission is either measured or explicitly declared unquantifiable — never guessed.
 
-| # | Term | What sets it | Source | Value |
-|---|---|---|---|---|
-| 1 | **Discretisation** | finite element size | sphere convergence — **first attempt failed, see below** | *TODO — needs a genuinely refined mesh* |
-| 2 | **Interface proximity** | source near a conductivity boundary | **not separable on a concentric sphere** — see below | *needs a different geometry* |
-| 3 | **Inferior boundary** | MIDA's cut face at S = −116.2 mm | truncated vs neck-extended mesh, two slab conductivities | *TODO — extension run* |
-| 4 | **Muscle anisotropy** | σ tensor vs scalar | Run A isotropic vs Run B anisotropic | *TODO — stage 3* |
-| 5 | **Fibre orientation** | n̂ unknown in MIDA | orientation sweep envelope, per muscle | *partially measured — bounds are per-muscle, see Methods* |
-| 6 | **Single anatomy** | MIDA is one subject | **not quantifiable from one head.** Stated, not estimated. | n/a by construction |
+**Read the last two columns first.** Every published claim in this paper is a **ratio** — this site against that site, ear against jaw, muscle against muscle. A term that scales the whole lead field equally **cancels in every ratio** and never reaches a conclusion. A term that varies *between* sites survives into all of them. Sorting the budget this way is what makes it load-bearing rather than decorative.
+
+| # | Term | What sets it | Affects absolute lead field | Affects site-to-site ratios | Value |
+|---|---|---|---|---|---|
+| 1 | **Discretisation** | finite element size | yes | partly | *TODO — see below* |
+| 2 | **Interface proximity** | source near a conductivity boundary | yes | **yes** | *needs a different geometry* |
+| 3 | **Inferior boundary** | MIDA's cut face at S = −116.2 mm | yes | **yes** — hits jaw sites, not ear sites | *TODO — run in progress* |
+| 4 | **Muscle anisotropy** | σ tensor vs scalar | yes | **yes** | *TODO — stage 3* |
+| 5 | **Fibre orientation** | n̂ unknown in MIDA | yes | **yes** | *partially measured, per-muscle envelope* |
+| 6 | **Electrode meshing** | contact area realised from incidental surface triangulation | yes | **yes — per-site, does not cancel** | **0.43 dB** (measured) |
+| 7 | **Single anatomy** | MIDA is one subject | yes | unknown | **not quantifiable from one head** |
+
+**Row 6 was nearly mis-filed as a cancelling term and is the clearest case for the two-column split.** It would be natural to treat electrode modelling as a global scale factor that divides out. It does not: each electrode's contact area is realised independently from whatever surface triangles happen to fall under it, so it is per-site noise, not global scale. Measured at **5.06 percentage points in MAG between two meshes differing by 0.13% in element count**, which is 20·log₁₀(1.0506) = **0.43 dB**.
+
+That number matters twice over. It sets the **resolution floor for the channel-redundancy analysis** (Fig 5), where adjacent sites may differ by less than 0.43 dB and would then be indistinguishable rather than genuinely redundant. And it sits only ~2.3x below the boundary run's 1.0 dB decision threshold, so a boundary shift under ~0.5 dB cannot be separated from meshing noise by one pair of solves. It must be measured on the **production** montage, by repeating it across several mesh realisations and reporting per-site spread in dB.
+
+**Worked cancellation, for the terms that do cancel.** A flat 4.4% magnitude offset is 20·log₁₀(1.044) = 0.37 dB on every site equally. In a ratio of site A to site B both numerator and denominator carry it, so it subtracts to exactly 0 dB. This is why the retracted MAG figure, though embarrassing as an accuracy claim, would not have moved a single published conclusion — and why RDM, which measures *topography*, is the metric that actually matters here.
+
+Row 7 is deliberately left unquantified. A single-subject model cannot estimate its own between-subject variance, and producing a number for it would be exactly the hand-waving this table exists to avoid.
 
 **Method validity is established separately and is not a budget term.** Reciprocity was verified against the analytic multilayer sphere at a median magnitude ratio of 0.9907 (least-squares scale factor 0.9935, magnitude correlation r = 0.99743, no systematic drift across source radii 20–75 mm). That is a correctness check on the identity `V_AB = E_recip(r)·p / I`, not an uncertainty on any published number, and conflating the two would inflate the budget with a term that does not belong in it.
-
-Row 6 is deliberately left unquantified. A single-subject model cannot estimate its own between-subject variance, and producing a number for it would be exactly the hand-waving this table exists to avoid.
 
 **Row 1's first attempt failed and is recorded rather than re-run quietly.** Three densities were requested via `meshmesh --usesettings` element-size ranges. Two were produced:
 

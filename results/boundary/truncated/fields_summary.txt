@@ -1,0 +1,12 @@
+Cannot locate subjects m2m folder
+some postprocessing options might fail
+Uncaught exception
+Traceback (most recent call last):
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/utils/cond_utils.py", line 182, in test_numerical
+    c = float(v)
+        ^^^^^^^^
+TypeError: float() argument must be a string or a real number, not 'NoneType'
+
+During handling of the above exception, another exception occurred:
+
+TypeError: The value 12 in cond_list is not numerical
