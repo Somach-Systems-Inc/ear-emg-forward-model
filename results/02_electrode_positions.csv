@@ -1,0 +1,25 @@
+name,montage,side,R,A,S,snap_mm,depth_mm,anchor,verified
+pre_tragus,ear,right,69.37,38.55,-11.62,5.33,,pinna/tragus +0R +14A +0S,no
+above_ear,ear,right,78.76,7.24,13.61,9.91,,pinna +0R +0A +30S,no
+mastoid,ear,right,69.41,-12.38,-22.98,1.05,,pinna +0R -18A -10S,no
+post_lobule,ear,right,63.42,-4.7,-40.55,7.31,,pinna +0R -12A -30S,no
+mental,jaw,right,-7.16,94.04,-104.96,0.41,23.5,"chin, anterior mandible (label 36) projected out 24mm",no
+submental_mid,jaw,right,-6.06,69.48,-107.2,0.28,3.5,"under chin, midline (label 36) projected out 4mm",no
+submental_lat,jaw,right,16.72,65.64,-105.34,0.22,3.5,"under chin, lateral (label 36) projected out 4mm",no
+submaxillary,jaw,right,29.52,53.42,-99.86,0.3,4.5,under the jawline (label 36) projected out 4mm,no
+hyoid,jaw,right,-7.76,36.08,-115.57,1.15,25.5,over the hyoid bone (label 87) projected out 26mm,no
+throat_scm,jaw,right,48.07,-15.07,-92.75,0.22,13.5,over sternocleidomastoid (label 68) projected out 14mm,no
+buccal,jaw,right,33.42,75.55,-86.7,0.08,22.5,"cheek, over buccinator (label 84) projected out 22mm",no
+midjaw,jaw,right,60.26,51.9,-67.8,0.35,22.5,"over masseter, mid-ramus (label 66) projected out 22mm",no
+cg01,ceegrid,right,75.97,23.63,13.68,7.02,,pinna + 32mm @ 60deg,no
+cg02,ceegrid,right,79.4,6.87,17.11,9.91,,pinna + 32mm @ 87deg,no
+cg03,ceegrid,right,76.23,-10.82,16.79,7.35,,pinna + 32mm @ 113deg,no
+cg04,ceegrid,right,72.25,-19.89,5.2,3.22,,pinna + 32mm @ 140deg,no
+cg05,ceegrid,right,69.67,-26.88,-6.5,0.62,,pinna + 32mm @ 167deg,no
+cg06,ceegrid,right,66.68,-26.44,-19.93,3.08,,pinna + 32mm @ 193deg,no
+cg07,ceegrid,right,62.85,-17.99,-32.09,7.25,,pinna + 32mm @ 220deg,no
+cg08,ceegrid,right,63.46,-5.18,-40.03,7.3,,pinna + 32mm @ 247deg,no
+cg09,ceegrid,right,65.34,6.37,-41.97,5.54,,pinna + 32mm @ 273deg,no
+cg10,ceegrid,right,65.18,21.96,-39.47,4.9,,pinna + 32mm @ 300deg,no
+earlobe_contra,reference,right,-71.65,7.94,-33.44,2.06,,"most inferior pinna point, left",no
+earlobe_ipsi,reference,right,66.24,12.07,-37.18,4.74,,"most inferior pinna point, right",no
