@@ -1,0 +1,7 @@
+density,tets,h_mean_mm,RDM_pct,MAG_pct
+vcoarse,118169,2.957,6.0977,5.5282
+coarse,265620,2.257,5.1472,22.0184
+medium,647323,1.677,4.3552,4.4002
+
+RDM_0_pct,C,p,monotone
+2.0118,1.411734,0.9802,True
