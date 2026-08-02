@@ -47,12 +47,17 @@ DECISION_MUSCLES = [
     "genioglossus",
 ]
 
-# Names that indicate MIDA pooled muscle tissue rather than naming a muscle.
+# Labels that pool many muscles into one compartment rather than naming one.
+# MIDA v1.0 ships "Muscle (General)" and an undivided "Tongue"; specific muscles
+# are named "Muscle - Masseter", so the " - " is what distinguishes them.
 CATCH_ALL_PATTERNS = [
-    r"^muscle[s]?$",
+    r"^muscles?\s*$",
+    r"^muscles?\s*\(?\s*(general|generic|unspecified|other|remaining|nos)\b",
     r"^skeletal[\s_-]*muscle",
     r"^muscle[\s_-]*tissue",
     r"^generic[\s_-]*muscle",
+    r"^soft[\s_-]*tissue",
+    r"^tongue\s*$",
 ]
 
 LUT_GLOBS = ["*.txt", "*.csv", "*.tsv", "*.lut", "*.label", "*.ctbl", "*.json"]
@@ -302,8 +307,12 @@ def list_labels(volume_path: Path, lut_path: Path | None, out_csv: Path | None) 
     print(f"Label volume : {volume_path}")
     print(f"Shape        : {tuple(int(s) for s in arr.shape)}   dtype={arr.dtype}")
     print(f"Voxel size   : {zooms} mm  ({voxel_mm3:.6g} mm^3/voxel)")
-    print(f"Unique labels: {len(values)}  ({len(values) - (1 if 0 in labels_present else 0)} "
-          f"excluding background)")
+    # MIDA labels background as 50, not 0, so detect it by name as well.
+    background = {
+        v for v in labels_present
+        if v == 0 or lut.get(v, "").strip().lower() in ("background", "air", "outside")
+    }
+    print(f"Unique labels: {len(values)}  ({len(values) - len(background)} excluding background)")
     print(f"Lookup table : {lut_src if lut_src else '(none found)'}  [{lut_note}]")
     print()
 
@@ -367,14 +376,15 @@ def _report_decision(rows: list[dict]) -> None:
     ]
     print()
     if catch_alls:
-        print("Generic muscle catch-all label(s) present:")
+        print("Pooled compartment(s) the missing muscles are likely inside:")
         for r in catch_alls:
-            print(f"    label {r['label']}  {r['name']}  {r['voxels']:,} voxels")
-        print("  -> If a suprahyoid muscle is MISSING above, it is probably pooled here.")
-        print("     CLAUDE.md: sub-segment manually and document as a methods")
-        print("     limitation. Do NOT substitute a nearby label.")
+            print(f"    label {r['label']:>4}  {r['name']:<24} "
+                  f"{r['voxels']:>12,} voxels  ({r['volume_mm3']:,.0f} mm^3)")
+        print("  -> These are the volumes to sub-segment by hand. CLAUDE.md:")
+        print("     document it as a methods limitation. Do NOT substitute a")
+        print("     nearby label.")
     else:
-        print("No generic 'muscle' catch-all label detected.")
+        print("No pooled muscle/tongue compartment detected.")
 
     missing = [
         t for t in DECISION_MUSCLES

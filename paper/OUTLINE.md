@@ -44,7 +44,22 @@ Meanwhile the empirical side has moved without theory:
 **MIDA** (IT'IS Foundation) — 153 anatomical structures at 500 µm isotropic, free, DOI 10.13099/ViP-MIDA-V1.0.
 Confirmed segmented and relevant: masseter, temporalis, medial + lateral pterygoid, orbicularis oris, buccinator, zygomaticus major/minor, risorius, depressor anguli oris, mentalis, platysma, sternocleidomastoid, splenius capitis.
 
-⚠️ **Verify on download:** digastric, stylohyoid, mylohyoid, geniohyoid, genioglossus. These may sit inside a generic "muscles" catch-all. The suprahyoid group is central to the argument — if it is not individually segmented, sub-segment it manually from the label volume and document that as a methods limitation.
+✅ **RESOLVED 2026-08-02** (was: "⚠️ verify on download — digastric, stylohyoid, mylohyoid, geniohyoid, genioglossus may sit inside a generic muscles catch-all").
+
+They do. MIDA v1.0's voxel distribution carries **116 labelled structures**, and none of the suprahyoid or tongue muscles is among them. They are pooled into two compartments:
+
+| Label | Name | Voxels | Volume |
+|---|---|---|---|
+| 38 | `Muscle (General)` | 1,975,307 | 246,872 mm³ |
+| 42 | `Tongue` | 521,131 | 65,130 mm³ |
+
+**The awkward branch applies.** Digastric posterior belly and stylohyoid — the two muscles that anchor at the mastoid and carry the strongest version of the argument — must be sub-segmented by hand from label 38, and the procedure reported as a methods limitation.
+
+10 of the 18 muscles in `src/config.py` are individually segmented and verified: masseter (66), temporalis/temporoparietalis (63), medial pterygoid (81), lateral pterygoid (65), orbicularis oris (75), buccinator (84), mentalis (71), depressor anguli oris (72), platysma (60), sternocleidomastoid (68).
+
+Note also that MIDA merges **temporalis with temporoparietalis** in label 63, and carries the temporalis tendon separately (98). Full inventory: `results/01_label_inventory.csv`.
+
+> The 153-structure figure quoted from Iacono et al. (2015) describes the CAD/surface distribution. The voxel distribution actually used here has 116. Reconcile this in Methods before submission rather than quoting 153 for a model we mesh from 116 labels.
 
 ### Solver
 **SimNIBS 4.6** — FEM, tetrahedral, native Apple Silicon. Custom tissue labels are a documented feature (`meshmesh` + per-label conductivity assignment), not a workaround.

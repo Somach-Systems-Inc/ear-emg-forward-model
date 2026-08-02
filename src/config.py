@@ -46,6 +46,13 @@ ANISOTROPY_RATIO = SIGMA["muscle_long"] / SIGMA["muscle_trans"]   # = 4.0
 #
 # `group` drives figure ordering and the discussion narrative.
 # ----------------------------------------------------------------------
+# Labels below are read from MIDA v1.0 MIDA_v1_voxels/MIDA_v1.txt (116 structures),
+# verified 2026-08-02 via `01_build_mesh.py --list-labels`. Integers are exact.
+#
+# 10 of 18 are individually segmented. The 8 with mida_label = None are NOT
+# absent from the model -- they are pooled inside a larger compartment (see
+# MIDA_POOLED below) and must be sub-segmented by hand. Leaving them None is
+# deliberate: CLAUDE.md, "a wrong label is worse than a missing one".
 MUSCLES = [
     # name,                     group,          mida_label, expected_at_ear
     ("digastric_posterior",     "suprahyoid",   None,  "STRONG - attaches at mastoid notch"),
@@ -56,17 +63,53 @@ MUSCLES = [
     ("genioglossus",            "tongue",       None,  "WEAK - deep and distant; predicts phoneme loss"),
     ("hyoglossus",              "tongue",       None,  "weak"),
     ("styloglossus",            "tongue",       None,  "moderate - styloid origin"),
-    ("masseter",                "mastication",  None,  "STRONG - 1-2 cm anterior to tragus"),
-    ("temporalis",              "mastication",  None,  "STRONG - directly above ear"),
-    ("medial_pterygoid",        "mastication",  None,  "moderate - deep"),
-    ("lateral_pterygoid",       "mastication",  None,  "moderate - deep"),
-    ("orbicularis_oris",        "labial",       None,  "weak - far anterior"),
-    ("buccinator",              "labial",       None,  "moderate"),
-    ("mentalis",                "labial",       None,  "weak"),
-    ("depressor_anguli_oris",   "labial",       None,  "weak"),
-    ("platysma",                "cervical",     None,  "moderate - broad sheet"),
-    ("sternocleidomastoid",     "cervical",     None,  "STRONG - mastoid attachment (but low speech activity)"),
+    ("masseter",                "mastication",    66,  "STRONG - 1-2 cm anterior to tragus"),
+    # MIDA merges temporalis with temporoparietalis in one label. The temporalis
+    # tendon is separate (98) and is NOT included here -- tendon conductivity
+    # differs from muscle and it is not a source.
+    ("temporalis",              "mastication",    63,  "STRONG - directly above ear"),
+    ("medial_pterygoid",        "mastication",    81,  "moderate - deep"),
+    ("lateral_pterygoid",       "mastication",    65,  "moderate - deep"),
+    ("orbicularis_oris",        "labial",         75,  "weak - far anterior"),
+    ("buccinator",              "labial",         84,  "moderate"),
+    ("mentalis",                "labial",         71,  "weak"),
+    ("depressor_anguli_oris",   "labial",         72,  "weak"),
+    ("platysma",                "cervical",       60,  "moderate - broad sheet"),
+    ("sternocleidomastoid",     "cervical",       68,  "STRONG - mastoid attachment (but low speech activity)"),
 ]
+
+# ----------------------------------------------------------------------
+# THE SUB-SEGMENTATION PROBLEM  (resolved 2026-08-02, methods limitation)
+#
+# MIDA v1.0 does not individually segment the suprahyoid group or the
+# intrinsic/extrinsic tongue muscles. They are pooled into two compartments:
+#
+#   38  "Muscle (General)"  1,975,307 voxels  246,872 mm^3
+#   42  "Tongue"              521,131 voxels   65,130 mm^3
+#
+# This hits the strongest part of the argument directly: digastric posterior
+# belly and stylohyoid anchor at the mastoid, which is exactly why they were
+# predicted to dominate the retroauricular signal. They must be sub-segmented
+# from label 38 by hand and reported as a limitation.
+# ----------------------------------------------------------------------
+MIDA_MUSCLE_GENERAL = 38
+MIDA_TONGUE         = 42
+
+# muscle name -> the MIDA label it is currently pooled inside.
+# UNVERIFIED: the assignment of each tongue muscle to 42 vs 38 is anatomical
+# inference, not measurement. Styloglossus and hyoglossus originate outside the
+# tongue body (styloid process, hyoid) so parts of them may sit in 38. Confirm
+# against the volume before sub-segmenting; do not assume.
+MIDA_POOLED = {
+    "digastric_posterior": MIDA_MUSCLE_GENERAL,
+    "digastric_anterior":  MIDA_MUSCLE_GENERAL,
+    "stylohyoid":          MIDA_MUSCLE_GENERAL,
+    "mylohyoid":           MIDA_MUSCLE_GENERAL,
+    "geniohyoid":          MIDA_MUSCLE_GENERAL,
+    "genioglossus":        MIDA_TONGUE,
+    "hyoglossus":          MIDA_TONGUE,   # UNVERIFIED: may straddle 38
+    "styloglossus":        MIDA_TONGUE,   # UNVERIFIED: may straddle 38
+}
 
 # ----------------------------------------------------------------------
 # ELECTRODE MONTAGES

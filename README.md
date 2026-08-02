@@ -53,12 +53,11 @@ This prints every anatomical label in MIDA, writes `results/01_label_inventory.c
 and ends with an explicit verdict on the fork below. **Find the suprahyoid
 muscles** — digastric (posterior belly especially), stylohyoid, mylohyoid, geniohyoid.
 
-- **If individually segmented** → proceed as designed. The strongest part of the argument is intact.
-- **If inside a generic "muscles" catch-all** → you must sub-segment them from the label volume by hand, and document it as a methods limitation. Still a paper, but budget a few extra days.
+**Answered 2026-08-02 — the catch-all branch applies.** None of digastric, stylohyoid, mylohyoid, geniohyoid or genioglossus is individually segmented in MIDA v1.0's 116-label voxel distribution. They sit inside `Muscle (General)` (label 38) and `Tongue` (label 42), and must be sub-segmented by hand and reported as a methods limitation. Budget a few extra days; the limitation is honest, not fatal.
 
-Confirmed present: masseter, temporalis, pterygoids, orbicularis oris, buccinator, zygomaticus, platysma, SCM.
+Verified and filled in `src/config.py` (10 of 18): masseter 66, temporalis/temporoparietalis 63, medial pterygoid 81, lateral pterygoid 65, orbicularis oris 75, buccinator 84, mentalis 71, depressor anguli oris 72, platysma 60, SCM 68. The other 8 stay `None` on purpose — a wrong label is worse than a missing one — with their containers recorded in `config.MIDA_POOLED`.
 
-Fill the `mida_label` column in `src/config.py` once you know the real numbers.
+Full inventory: `results/01_label_inventory.csv`.
 
 ### 4. Python — must be 3.11
 
@@ -107,8 +106,9 @@ Do **not** place thousands of muscle-fibre sources and solve forward for each. U
 - [x] Config: conductivities, muscle list, montages
 - [x] Python 3.11 venv + pinned `requirements.txt`
 - [x] `01_build_mesh.py` — both modes written, failure paths verified
+- [x] MIDA downloaded, **suprahyoid segmentation verified** — pooled, sub-segmentation required
 - [ ] SimNIBS installed and stock example runs
-- [ ] MIDA downloaded, **suprahyoid segmentation verified**
+- [ ] Suprahyoid group sub-segmented from label 38
 - [ ] Mesh built with muscle labels
 - [ ] Electrodes placed
 - [ ] Reciprocity solves
