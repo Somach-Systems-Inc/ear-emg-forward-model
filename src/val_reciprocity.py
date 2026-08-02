@@ -116,10 +116,15 @@ def run_simnibs(mesh_path: Path, out_dir: Path, current: float,
     """Reciprocal solve: inject `current` at A, withdraw at B."""
     from simnibs import sim_struct, run_simnibs
 
+    # SimNIBS calls os.mkdir, which will not create intermediate directories.
+    out_dir.parent.mkdir(parents=True, exist_ok=True)
+
     S = sim_struct.SESSION()
     S.fnamehead = str(mesh_path)
     S.pathfem = str(out_dir)
-    S.fields = "e"
+    # Uppercase E is the VECTOR field. Lowercase e writes only |E|, which
+    # cannot be projected onto a source orientation.
+    S.fields = "E"
     S.open_in_gmsh = False
     S.map_to_surf = False
 
@@ -146,13 +151,12 @@ def sample_E(result_msh: Path, pts_mm):
     """E (V/m) at each point, from the element containing it."""
     from simnibs import mesh_io
     m = mesh_io.read_msh(str(result_msh))
-    fld = None
-    for key in ("E", "magnE", "e"):
-        if key in m.field:
-            fld = m.field[key]
-            break
-    if fld is None:
-        raise RuntimeError(f"no E field in {result_msh}; have {list(m.field)}")
+    if "E" not in m.field:
+        raise RuntimeError(
+            f"no vector E in {result_msh}; have {list(m.field)}. "
+            f"SESSION.fields must contain uppercase 'E' -- lowercase 'e' "
+            f"writes only |E|, which cannot be projected onto an orientation.")
+    fld = m.field["E"]
     data = fld.value if hasattr(fld, "value") else np.asarray(fld)
     if data.ndim != 2 or data.shape[1] != 3:
         raise RuntimeError(f"expected vector E, got shape {data.shape}")
@@ -161,64 +165,135 @@ def sample_E(result_msh: Path, pts_mm):
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(prog="val_reciprocity.py")
+    ap = argparse.ArgumentParser(
+        prog="val_reciprocity.py",
+        description="Two phases, because simnibs and mne live in different "
+                    "interpreters. Run --phase simnibs under simnibs_python, "
+                    "then --phase analytic under the project venv.")
+    ap.add_argument("--phase", choices=("simnibs", "analytic"), required=True)
     ap.add_argument("--mesh", type=Path, default=config.DATA / "val_sphere.msh")
     ap.add_argument("--workdir", type=Path,
                     default=config.RESULTS / "val_reciprocity")
+    ap.add_argument("--npz", type=Path,
+                    default=config.RESULTS / "val_reciprocity_fields.npz")
     ap.add_argument("--out", type=Path,
                     default=config.RESULTS / "val_reciprocity.csv")
     a = ap.parse_args(argv)
 
-    if not a.mesh.exists():
-        print(f"ERROR: sphere mesh not found at {a.mesh}\n"
-              f"  build it first:\n"
-              f"    python src/val_sphere_build.py --voxel 0.5\n"
-              f"    meshmesh data/val_sphere.nii.gz data/val_sphere.msh",
+    pts, dirs = source_points()
+
+    # ---------------- phase 1: the numerical (reciprocal) side ----------
+    if a.phase == "simnibs":
+        if not a.mesh.exists():
+            print(f"ERROR: sphere mesh not found at {a.mesh}\n"
+                  f"  build it first:\n"
+                  f"    python src/val_sphere_build.py --voxel 0.5\n"
+                  f"    meshmesh data/val_sphere.nii.gz data/val_sphere.msh",
+                  file=sys.stderr)
+            return 1
+        print(f"{len(pts)} source samples over radii "
+              f"{list(SOURCE_RADII_MM)} mm\n")
+        print("reciprocal solve, base ...", flush=True)
+        E = sample_E(run_simnibs(a.mesh, a.workdir / "base", CURRENT_A), pts)
+        print("reciprocal solve, swapped polarity ...", flush=True)
+        E_s = sample_E(run_simnibs(a.mesh, a.workdir / "swap", CURRENT_A,
+                                   swap=True), pts)
+        print("reciprocal solve, doubled current ...", flush=True)
+        E_2 = sample_E(run_simnibs(a.mesh, a.workdir / "double",
+                                   2 * CURRENT_A), pts)
+        a.npz.parent.mkdir(parents=True, exist_ok=True)
+        np.savez(a.npz, pts=pts, dirs=dirs, E=E, E_swap=E_s, E_double=E_2,
+                 current=CURRENT_A)
+        print(f"\nwrote {a.npz}\nnow run --phase analytic under the venv")
+        return 0
+
+    # ---------------- phase 2: the analytic oracle + comparison ---------
+    if not a.npz.exists():
+        print(f"ERROR: {a.npz} missing. Run --phase simnibs first.",
               file=sys.stderr)
         return 1
+    d = np.load(a.npz)
+    pts, dirs = d["pts"], d["dirs"]
+    E, E_s, E_2 = d["E"], d["E_swap"], d["E_double"]
+    cur = float(d["current"])
 
-    pts, dirs = source_points()
     print(f"{len(pts)} source samples over radii "
           f"{list(SOURCE_RADII_MM)} mm\n")
-
     print("analytic sphere (MNE) ...", flush=True)
     V = analytic_leadfield(pts, dirs, np.array([ELEC_A, ELEC_B]))
     L_analytic = V[:, 0] - V[:, 1]          # V per unit dipole moment
-
-    print("reciprocal solve (SimNIBS) ...", flush=True)
-    res = run_simnibs(a.mesh, a.workdir / "base", CURRENT_A)
-    E = sample_E(res, pts)
-    L_recip = np.einsum("ij,ij->i", E, dirs) / CURRENT_A
+    L_recip = np.einsum("ij,ij->i", E, dirs) / cur
 
     ok = np.isfinite(L_analytic) & np.isfinite(L_recip) & (np.abs(L_analytic) > 0)
     ratio = np.full(len(pts), np.nan)
     ratio[ok] = L_recip[ok] / L_analytic[ok]
 
-    print("\nRATIO  L_reciprocal / L_analytic")
-    print(f"  n           : {int(ok.sum())}")
-    print(f"  median      : {np.nanmedian(ratio):.4f}")
-    print(f"  mean        : {np.nanmean(ratio):.4f}")
-    print(f"  IQR         : {np.nanpercentile(ratio,25):.4f} .. "
-          f"{np.nanpercentile(ratio,75):.4f}")
-    print(f"  5-95 pct    : {np.nanpercentile(ratio,5):.4f} .. "
-          f"{np.nanpercentile(ratio,95):.4f}")
-    print(f"  min / max   : {np.nanmin(ratio):.4f} / {np.nanmax(ratio):.4f}")
-
-    print("\n  by source radius:")
     r_mm = np.linalg.norm(pts, axis=1)
+
+    # Sign first. A uniform sign flip is a convention difference (which node is
+    # the anode, and whether E is -grad V), not an error, and it must be
+    # reported separately from magnitude or it contaminates every statistic.
+    neg = float(np.mean(ratio[ok] < 0))
+    absA_ = np.abs(L_analytic)
+    thr_ = np.nanpercentile(absA_[ok], 50)
+    strong = ok & (absA_ >= thr_)
+    weak = ok & (absA_ < thr_)
+    print("\nSIGN")
+    print(f"  negative ratio, all samples          : {neg:.3f}")
+    print(f"  negative ratio, well-conditioned half: "
+          f"{float(np.mean(ratio[strong] < 0)):.3f}")
+    print(f"  negative ratio, weakest half         : "
+          f"{float(np.mean(ratio[weak] < 0)):.3f}")
+    print("  A uniform flip is a polarity convention (which node is the anode,")
+    print("  and the sign of E = -grad V), not an error. Exceptions confined to")
+    print("  the weakest signals are conditioning noise; a sign flip among the")
+    print("  well-conditioned samples would be a real defect.")
+
+    mag = np.abs(ratio)
+    print("\nMAGNITUDE  |L_reciprocal / L_analytic|   (1.0 = exact)")
+    print(f"  n           : {int(ok.sum())}")
+    print(f"  median      : {np.nanmedian(mag):.4f}")
+    print(f"  IQR         : {np.nanpercentile(mag,25):.4f} .. "
+          f"{np.nanpercentile(mag,75):.4f}")
+    print(f"  5-95 pct    : {np.nanpercentile(mag,5):.4f} .. "
+          f"{np.nanpercentile(mag,95):.4f}")
+
+    # Conditioning. Where L_analytic is near zero the ratio is dominated by a
+    # vanishing denominator, not by solver error -- a source whose orientation
+    # is nearly perpendicular to the reciprocal field produces almost no signal
+    # by construction. Report the well-conditioned subset separately.
+    absA = np.abs(L_analytic)
+    thr = np.nanpercentile(absA[ok], 50)
+    well = ok & (absA >= thr)
+    print(f"\n  restricted to the {int(well.sum())} best-conditioned samples "
+          f"(|L_analytic| above its median):")
+    print(f"    median   : {np.nanmedian(mag[well]):.4f}")
+    print(f"    IQR      : {np.nanpercentile(mag[well],25):.4f} .. "
+          f"{np.nanpercentile(mag[well],75):.4f}")
+    print(f"    5-95 pct : {np.nanpercentile(mag[well],5):.4f} .. "
+          f"{np.nanpercentile(mag[well],95):.4f}")
+
+    print("\n  by source radius (magnitude, well-conditioned only):")
     for r in SOURCE_RADII_MM:
-        k = ok & (np.abs(r_mm - r) < 1e-6)
+        k = well & (np.abs(r_mm - r) < 1e-6)
         if k.any():
             print(f"    r={r:5.1f} mm  n={int(k.sum()):>3}  "
-                  f"median {np.nanmedian(ratio[k]):.4f}  "
-                  f"spread {np.nanpercentile(ratio[k],5):.3f}-"
-                  f"{np.nanpercentile(ratio[k],95):.3f}")
+                  f"median {np.nanmedian(mag[k]):.4f}  "
+                  f"5-95 {np.nanpercentile(mag[k],5):.3f}-"
+                  f"{np.nanpercentile(mag[k],95):.3f}")
+
+    # Scale-free cross-check that does not divide at all.
+    good_lin = ok
+    num = float(np.sum(np.abs(L_recip[good_lin]) * np.abs(L_analytic[good_lin])))
+    den = float(np.sum(L_analytic[good_lin] ** 2))
+    print(f"\n  least-squares scale factor |L_recip| ~ k|L_analytic| : "
+          f"k = {num/den:.4f}")
+    cc = np.corrcoef(np.abs(L_recip[good_lin]), np.abs(L_analytic[good_lin]))[0, 1]
+    print(f"  correlation of magnitudes                            : r = {cc:.5f}")
 
     # ---- invariant 1: swapping source and sink -------------------------
     print("\nINVARIANT 1  swap source and sink -> sign flips, magnitude preserved")
-    res_s = run_simnibs(a.mesh, a.workdir / "swap", CURRENT_A, swap=True)
-    E_s = sample_E(res_s, pts)
-    L_s = np.einsum("ij,ij->i", E_s, dirs) / CURRENT_A
+    L_s = np.einsum("ij,ij->i", E_s, dirs) / cur
     good = np.abs(L_recip) > 0
     rel = (L_s[good] + L_recip[good]) / np.abs(L_recip[good])
     print(f"  max |L_swap + L_base| / |L_base| : {np.nanmax(np.abs(rel)):.3e}"
@@ -226,9 +301,7 @@ def main(argv=None) -> int:
 
     # ---- invariant 2: linearity in injection current -------------------
     print("\nINVARIANT 2  lead field is linear in injection current")
-    res_2 = run_simnibs(a.mesh, a.workdir / "double", 2 * CURRENT_A)
-    E_2 = sample_E(res_2, pts)
-    L_2 = np.einsum("ij,ij->i", E_2, dirs) / (2 * CURRENT_A)
+    L_2 = np.einsum("ij,ij->i", E_2, dirs) / (2 * cur)
     rel2 = (L_2[good] - L_recip[good]) / np.abs(L_recip[good])
     print(f"  max |L(2I) - L(I)| / |L(I)|      : {np.nanmax(np.abs(rel2)):.3e}"
           f"   (0 = perfectly linear)")
