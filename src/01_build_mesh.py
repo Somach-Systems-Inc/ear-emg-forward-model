@@ -410,9 +410,10 @@ def resolved_muscle_labels() -> tuple[list[tuple], list[tuple]]:
 
 
 def build_mesh(volume_path: Path, out_mesh: Path, force: bool,
-               extra: list[str] | None = None) -> int:
-    _, unresolved = resolved_muscle_labels()
-    if unresolved:
+               extra: list[str] | None = None,
+               skip_label_check: bool = False) -> int:
+    resolved, unresolved = resolved_muscle_labels()
+    if unresolved and not skip_label_check:
         names = ", ".join(e[0] for e in unresolved)
         raise Stage1Error(
             f"{len(unresolved)} of {len(config.MUSCLES)} muscles still have "
@@ -421,8 +422,28 @@ def build_mesh(volume_path: Path, out_mesh: Path, force: bool,
             f"Resolve them first:\n"
             f"  python src/01_build_mesh.py --list-labels <mida-label-volume.nii.gz>\n\n"
             f"CLAUDE.md: 'a wrong label is worse than a missing one'. Refusing to "
-            f"build a mesh whose muscle compartments cannot be verified."
+            f"build a mesh whose muscle compartments cannot be verified.\n\n"
+            f"To build a PROVISIONAL mesh covering only the {len(resolved)} verified\n"
+            f"muscles -- useful for exercising stages 2-4 before the hand\n"
+            f"sub-segmentation is done -- pass --skip-label-check."
         )
+
+    if unresolved:
+        names = ", ".join(e[0] for e in unresolved)
+        print("=" * 68)
+        print("PROVISIONAL MESH -- --skip-label-check was passed.")
+        print("=" * 68)
+        print(f"{len(unresolved)} of {len(config.MUSCLES)} muscles have no verified "
+              f"MIDA label and\nwill NOT be resolvable as separate compartments in "
+              f"this mesh:\n  {names}\n")
+        print("They are pooled inside:")
+        for muscle, container in sorted(config.MIDA_POOLED.items(),
+                                        key=lambda kv: kv[1]):
+            print(f"    {muscle:<22} -> label {container}")
+        print("\nThe mesh itself is complete -- meshmesh meshes every label in the")
+        print("volume. What is provisional is the MUSCLE MAPPING, not the geometry.")
+        print("Any sensitivity result for the muscles above is invalid until they")
+        print("are sub-segmented. Do not put them in a figure.\n")
 
     if not volume_path.exists():
         raise Stage1Error(_missing_volume_message(volume_path))
@@ -488,12 +509,18 @@ def write_conductivity_map(out_csv: Path) -> Path:
     with out_csv.open("w", newline="") as fh:
         writer = csv.writer(fh)
         writer.writerow(
-            ["mida_label", "muscle", "group", "sigma_iso_S_per_m",
-             "sigma_long_S_per_m", "sigma_trans_S_per_m", "expected_at_ear"]
+            ["mida_label", "muscle", "group", "verified", "pooled_in",
+             "sigma_iso_S_per_m", "sigma_long_S_per_m", "sigma_trans_S_per_m",
+             "expected_at_ear"]
         )
         for name, group, label, expected in config.MUSCLES:
+            # `verified` exists so stage 4 cannot silently plot a muscle whose
+            # compartment was never actually resolved.
             writer.writerow([
-                label, name, group,
+                label if label is not None else "",
+                name, group,
+                "yes" if label is not None else "no",
+                "" if label is not None else config.MIDA_POOLED.get(name, ""),
                 config.SIGMA["muscle_iso"],
                 config.SIGMA["muscle_long"],
                 config.SIGMA["muscle_trans"],
@@ -539,6 +566,11 @@ def main(argv: list[str] | None = None) -> int:
         "--force", action="store_true",
         help="overwrite an existing mesh",
     )
+    parser.add_argument(
+        "--skip-label-check", action="store_true",
+        help="build a PROVISIONAL mesh while some mida_label are still None "
+             "(for exercising stages 2-4 before hand sub-segmentation)",
+    )
     # Passed straight through to meshmesh. MIDA is already 500 um isotropic, so
     # meshmesh's "twice the minimum resolution" rule of thumb does not apply
     # unmodified -- leave --voxsize-meshing unset unless you have a reason.
@@ -580,7 +612,8 @@ def main(argv: list[str] | None = None) -> int:
                 "  Build the mesh:    --label-volume <nifti>\n"
                 "There is no default MIDA filename -- pass the real path."
             )
-        return build_mesh(args.label_volume, args.out, args.force, extra)
+        return build_mesh(args.label_volume, args.out, args.force, extra,
+                          args.skip_label_check)
 
     except Stage1Error as exc:
         print(f"\nERROR: {exc}", file=sys.stderr)
