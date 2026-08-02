@@ -3,13 +3,13 @@ pre_tragus,ear,right,69.37,38.55,-11.62,5.33,,pinna/tragus +0R +14A +0S,no
 above_ear,ear,right,78.76,7.24,13.61,9.91,,pinna +0R +0A +30S,no
 mastoid,ear,right,69.41,-12.38,-22.98,1.05,,pinna +0R -18A -10S,no
 post_lobule,ear,right,63.42,-4.7,-40.55,7.31,,pinna +0R -12A -30S,no
-mental,jaw,right,-6.7,98.73,-99.62,0.0,13.21,"over mentalis (chin) (label 71), normal projection",no
-submental_mid,jaw,right,-10.62,81.82,-105.95,0.0,16.15,"under chin at midline, mandibular symphysis (label 36, symphysis_mid), normal projection",no
-submental_lat,jaw,right,19.66,86.71,-92.61,0.0,15.28,"under chin, lateral to the symphysis (label 36, symphysis_lat), normal projection",no
-submaxillary,jaw,right,42.47,68.66,-80.77,0.0,24.19,"under the jawline, mandibular body (label 36, body_lat), normal projection",no
-hyoid,jaw,right,-1.79,42.1,-108.46,0.0,28.23,"over the hyoid bone (label 87), normal projection",no
-buccal,jaw,right,38.72,75.56,-78.36,0.0,19.55,"cheek, over buccinator (label 84, side), normal projection",no
-midjaw,jaw,right,65.25,51.04,-54.93,0.0,20.66,"over masseter (label 66, side), normal projection",no
+mental,jaw,right,-6.21,98.22,-100.62,0.0,5.15,"over mentalis (chin) (label 71), min-distance projection to compartment",accepted
+submental_mid,jaw,right,-8.14,81.92,-106.54,0.0,6.5,"under chin at midline, mandibular symphysis (label 36, symphysis_mid), min-distance projection to compartment",accepted
+submental_lat,jaw,right,3.45,79.44,-107.85,0.0,5.1,"under chin, lateral to the symphysis (label 36, symphysis_lat), min-distance projection to compartment",accepted
+submaxillary,jaw,right,24.05,61.08,-102.43,0.0,6.04,"under the jawline, mandibular body (label 36, body_lat), min-distance projection to compartment",accepted
+hyoid,jaw,right,-9.33,42.74,-108.23,0.0,19.68,"over the hyoid bone (label 87), min-distance projection to compartment",accepted
+buccal,jaw,right,38.72,75.56,-78.36,0.0,10.78,"cheek, over buccinator (label 84, side), min-distance projection to compartment",accepted
+midjaw,jaw,right,65.25,51.04,-54.93,0.0,11.01,"over masseter (label 66, side), min-distance projection to compartment",accepted
 throat_scm,jaw,right,,,,,,HELD - awaiting measured coordinate from the physical rig; MIDA's SCM is truncated at S=-116.2 so its centroid is biased,held
 cg01,ceegrid,right,75.97,23.63,13.68,7.02,,pinna + 32mm @ 60deg,no
 cg02,ceegrid,right,79.4,6.87,17.11,9.91,,pinna + 32mm @ 87deg,no

@@ -225,6 +225,18 @@ BIAS      = "earlobe_ipsi"
 ELECTRODE_DIAMETER_MM = 10.0    # gold cup
 INJECTION_CURRENT_A   = 1e-3    # 1 mA, reciprocity solve
 
+# Outer diameter of the adhesive collar, which is what actually sets the
+# minimum centre-to-centre spacing -- not the cup. Two sites closer than this
+# cannot both be mounted.
+#
+# TODO(carl): measure the TD-20s collar OD with calipers and set this.
+#
+# Deliberately None until measured. An earlier 20 mm figure was an undervalidated
+# guess and it failed three site pairs that are anatomically correct, which would
+# have forced a real montage change on the strength of a made-up number. While
+# this is None, spacing is REPORTED and never gates anything.
+COLLAR_OD_MM = None
+
 # ----------------------------------------------------------------------
 # ANALYSIS
 # ----------------------------------------------------------------------

@@ -1,0 +1,33 @@
+site,target_label,path_mm,tissue_label,tissue,pct_of_path
+buccal,84,10.78,62,Subcutaneous Adipose Tissue,80.0
+buccal,84,10.78,51,Epidermis/Dermis,17.5
+buccal,84,10.78,84,Muscle - Buccinator,2.5
+hyoid,87,19.68,43,Adipose Tissue,51.2
+hyoid,87,19.68,62,Subcutaneous Adipose Tissue,20.0
+hyoid,87,19.68,38,Muscle (General),20.0
+hyoid,87,19.68,51,Epidermis/Dermis,7.2
+mental,71,10.4,62,Subcutaneous Adipose Tissue,46.8
+mental,71,10.4,51,Epidermis/Dermis,23.5
+mental,71,10.4,72,Muscle - Depressor Anguli Oris,17.2
+mental,71,10.4,71,Muscle - Mentalis,9.8
+mental,71,10.4,73,Muscle - Depressor Labii,2.8
+midjaw,66,11.01,62,Subcutaneous Adipose Tissue,82.2
+midjaw,66,11.01,51,Epidermis/Dermis,14.8
+midjaw,66,11.01,66,Muscle - Masseter,3.0
+submaxillary,36,6.04,62,Subcutaneous Adipose Tissue,47.2
+submaxillary,36,6.04,72,Muscle - Depressor Anguli Oris,25.2
+submaxillary,36,6.04,51,Epidermis/Dermis,22.8
+submaxillary,36,6.04,36,Mandible,4.8
+submental_lat,36,5.0,60,Muscle - Platysma,40.0
+submental_lat,36,5.0,62,Subcutaneous Adipose Tissue,30.0
+submental_lat,36,5.0,51,Epidermis/Dermis,25.0
+submental_lat,36,5.0,36,Mandible,5.0
+submental_mid,36,9.71,62,Subcutaneous Adipose Tissue,72.5
+submental_mid,36,9.71,51,Epidermis/Dermis,22.8
+submental_mid,36,9.71,36,Mandible,4.8
+above_ear,63,3.5,62,Subcutaneous Adipose Tissue,57.0
+above_ear,63,3.5,51,Epidermis/Dermis,35.8
+above_ear,63,3.5,63,Muscle - Temporalis/Temporoparietalis,7.2
+pre_tragus,66,7.84,62,Subcutaneous Adipose Tissue,72.5
+pre_tragus,66,7.84,51,Epidermis/Dermis,22.8
+pre_tragus,66,7.84,66,Muscle - Masseter,4.8

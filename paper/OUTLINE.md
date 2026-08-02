@@ -161,13 +161,27 @@ direction**. That is the one direction of bias a reviewer should care about.
 
 So it is measured, not argued about. `src/01c_extend_neck.py` extrudes the
 inferior cross-section 70 mm downward as a homogeneous slab carrying its own
-label (muscle-isotropic conductivity, documented as a choice: the point is to
-move the insulating boundary away from the electrodes, not to model neck
-anatomy MIDA does not contain). One representative montage is solved on both
-meshes and the dB change reported at every electrode. Under ~1 dB at `hyoid`
-and `throat_scm` and this is one paragraph in Limitations; 3 dB or more and the
-extension is mandatory and every result uses it. Either way it is a
-supplementary figure.
+label. The slab's conductivity is not defended, it is **bounded**: the run is
+repeated at **muscle-isotropic (0.355 S/m)** and at a **fat/muscle blend**, so
+the reported shift spans the plausible range rather than resting on one
+arbitrary value. The slab is homogeneous on purpose — the point is to move the
+insulating boundary away from the electrodes, not to model neck anatomy MIDA
+does not contain.
+
+Three jaw sites sit within 10 mm of the cut face (`hyoid` 8.0 mm,
+`submental_lat` 8.4 mm, `submental_mid` 9.7 mm) while every ear site is 80 mm
+or more away, so the montage is exactly the wrong shape for this artefact to
+cancel.
+
+> **DECISION RULE, fixed before the numbers exist.** One representative montage
+> is solved on both meshes. **If the dB shift at `hyoid`, `submental_lat` or
+> `submental_mid` exceeds 1.0 dB under *either* slab conductivity, the extended
+> mesh becomes primary for every published result and the truncated mesh moves
+> to supplementary.** Otherwise the truncated mesh stays primary and this
+> becomes one paragraph in Limitations. Written down in advance so the
+> threshold cannot be chosen after seeing which answer is more convenient.
+
+Either way the comparison is a supplementary figure.
 
 ### Montages compared
 1. **Canonical jaw** — the Gaddy/Kapur regions: mental, submental, submaxillary, hyoid, throat/SCM, buccal
@@ -193,7 +207,34 @@ supplementary figure.
 
 **Fig 4** — Isotropic vs anisotropic muscle conductivity, same matrix. Quantifies the modelling error.
 
-**Fig 5** — Rank ordering: the top-N retroauricular positions by total articulator sensitivity. **This is the design table earbud teams actually need.**
+**Fig 5** — Rank ordering: the top-N retroauricular positions by total articulator sensitivity, **plus the channel-redundancy analysis that turns a ranking into a recommended subset**. **This is the design table earbud teams actually need.**
+
+### Channel redundancy — how many electrodes do you actually need?
+
+A ranking says which sites are best individually. It does not say which are
+*worth adding*, because two adjacent sites can rank highly and see the same
+thing. Once the sensitivity matrix exists we compute the **pairwise Pearson
+correlation between electrode column vectors across the muscle rows**. Two
+columns that correlate at r ≈ 1 are one channel wearing two electrodes.
+
+This is a contribution, not a diagnostic. Paper 2 records **4 jaw channels, not
+8**, and the canonical Gaddy/Kapur montage has never been reduced on any
+principled basis — people inherit all eight. The correlation matrix lets us
+publish a defensible 4-site subset with the redundancy each dropped site
+carried, and gives an earbud team the same tool for the retroauricular cluster.
+
+It also settles a concrete question this model raised: `submental_mid` and
+`submental_lat` are 11.9 mm apart, closer than any other pair. Whether that is
+two channels or one is decided by their correlation, not by their spacing.
+
+**Table 2 — what each canonical site actually sits on.** Tissue composition
+along the straight electrode-to-target segment, per MIDA label, for every jaw
+site plus `above_ear` and `pre_tragus`. Nobody has reported this for the
+Gaddy/Kapur montage, and the numbers are not what the site names imply: the
+`mental` path is 17% depressor anguli oris against 10% mentalis, `submental_lat`
+is 40% platysma and 5% mandible, and every site is dominated by subcutaneous
+adipose (47–82%). It reframes crosstalk from an empirical nuisance into a
+geometric prediction.
 
 **Fig 6 — the suprahyoid sensitivity field. This is the figure the ear argument actually rests on.** Sagittal and coronal slices of |E| through the pooled `Muscle (General)` compartment, with the mastoid notch, hyoid and corridor overlaid, for the retroauricular montage. See "Reporting a field, not eighteen numbers" below.
 

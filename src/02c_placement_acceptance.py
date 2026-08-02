@@ -50,9 +50,17 @@ MIDLINE_TOL_MM = 2.0
 SITES = ["mental", "hyoid", "submental_mid", "submental_lat",
          "submaxillary", "buccal", "midjaw"]
 
-# (low, high) mm expected depth, from Carl's review
+# (low, high) mm expected depth. Carl's review numbers, with one revised.
+#
+# hyoid was specified 10-15 mm. That is not attainable in MIDA: the hyoid
+# bone's minimum distance to the skin surface is 19.1 mm measured over the
+# ENTIRE skin, unconstrained by midline or any other filter. The band is
+# revised to the measured reality rather than left as a permanent false
+# failure. MIDA separates Epidermis/Dermis from Subcutaneous Adipose, so this
+# depth spans skin, fat, platysma and the infrahyoid group.
 DEPTH_EXPECT = {
-    "mental": (3, 8), "midjaw": (5, 12), "buccal": (8, 15), "hyoid": (10, 15),
+    "mental": (3, 8), "midjaw": (5, 12), "buccal": (8, 15),
+    "hyoid": (15, 22),          # REVISED from (10, 15); measured minimum 19.1
     "submental_mid": (4, 12), "submental_lat": (4, 12), "submaxillary": (4, 12),
 }
 
@@ -183,37 +191,66 @@ def main(argv=None) -> int:
     for name, v in accepted.items():
         lo, hi = DEPTH_EXPECT[name]
         d = v["depth"]
-        if d > DEPTH_FLAG_MM:
-            verdict = f"*** FLAG: over {DEPTH_FLAG_MM:.0f} mm ***"
+        if d > hi:
+            verdict = f"*** FLAG: above band ***"
             b_fail.append(name)
-        elif lo <= d <= hi:
-            verdict = "ok"
+        elif d < lo:
+            verdict = "shallower than expected (not a failure)"
         else:
-            verdict = "outside expected band, under flag"
+            verdict = "ok"
         print(f"{name:<16} {d:>9.1f} {f'{lo}-{hi}':>12}  {verdict}")
 
     # ---------------------------------------------------------------- C
     print("\n" + "=" * 100)
-    print(f"C. INTER-ELECTRODE SPACING  -- hard floor {SPACING_FLOOR_MM:.0f} mm")
+    floor = config.COLLAR_OD_MM
+    print("C. INTER-ELECTRODE SPACING  -- REPORTED CONSTRAINT, not a gate")
     print("=" * 100)
+    if floor is None:
+        print("config.COLLAR_OD_MM is None (TODO: caliper the TD-20s collars).")
+        print("Spacing is reported; nothing fails on it. A referential montage")
+        print("does not have a derived minimum spacing, and the previous 20 mm")
+        print("figure was a guess that failed three anatomically-correct pairs.\n")
+    else:
+        print(f"Flagging pairs closer than COLLAR_OD_MM = {floor:.1f} mm.\n")
+
     held = [n for n, r in rows.items() if r.get("verified") == "held"]
     names = list(accepted)
     P = np.array([accepted[n]["pos"] for n in names])
     D = np.linalg.norm(P[:, None, :] - P[None, :, :], axis=-1)
+
+    # Full matrix, including the held site as a blank row/column so the 8x8
+    # shape is visible and its absence is explicit rather than silent.
+    allnames = names + held
+    w = max(len(n) for n in allnames) + 1
+    print(f"{'':<{w}}" + "".join(f"{n[:8]:>9}" for n in allnames))
+    for i, n in enumerate(allnames):
+        line = f"{n:<{w}}"
+        for j, m in enumerate(allnames):
+            if n in held or m in held:
+                line += f"{'-':>9}"
+            elif i == j:
+                line += f"{'.':>9}"
+            else:
+                d = D[names.index(n), names.index(m)]
+                mark = "*" if (floor is not None and d < floor) else " "
+                line += f"{d:>8.1f}{mark}"
+        print(line)
+
     np.fill_diagonal(D, np.inf)
-    print(f"{'site':<16} {'nearest':<16} {'mm':>7}  verdict")
-    print("-" * 100)
-    c_fail = []
-    for i, n in enumerate(names):
-        j = int(np.argmin(D[i]))
-        d = float(D[i, j])
-        ok = d >= SPACING_FLOOR_MM
-        if not ok:
-            c_fail.append((n, names[j], d))
-        print(f"{n:<16} {names[j]:<16} {d:>7.1f}  {'ok' if ok else '*** BELOW FLOOR ***'}")
     gmin = float(D.min())
-    print(f"\nglobal minimum pairwise spacing: {gmin:.1f} mm "
-          f"({'PASS' if gmin >= SPACING_FLOOR_MM else 'FAIL'})")
+    i, j = np.unravel_index(int(np.argmin(D)), D.shape)
+    c_fail = []
+    print(f"\nminimum pairwise spacing: {gmin:.1f} mm "
+          f"({names[i]} <-> {names[j]})")
+    if floor is not None:
+        below = [(names[x], names[y], float(D[x, y]))
+                 for x in range(len(names)) for y in range(x + 1, len(names))
+                 if D[x, y] < floor]
+        print(f"pairs below COLLAR_OD_MM: {len(below)}"
+              + ("" if not below else "  " + ", ".join(
+                  f"{a}-{b} {d:.1f}mm" for a, b, d in below)))
+    else:
+        print("no floor set, so no pairs flagged")
     if held:
         print(f"NOTE: {', '.join(held)} held with no coordinate, so this is "
               f"{len(names)}x{len(names)}, not 8x8. Re-run this check when the "
@@ -299,13 +336,86 @@ def main(argv=None) -> int:
                                             float(b['S'])])) if b else float("nan"))
         print(f"{name:<16} {bs:<26} {ns:<26} {ps:<26} {tot:>9.1f}")
 
+    # ---------------------------------------------------------------- G
+    print("\n" + "=" * 100)
+    print("G. TISSUE COMPOSITION ALONG THE ELECTRODE-TO-TARGET SEGMENT")
+    print("=" * 100)
+    print("What each canonical site is actually integrating over. At ~20 mm the")
+    print("hyoid site traverses platysma and the infrahyoid group, not the")
+    print("suprahyoids it is named for. Not previously reported for the")
+    print("Gaddy/Kapur montage.\n")
+
+    lut = {}
+    inv_csv = config.RESULTS / "01_label_inventory.csv"
+    if inv_csv.exists():
+        for r in csv.DictReader(inv_csv.open()):
+            lut[int(r["label"])] = r["name"]
+
+    targets = {n: place2.JAW_TARGETS[n]["label"] for n in accepted}
+    for n, (lab, _) in place2.EAR_TISSUE_CHECK.items():
+        if n in rows and rows[n]["R"] != "":
+            targets[n] = lab
+
+    comp_rows = []
+    for name in sorted(targets, key=lambda x: (x not in accepted, x)):
+        lab = targets[name]
+        if name in accepted:
+            p0 = accepted[name]["pos"]
+        else:
+            p0 = np.array([float(rows[name]["R"]), float(rows[name]["A"]),
+                           float(rows[name]["S"])])
+        pts = ras(np.argwhere(arr == lab))
+        if a.side == "right":
+            k = pts[:, 0] > 0
+        else:
+            k = pts[:, 0] < 0
+        if k.any() and lab not in (87,):      # hyoid is a midline arch
+            pts = pts[k]
+        d, i = cKDTree(pts).query(p0)
+        p1 = pts[i]
+
+        t = np.linspace(0.0, 1.0, 400)[:, None]
+        seg = p0[None, :] * (1 - t) + p1[None, :] * t
+        ijk = np.rint(seg @ inv[:3, :3].T + inv[:3, 3]).astype(int)
+        okm = np.all((ijk >= 0) & (ijk < np.array(arr.shape)), axis=1)
+        labs = np.full(len(seg), MIDA_BACKGROUND, dtype=arr.dtype)
+        labs[okm] = arr[ijk[okm, 0], ijk[okm, 1], ijk[okm, 2]]
+
+        uniq, cnt = np.unique(labs, return_counts=True)
+        order = np.argsort(cnt)[::-1]
+        parts = []
+        for u, c in zip(uniq[order], cnt[order]):
+            pct = 100.0 * c / len(labs)
+            if pct < 2.0:
+                continue
+            parts.append(f"{lut.get(int(u), str(int(u)))} {pct:.0f}%")
+            comp_rows.append(dict(site=name, target_label=lab,
+                                  path_mm=round(float(d), 2),
+                                  tissue_label=int(u),
+                                  tissue=lut.get(int(u), str(int(u))),
+                                  pct_of_path=round(pct, 1)))
+        print(f"  {name:<16} {d:>5.1f} mm -> {lut.get(lab,lab)[:28]:<30} "
+              + "; ".join(parts[:5]))
+
+    for n in held:
+        print(f"  {n:<16} HELD, no coordinate; composition pending")
+
+    if comp_rows:
+        out = config.RESULTS / "02_path_composition.csv"
+        with out.open("w", newline="") as fh:
+            w2 = csv.DictWriter(fh, fieldnames=list(comp_rows[0].keys()))
+            w2.writeheader()
+            w2.writerows(comp_rows)
+        print(f"\nWritten: {out}")
+
     # ---------------------------------------------------------------- verdict
     print("\n" + "=" * 100)
     fails = []
     if b_fail:
         fails.append(f"B: depth over {DEPTH_FLAG_MM:.0f} mm at " + ", ".join(b_fail))
     if c_fail:
-        fails.append("C: spacing below floor for " +
+        fails.append("C(cross-montage): jaw site within the floor of another "
+                     "montage: " +
                      ", ".join(f"{x}-{y} {d:.1f}mm" for x, y, d in c_fail))
     if d_fail:
         fails.append("D: side/midline failure at " + ", ".join(d_fail))
