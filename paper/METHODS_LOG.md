@@ -93,3 +93,43 @@ RDM is the more robust metric and carries the headline, with the caveat that
 5.147 → 4.355 across two densities is **monotone decreasing across the two
 available densities**, not a convergence demonstration. It does not become
 "converged" until a rate is fitted across three genuine densities.
+
+---
+
+## 2026-08-02 — BLOCKER: 106 of 116 MIDA labels have no conductivity
+
+The boundary run failed before producing a number:
+
+    TypeError: The value 12 in cond_list is not numerical
+
+SimNIBS requires a conductivity for **every tag present in the mesh**, not only
+the ones the analysis reads. `config.SIGMA` holds 14 generic tissue values and
+`config.MUSCLES` maps 10 muscle labels, so 106 of the mesh's 116 tags were
+`None`.
+
+This blocks **every** solve on the MIDA mesh, so it blocks stage 3 as well as
+the boundary run. It is not specific to the boundary experiment.
+
+Scale of the gap:
+
+| | count |
+|---|---|
+| MIDA labels in the mesh | 116 |
+| mechanically mappable to an existing `SIGMA` value by name | 69 |
+| needing a newly sourced value | 47, of which one is Background |
+
+The 46 real structures are roughly **7% of head tissue volume** (excluding
+Background) and are dominated by deep brain nuclei, glands, tendons, dura and
+mucosa: Dura, Parotid Gland, Mucosa, Galea Aponeurotica, Submandibular Gland,
+the brainstem, Thalamus, Putamen, Caudate, Hippocampus, the tendons.
+
+Most sit far from both the muscle compartments and the electrodes, so their
+exact values will barely move a jaw or ear lead field — but SimNIBS cannot run
+without them, and **this is Table 1 of the paper**, which per CLAUDE.md must
+carry sourced values, not plausible ones. Not filled in by guessing.
+
+**Design note for whoever fills it:** the mapping should be explicit
+label → tissue → σ with a source per row, not a name-matching heuristic. The
+69 "mechanically mappable" labels above were matched by regex to demonstrate
+the scale of the problem; that is a diagnostic, not a proposal. `Teeth` matched
+`bone_compact` by keyword and dentine is not compact bone.
