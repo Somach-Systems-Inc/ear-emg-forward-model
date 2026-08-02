@@ -1,0 +1,22 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# macOS
+.DS_Store
+
+# MIDA is licensed by the IT'IS Foundation and requires individual
+# registration (DOI 10.13099/ViP-MIDA-V1.0). This repo is public --
+# redistributing the model here would breach that. Keep data/ local.
+data/*
+!data/.gitkeep
+!data/README.md
+
+# Generated meshes and E-field volumes are large and reproducible from
+# the pipeline. Regenerate rather than commit.
+*.msh
+*.msh.opt
+*.nii
+*.nii.gz
