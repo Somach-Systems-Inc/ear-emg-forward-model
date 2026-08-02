@@ -267,7 +267,7 @@ One row per term. Each is filled in only when its run completes, and any row sti
 
 | # | Term | What sets it | Source | Value |
 |---|---|---|---|---|
-| 1 | **Discretisation** | finite element size | sphere convergence at three densities, extrapolated to h→0 | *TODO — item 1* |
+| 1 | **Discretisation** | finite element size | sphere convergence — **first attempt failed, see below** | *TODO — needs a genuinely refined mesh* |
 | 2 | **Interface proximity** | source near a conductivity boundary | **not separable on a concentric sphere** — see below | *needs a different geometry* |
 | 3 | **Inferior boundary** | MIDA's cut face at S = −116.2 mm | truncated vs neck-extended mesh, two slab conductivities | *TODO — extension run* |
 | 4 | **Muscle anisotropy** | σ tensor vs scalar | Run A isotropic vs Run B anisotropic | *TODO — stage 3* |
@@ -277,6 +277,22 @@ One row per term. Each is filled in only when its run completes, and any row sti
 **Method validity is established separately and is not a budget term.** Reciprocity was verified against the analytic multilayer sphere at a median magnitude ratio of 0.9907 (least-squares scale factor 0.9935, magnitude correlation r = 0.99743, no systematic drift across source radii 20–75 mm). That is a correctness check on the identity `V_AB = E_recip(r)·p / I`, not an uncertainty on any published number, and conflating the two would inflate the budget with a term that does not belong in it.
 
 Row 6 is deliberately left unquantified. A single-subject model cannot estimate its own between-subject variance, and producing a number for it would be exactly the hand-waving this table exists to avoid.
+
+**Row 1's first attempt failed and is recorded rather than re-run quietly.** Three densities were requested via `meshmesh --usesettings` element-size ranges. Two were produced:
+
+| Mesh | Tets | h_mean | RDM (%) | MAG (%) |
+|---|---|---|---|---|
+| coarse | 265,620 | 2.257 mm | 5.147 | +22.018 |
+| medium | 647,323 | 1.677 mm | 4.355 | +4.400 |
+| "fine" | 648,170 | **1.676 mm** | 3.812 | +9.464 |
+
+The "fine" mesh is **0.13% larger than medium with the same element size**. Requesting a 0.8–2.5 mm range produced nothing finer, because element size is floored by the 0.5 mm label volume and by MMG's remeshing pass, neither of which the size range overrides.
+
+So the apparently non-monotonic MAG (+22.0 → +4.4 → +9.5) is not a convergence curve. It is two runs on statistically identical meshes disagreeing by **5.06 percentage points in MAG and 0.54 in RDM**. That variability is itself the informative result: at fixed element size, MAG moves by ±5 points under a 0.1% mesh perturbation, which means **MAG is dominated by how the 15 mm disc electrodes are meshed onto the surface, not by volume discretisation.** Electrode contact geometry changes discontinuously when surface triangles move.
+
+Two consequences. A discretisation term cannot be extracted at this precision until the electrode confound is removed, and the earlier +4.4% MAG should not be quoted as an accuracy figure, since a nominally identical mesh gives +9.5%.
+
+The redesign this calls for: refine the **label volume** to 0.25 mm rather than asking for smaller elements on a 0.5 mm volume; and either shrink the electrodes toward point contacts or average each density over several electrode montages, so electrode meshing is a controlled variable instead of an uncontrolled one. RDM is the more robust metric of the two and should carry the headline regardless.
 
 **Row 2 is blocked by a confound, not by effort.** The intent was to measure how forward error grows for sources near a conductivity boundary, which matters because in MIDA nearly every muscle is bounded by fat at a 14x contrast. On a concentric sphere this cannot be measured: a source at radius *r* is at distance (78 − *r*) mm from the innermost interface **by construction**, so distance-to-interface and eccentricity are perfectly collinear and no regression can separate them.
 

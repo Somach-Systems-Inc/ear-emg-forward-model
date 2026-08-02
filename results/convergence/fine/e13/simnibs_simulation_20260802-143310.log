@@ -1,0 +1,67 @@
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,434 - 26241 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,434 - 26241 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,434 - 26241 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/val_sphere_fine.msh
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,434 - 26241 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,434 - 26241 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/convergence/fine/e13
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,461 - 26241 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/convergence/fine/e13
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,552 - 26241 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,552 - 26241 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,552 - 26241 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-02 14:33:10,552 - 26241 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-02 14:33:11,436 - 26241 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(36.21070625221212), np.float64(-54.40835531162475), np.float64(-61.875)]
+pos_ydir: []
+dimensions: [15, 15]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 14:33:12,663 - 26241 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(0.0), np.float64(0.0), np.float64(-90.0)]
+pos_ydir: []
+dimensions: [15, 15]
+thickness:2
+channelnr: 2
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 14:33:15,050 - 26241 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-02 14:33:15,090 - 26241 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-02 14:33:15,096 - 26241 ]INFO: Assembling FEM Matrix
+[ simnibs 4.6.0 - 2026-08-02 14:33:15,627 - 26241 ]INFO: 0.53 s to assemble FEM matrix
+[ simnibs 4.6.0 - 2026-08-02 14:33:15,628 - 26241 ]DEBUG: Solving FEM System
+[ simnibs 4.6.0 - 2026-08-02 14:33:15,628 - 26241 ]INFO: Using solver options: hypre
+[ simnibs 4.6.0 - 2026-08-02 14:33:15,815 - 26241 ]INFO: Time to set up KSP:   0.1562 s
+[ simnibs 4.6.0 - 2026-08-02 14:33:16,118 - 26241 ]INFO: Time to solve:   0.3014 s
+[ simnibs 4.6.0 - 2026-08-02 14:33:16,235 - 26241 ]INFO: Estimated current calibration error: 7.1%
+[ simnibs 4.6.0 - 2026-08-02 14:33:16,543 - 26241 ]INFO: Creating visualizations
+[ simnibs 4.6.0 - 2026-08-02 14:33:17,034 - 26241 ]SUMMARY: 
+val_sphere_fine_TDCS_1
+======================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |3.22e-01 V/m |3.01e-01 V/m |1.99e-01 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |1.00e+04 mm³ |2.44e+04 mm³ |
+
+[ simnibs 4.6.0 - 2026-08-02 14:33:17,072 - 26241 ]INFO: Finished Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 14:33:17,072 - 26241 ]INFO: Result Files:
+/Users/carl/CODELocalProjects/ear-emg-forward-model/results/convergence/fine/e13/val_sphere_fine_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 14:33:17,108 - 26241 ]INFO: =====================================
+[ simnibs 4.6.0 - 2026-08-02 14:33:17,108 - 26241 ]INFO: SimNIBS finished running simulations
+[ simnibs 4.6.0 - 2026-08-02 14:33:17,108 - 26241 ]INFO: Simulation Result Meshes:
+[ simnibs 4.6.0 - 2026-08-02 14:33:17,108 - 26241 ]INFO: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/convergence/fine/e13/val_sphere_fine_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 14:33:17,108 - 26241 ]INFO: =====================================
