@@ -257,6 +257,27 @@ Fat sits at **0.025 S/m against muscle at 0.355 S/m, a 14x contrast**, and gener
 
 **Table 1** — Tissue conductivities used, with sources.
 
+---
+
+## Table 3 — the error budget
+
+**The headline jaw-versus-ear dB figure ships with a ± assembled from measured terms, not asserted ones.** Almost nobody in this literature attaches a measured uncertainty to a forward-model dB number; doing so is a differentiator independent of what the number turns out to be.
+
+One row per term. Each is filled in only when its run completes, and any row still reading TODO at submission is either measured or explicitly declared unquantifiable — never guessed.
+
+| # | Term | What sets it | Source | Value |
+|---|---|---|---|---|
+| 1 | **Discretisation** | finite element size | sphere convergence at three densities, extrapolated to h→0 | *TODO — item 1* |
+| 2 | **Interface proximity** | source near a conductivity boundary | error vs source-to-interface distance on the sphere | *TODO — item 3* |
+| 3 | **Inferior boundary** | MIDA's cut face at S = −116.2 mm | truncated vs neck-extended mesh, two slab conductivities | *TODO — extension run* |
+| 4 | **Muscle anisotropy** | σ tensor vs scalar | Run A isotropic vs Run B anisotropic | *TODO — stage 3* |
+| 5 | **Fibre orientation** | n̂ unknown in MIDA | orientation sweep envelope, per muscle | *partially measured — bounds are per-muscle, see Methods* |
+| 6 | **Single anatomy** | MIDA is one subject | **not quantifiable from one head.** Stated, not estimated. | n/a by construction |
+
+**Method validity is established separately and is not a budget term.** Reciprocity was verified against the analytic multilayer sphere at a median magnitude ratio of 0.9907 (least-squares scale factor 0.9935, magnitude correlation r = 0.99743, no systematic drift across source radii 20–75 mm). That is a correctness check on the identity `V_AB = E_recip(r)·p / I`, not an uncertainty on any published number, and conflating the two would inflate the budget with a term that does not belong in it.
+
+Row 6 is deliberately left unquantified. A single-subject model cannot estimate its own between-subject variance, and producing a number for it would be exactly the hand-waving this table exists to avoid.
+
 **Supplementary figure — boundary-condition sensitivity.** dB change at every electrode between the native mesh and the neck-extended mesh. See "The inferior boundary" below.
 
 ---

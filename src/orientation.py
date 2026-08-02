@@ -66,7 +66,16 @@ def sweep(E: np.ndarray,
     """
     E = np.asarray(E, dtype=np.float64)
     if E.ndim != 2 or E.shape[1] != 3:
-        raise ValueError(f"E must be (M, 3), got {E.shape}")
+        # This is the gate for a specific silent failure: SimNIBS's
+        # SESSION.fields = "e" writes |E|, a scalar per element, while "E"
+        # writes the vector. Projecting a magnitude onto an orientation is
+        # meaningless but raises nothing, so every lead field would be quietly
+        # wrong. Fail loudly here instead.
+        raise ValueError(
+            f"E must be a vector field of shape (M, 3); got {E.shape}. "
+            f"If this is (M,), the solve was run with SESSION.fields "
+            f"containing lowercase 'e' (magnitude) rather than uppercase 'E' "
+            f"(vector).")
     if len(E) == 0:
         raise ValueError("empty compartment: no elements to sweep")
 

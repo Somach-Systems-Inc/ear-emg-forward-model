@@ -1,0 +1,21 @@
+Cannot locate subjects m2m folder
+some postprocessing options might fail
+
+val_sphere_TDCS_1
+=================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |2.61e-01 V/m |2.45e-01 V/m |2.20e-01 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |2.62e+04 mm³ |6.63e+04 mm³ |
+

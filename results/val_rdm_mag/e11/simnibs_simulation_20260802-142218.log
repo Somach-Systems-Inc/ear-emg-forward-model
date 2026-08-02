@@ -1,0 +1,30 @@
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,367 - 20934 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,367 - 20934 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,367 - 20934 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/val_sphere.msh
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,367 - 20934 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,367 - 20934 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/val_rdm_mag/e11
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,395 - 20934 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/val_rdm_mag/e11
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,480 - 20934 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,480 - 20934 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,480 - 20934 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-02 14:22:18,480 - 20934 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-02 14:22:19,233 - 20934 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-63.194646168224004), np.float64(-50.55735426891889), np.float64(-39.375)]
+pos_ydir: []
+dimensions: [15, 15]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 14:22:20,325 - 20934 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(0.0), np.float64(0.0), np.float64(-90.0)]
+pos_ydir: []
+dimensions: [15, 15]
+thickness:2
+channelnr: 2
+number of holes: 0
+
