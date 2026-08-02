@@ -121,7 +121,8 @@ Do **not** place thousands of muscle-fibre sources and solve forward for each. U
 - [x] Python 3.11 venv + pinned `requirements.txt`
 - [x] `01_build_mesh.py` — both modes written, failure paths verified
 - [x] MIDA downloaded, **suprahyoid segmentation verified** — pooled, sub-segmentation required
-- [ ] SimNIBS installed and stock example runs
+- [x] SimNIBS 4.6.0 installed → `~/Applications/SimNIBS-4.6` (`meshmesh`, `fem`, `mumps` all verified)
+- [ ] Stock SimNIBS example runs end to end
 - [ ] Suprahyoid group sub-segmented from label 38
 - [ ] Mesh built with muscle labels
 - [ ] Electrodes placed

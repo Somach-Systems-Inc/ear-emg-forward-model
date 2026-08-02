@@ -409,7 +409,8 @@ def resolved_muscle_labels() -> tuple[list[tuple], list[tuple]]:
     return resolved, unresolved
 
 
-def build_mesh(volume_path: Path, out_mesh: Path, force: bool) -> int:
+def build_mesh(volume_path: Path, out_mesh: Path, force: bool,
+               extra: list[str] | None = None) -> int:
     _, unresolved = resolved_muscle_labels()
     if unresolved:
         names = ", ".join(e[0] for e in unresolved)
@@ -428,13 +429,22 @@ def build_mesh(volume_path: Path, out_mesh: Path, force: bool) -> int:
 
     meshmesh = shutil.which("meshmesh")
     if meshmesh is None:
-        raise Stage1Error(
-            "SimNIBS `meshmesh` is not on PATH.\n\n"
-            "SimNIBS 4.6.0 is required (native Apple Silicon; Intel support was\n"
-            "dropped in 4.5). Install it, then re-run. See README.md for the two\n"
-            "supported routes. Verify with:\n"
-            "  meshmesh -h"
-        )
+        # The .pkg adds this to the PATH via ~/.zprofile, which a non-login
+        # shell will not have read. Fall back to the default install location
+        # before giving up, so a plain `python src/01_build_mesh.py` works.
+        default = Path.home() / "Applications/SimNIBS-4.6/bin/meshmesh"
+        if default.is_file():
+            meshmesh = str(default)
+        else:
+            raise Stage1Error(
+                "SimNIBS `meshmesh` is not on PATH and is not at\n"
+                f"  {default}\n\n"
+                "Install SimNIBS 4.6.0 from simnibs_installer_macos.pkg (see\n"
+                "README.md -- the pip wheel route does not work). Then verify:\n"
+                "  meshmesh -h\n"
+                "If it is installed but not found, open a new login shell so\n"
+                "~/.zprofile is read."
+            )
 
     if out_mesh.exists() and not force:
         raise Stage1Error(
@@ -442,8 +452,11 @@ def build_mesh(volume_path: Path, out_mesh: Path, force: bool) -> int:
         )
 
     out_mesh.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [meshmesh, str(volume_path), str(out_mesh)]
+    cmd = [meshmesh, str(volume_path), str(out_mesh)] + list(extra or [])
     print("Running:", " ".join(cmd), flush=True)
+    print("(MIDA is 480x480x350 at 500 um; expect this to take a while and to\n"
+          " need several GB of RAM. Ctrl-C leaves no partial mesh behind.)\n",
+          flush=True)
 
     proc = subprocess.run(cmd, check=False)
     if proc.returncode != 0:
@@ -526,7 +539,34 @@ def main(argv: list[str] | None = None) -> int:
         "--force", action="store_true",
         help="overwrite an existing mesh",
     )
+    # Passed straight through to meshmesh. MIDA is already 500 um isotropic, so
+    # meshmesh's "twice the minimum resolution" rule of thumb does not apply
+    # unmodified -- leave --voxsize-meshing unset unless you have a reason.
+    parser.add_argument(
+        "--voxsize-meshing", metavar="MM", type=float,
+        help="meshmesh --voxsize_meshing: internal upsampling resolution in mm",
+    )
+    parser.add_argument(
+        "--nthreads", metavar="N", type=int,
+        help="meshmesh --nthreads: meshing threads",
+    )
+    parser.add_argument(
+        "--usesettings", metavar="INI", type=Path,
+        help="meshmesh --usesettings: ini file controlling per-label tet sizes",
+    )
     args = parser.parse_args(argv)
+
+    extra: list[str] = []
+    if args.voxsize_meshing is not None:
+        extra += ["--voxsize_meshing", str(args.voxsize_meshing)]
+    if args.nthreads is not None:
+        extra += ["--nthreads", str(args.nthreads)]
+    if args.usesettings is not None:
+        if not args.usesettings.exists():
+            print(f"\nERROR: --usesettings file not found: {args.usesettings}",
+                  file=sys.stderr)
+            return 1
+        extra += ["--usesettings", str(args.usesettings)]
 
     try:
         if args.list_labels is not None:
@@ -540,7 +580,7 @@ def main(argv: list[str] | None = None) -> int:
                 "  Build the mesh:    --label-volume <nifti>\n"
                 "There is no default MIDA filename -- pass the real path."
             )
-        return build_mesh(args.label_volume, args.out, args.force)
+        return build_mesh(args.label_volume, args.out, args.force, extra)
 
     except Stage1Error as exc:
         print(f"\nERROR: {exc}", file=sys.stderr)
