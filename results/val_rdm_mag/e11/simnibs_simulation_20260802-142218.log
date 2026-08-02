@@ -28,3 +28,40 @@ thickness:2
 channelnr: 2
 number of holes: 0
 
+[ simnibs 4.6.0 - 2026-08-02 14:22:22,517 - 20934 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-02 14:22:22,557 - 20934 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-02 14:22:22,564 - 20934 ]INFO: Assembling FEM Matrix
+[ simnibs 4.6.0 - 2026-08-02 14:22:23,106 - 20934 ]INFO: 0.54 s to assemble FEM matrix
+[ simnibs 4.6.0 - 2026-08-02 14:22:23,107 - 20934 ]DEBUG: Solving FEM System
+[ simnibs 4.6.0 - 2026-08-02 14:22:23,107 - 20934 ]INFO: Using solver options: hypre
+[ simnibs 4.6.0 - 2026-08-02 14:22:23,292 - 20934 ]INFO: Time to set up KSP:   0.1536 s
+[ simnibs 4.6.0 - 2026-08-02 14:22:23,592 - 20934 ]INFO: Time to solve:   0.2974 s
+[ simnibs 4.6.0 - 2026-08-02 14:22:23,696 - 20934 ]WARNING: The current calibration error exceeded 10%! Estimated error value: 17.28%
+[ simnibs 4.6.0 - 2026-08-02 14:22:23,997 - 20934 ]INFO: Creating visualizations
+[ simnibs 4.6.0 - 2026-08-02 14:22:24,488 - 20934 ]SUMMARY: 
+val_sphere_TDCS_1
+=================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |3.05e-01 V/m |2.93e-01 V/m |2.40e-01 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |1.86e+04 mm³ |4.52e+04 mm³ |
+
+[ simnibs 4.6.0 - 2026-08-02 14:22:24,523 - 20934 ]INFO: Finished Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 14:22:24,523 - 20934 ]INFO: Result Files:
+/Users/carl/CODELocalProjects/ear-emg-forward-model/results/val_rdm_mag/e11/val_sphere_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 14:22:24,555 - 20934 ]INFO: =====================================
+[ simnibs 4.6.0 - 2026-08-02 14:22:24,555 - 20934 ]INFO: SimNIBS finished running simulations
+[ simnibs 4.6.0 - 2026-08-02 14:22:24,555 - 20934 ]INFO: Simulation Result Meshes:
+[ simnibs 4.6.0 - 2026-08-02 14:22:24,555 - 20934 ]INFO: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/val_rdm_mag/e11/val_sphere_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 14:22:24,555 - 20934 ]INFO: =====================================

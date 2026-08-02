@@ -268,7 +268,7 @@ One row per term. Each is filled in only when its run completes, and any row sti
 | # | Term | What sets it | Source | Value |
 |---|---|---|---|---|
 | 1 | **Discretisation** | finite element size | sphere convergence at three densities, extrapolated to h→0 | *TODO — item 1* |
-| 2 | **Interface proximity** | source near a conductivity boundary | error vs source-to-interface distance on the sphere | *TODO — item 3* |
+| 2 | **Interface proximity** | source near a conductivity boundary | **not separable on a concentric sphere** — see below | *needs a different geometry* |
 | 3 | **Inferior boundary** | MIDA's cut face at S = −116.2 mm | truncated vs neck-extended mesh, two slab conductivities | *TODO — extension run* |
 | 4 | **Muscle anisotropy** | σ tensor vs scalar | Run A isotropic vs Run B anisotropic | *TODO — stage 3* |
 | 5 | **Fibre orientation** | n̂ unknown in MIDA | orientation sweep envelope, per muscle | *partially measured — bounds are per-muscle, see Methods* |
@@ -277,6 +277,24 @@ One row per term. Each is filled in only when its run completes, and any row sti
 **Method validity is established separately and is not a budget term.** Reciprocity was verified against the analytic multilayer sphere at a median magnitude ratio of 0.9907 (least-squares scale factor 0.9935, magnitude correlation r = 0.99743, no systematic drift across source radii 20–75 mm). That is a correctness check on the identity `V_AB = E_recip(r)·p / I`, not an uncertainty on any published number, and conflating the two would inflate the budget with a term that does not belong in it.
 
 Row 6 is deliberately left unquantified. A single-subject model cannot estimate its own between-subject variance, and producing a number for it would be exactly the hand-waving this table exists to avoid.
+
+**Row 2 is blocked by a confound, not by effort.** The intent was to measure how forward error grows for sources near a conductivity boundary, which matters because in MIDA nearly every muscle is bounded by fat at a 14x contrast. On a concentric sphere this cannot be measured: a source at radius *r* is at distance (78 − *r*) mm from the innermost interface **by construction**, so distance-to-interface and eccentricity are perfectly collinear and no regression can separate them.
+
+The measurement itself comes out backwards from the hypothesis, which is what exposed the confound. RDM *falls* as sources approach the interface:
+
+| Distance to nearest interface | n | RDM median (%) | MAG median (%) |
+|---|---|---|---|
+| 0–5 mm | 24 | **2.54** | +3.62 |
+| 5–10 mm | 24 | 3.08 | +4.22 |
+| 10–20 mm | 24 | 4.47 | +5.21 |
+| 20–40 mm | 24 | 7.46 | +5.16 |
+| 40–100 mm | 24 | **8.96** | +5.10 |
+
+Correlation of RDM with interface distance is **+0.676**. Read naively this says proximity to a conductivity jump *improves* accuracy, which is not plausible. Read correctly it is the well-known degradation of EEG forward solutions for **deep, central sources**, whose topographies are low-amplitude and poorly conditioned. In this geometry that is the same variable.
+
+Getting a real number for row 2 needs a geometry where two sources at equal eccentricity sit at different distances from an interface — a sphere with an eccentric inclusion, or the head mesh itself with the analytic oracle replaced by a converged fine-mesh reference. Recorded as a designed experiment rather than quietly dropped.
+
+This also disposes of the r = 40 mm anomaly from the earlier bipolar ratio (1.033 against 0.979–0.993 elsewhere). It was **not** interface proximity: r = 40 mm is 38 mm from the nearest boundary, the second-farthest sampled. MAG is essentially flat across radii (+3.6 to +5.2%), so the 1.033 was conditioning noise in a metric that has since been retired.
 
 **Supplementary figure — boundary-condition sensitivity.** dB change at every electrode between the native mesh and the neck-extended mesh. See "The inferior boundary" below.
 
