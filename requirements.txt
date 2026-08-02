@@ -1,0 +1,26 @@
+# Paper 1 -- ear-emg-forward-model
+#
+# Python 3.11 is required, not a preference: the only native Apple Silicon
+# SimNIBS 4.6.0 build is a cp311 wheel, so a 3.12+ interpreter cannot load it.
+#
+#   uv venv --python 3.11 .venv
+#   source .venv/bin/activate
+#   uv pip install -r requirements.txt
+#
+# Versions pinned for reproducibility of the published figures.
+
+numpy==2.4.6
+scipy==1.17.1
+nibabel==5.4.2
+matplotlib==3.11.1
+pandas==3.0.5
+
+# SimNIBS is NOT on PyPI and is NOT installed by this file. It is a 184 MB
+# wheel published per-release on GitHub, and it is only needed from stage 1's
+# mesh build onward -- `--list-labels` runs without it.
+#
+# Native Apple Silicon, into this venv:
+#   uv pip install https://github.com/simnibs/simnibs/releases/download/v4.6.0/simnibs-4.6.0-cp311-cp311-macosx_11_0_arm64.whl
+#   postinstall_simnibs --setup-links
+#
+# See README.md for the alternative full-installer route (.pkg, 849 MB).
