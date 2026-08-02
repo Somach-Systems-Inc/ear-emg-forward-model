@@ -1,0 +1,19 @@
+mida_label,muscle,group,verified,pooled_in,sigma_iso_S_per_m,sigma_long_S_per_m,sigma_trans_S_per_m,expected_at_ear
+,digastric_posterior,suprahyoid,no,38,0.355,0.4,0.1,STRONG - attaches at mastoid notch
+,stylohyoid,suprahyoid,no,38,0.355,0.4,0.1,"STRONG - styloid process, adjacent"
+,mylohyoid,suprahyoid,no,38,0.355,0.4,0.1,moderate
+,geniohyoid,suprahyoid,no,38,0.355,0.4,0.1,"weak - anterior, deep"
+,digastric_anterior,suprahyoid,no,38,0.355,0.4,0.1,weak - anterior
+,genioglossus,tongue,no,42,0.355,0.4,0.1,WEAK - deep and distant; predicts phoneme loss
+,hyoglossus,tongue,no,42,0.355,0.4,0.1,weak
+,styloglossus,tongue,no,42,0.355,0.4,0.1,moderate - styloid origin
+66,masseter,mastication,yes,,0.355,0.4,0.1,STRONG - 1-2 cm anterior to tragus
+63,temporalis,mastication,yes,,0.355,0.4,0.1,STRONG - directly above ear
+81,medial_pterygoid,mastication,yes,,0.355,0.4,0.1,moderate - deep
+65,lateral_pterygoid,mastication,yes,,0.355,0.4,0.1,moderate - deep
+75,orbicularis_oris,labial,yes,,0.355,0.4,0.1,weak - far anterior
+84,buccinator,labial,yes,,0.355,0.4,0.1,moderate
+71,mentalis,labial,yes,,0.355,0.4,0.1,weak
+72,depressor_anguli_oris,labial,yes,,0.355,0.4,0.1,weak
+60,platysma,cervical,yes,,0.355,0.4,0.1,moderate - broad sheet
+68,sternocleidomastoid,cervical,yes,,0.355,0.4,0.1,STRONG - mastoid attachment (but low speech activity)
