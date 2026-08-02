@@ -79,6 +79,29 @@ Muscle conductivity is anisotropic: roughly **0.4 S/m along fibres, 0.1 S/m acro
 
 Run it **both ways**. If anisotropy materially changes the ear-site sensitivity estimate, that is a finding in itself: *isotropic head models systematically mis-estimate muscle coupling.*
 
+### Bounding fibre-orientation uncertainty
+
+Both anisotropy and source orientation depend on knowing which way muscle fibres run, and **MIDA does not contain that information** — its diffusion data covers brain water, not muscle. Rather than assume directions we cannot support, we bound them. Two effects are separated because they are different problems with different costs.
+
+**1. Source orientation — bounded, no extra solves.** A fibre's current dipole runs along the fibre, and the lead field is `L = E(r) · n̂`. Since **E** is already solved, n̂ is swept over the hemisphere per muscle and reported as a median with a min/max envelope. Every sensitivity value in the paper therefore carries an orientation error bar rather than a point estimate that silently assumes a direction.
+
+**2. Tissue anisotropy — two solves, not one per muscle.** Run A isotropic; Run B anisotropic, using a PCA principal axis as the fibre direction *only* for muscles where a principal axis is a meaningful object.
+
+That restriction is the point. A principal axis describes a strap-like muscle well and is not merely imprecise but categorically wrong elsewhere:
+
+| Treatment | Muscles | Why |
+|---|---|---|
+| PCA axis | digastric (both bellies), stylohyoid, geniohyoid, SCM, styloglossus, hyoglossus, medial pterygoid, mentalis | strap-like; fibres run along the long axis |
+| Isotropic in both runs | orbicularis oris, temporalis, genioglossus, platysma, masseter, lateral pterygoid, mylohyoid, buccinator, depressor anguli oris | sphincter (ring), fan, sheet, or multiple layers at different angles |
+
+Orbicularis oris is the clearest case: it is a sphincter whose fibres run in a ring, so a single axis is a category error, not an approximation. Temporalis is a fan whose anterior fibres are vertical and posterior fibres nearly horizontal; one axis describes neither.
+
+**The muscles carrying the ear argument — digastric posterior belly, stylohyoid, SCM, and the styloid-origin tongue muscles — all fall in the PCA-defensible set.** The anisotropy treatment is therefore strongest exactly where the argument needs it, which is worth stating explicitly rather than leaving for a reviewer to notice.
+
+**Why this is the stronger claim.** The question was never "what are the true fibre directions?" but "does fibre orientation materially change the ear sensitivity estimate?" That needs a bound, not ground truth. A narrow envelope shows fibre direction does not matter here, and every future head model can ignore it. A wide envelope quantifies how much it matters and motivates measuring it. Both outcomes publish, and the reviewer question "how do you know the fibre directions?" is answered with *we don't, so we bounded them* rather than *we assumed PCA*.
+
+Reference points from the implementation's self-test: a perfectly aligned compartment yields a ~59 dB orientation envelope, a fully isotropic one ~0.3 dB. Real muscles fall between, and where they fall is a result.
+
 ### Montages compared
 1. **Canonical jaw** — the Gaddy/Kapur regions: mental, submental, submaxillary, hyoid, throat/SCM, buccal
 2. **Retroauricular cluster** — above ear (temporalis), mastoid, behind/below earlobe (digastric + stylohyoid), anterior to tragus (masseter/TMJ)
@@ -91,7 +114,7 @@ Run it **both ways**. If anisotropy materially changes the ear-site sensitivity 
 
 **Fig 1** — Head model with muscle compartments highlighted; electrode positions for all montages.
 
-**Fig 2** — **The money figure.** Sensitivity matrix: muscles (rows) × electrode positions (columns), colour = lead-field magnitude in dB relative to the best jaw site. Answers "what can you see from where."
+**Fig 2** — **The money figure.** Sensitivity matrix: muscles (rows) × electrode positions (columns), colour = lead-field magnitude in dB relative to the best jaw site, taken as the **median over source orientation**. Answers "what can you see from where." Every cell also carries the orientation envelope (min/max over n̂); render it as a companion panel or cell annotation rather than dropping it, since the envelope width is itself a finding.
 
 **Fig 3** — Attenuation vs distance for each articulator muscle, jaw sites vs ear sites. Shows the cost of moving to the ear in dB.
 
@@ -119,7 +142,7 @@ Write the discussion so that either direction is publishable. A large loss says 
 1. **Design guidance** — a lookup table for anyone building an ear-worn ExG device.
 2. **Reframing artifact as signal** — the EEG field spent decades documenting mastoid EMG contamination as a nuisance (Yao et al. 2019; Goncharova et al. 2003). This model says what that contamination actually *is*, muscle by muscle.
 3. **A testable prediction for Paper 2** — the model predicts which sites and which phoneme classes survive at the ear. Your physical 8-channel jaw-vs-ear rig tests it directly. Modelling paper predicts, empirical paper confirms or refutes. That pairing is much stronger than either alone.
-4. **Limitations** — single anatomy (MIDA is one subject), static geometry (no articulation deformation), quasi-static assumption, fibre orientation approximated.
+4. **Limitations** — single anatomy (MIDA is one subject), static geometry (no articulation deformation), quasi-static assumption. Fibre orientation is *not* listed here any more: it moved out of limitations and into Methods as a bounded quantity ("Bounding fibre-orientation uncertainty"). Unknown-but-bounded is a result; unknown-and-assumed would have been a limitation.
 
 ---
 

@@ -39,6 +39,80 @@ SIGMA = {
 ANISOTROPY_RATIO = SIGMA["muscle_long"] / SIGMA["muscle_trans"]   # = 4.0
 
 # ----------------------------------------------------------------------
+# FIBRE ORIENTATION -- two different problems, deliberately separated
+#
+# MIDA ships no muscle fibre directions (its diffusion data covers brain
+# water). Rather than invent them, the paper bounds them. Two mechanisms:
+#
+#   1. SOURCE ORIENTATION -- which way each fibre's current dipole points.
+#      Lead field is E(r).n_hat, so n_hat is swept over the sphere per muscle
+#      and reported as median plus a min/max envelope. This needs NO extra FEM
+#      solve: E is already computed. Every number in the paper carries this
+#      envelope as an error bar.
+#
+#   2. TISSUE ANISOTROPY -- whether sigma is a tensor rather than a scalar.
+#      Costs exactly two solves for the whole head (Run A isotropic, Run B
+#      anisotropic), not one per muscle.
+#
+# The claim being tested was never "here are the true fibre directions". It is
+# "does fibre orientation materially change the ear sensitivity estimate?"
+# That needs a bound, not ground truth. A narrow envelope says future head
+# models can ignore muscle fibre direction; a wide one quantifies how much it
+# matters. Both are publishable.
+#
+# FIBRE_MODEL controls which muscles get a PCA-derived tensor in Run B. A
+# principal axis is only meaningful for strap-like muscles. For sphincters,
+# fans and layered muscles it is not merely imprecise, it is the wrong kind
+# of object, so those stay isotropic in BOTH runs and rely on the orientation
+# sweep alone.
+# ----------------------------------------------------------------------
+_STRAP = "strap-like; fibres run along the compartment long axis"
+
+FIBRE_MODEL = {
+    # --- PCA defensible ------------------------------------------------
+    "digastric_posterior":   ("pca",       _STRAP),
+    "stylohyoid":            ("pca",       _STRAP),
+    "sternocleidomastoid":   ("pca",       _STRAP),
+    "styloglossus":          ("pca",       _STRAP),
+    "hyoglossus":            ("pca",       _STRAP),
+    "geniohyoid":            ("pca",       _STRAP),
+    # UNREVIEWED: my call, not Carl's. Second belly of digastric, same shape.
+    "digastric_anterior":    ("pca",       _STRAP),
+    # UNREVIEWED: quadrilateral, fibres roughly parallel inferoposterolaterally.
+    "medial_pterygoid":      ("pca",       _STRAP),
+    # UNREVIEWED: small and vertically oriented.
+    "mentalis":              ("pca",       _STRAP),
+
+    # --- PCA meaningless: isotropic in both runs ------------------------
+    "orbicularis_oris":      ("isotropic", "sphincter; fibres run in a ring, "
+                                           "a principal axis is a category error"),
+    "temporalis":            ("isotropic", "fan; anterior fibres vertical, posterior "
+                                           "nearly horizontal, converging on the coronoid"),
+    "genioglossus":          ("isotropic", "fan radiating from the mental spine"),
+    "platysma":              ("isotropic", "broad sheet"),
+    "masseter":              ("isotropic", "superficial and deep layers at different angles"),
+    # UNREVIEWED: my call. Two heads at markedly different angles, same
+    # failure mode as masseter.
+    "lateral_pterygoid":     ("isotropic", "two heads at different angles"),
+    # UNREVIEWED: flat sheet converging on the median raphe.
+    "mylohyoid":             ("isotropic", "sheet converging on a midline raphe"),
+    # UNREVIEWED: thin sheet blending into orbicularis oris at the modiolus.
+    "buccinator":            ("isotropic", "sheet blending into the oris sphincter"),
+    # UNREVIEWED: triangular, fibres converge toward the modiolus.
+    "depressor_anguli_oris": ("isotropic", "converging triangular fibres"),
+}
+
+# The muscles carrying the ear argument -- digastric posterior, stylohyoid,
+# SCM, and the styloid-origin tongue muscles -- are all in the PCA-defensible
+# set. That is a genuine piece of luck and is worth stating in the paper: the
+# anisotropy treatment is strongest exactly where the argument needs it.
+FIBRE_PCA_MUSCLES = tuple(m for m, (k, _) in FIBRE_MODEL.items() if k == "pca")
+
+# Directions sampled over the hemisphere for the orientation sweep. n_hat and
+# -n_hat give the same |E.n_hat|, so a hemisphere suffices.
+ORIENTATION_SWEEP_N = 512
+
+# ----------------------------------------------------------------------
 # ARTICULATOR MUSCLES  -- the rows of the sensitivity matrix
 #
 # `mida_label` MUST be filled in after downloading MIDA and inspecting the
