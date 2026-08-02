@@ -133,3 +133,66 @@ label → tissue → σ with a source per row, not a name-matching heuristic. Th
 69 "mechanically mappable" labels above were matched by regex to demonstrate
 the scale of the problem; that is a diagnostic, not a proposal. `Teeth` matched
 `bone_compact` by keyword and dentine is not compact bone.
+
+---
+
+## 2026-08-02 — STOP: step 1 results are invalid; every solve carries a current-calibration warning
+
+**Do not use `results/03_conductivity_bound.csv`.** The numbers in it are
+physically impossible and are withdrawn.
+
+### What the numbers said
+
+Condition d (ear air voids filled with bone) reported **+39.9 to +45.7 dB**
+across *all ten* muscle compartments at the `hyoid` electrode. Filling the
+mastoid air cells cannot change a hyoid lead field at all at that distance, and
+a near-uniform shift across every compartment is the signature of a global
+scaling, not a local physical effect. The reported "sensitivity envelope" of
+47.5 dB is likewise not credible against a 0.43 dB meshing noise floor.
+
+### What was actually wrong
+
+Every one of the 20 solves wrote this into `fields_summary.txt`:
+
+    The current calibration error exceeded 10%! Estimated error value: 200.00%
+
+**I did not read the solver's own output file.** SimNIBS reported the failure
+in writing and I took the field values anyway. This is precisely the failure
+mode CLAUDE.md names — silence is the bug, except here it was not even silent.
+
+### What is NOT yet established
+
+The same warning appears in **39 of 83 sphere solves**, including ones behind
+the reciprocity validation. That would imply the validation is invalid too —
+except the sphere result agreed with the *analytic* oracle at magnitude ratio
+0.9907, r = 0.997, which a genuine 200% current error cannot produce. The
+sphere summaries also print `Cannot locate subjects m2m folder / some
+postprocessing options might fail`, so the calibration check may simply be a
+post-processing step that cannot run without an m2m folder and reports a
+meaningless 200% for any custom mesh.
+
+Both readings are live and they have opposite consequences:
+
+- **benign** — the warning is a post-processing artefact of custom meshes; the
+  reciprocity validation stands; the MIDA anomalies have some other cause still
+  to be found
+- **real** — currents are mis-delivered; the reciprocity result is coincidental
+  and everything solved on a custom mesh is suspect
+
+**Not resolved by guessing.** The decisive test is to solve a case with a known
+answer *and* check the calibration line: the sphere against the analytic oracle
+is exactly that, so re-running one sphere solve while inspecting delivered
+current per electrode separates the two readings.
+
+### Required before any further solving
+
+1. Parse `fields_summary.txt` after **every** solve and hard-fail on a
+   calibration warning. No result is read from a solve that reported an error.
+2. Determine whether the warning is benign for custom meshes, by the test above.
+3. Only then re-run step 1, and step 2 behind it.
+
+### Partial signal, recorded but not trusted
+
+Conditions b, c1 and c2 gave *sane* values at masseter (−2.3, +3.4, −1.3 dB),
+so the conductivity sensitivity may well be small. That is a hint, not a
+result, and it is not going in the error budget until the solves are clean.
