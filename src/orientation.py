@@ -127,6 +127,22 @@ def principal_axis(points: np.ndarray) -> tuple[np.ndarray, float]:
     two eigenvalues. A ratio near 1 means the cloud has no meaningful long
     axis, which is the quantitative form of "PCA is the wrong object here".
     """
+    axis, _, elong, _ = shape_descriptors(points)
+    return axis, elong
+
+
+def shape_descriptors(points: np.ndarray):
+    """Classify a compartment's shape from its scatter matrix.
+
+    Returns (axis, eigenvalues, elongation, flatness) where
+      elongation = sqrt(l1/l2)  -- rod-ness. High for a strap muscle.
+      flatness   = sqrt(l2/l3)  -- plate-ness. High for a sheet or a ring.
+
+    This is what makes the FIBRE_MODEL table testable rather than asserted.
+    A muscle labelled "pca" should be a rod: elongation clearly above 1 and
+    larger than its flatness. A sheet, fan or sphincter is a plate: flatness
+    dominates and the "long axis" is an artefact of outline, not fibres.
+    """
     P = np.asarray(points, dtype=np.float64)
     if P.ndim != 2 or P.shape[1] != 3 or len(P) < 3:
         raise ValueError(f"need (M>=3, 3) points, got {P.shape}")
@@ -134,8 +150,135 @@ def principal_axis(points: np.ndarray) -> tuple[np.ndarray, float]:
     vals, vecs = np.linalg.eigh(C)
     order = np.argsort(vals)[::-1]
     vals, vecs = vals[order], vecs[:, order]
-    ratio = float(np.sqrt(vals[0] / vals[1])) if vals[1] > 0 else float("inf")
-    return vecs[:, 0], ratio
+    elong = float(np.sqrt(vals[0] / vals[1])) if vals[1] > 0 else float("inf")
+    flat = float(np.sqrt(vals[1] / vals[2])) if vals[2] > 0 else float("inf")
+    return vecs[:, 0], vals, elong, flat
+
+
+def split_sides(ras: np.ndarray, min_frac: float = 0.15):
+    """Split a compartment into left/right halves if it is bilateral.
+
+    MIDA gives each muscle ONE label covering both sides. Running PCA on that
+    directly measures the left-right separation between two muscles, not the
+    fibre direction along either -- it reported sternocleidomastoid, the
+    textbook strap muscle, as a plate. Any fibre axis must be computed per
+    side. Returns a list of (side_name, points).
+    """
+    right, left = ras[ras[:, 0] > 0], ras[ras[:, 0] < 0]
+    n = len(ras)
+    if len(right) >= min_frac * n and len(left) >= min_frac * n:
+        return [("right", right), ("left", left)]
+    return [("both", ras)]
+
+
+def _pca_check(volume_path: Path) -> int:
+    """Test FIBRE_MODEL against MIDA's real geometry.
+
+    Only the muscles with a verified mida_label can be checked; the pooled
+    ones have no compartment to measure yet.
+    """
+    import nibabel as nib
+
+    if not volume_path.exists():
+        print(f"ERROR: label volume not found: {volume_path}", file=sys.stderr)
+        return 1
+
+    img = nib.load(str(volume_path))
+    arr = np.asanyarray(img.dataobj)
+    aff = img.affine
+
+    print(f"Label volume: {volume_path}")
+    print("elongation = sqrt(l1/l2), rod-ness.  flatness = sqrt(l2/l3), plate-ness.")
+    print("A 'pca' muscle should be a rod: elongation > flatness.\n")
+    print(f"{'muscle':<24} {'model':<10} {'lab':>4} {'voxels':>10} "
+          f"{'elong':>7} {'flat':>7}  {'shape':<8} verdict")
+    print("-" * 100)
+
+    disagree = []
+    for name, group, label, _ in config.MUSCLES:
+        kind = config.FIBRE_MODEL.get(name, ("?", ""))[0]
+        if label is None:
+            print(f"{name:<24} {kind:<10} {'-':>4} {'pooled':>10} "
+                  f"{'-':>7} {'-':>7}  {'-':<8} not yet segmented")
+            continue
+        idx = np.argwhere(arr == label)
+        if len(idx) < 3:
+            print(f"{name:<24} {kind:<10} {label:>4} {len(idx):>10} "
+                  f"{'-':>7} {'-':>7}  {'-':<8} TOO FEW VOXELS")
+            continue
+        ras = idx @ aff[:3, :3].T + aff[:3, 3]
+        for side, pts in split_sides(ras):
+            if len(pts) < 3:
+                continue
+            _, _, elong, flat = shape_descriptors(pts)
+            # Neutral band. platysma-left came out elongation 2.82, flatness
+            # 2.82 and a bare >= silently called it a rod. Forcing a coin-flip
+            # into a category is the same error as asserting a fibre axis for
+            # a sphincter, just smaller.
+            ratio = elong / flat if flat > 0 else float("inf")
+            if 0.8 < ratio < 1.25:
+                shape = "ambiguous"
+            else:
+                shape = "rod" if ratio >= 1.0 else "plate"
+            agree = (shape == "ambiguous") or ((kind == "pca") == (shape == "rod"))
+            verdict = ("consistent" if agree else "*** DISAGREES WITH FIBRE_MODEL ***")
+            if shape == "ambiguous":
+                verdict = "ambiguous, no evidence either way"
+            if not agree:
+                disagree.append((f"{name} ({side})", kind, shape, elong, flat))
+            tag = f"{name} [{side}]" if side != "both" else name
+            print(f"{tag:<24} {kind:<10} {label:>4} {len(pts):>10,} "
+                  f"{elong:>7.2f} {flat:>7.2f}  {shape:<8} {verdict}")
+
+    # Left/right volume asymmetry. MIDA is one subject segmented by hand, so a
+    # large imbalance is a segmentation artefact rather than anatomy -- and it
+    # matters, because stage 2 places the montage on one nominated side.
+    print("\nLEFT/RIGHT VOLUME SYMMETRY")
+    print(f"{'muscle':<24} {'right':>10} {'left':>10} {'asym':>7}")
+    print("-" * 56)
+    asym_flagged = []
+    for name, _, label, _ in config.MUSCLES:
+        if label is None:
+            continue
+        idx = np.argwhere(arr == label)
+        if len(idx) < 3:
+            continue
+        ras = idx @ aff[:3, :3].T + aff[:3, 3]
+        nr, nl = int((ras[:, 0] > 0).sum()), int((ras[:, 0] < 0).sum())
+        if nr + nl == 0:
+            continue
+        a = abs(nr - nl) / (nr + nl)
+        flag = "  <-- asymmetric" if a > 0.25 else ""
+        if a > 0.25:
+            asym_flagged.append((name, nr, nl, a))
+        print(f"{name:<24} {nr:>10,} {nl:>10,} {a:>7.2f}{flag}")
+    if asym_flagged:
+        print("\nAsymmetry above 0.25 in: "
+              + ", ".join(f"{n} ({a:.0%})" for n, _, _, a in asym_flagged))
+        smaller_right = [n for n, nr, nl, _ in asym_flagged if nr < nl]
+        if smaller_right:
+            print("These are SMALLER on the right: " + ", ".join(smaller_right))
+            print("Stage 2 currently places the montage on the right (--side right).")
+        print("\nCAVEAT: a left/right split at R=0 is only meaningful for PAIRED")
+        print("muscles. For midline structures -- orbicularis oris is a single ring")
+        print("crossing the midline, mentalis sits on the chin -- the split is")
+        print("arbitrary and 'asymmetry' is largely an artefact of where the plane")
+        print("falls. Judge those two on absolute element count, not on this ratio.")
+
+    print()
+    if disagree:
+        print("Geometry disagrees with the anatomical classification for "
+              f"{len(disagree)} muscle(s):")
+        for n, k, s, e, f in disagree:
+            print(f"  {n}: labelled '{k}' but the compartment is a {s} "
+                  f"(elongation {e:.2f}, flatness {f:.2f})")
+        print("\nGeometry is evidence, not a verdict. A fan can have an elongated")
+        print("outline while its fibres diverge, so a 'plate' shape does not by")
+        print("itself justify flipping a muscle to pca. Treat these as prompts to")
+        print("re-read the anatomy, not as an automatic reclassification.")
+    else:
+        print("Every segmented muscle's shape is consistent with its FIBRE_MODEL entry.")
+    return 0
 
 
 def evaluate_at(E: np.ndarray, n_hat: np.ndarray,
@@ -241,5 +384,13 @@ def _self_test() -> int:
 if __name__ == "__main__":
     if "--self-test" in sys.argv:
         sys.exit(_self_test())
+    if "--pca-check" in sys.argv:
+        i = sys.argv.index("--pca-check")
+        if i + 1 >= len(sys.argv):
+            print("usage: --pca-check <label-volume.nii>", file=sys.stderr)
+            sys.exit(2)
+        sys.exit(_pca_check(Path(sys.argv[i + 1])))
     print(__doc__)
-    print("Nothing to do without a solved E-field. Run --self-test to verify the maths.")
+    print("Nothing to do without a solved E-field.")
+    print("  --self-test              verify the maths on synthetic fields")
+    print("  --pca-check <nifti>      test FIBRE_MODEL against MIDA geometry")
