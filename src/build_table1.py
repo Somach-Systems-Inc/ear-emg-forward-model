@@ -133,11 +133,19 @@ MAP: dict[int, object] = {
     # singular. config.SIGMA["air"] = 1e-15 exists precisely to avoid that, so
     # air lumens take the SimNIBS value even though the tissue identification
     # itself is a judgement.
+    # Range spans the two physically plausible states: an open air lumen and a
+    # collapsed, mucosa-lined one. That makes the judgement testable by the
+    # sensitivity bound rather than merely declared.
     85:  (S, "air", "judgement", "external auditory canal is an air-filled "
                                  "lumen; uses 1e-15 not IT'IS 0 S/m, which "
-                                 "would make the system singular"),
+                                 "would make the system singular. Range spans "
+                                 "open air to cerumen/mucosa-filled.",
+          ("air", "Mucous Membrane")),
     86:  (S, "air", "judgement", "pharyngotympanic tube modelled as an air "
-                                 "lumen; 1e-15 for the same reason"),
+                                 "lumen; 1e-15 for the same reason. The tube "
+                                 "is normally collapsed and mucosa-lined, so "
+                                 "the range spans air to mucous membrane.",
+          ("air", "Mucous Membrane")),
     87:  J("Bone (Cortical)", "IT'IS has no hyoid entry; hyoid is a small "
                               "cortical-shelled bone"),
 }
@@ -173,13 +181,21 @@ def main() -> int:
     rows = []
     rng = np.random.default_rng(0)
     for lab in sorted(inv):
-        kind, key, assign, note = MAP[lab]
+        entry = MAP[lab]
+        kind, key, assign, note = entry[:4]
+        explicit_range = entry[4] if len(entry) > 4 else None
         name = inv[lab]["name"]
         vox = int(inv[lab]["voxels"])
 
         if kind == S:
             sigma = config.SIGMA[key]
             lo = hi = ""
+            if explicit_range is not None:
+                def _resolve(x):
+                    return (config.SIGMA[x] if x in config.SIGMA
+                            else float(itis[x]["sigma_S_per_m"]))
+                lo, hi = (_resolve(explicit_range[0]),
+                          _resolve(explicit_range[1]))
             src = SIMNIBS_SRC
             tissue = key
         else:

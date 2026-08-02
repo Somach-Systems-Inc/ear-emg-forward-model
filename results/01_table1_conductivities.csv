@@ -38,7 +38,7 @@ mida_label,mida_name,assigned_tissue,sigma_S_per_m,frequency_Hz,source,assignmen
 75,Muscle - Orbicularis Oris,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.002573,17.57,
 61,Tendon - Galea Aponeurotica,Tendon\Ligament,0.3675772277227722,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.3675772277227722,0.3675772277227722,0.009629,35.75,
 81,Muscle - Medial Pterygoid,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.004639,28.94,
-85,Ear Auditory Canal,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),judgement,,,0.000326,7.76,"external auditory canal is an air-filled lumen; uses 1e-15 not IT'IS 0 S/m, which would make the system singular"
+85,Ear Auditory Canal,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),judgement,1e-15,0.4610075264456888,0.000326,7.76,"external auditory canal is an air-filled lumen; uses 1e-15 not IT'IS 0 S/m, which would make the system singular. Range spans open air to cerumen/mucosa-filled."
 83,Muscles - Risorius,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.001301,15.97,
 78,Muscle - Zygomaticus Major,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000877,14.11,
 90,Sublingual Gland,Salivary Gland,0.5585997222608695,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.435631853,0.743,0.001167,16.47,
@@ -59,7 +59,7 @@ mida_label,mida_name,assigned_tissue,sigma_S_per_m,frequency_Hz,source,assignmen
 14,Brainstem Pons,Pons,0.558392,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.369,0.747784,0.003179,55.19,
 48,Vertebra - C5,Vertebrae,0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.001851851851851852,0.0091,0.001935,44.13,
 39,Nasal Septum (Cartilage),cartilage,0.17,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.002536,53.87,
-86,Ear Pharyngotympanic Tube,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),judgement,,,0.000275,19.25,pharyngotympanic tube modelled as an air lumen; 1e-15 for the same reason
+86,Ear Pharyngotympanic Tube,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),judgement,1e-15,0.4610075264456888,0.000275,19.25,"pharyngotympanic tube modelled as an air lumen; 1e-15 for the same reason. The tube is normally collapsed and mucosa-lined, so the range spans air to mucous membrane."
 87,Hyoid Bone,Bone (Cortical),0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",judgement,0.001851851851851852,0.0091,0.000285,19.68,IT'IS has no hyoid entry; hyoid is a small cortical-shelled bone
 11,Brainstem Midbrain,Midbrain,0.35,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.35,0.35,0.001911,52.96,
 5,Hippocampus,Hippocampus,0.4190548817650446,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.06,0.83,0.001181,42.14,
