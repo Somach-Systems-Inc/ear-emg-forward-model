@@ -1,7 +1,7 @@
 # Paper 1 -- ear-emg-forward-model
 #
-# Python 3.11 is required, not a preference: the only native Apple Silicon
-# SimNIBS 4.6.0 build is a cp311 wheel, so a 3.12+ interpreter cannot load it.
+# Python 3.11 to match the interpreter SimNIBS 4.6.0 is built for (cp311),
+# so this venv and the SimNIBS environment stay on the same footing.
 #
 #   uv venv --python 3.11 .venv
 #   source .venv/bin/activate
@@ -15,12 +15,17 @@ nibabel==5.4.2
 matplotlib==3.11.1
 pandas==3.0.5
 
-# SimNIBS is NOT on PyPI and is NOT installed by this file. It is a 184 MB
-# wheel published per-release on GitHub, and it is only needed from stage 1's
-# mesh build onward -- `--list-labels` runs without it.
+# SimNIBS is deliberately absent from this file and must NOT be added to it.
 #
-# Native Apple Silicon, into this venv:
-#   uv pip install https://github.com/simnibs/simnibs/releases/download/v4.6.0/simnibs-4.6.0-cp311-cp311-macosx_11_0_arm64.whl
-#   postinstall_simnibs --setup-links
+# Do not pip-install the SimNIBS wheel into this venv. It resolves only after
+# you supply six non-PyPI dependencies by URL, and then still fails: the CGAL
+# extensions carry an rpath to the maintainer's build machine, and the import
+# chain requires `mumps`, which is sdist-only and has no Homebrew formula.
+# README.md records the full autopsy.
 #
-# See README.md for the alternative full-installer route (.pkg, 849 MB).
+# Install SimNIBS 4.6.0 from simnibs_installer_macos.pkg instead. It lives
+# outside this venv with its own Python, and 01_build_mesh.py finds `meshmesh`
+# on PATH via shutil.which().
+#
+# Only the mesh build needs it. `--list-labels` runs on numpy + nibabel alone,
+# which is why the MIDA label question was settled before SimNIBS existed here.

@@ -15,19 +15,33 @@ Read `paper/OUTLINE.md` first. It has the gap statement, the method, the figure 
 ### 1. SimNIBS 4.6.0
 **Native Apple Silicon** — Intel Mac support was discontinued at 4.5, so the M-series machine is the right one. Not needed for `--list-labels`; only from the mesh build onward.
 
-Two routes, both manual (the release assets are on GitHub, not PyPI):
+**Use the official installer.** `simnibs_installer_macos.pkg` (849 MB) from
+https://github.com/simnibs/simnibs/releases/tag/v4.6.0 — double-click, or:
 
-**A. Wheel into this repo's venv (recommended).** 184 MB, isolated, nothing system-wide:
 ```bash
-uv pip install https://github.com/simnibs/simnibs/releases/download/v4.6.0/simnibs-4.6.0-cp311-cp311-macosx_11_0_arm64.whl
-postinstall_simnibs --setup-links     # puts meshmesh/charm on PATH
+sudo installer -pkg ~/Downloads/simnibs_installer_macos.pkg -target /
 ```
 
-**B. Full installer.** `simnibs_installer_macos.pkg` (849 MB) from
-https://github.com/simnibs/simnibs/releases/tag/v4.6.0 — double-click, ~5–10 min.
-Adds the GUI and all external tools. Installs outside this repo.
+Signed by Axel Thielscher, notarized by Apple. Installs outside this repo and brings its own Python environment. Verify with `meshmesh -h`, then run a stock example before touching MIDA. If the reference example doesn't run, nothing downstream will.
 
-Verify either way with `meshmesh -h`, then run a stock example before touching MIDA. If the reference example doesn't run, nothing downstream will.
+<details>
+<summary><b>Do not pip-install the wheel into a venv.</b> Tried and abandoned 2026-08-02 — how far it gets, and why it dies.</summary>
+
+The release publishes `simnibs-4.6.0-cp311-cp311-macosx_11_0_arm64.whl` (184 MB, native arm64), which looks like a clean isolated install. It only resolves if you also hand pip the six dependencies from `environment_macos.yml` that are not on PyPI:
+
+```
+fmm3dpy 1.0.4 · cortech 0.1 · petsc4py 3.22.2 · samseg 0.5a0
+brainnet@git+…@v0.2 · brainsynth@git+…@v0.1
+```
+
+That installs, and still does not work, for two reasons.
+
+1. The CGAL extensions link `libmpfr.6` / `libgmp.10` / `libz.1` through `@rpath`, and the only baked-in rpath is the maintainer's build machine, `/Users/axelt/miniforge3/envs/simnibs_dev/lib`. Survivable: `brew install mpfr`, then `install_name_tool -add_rpath /opt/homebrew/lib` and an ad-hoc `codesign -f -s -` on three `.so` files.
+
+2. Then `simnibs/__init__.py` imports the FEM module, which imports `mumps`. `python-mumps` is sdist-only on PyPI and needs a Fortran build against MUMPS; Homebrew has no `mumps` formula. This is where it ends, and it blocks even `meshmesh`, because the package's import chain pulls FEM in regardless of which CLI you invoke.
+
+The binaries are built against one specific conda environment. The `.pkg` ships that environment. Reproducing it with Homebrew and pip is a losing game.
+</details>
 
 > **Stage 3 constraint, noted now so it isn't a surprise later:** the PARDISO
 > solver does not work on Apple Silicon. Use **MUMPS** for the reciprocity
