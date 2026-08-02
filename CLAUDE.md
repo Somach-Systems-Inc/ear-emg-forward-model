@@ -56,6 +56,12 @@ Fill `mida_label` in `src/config.py` with real integers once known. Leave `None`
 
 **Flag uncertainty inline.** If a conductivity, label, or coordinate is assumed rather than verified, mark it `# UNVERIFIED:` in code and call it out in the commit message.
 
+**Never move a threshold because something failed it.** A threshold may be revised only when an independent measurement establishes the physical bound, and the revision must be recorded inline next to that measurement. A test that is loosened until it passes is not a test.
+
+Worked example, both directions. The hyoid depth band was specified 10–15 mm and the placement returned 19.7 mm. Revising it was legitimate *only* because a separate measurement — the hyoid's minimum distance to the skin surface taken over the entire surface, unconstrained, at 19.1 mm — established that 10–15 mm is physically unreachable in this anatomy; the band became 15–22 with that number written beside it. By contrast the 20 mm electrode-spacing floor was never revised, because nothing measured it: it was withdrawn as a gate and became a reported quantity awaiting a caliper reading (`config.COLLAR_OD_MM = None`). Withdraw an unfounded threshold; do not retune it to fit.
+
+**A metric that stops early measures where it stopped.** The first tissue-composition table walked from electrode to the *nearest surface* of the target and reported percent-of-path, which made `midjaw` look like 3% masseter. Extending the same ray through the full compartment gave 16.5 mm of masseter, a 33x difference. Before a descriptive statistic becomes a claim, check that its integration limits are physical rather than incidental.
+
 **Both outcomes publish.** The discussion is written so a large attenuation at the ear ("here is the dB budget, here is why it's hard") and a small one ("it should work, put contacts here") are both results. Do not tune the analysis toward either.
 
 **Commit granularly with real messages.** This repo is public and is part of the company's credibility. `git commit -m "fix"` is not acceptable.

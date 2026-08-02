@@ -227,14 +227,31 @@ It also settles a concrete question this model raised: `submental_mid` and
 `submental_lat` are 11.9 mm apart, closer than any other pair. Whether that is
 two channels or one is decided by their correlation, not by their spacing.
 
-**Table 2 — what each canonical site actually sits on.** Tissue composition
-along the straight electrode-to-target segment, per MIDA label, for every jaw
-site plus `above_ear` and `pre_tragus`. Nobody has reported this for the
-Gaddy/Kapur montage, and the numbers are not what the site names imply: the
-`mental` path is 17% depressor anguli oris against 10% mentalis, `submental_lat`
-is 40% platysma and 5% mandible, and every site is dominated by subcutaneous
-adipose (47–82%). It reframes crosstalk from an empirical nuisance into a
-geometric prediction.
+**Table 2 — the tissue layer stack beneath each canonical site.** Millimetres per MIDA tissue along the ray from each electrode through the **full thickness** of its target, for every jaw site plus `above_ear` and `pre_tragus`.
+
+> **Correction, recorded rather than quietly fixed.** The first version walked from the electrode only as far as the *nearest surface* of the target and reported percent-of-path. That is truncation-limited by construction: the ray stopped on arrival, so `midjaw` looked like 3% masseter. Extending the same ray through the full compartment gives **16.5 mm of masseter**, a 33x difference; `submaxillary` changes by 109x. The earlier draft claim, "the canonical sites do not sit on the muscles they are named for", was an artefact of the integration limit and is **withdrawn**. Every site does sit over its named target with real thickness.
+
+What survives is cleaner. Each site is separated from its named generator by a **subcutaneous fat layer of 1.5–14.0 mm**:
+
+| Site | Target | Target thickness traversed | Fat before target |
+|---|---|---|---|
+| `submaxillary` | Mandible | 27.25 mm | 2.75 mm |
+| `pre_tragus` | Masseter | 17.25 mm | 5.50 mm |
+| `midjaw` | Masseter | 16.50 mm | 9.00 mm |
+| `submental_lat` | Mandible | 11.00 mm | 1.50 mm |
+| `buccal` | Buccinator | 8.00 mm | 8.75 mm |
+| `submental_mid` | Mandible | 7.25 mm | 7.25 mm |
+| `hyoid` | Hyoid Bone | 6.25 mm | 14.00 mm |
+| `above_ear` | Temporalis | 6.00 mm | 1.75 mm |
+| `mental` | Mentalis | 2.75 mm | 5.00 mm |
+
+Fat sits at **0.025 S/m against muscle at 0.355 S/m, a 14x contrast**, and generates nothing itself. This connects directly to the limb literature: Kuiken, Lowery & Stoykov (2003) added fat layers of 3, 9 and 18 mm to a finite-element upper-arm model and measured surface RMS amplitude falling by **31.3%, 80.2% and 90.0%**, with crosstalk rising alongside. Our measured 1.5–14.0 mm spans most of that range, so their attenuation curve is the quantitative bridge. Framed correctly this is *"quantified in the head what was already established for limbs"*, not an isolated observation.
+
+⚠️ **One mechanism claim is NOT yet supportable and must not be asserted.** It is tempting to write that fat's low conductivity forces current to fan laterally and so spatially low-passes the source. The limb literature does not clearly support that: several treatments attribute the crosstalk increase primarily to the added **source-to-electrode distance** rather than to adipose material properties, and the decisive sentence could not be verified from a primary source. Do not present the conductivity-contrast mechanism as established.
+
+**This model can settle it, which beats asserting it.** Solve twice with geometry held exactly fixed: once with fat at 0.025 S/m, once with the fat compartment set to muscle conductivity. Any difference is attributable to material properties alone, because distance is identical by construction. Limb studies could not separate the two cleanly; a labelled head model can. If the solves agree, distance dominates and we say so; if they diverge, the conductivity mechanism is real and measured.
+
+**Table 2b (stage 4) — the sensitivity-weighted successor.** Path thickness is a geometric proxy. The physical quantity is the **fraction of each electrode's total sensitivity contributed by each compartment**, free once **E** exists: integrate the lead field over each compartment and normalise. Table 2 is retained as the *a priori* geometric prediction and Table 2b as its confirmation, so the paper contains a prediction and its test rather than either alone.
 
 **Fig 6 — the suprahyoid sensitivity field. This is the figure the ear argument actually rests on.** Sagittal and coronal slices of |E| through the pooled `Muscle (General)` compartment, with the mastoid notch, hyoid and corridor overlaid, for the retroauricular montage. See "Reporting a field, not eighteen numbers" below.
 
@@ -278,6 +295,7 @@ Write the discussion so that either direction is publishable. A large loss says 
 - Thielscher et al. — SimNIBS
 - Maksymenko, Deslauriers-Gauthier & Farina (2021). *Ultra fast and highly realistic numerical modelling of surface EMG.* bioRxiv — limb-geometry precedent
 - Mesin (2020). *Crosstalk in surface electromyogram: literature review.* Phys Eng Sci Med. doi:10.1007/s13246-020-00868-1
+- Kuiken, Lowery & Stoykov (2003). *The effect of subcutaneous fat on myoelectric signal amplitude and cross-talk.* Prosthet Orthot Int 27(1):48–54. doi:10.3109/03093640309167976 — **verified against PubMed 12812327.** FE upper-arm model; fat layers of 3/9/18 mm reduce surface RMS amplitude by 31.3/80.2/90.0% with crosstalk rising. This is the limb-geometry precedent Table 2 bridges to. Note: the abstract does **not** adjudicate distance versus adipose material properties as the cause; do not cite it for that.
 - De Luca et al. (2011). *Inter-electrode spacing of surface EMG sensors.* J Biomech
 - Sato & Kochiyama (2023). *Crosstalk in Facial EMG and Its Reduction Using ICA.* Sensors 23:2720
 - Yao et al. (2019). *Which Reference Should We Use for EEG and ERP practice?* Brain Topogr. — mastoid picks up EMG
