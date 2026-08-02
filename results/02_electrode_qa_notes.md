@@ -239,3 +239,114 @@ Approved by Carl: all ear sites, cEEGrid, reference/BIAS.
 Re-placed this revision and needing a fresh look: `mental`, `hyoid`,
 `submental_mid`, `submental_lat`, `submaxillary`, `buccal`, `midjaw`.
 **Held:** `throat_scm`, pending a measured coordinate.
+
+---
+
+# Placement acceptance (src/02c_placement_acceptance.py) — 2026-08-02
+
+**RESULT: FAILED on B and C. Positions NOT written; sign-off not taken.**
+
+## A. Centroid validity — 4 of 7 centroids are outside their own compartment
+
+| site | target | label AT centroid | inside? | rule applied |
+|---|---|---|---|---|
+| `mental` | Mentalis (71) | 36 Mandible | **NO** | min-distance to compartment |
+| `hyoid` | Hyoid Bone (87) | 37 Mucosa | **NO** | min-distance to compartment |
+| `submental_mid` | Mandible (36) symphysis_mid | 36 | YES | centroid projection |
+| `submental_lat` | Mandible (36) symphysis_lat | 41 Teeth | **NO** | min-distance to compartment |
+| `submaxillary` | Mandible (36) body_lat | 43 Adipose | **NO** | min-distance to compartment |
+| `buccal` | Buccinator (84) | 84 | YES | centroid projection |
+| `midjaw` | Masseter (66) | 66 | YES | centroid projection |
+
+The failures are all concave structures: a mandible and a hyoid are arches, so
+the centroid sits in the soft tissue enclosed by the arch (mucosa, teeth, fat),
+not in bone. Projecting from a point that is not in the target was the flaw.
+
+Re-placed: `mental` 1.2, `hyoid` 7.6, `submental_mid` 2.6, `submental_lat`
+23.4, `submaxillary` 29.4 mm.
+
+**Implementation note:** the min-distance rule is applied *only* where the
+centroid is invalid. Applying it uniformly moved `midjaw` 51.8 mm up to the
+zygomatic arch (S = -17.7) — for a long muscle it migrates to the single
+shallowest point of the whole compartment, which is not mid-ramus and came
+within ~7 mm of `pre_tragus`.
+
+## B. Depth — FAIL at hyoid
+
+| site | depth | expected | verdict |
+|---|---|---|---|
+| `mental` | 5.1 | 3-8 | ok |
+| `submental_lat` | 5.1 | 4-12 | ok |
+| `submental_mid` | 6.5 | 4-12 | ok |
+| `submaxillary` | 6.0 | 4-12 | ok |
+| `buccal` | 10.8 | 8-15 | ok |
+| `midjaw` | 11.0 | 5-12 | ok |
+| `hyoid` | **19.7** | 10-15 | **FLAG** |
+
+Diagnosed rather than smoothed. It is **not** the wrong aspect of the bone:
+the hyoid's minimum distance to the skin surface is **19.1 mm taken over the
+entire skin**, unconstrained. Midline band makes almost no difference
+(±2 mm → 19.7, ±10 mm → 19.4, unconstrained → 19.1).
+
+So MIDA's hyoid is simply ~19 mm deep in this subject; the 10-15 mm
+expectation does not hold here. MIDA separates `Epidermis/Dermis` (51) from
+`Subcutaneous Adipose Tissue` (62), so this depth spans skin, subcutaneous
+fat, platysma and the infrahyoid muscles. Report the depth as measured.
+
+## C. Inter-electrode spacing — FAIL, floor 20 mm
+
+| site | nearest | mm |
+|---|---|---|
+| `submental_mid` | `submental_lat` | **11.9** |
+| `mental` | `submental_mid` | **17.4** |
+| `submaxillary` | `submental_lat` | 28.1 |
+| `buccal` | `submaxillary` | 31.7 |
+| `hyoid` | `submaxillary` | 38.5 |
+| `midjaw` | `buccal` | 43.1 |
+
+**Global minimum 11.9 mm against a 20 mm floor.** Closest jaw-to-other-montage
+pair is `midjaw` ↔ `cg10` at 32.9 mm (ok).
+
+This is a montage-definition problem, not a placement bug. `mental`,
+`submental_mid` and `submental_lat` name three anatomically adjacent regions
+of the chin, and once each is placed over its own structure they are 12-17 mm
+apart. With 10 mm cups in adhesive collars the three cannot coexist. Needs a
+decision, not a nudge — see the summary.
+
+Held: `throat_scm`, so this is 7x7 rather than 8x8. Re-run when its measured
+coordinate arrives.
+
+## D. Side integrity — PASS
+
+All three midline sites within 2 mm of the symphysis midline (-7.77):
+`mental` 1.6, `hyoid` 1.6, `submental_mid` 0.4. All lateral sites on the
+correct side (+11.2 to +73.0 mm).
+
+## E. Boundary clearance (cut face S = -116.2)
+
+| site | clearance |
+|---|---|
+| `hyoid` | **8.0 mm** |
+| `submental_lat` | **8.4 mm** |
+| `submental_mid` | **9.7 mm** |
+| … | |
+| `cg02` (largest) | 133.3 mm |
+
+Three jaw sites sit within 10 mm of the insulating cut face while every ear
+site is 80 mm or more away. This is exactly the asymmetry the boundary
+sensitivity run is measuring.
+
+## F. Displacement history
+
+| site | original (hand-offset) | normal-projection | accepted | orig→acc |
+|---|---|---|---|---|
+| `mental` | -7.2, 94.0, -105.0 | -6.7, 98.7, -99.6 | -6.2, 98.2, -100.6 | 6.1 |
+| `hyoid` | -7.8, 36.1, -115.6 | -1.8, 42.1, -108.5 | -9.3, 42.7, -108.2 | 10.0 |
+| `submental_mid` | -6.1, 69.5, -107.2 | -10.6, 81.8, -106.0 | -8.1, 81.9, -106.5 | 12.6 |
+| `submental_lat` | 16.7, 65.6, -105.3 | 19.7, 86.7, -92.6 | 3.5, 79.4, -107.8 | 19.3 |
+| `submaxillary` | 29.5, 53.4, -99.9 | 42.5, 68.7, -80.8 | 24.1, 61.1, -102.4 | 9.8 |
+| `buccal` | 33.4, 75.5, -86.7 | 38.7, 75.6, -78.4 | 38.7, 75.6, -78.4 | 9.9 |
+| `midjaw` | 60.3, 51.9, -67.8 | 65.2, 51.0, -54.9 | 65.3, 51.0, -54.9 | 13.8 |
+
+`mental` moved 6.1 mm from the original and sits at A = 98.2, S = -100.6, on
+the chin pad over mentalis at 5.1 mm depth — it did not stay submental.
