@@ -1,158 +1,173 @@
 # HANDOFF — Paper 1, ear-emg-forward-model
 
-Written 2026-08-02 at ~99% context. Start here, then `CLAUDE.md` (standing
-decision policy), then `paper/METHODS_LOG.md` (what went wrong and why), then
-`paper/OUTLINE.md` (the paper's argument).
+Rewritten 2026-08-03. Read `CLAUDE.md` (standing decision policy), then
+`paper/METHODS_LOG.md` (what went wrong and why), then `paper/OUTLINE.md`.
 
-Repo: `~/CODELocalProjects/ear-emg-forward-model`, clean, all work committed.
-
----
-
-## 1. RUNNING RIGHT NOW
-
-**Cavity test, 16 solves, serial.** Background job, ~2/16 done, slow.
-Script: `scratchpad/cavity_test.py` (in the session scratchpad, not the repo —
-**copy it into `src/` if it matters**, it is the only uncommitted artefact).
-Output lands in `results/cavity/{air,filled}__{electrode}/`.
-
-It tests articulatory volume-conductor exposure vs distance to the oral cavity.
-8 electrodes spanning 14.5–75.5 mm from the modified cavity. **Analysis is
-NOT the script's own printed verdict** — that is superseded. Use
-`src/03c_cavity_analysis.py`, which decomposes common-mode from residual and
-reports the flip point.
-
-**Do not compute the cavity verdict without reading `03c`'s ordering guard** —
-it exits 2 until the floor file exists. That file now exists.
+Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
-## 2. THE MEMORY SITUATION — READ BEFORE ANY PARALLEL RUN
+## 1. NOTHING IS RUNNING
 
-Measured with everything running:
-
-```
-PhysMem: 47G used, 536M unused
-swap:    3917 MB of 5120 MB used
-largest consumer: ollama llama-server  14.76 GB
-```
-
-**The machine is memory-saturated and already swapping with ONE solve running.**
-
-A production solve is **1 core at 100%, 10.8 GB peak RSS** (measured over 60 s,
-10 samples). So:
-
-- cores are NOT the constraint — 17 of 18 idle during every solve
-- **memory is, and there currently is none free**
-
-`src/run_solves_parallel.py` defaults to N=3 based on a *nominally* free 48 GB.
-**That default is unsafe as things stand.** Before using it:
-
-1. Stop `ollama` (frees 14.76 GB) or confirm it has exited.
-2. Re-measure actual free memory.
-3. Only then pick N. With ollama gone, N=3 is sound (32.4 GB, 15.6 GB headroom).
-   With ollama running, **N=1**.
-
-Swap thrash on a 1-hour run costs more than the parallelism gains.
-
-### Untested, try this FIRST — threads before processes
-
-`simnibs.simulation.fem.tdcs()` has an **`n_workers` parameter (default 1)**.
-hypre supports OpenMP; SimNIBS may simply not enable it. **This was not
-tested** — context ran out.
-
-Run one solve with `OMP_NUM_THREADS=8` and/or `n_workers>1` and check whether
-CPU exceeds 100%. Threads cost **no extra memory**; processes cost 10.8 GB each.
-If threads work, the process pool is unnecessary and the memory problem
-largely disappears. Report either way.
+No solves in flight. The cavity run (16 solves) and the boundary run (3) both
+completed.
 
 ---
 
-## 3. THREE QUEUED FOLLOW-UPS (Carl's, not yet done)
+## 2. THE BLOCKER — read before starting anything
 
-### 3a. The floor has false precision — do this before it gates Fig 5
-`results/electrode_meshing_floor.txt` holds **0.1310 dB from n=2**. That is one
-difference quoted to four significant figures, and it now gates two analyses
-(cavity criterion b, Fig 5 resolution).
+**Stage 3 cannot start.** The boundary run decides which mesh is primary for
+every published result, and **its verdict is withheld**:
 
-Report it as **~0.13 dB with n stated and its own uncertainty**. Get more draws
-cheaply: **vary the electrode's angular placement slightly at the same
-position**, which re-triangulates the contact without re-meshing the head.
-Target **n ≥ 5**. These are sphere solves — seconds each, not minutes.
-
-### 3b. MAG disposition
-Three observations now show MAG's variance is dominated by **electrode
-discretisation, not solver accuracy**:
-
-| observation | value |
+| solve | calibration |
 |---|---|
-| two identical meshes, 15 mm | 5.06 pp |
-| non-repeatability | +4.4% vs +9.5% |
-| across diameter (RDM moved 0.4 pp) | +5.996/+7.516 vs +4.400/+9.464 |
+| truncated | clean |
+| extended, slab 0.355 | **WARNED 100.49%** |
+| extended, slab 0.190 | **WARNED 95.84%** |
 
-**Keep reporting MAG** — reviewers expect the RDM/MAG pair — but state
-explicitly what its variance measures. *"MAG is not a useful solver-accuracy
-metric when the electrode is meshed rather than a point sensor"* is a
-defensible small finding. **RDM carries the headline.**
+It printed "extended mesh becomes PRIMARY" from an 8.66 dB shift. Do not act
+on that. ~100% is not the measured 11–15% false-positive band, the fields
+corroborate it (SCM moves 2.7x), and the dB pattern is the wrong shape for a
+boundary artefact (temporalis moves +3.96 dB and is nowhere near the cut).
 
-### 3c. Fig 5 — propagate the floor, do not assume it transfers
-A dB noise floor does **not** map onto a correlation threshold 1:1. Perturb each
-lead field by the measured per-site noise, recompute the column correlations N
-times, and report **each correlation's uncertainty**. Fig 5 is the design table
-people would actually use, and `r = 0.95 ± 0.01` and `r = 0.95 ± 0.15` are
-different claims.
+**Measured cause candidate.** The extended mesh has only **0.83% more
+elements** than the truncated one (15,542,772 vs 15,415,273) despite adding a
+70 mm extrusion of a full neck cross-section. The slab is meshed roughly an
+order of magnitude coarser than the head it attaches to, and a large
+element-size jump across a shared interface wrecks an iterative solve.
+Conductivity conditioning is excluded (σ span 1.879e6, identical to the clean
+truncated run).
 
----
+**Next action:** rebuild `data/mida_neckext.msh` via `src/01c_extend_neck.py`
+with the slab meshed comparably to adjacent head elements, re-run
+`src/03a_boundary_run.py`, confirm both extended solves report clean
+calibration, and only then apply the rule.
 
-## 4. STAGE 3 CONFIG
-
-- **24 positions** including a provisional literature `throat_scm`.
-  **`throat_scm` has no coordinate yet** — Carl is measuring it on his own neck.
-  It is `verified=held` with blank coordinates in
-  `results/02_electrode_positions.csv`, and every consumer skips held rows.
-  A "provisional literature" placement was authorised but **not implemented**;
-  SENIAM's SCM guidance (1/3 along sternal notch → mastoid) is the obvious
-  source but was **never verified** — do not use it unsourced.
-- **Both anisotropy conditions** (isotropic, anisotropic per `config.FIBRE_MODEL`).
-- **Mesh:** whichever the boundary run selects. **The boundary run has not been
-  done.** Rule is pre-committed in OUTLINE: >1.0 dB shift at `hyoid`,
-  `submental_lat` or `submental_mid` under either slab conductivity ⇒ extended
-  mesh (`data/mida_neckext.msh`) becomes primary.
-- **Invariants:** 1 and 2 on every solve; 3 and 4 on **first and last** of the
-  batch, plus any solve whose invariant-1 CV is elevated
-  (`solve_invariants.needs_escalation`).
-- **Expect escalation to fire often.** The CV band was calibrated on n=4 solves
-  varying only σ_air, on one mesh and one montage, so it captures no mesh or
-  montage variance. That is predicted, not drift. Recalibrate from the first 10
-  stage-3 solves and record as **calibration 2 with its own n, alongside the
-  first, not overwriting it**.
+**The 1.0 dB threshold is NOT revised.** Nothing failed it. What is missing is
+a trustworthy number to apply it to.
 
 ---
 
-## 5. THINGS IN MY HEAD NOT YET WRITTEN DOWN ELSEWHERE
+## 3. SETTLED THIS SESSION — do not re-litigate
 
-- **`scratchpad/cavity_test.py` is not in the repo.** It is the only script that
-  exists solely in the session scratchpad. Everything else is committed.
-- **The buccal exterior-flux anomaly is unexplained.** `buccal` reports
-  *exactly* zero exterior flux at r=25 and 35 mm, meaning the patch touches no
-  mesh-exterior face at those radii — odd for a skin-mounted electrode. It does
-  not affect the plateau criterion, which handles it, but nobody understands it.
-  `hyoid`'s exterior count is monotone, so it is not a general classification
-  bug.
-- **The ~4% flux deficit has no explanation.** My first-order-discretisation
-  story was falsified (non-monotone in h, sign change, 25% overshoot at coarse).
-  The electrode-realisation hypothesis is now *supported* by the floor
-  measurement tracking diameter, but the deficit itself is still unexplained.
-  **Invariant 1 is a consistency test only — never quote its absolute level.**
-- **Fig 7 is deleted, not pending.** Its premise was falsified by measurement.
-  The air-void inventory survives as a supplementary figure. Nothing replaces
-  Fig 7 unless the cavity test survives.
-- **8 of 18 muscles are still pooled** in `Muscle (General)` (38) and `Tongue`
-  (42), including digastric posterior and stylohyoid — the two carrying the ear
-  argument. `src/roi_corridor.py` handles them via a corridor ROI. The styloid
-  process is **not segmentable** in MIDA (checked exhaustively), so one corridor
-  holds both muscles.
-- **Adversarial pass at every stage boundary** is standing policy. It has a
-  ~50% hit rate on already-reviewed material. Tag claims
-  `measured|derived|asserted` and attack `asserted` first.
-- **Nothing in Discussion/Introduction/Abstract may be written.** Those framing
-  decisions are Carl's.
+### Threads are not available. Process pool only.
+Tested three ways, all negative. `fem.tdcs`'s `n_workers` is a
+**multiprocessing** pool (10.8 GB per worker, not free), and it is clamped by
+`n_workers = min(len(currents) - 1, n_workers)`, which is **1 for every
+bipolar montage in this paper** regardless of what you pass. Neither
+`libpetsc` nor `libHYPRE` has a single undefined OpenMP symbol, and
+`OMP_NUM_THREADS=8` measured 7.3 s against 7.2 s at one thread. **Do not spend
+time here again.**
+
+### Memory
+Budget **~12 GB per solve on either mesh** (observed peak 11.9 GB). The two
+meshes differ by under 1%, so the extended mesh introduces no memory problem
+— but if the slab is refined to fix the blocker above, **both element count
+and peak RSS rise, so re-measure.**
+
+Free memory swung 0.5 GB → 15 GB across sessions with no deliberate action
+(ollama's model server exits on an idle timeout). **Measure at launch, choose
+N from that, never from a figure recorded earlier.** Do not stop or modify
+ollama or any other process; work inside whatever is free.
+
+### The electrode-meshing floor is 0.27 dB
+n=6, per-site, common mode removed. **95% CI [0.16, 0.28]** — quote it with
+the interval, not as `0.272`. Written to
+`results/electrode_meshing_floor.txt`; every consumer reads it from there
+(`03a`, `03b`, `03c`). `measure_electrode_floor.py` now refuses to overwrite
+it and exits 3.
+
+The old **0.1310 dB was not wrong in method, it was under-sampled**: one
+pairwise difference of 1.52 pp drawn from a spread whose SD is 4.61 pp, so it
+landed low by ~3x. The n=6 harness reproduces its exact input (identity
+rotation gives median MAG +5.996, RDM 4.111, matching `e10mm_medium.csv`).
+
+### MAG is disposed of
+Under pure re-triangulation with geometry held exactly fixed, **MAG's spread
+is 44x RDM's and MAG changes sign**. Keep reporting MAG (reviewers expect the
+pair) but state what its variance measures. RDM carries the headline.
+
+---
+
+## 4. THE CAVITY RESULT — SURVIVES
+
+All 16 solves done, analysed with `03c` (**not** `03d`'s printed verdict,
+which is superseded and now says so in its own docstring).
+
+    (a) Spearman rho = -0.881, p = 0.004    PASS
+    (b) max |residual| = 1.6006 dB (hyoid)  PASS
+    VERDICT: SURVIVES
+
+**Flip point 1.60 dB.** All three floors ever used (0.43, 0.131, 0.27) agree,
+so no choice of floor decides this. Residuals are monotone and physically
+coherent: near sites lose signal when the cavity is filled, far sites gain
+slightly, crossing over between `submental_lat` and `midjaw`.
+
+**Methods term, independent of the verdict:** head models omitting the oral
+cavity and nasopharynx are off by **0.507 dB** in absolute lead field.
+
+**State this caveat with the result.** Leave-one-out survives all eight
+deletions, but the (b) margin is carried by `hyoid`. Drop it and the largest
+residual is `buccal` at 0.350 dB, clearing the measured floor by only 1.29x
+and **failing** the old registered 0.43 dB floor. `hyoid` is the closest site
+at 14.5 mm, so the physics puts the largest effect there, but a reader must
+not have to discover it.
+
+`cg10` warned at 11.90% in **both** air and filled, identically, so it cancels
+in the pair ratio. Excluding it leaves the verdict unchanged.
+
+**Fig 7's replacement is now licensed but NOT written.** The framing is
+Carl's decision per `CLAUDE.md`.
+
+---
+
+## 5. QUEUED
+
+- **3c. Fig 5 floor propagation.** Still blocked: needs the stage-4
+  sensitivity matrix, which does not exist. Perturb each lead field by the
+  measured per-site noise, recompute column correlations N times, report each
+  correlation's uncertainty. `r = 0.95 ± 0.01` and `r = 0.95 ± 0.15` are
+  different claims.
+- **Paired noise floor.** Registered, deliberately not acted on. The cavity
+  test compares filled against air *at the same electrode on the same mesh*,
+  so contact realisation is identical in both halves and cancels to first
+  order. The true floor for a paired dB shift is **smaller** than 0.27 dB,
+  making the criterion conservative. Measure it (solve one electrode twice
+  identically, or air against air) in a session where **no verdict is waiting
+  on it** — lowering a floor while a hypothesis is live is the prohibited
+  ordering.
+- **Stage 3 config** unchanged: 24 positions (`throat_scm` still `held`, no
+  coordinate, consumers skip it), both anisotropy conditions, invariants 1
+  and 2 every solve, 3 and 4 first and last. Expect CV escalation to fire
+  often; recalibrate from the first 10 solves and record as calibration 2
+  **alongside** the first, not overwriting it.
+
+---
+
+## 6. TWO DECISIONS WAITING ON CARL
+
+See `paper/SCULPTOR_REVIEW.md`.
+
+1. **The figures workspace is held** because it modified `.gitignore`, outside
+   its declared ownership. The change itself is sensible (it stops MOCK
+   artifacts being tracked as real). One-line approval merges it.
+2. **This repo has no git remote.** No `gh pr` path exists for held work, and
+   nothing here is backed up off this machine. Creating and pushing a
+   repository is outward-facing, so it was not done unilaterally.
+
+Also flagged: `figures/mock_data.py` carries a synthetic placeholder
+coordinate for `throat_scm`, the one electrode held blank pending Carl's own
+neck measurement. Contained to mock data and clearly labelled, but it is the
+only place in the repo where a number stands in for that measurement.
+
+---
+
+## 7. STANDING
+
+Adversarial pass at every stage boundary. Pass #3 ran this session on the
+floor measurement and hit twice: false precision in my own `0.272` (fixed with
+a bootstrap CI), and the paired-cancellation issue above. Tag claims
+`measured|derived|asserted` and attack `asserted` first.
+
+Nothing in Discussion / Introduction / Abstract may be written. Those framing
+decisions are Carl's.
