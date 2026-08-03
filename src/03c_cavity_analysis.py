@@ -43,7 +43,11 @@ import config  # noqa: E402
 ELECS = ["hyoid", "buccal", "submental_lat", "midjaw", "cg10", "pre_tragus",
          "mastoid", "above_ear"]
 CAVITY = (31, 97)
-NOISE_FLOOR_DB = 0.43
+# The floor is a MEASURED quantity, not a constant. It was first measured with
+# a 15 mm electrode while production runs 10 mm, so it is being re-measured.
+# Until that lands this analysis refuses to run -- see the ordering guard.
+REGISTERED_FLOOR_DB = 0.43           # what criterion (b) was registered against
+FLOOR_FILE = "electrode_meshing_floor.txt"   # written by the 10 mm re-run
 
 
 def medians(res_dir: Path):
@@ -69,6 +73,23 @@ def medians(res_dir: Path):
     return out
 
 
+def read_measured_floor():
+    """Corrected floor, or None. Ordering guard: the cavity verdict must not be
+    computed before the floor it is judged against has been measured and
+    committed."""
+    f = config.RESULTS / FLOOR_FILE
+    if not f.exists():
+        return None
+    for line in f.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            try:
+                return float(line.split()[0])
+            except ValueError:
+                continue
+    return None
+
+
 def main() -> int:
     from scipy.stats import spearmanr
     from scipy.spatial import cKDTree
@@ -84,6 +105,14 @@ def main() -> int:
            for r in csv.DictReader(
                (config.RESULTS / "02_electrode_positions.csv").open())
            if r.get("verified") != "held" and r["R"] != ""}
+
+    if read_measured_floor() is None:
+        print("ORDERING GUARD: the 10 mm electrode-meshing floor has not been\n"
+              "measured and committed yet. The cavity verdict is judged against\n"
+              "that floor, so measuring it afterwards would let the threshold\n"
+              f"follow the result. Write {config.RESULTS / FLOOR_FILE} first.\n",
+              file=sys.stderr)
+        return 2
 
     rows = []
     for e in ELECS:
@@ -115,16 +144,37 @@ def main() -> int:
 
     rho, p = spearmanr([r["dist"] for r in rows], [r["absmed"] for r in rows])
     max_res = max(abs(r["residual"]) for r in rows)
-    a_ok, b_ok = rho < 0, max_res > NOISE_FLOOR_DB
+    a_ok = rho < 0
 
     print(f"\n(a) Spearman rho(distance, median|dB|) = {rho:+.3f}  p = {p:.3f}"
           f"   -> {'PASS' if a_ok else 'FAIL'}")
-    print(f"(b) max |residual| = {max_res:.3f} dB  vs floor "
-          f"{NOISE_FLOOR_DB}   -> {'PASS' if b_ok else 'FAIL'}")
+    print(f"(b) max |residual| = {max_res:.4f} dB")
     print(f"    (max |raw shift| was {max(abs(r['signed']) for r in rows):.3f} dB"
           f" -- NOT the test)")
 
-    print("\nVERDICT:", "SURVIVES" if (a_ok and b_ok) else "FALSIFIED")
+    # THE FLIP POINT, not a binary. Criterion (b) is "residual exceeds the
+    # electrode-meshing floor", so the residual IS the floor value at which
+    # the verdict changes. Reporting it locates the result on the axis and
+    # removes the goalpost: the floor measurement then places the result
+    # rather than deciding it.
+    print(f"\n    FLIP POINT: criterion (b) passes for any floor below "
+          f"{max_res:.4f} dB\n                and fails for any floor above it.")
+
+    measured = read_measured_floor()
+    verdicts = [("registered 0.43 dB (15 mm electrode)", REGISTERED_FLOOR_DB)]
+    if measured is not None:
+        verdicts.append((f"measured {measured:.4f} dB (10 mm, production)",
+                         measured))
+    print(f"\n    {'floor':<40}{'(b)':>6}   {'overall':>9}")
+    for lbl, fl in verdicts:
+        b = max_res > fl
+        print(f"    {lbl:<40}{'PASS' if b else 'FAIL':>6}   "
+              f"{'SURVIVES' if (a_ok and b) else 'FALSIFIED':>9}")
+
+    b_ok = max_res > (measured if measured is not None else REGISTERED_FLOOR_DB)
+    print("\nVERDICT:", "SURVIVES" if (a_ok and b_ok) else "FALSIFIED",
+          f"(against the {'measured' if measured is not None else 'registered'}"
+          f" floor)")
     if not (a_ok and b_ok):
         print("\nThis is a STRONG NEGATIVE, not a null. Complete cavity filling")
         print("is the most extreme configuration change physically available,")

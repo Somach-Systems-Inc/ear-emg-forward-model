@@ -8,3 +8,60 @@
 [ simnibs 4.6.0 - 2026-08-02 21:58:36,624 - 30868 ]INFO: Began to run tDCS simulation
 [ simnibs 4.6.0 - 2026-08-02 21:58:36,624 - 30868 ]INFO: Channels: [1, 2]
 [ simnibs 4.6.0 - 2026-08-02 21:58:36,624 - 30868 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-02 21:59:12,908 - 30868 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(38.72), np.float64(75.56), np.float64(-78.36)]
+pos_ydir: []
+dimensions: [10, 10]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 21:59:19,975 - 30868 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-71.65), np.float64(7.94), np.float64(-33.44)]
+pos_ydir: []
+dimensions: [10, 10]
+thickness:2
+channelnr: 2
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 22:00:08,463 - 30868 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-02 22:00:12,191 - 30868 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-02 22:00:12,329 - 30868 ]INFO: Assembling FEM Matrix
+[ simnibs 4.6.0 - 2026-08-02 22:00:24,594 - 30868 ]INFO: 12.26 s to assemble FEM matrix
+[ simnibs 4.6.0 - 2026-08-02 22:00:24,623 - 30868 ]DEBUG: Solving FEM System
+[ simnibs 4.6.0 - 2026-08-02 22:00:24,623 - 30868 ]INFO: Using solver options: hypre
+[ simnibs 4.6.0 - 2026-08-02 22:00:29,065 - 30868 ]INFO: Time to set up KSP:   3.8166 s
+[ simnibs 4.6.0 - 2026-08-02 22:00:48,759 - 30868 ]INFO: Time to solve:  19.6529 s
+[ simnibs 4.6.0 - 2026-08-02 22:00:50,821 - 30868 ]INFO: Estimated current calibration error: 3.3%
+[ simnibs 4.6.0 - 2026-08-02 22:01:00,554 - 30868 ]INFO: Creating visualizations
+[ simnibs 4.6.0 - 2026-08-02 22:01:06,562 - 30868 ]SUMMARY: 
+mida_headneck_TDCS_1
+====================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |1.54e-01 V/m |1.07e-01 V/m |8.17e-02 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |5.52e+02 mm³ |6.16e+03 mm³ |
+
+[ simnibs 4.6.0 - 2026-08-02 22:01:06,704 - 30868 ]INFO: Finished Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 22:01:06,704 - 30868 ]INFO: Result Files:
+/Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__buccal/mida_headneck_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 22:01:06,783 - 30868 ]INFO: =====================================
+[ simnibs 4.6.0 - 2026-08-02 22:01:06,783 - 30868 ]INFO: SimNIBS finished running simulations
+[ simnibs 4.6.0 - 2026-08-02 22:01:06,783 - 30868 ]INFO: Simulation Result Meshes:
+[ simnibs 4.6.0 - 2026-08-02 22:01:06,783 - 30868 ]INFO: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__buccal/mida_headneck_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 22:01:06,783 - 30868 ]INFO: =====================================
