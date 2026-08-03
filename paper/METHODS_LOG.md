@@ -1770,3 +1770,90 @@ is a diagnostic rather than a rebuild.
 
 **One solve against a 40-minute remesh was the right trade** and it paid for
 itself immediately. Run the cheap discriminator before the expensive repair.
+
+---
+
+## 2026-08-03 — CONFIRMED: the extended mesh does not conserve charge. Boundary disposition settled.
+
+### (c) Invariant 2 never ran
+
+`03a_boundary_run.py` contains **zero references to `solve_invariants`**.
+Neither invariant 1 nor invariant 2 executed on any extended-mesh solve. The
+calibration line was the only check standing between a broken mesh and
+"extended mesh becomes PRIMARY for all published results".
+
+**Invariant 2 is precisely the test that would have caught this**, and it was
+written, and it was not wired in. That is the same defect as the unwired
+calibration guard, found the same day, in the same script.
+
+### (a) The measurement
+
+Both electrodes sit above the truncation plane (`hyoid` S = −108.2,
+`earlobe_contra` S = −33.4). Charge conservation therefore requires **exactly
+zero** net vertical current through any horizontal plane below both of them.
+
+| plane S (mm) | net downward current | as % of 1 mA injected | region |
+|---|---|---|---|
+| −60.0 | 1.6106 mA | 161.1% | between electrodes |
+| −90.0 | 1.5974 mA | 159.7% | between electrodes |
+| −112.0 | 1.5937 mA | 159.4% | between electrodes |
+| **−130.0** | **1.6406 mA** | **164.1%** | **below both** |
+| **−150.0** | **1.4809 mA** | **148.1%** | **below both** |
+| **−170.0** | **1.3653 mA** | **136.5%** | **below both** |
+| **−182.0** | **1.0698 mA** | **107.0%** | **below both** |
+
+**Two violations, not one.** Planes below both electrodes should carry 0 mA
+and carry 1.07–1.64. Planes *between* the electrodes should carry exactly the
+injected 1.00 mA and carry 1.59–1.61.
+
+**The solve does not conserve charge anywhere.** *(measured)*
+
+### What this does and does not identify
+
+The leakage hypothesis is **supported**: current flows downward through the
+slab and does not come back. It explains every observation, including the two
+that killed the element-size story — the error scaling with slab conductivity
+(a better conductor leaks more) and its independence from electrode position
+(the exit is at the bottom regardless of where you inject).
+
+**But it is not cleanly separable from simple non-convergence**, and that
+distinction is not resolved here. A field from a non-converged iterative solve
+violates conservation everywhere, which would produce the same table. One
+detail leans toward a real geometric leak rather than pure numerical noise:
+the flux **decreases monotonically with depth** (1.64 → 1.48 → 1.37 → 1.07),
+which is what current exiting through the slab's *lateral* surface as it
+descends would look like, rather than the flat profile a single bottom-face
+leak would give. That is suggestive, not conclusive, and it is tagged
+`derived` rather than `measured`.
+
+**Either reading has the same consequence: every extended-mesh solve is
+invalid, and no number from one may be used.**
+
+### STOPPING RULE INVOKED
+
+Two hypotheses were allowed. Both are spent:
+
+1. **element-size jump at the interface** — FALSIFIED by the `above_ear`
+   probe (identical 100.49% at 130 mm and at 8 mm)
+2. **non-insulating inferior boundary / charge leak** — CONFIRMED as a
+   conservation violation, mechanism not fully separated from non-convergence
+
+**Stopping, as pre-committed.** No further attempt to repair the extended
+mesh. Continuing would be disproportionate: an honest unquantified limitation
+is publishable, and blocking the paper on a mesh bug is not.
+
+**DISPOSITION: the truncated mesh `mida_headneck.msh` is PRIMARY for every
+published result.** It is the only mesh producing clean calibration, and its
+solves are the ones every existing result already rests on.
+
+The pre-committed 1.0 dB rule is **not applied, not revised, and not
+quietly dropped**. It required a trustworthy shift measurement on both meshes,
+and no trustworthy extended-mesh solve exists. The rule stands unexecuted, and
+that is recorded rather than hidden.
+
+### Wired in so it cannot recur
+
+`solve_invariants.check_solve_plateau` (invariants 1 and 2) is now called by
+`03a_boundary_run.py` after every solve, exactly as `03d` already did. A solve
+that violates conservation now fails loudly instead of printing a mesh
+decision.
