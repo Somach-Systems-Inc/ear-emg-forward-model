@@ -461,5 +461,25 @@ def check_solve_plateau(mesh_path, elec_centre, sigma_by_tag,
         print(f"    plateau r={pl['radii'][0]:.0f}-{pl['radii'][-1]:.0f} mm, "
               f"{len(pl['radii'])} radii, mean {pl['mean']:+.4f}, "
               f"CV {pl['cv']*100:.2f}%")
+    # INVARIANT 2, whole-domain charge conservation. It lives here and not
+    # only in check_solve() because check_solve_plateau() is what production
+    # actually calls, and for a long time that meant invariant 2 ran NOWHERE.
+    # It is the test that would have caught the neck-extended mesh leaking
+    # 1.07 mA of a 1 mA injection straight out of its inferior surface, and it
+    # was sitting in a function nothing invoked.
+    cog = m.nodes.node_coord.mean(0)
+    big = float(np.percentile(
+        np.linalg.norm(m.nodes.node_coord - cog, axis=1), 99)) * 1.05
+    net, _ = enclosed_current(m, cog, big, sigma_by_tag)
+    frac = net / injected_A
+    if verbose:
+        print(f"    outer shell r={big:.0f} mm  net {net:+.3e} A "
+              f"({frac:+.4f} x injected)")
+    if abs(frac) > BOUNDARY_NET_TOL:
+        raise RuntimeError(
+            f"INVARIANT 2 FAILED: net current through a shell enclosing the "
+            f"whole domain is {frac:+.4f} x injected, should be 0. Current is "
+            f"entering or leaving through the outer boundary, so the solve "
+            f"does not conserve charge and no value from it is usable.")
     return dict(vals=vals, exterior=exts, plateau=pl, cv=pl["cv"],
-                mean_ratio=pl["mean"])
+                mean_ratio=pl["mean"], outer_net_frac=frac)

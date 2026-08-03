@@ -107,6 +107,8 @@ def conductivity_sets(rows):
 
 def solve(mesh: Path, out: Path, pos, sigmas, label, inject_from, inject_to):
     from simnibs import sim_struct, run_simnibs
+    import preflight
+    preflight.check_conductivity_range(sigmas.values(), label=label)
     out.parent.mkdir(parents=True, exist_ok=True)
     S = sim_struct.SESSION()
     S.fnamehead = str(mesh)
@@ -129,6 +131,20 @@ def solve(mesh: Path, out: Path, pos, sigmas, label, inject_from, inject_to):
     print(f"  solving {label} ...", flush=True)
     run_simnibs(S)
     hits = sorted(out.glob("*_scalar.msh")) or sorted(out.glob("*.msh"))
+    if not hits:
+        raise RuntimeError(f"no result mesh in {out}")
+    # Guards. This script solved without ANY of them until the guard-coverage
+    # test enumerated it: no calibration read, no invariants, no sigma gate.
+    import preflight
+    import solve_invariants as SI
+    cal = preflight.read_calibration(out)
+    print(f"    calibration: "
+          f"{'clean' if cal is None else f'WARNED {cal:.2f}%'}", flush=True)
+    inv = SI.check_solve_plateau(hits[0], pos[inject_from],
+                                 SI.with_electrode_tags(sigmas), verbose=False)
+    print(f"    invariant 1: mean {inv['mean_ratio']:.4f} "
+          f"CV {inv['cv']*100:.2f}%   invariant 2: "
+          f"net {inv['outer_net_frac']:+.4f} x injected", flush=True)
     return hits[0]
 
 

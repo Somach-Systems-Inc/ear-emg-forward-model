@@ -1912,3 +1912,56 @@ not hold everywhere it was applied.
 
 `src/03a3_leak_probe.py` now runs the control alongside the test rather than
 asserting the expectation.
+
+---
+
+## 2026-08-03 — GUARD COVERAGE: enumerated, and it found two more. Plus a correction to my own claim.
+
+"Written but never wired" had happened three times. Rather than fix the third
+and move on, it is now enumerated the way `.gitignore` was replaced by an
+allowlist: `src/test_guard_coverage.py` parses each script's **AST call
+graph** and fails if a solving script does not invoke its guards. Grep was
+rejected deliberately, since a match in a comment, a docstring or an unused
+import looks like coverage and provides none.
+
+**It immediately found two more, and one of them was mine.**
+
+| script | missing when the test first ran |
+|---|---|
+| `03b_conductivity_bound.py` | **all three**: calibration, invariants, sigma-span gate |
+| `03d_cavity_solves.py` | calibration read, sigma-span gate |
+
+`03d` is the cavity run. It never read a calibration line, **which is exactly
+how `cg10`'s 11.90% warning passed unremarked through all 16 solves** and was
+only caught later by `03c` at analysis time.
+
+### CORRECTION: I claimed to have wired in "invariants 1 and 2" and had not
+
+The earlier commit says invariants 1 and 2 were wired into `03a`. **Only
+invariant 1 was.** `check_solve_plateau()` — the function production actually
+calls — raised `INVARIANT 1 FAILED` and nothing else. Invariant 2 lived in
+`check_solve()`, which **nothing in the repository calls**.
+
+So the count was wrong in the worst possible direction: **invariant 2, the
+whole-domain charge-conservation test, was unreachable from production
+code at the exact moment a leaking mesh was going undetected.** The test
+designed to catch that failure could not have caught it.
+
+Fixed at the source rather than at the call site: `check_solve_plateau()` now
+performs the outer-shell test and raises `INVARIANT 2 FAILED` itself, so every
+existing caller gains it without needing to remember.
+
+### Why the enumeration is the actual fix
+
+Each of the five instances was found by accident — a warning noticed while
+reading output, a grep run for another reason, a claim checked while writing
+it up. None was found by anything designed to find it. A denylist of
+remembered mistakes cannot cover the next one; an enumeration of what
+production *must* call can.
+
+`test_guard_coverage.py` carries an `EXEMPT` map with a written reason per
+entry (the three sphere-validation harnesses, which are checked against an
+analytic oracle instead). The exemption is deliberately verbose so that adding
+one feels like a decision rather than a shortcut.
+
+**Runs before any production run, always.**

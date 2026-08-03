@@ -75,6 +75,8 @@ ctree=cKDTree(cav)
 DIST={e:float(ctree.query(pos[e])[0]) for e in ELECS}
 
 def solve(sig,e,tag):
+    import preflight
+    preflight.check_conductivity_range(sig.values(), label=f"{tag}__{e}")
     out=ROOT/f"results/cavity/{tag}__{e}"; out.parent.mkdir(parents=True,exist_ok=True)
     S=sim_struct.SESSION(); S.fnamehead=str(ROOT/"data/mida_headneck.msh")
     S.pathfem=str(out); S.fields="E"; S.open_in_gmsh=False; S.map_to_surf=False
@@ -84,6 +86,12 @@ def solve(sig,e,tag):
         el=t.add_electrode(); el.channelnr=j+1; el.centre=list(pos[nm])
         el.shape="ellipse"; el.dimensions=[10,10]; el.thickness=2
     run_simnibs(S)
+    # Read the solver's own calibration line. Not doing this is how cg10's
+    # 11.90% warning went unremarked through the entire cavity run.
+    import preflight
+    cal=preflight.read_calibration(out)
+    if cal is not None:
+        print(f"  {tag:<7} @ {e:<14} CALIBRATION WARNED {cal:.2f}%", flush=True)
     r=sorted(out.glob("*_scalar.msh"))[0]
     inv=SI.check_solve_plateau(r,pos[e],SI.with_electrode_tags(sig),verbose=False)
     st=f"plateau {inv['plateau']['radii'][0]:.0f}-{inv['plateau']['radii'][-1]:.0f}mm"
