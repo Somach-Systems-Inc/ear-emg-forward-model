@@ -1579,3 +1579,100 @@ whole head.
 
 **Check what a file contains before publishing it, not after.** A name is not
 a description, and 22.9 MB should have prompted the question on its own.
+
+---
+
+## 2026-08-03 — THE MIDA LICENCE, read in full from the primary document
+
+Read from *Terms and Conditions of User License MIDA Model v1.0*, the IT'IS
+PDF at
+`itis.swiss/assets/Downloads/VirtualPopulation/License_Agreements/LicenseAgreementMIDA.pdf`,
+not from a summary. **The MIDA download itself contains no licence file** —
+`MIDA_v1.txt` is only the label lookup table — so the terms had to come from
+IT'IS directly.
+
+### The question asked: does it distinguish the voxel model from derived surfaces?
+
+**No, and it forecloses the distinction explicitly.**
+
+> **1. Software.** "The MIDA Model is distributed as a voxelized model in MAT,
+> RAW, NII, and TXT file formats **and as a CAD model in STL file format**
+> (the 'Model Data')"
+
+Surfaces are Model Data by definition. And the redistribution clause reaches
+past the distributed forms to anything derived from them:
+
+> **2.3.2** "The Model Data **or works derived from the Model Data** must not
+> be distributed or redistributed **in the original form or in any modified or
+> updated form**."
+
+That is about as broad as such a clause gets: derived works, any modified
+form. **The `.geo` files were unambiguously covered.** There was never a
+reading under which a triangulated surface exported from the meshed model sat
+outside this, and the earlier framing of them as merely "MIDA-derived" was too
+soft. They are squarely within 2.3.2.
+
+### Two clauses that were not on anyone's radar
+
+**2.3.3 constrains every figure in the paper.**
+
+> "Any images based on the Model Data may be published **only if the face is
+> disguised so as to render the individual unrecognizable** in any and all
+> communications of any kind, including but not limited to reports, papers,
+> and oral or poster presentations, in which images are published."
+
+`figures/02_electrode_qa.png` is committed and renders the skin surface as a
+point cloud in lateral view, where **the facial profile — nose, lips, chin —
+is plainly legible**. Planned **Fig 1** ("head model with muscle compartments
+highlighted") is the same exposure or worse. This is a publication blocker on
+the figures, not on the code, and it is cheap to satisfy: crop below the
+orbit, mask the anterior face, or render only the posterior aspect. **It must
+be handled before any figure ships**, including in a preprint.
+
+**5. Termination is strongly worded, and this bears on the disclosure decision.**
+
+> "This Agreement terminates **with immediate effect** if the Licensee and/or
+> any User is in breach of the terms of this Agreement, in particular clause 2
+> above. Upon termination, Licensee shall **return the Installer and Model Data
+> to IT'IS Foundation and confirm in writing that all copies** of the Installer
+> and Model Data on any of its installations **have been deleted**."
+
+With **4.2**: "The Licensee and/or User shall be **fully liable** to IT'IS
+Foundation for, and agrees to hold IT'IS Foundation harmless from, any damage
+caused by any breach of this Agreement, **in particular by any breach of
+clause 2.3**."
+
+### Obligations that are already satisfied, or now recorded
+
+- **2.3.1** — derivative works must carry notice that they are modified or
+  derived from the MIDA Model. The meshes qualify. `REPRODUCTION.md` now says
+  so, and the paper's Methods must too.
+- **2.3.8** — publications must credit **FDA, Center for Devices and
+  Radiological Health, and IT'IS Foundation** as creators of the Model Data
+  and cite Iacono et al., PLoS ONE, March 2015. Already in
+  `paper/references.bib` (`iacono2015mida`, `itis2015midamodel`); the explicit
+  FDA/CDRH creator credit still needs to appear in Methods.
+- **2.3.5** — no military use. Not applicable.
+- **2.3.9** — no title to IP is conveyed.
+- **2.3.10** — IT'IS may withdraw use entirely if the source individual
+  withdraws consent. A standing risk worth knowing for a paper built on one
+  anatomy.
+
+### Consequence for the disclosure decision
+
+The instruction recorded *"no proactive disclosure to IT'IS, given nil
+measured dissemination and same-day remediation. **Revisit if the licence
+terms in item 2 are strongly worded.**"
+
+**They are strongly worded.** Clause 5 makes breach terminate the licence
+automatically and with immediate effect, and obliges deletion of all copies;
+4.2 attaches full liability and singles out clause 2.3. That is a materially
+different setting from a permissive academic licence, and it meets the
+revisit condition as written.
+
+**Not decided here, and deliberately not acted on.** This is a legal judgement
+with consequences for a company, and the standing rule is to draft and stop
+rather than contact anyone. The facts a decision needs are all in the incident
+entry above: ~11.5 hours public, 109 files, every traffic counter zero,
+remediated the same day. Recorded for Carl, who is the only person who should
+weigh a self-report against clause 5's automatic-termination language.
