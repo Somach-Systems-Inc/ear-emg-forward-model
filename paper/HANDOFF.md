@@ -7,6 +7,39 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
+## 0. 🛑 THE NOVELTY CLAIM IS FALSIFIED — read before writing anything
+
+**HArtMuT** (Harmening, Klug, Gramann & Miklody 2022, *J. Neural Eng.*
+19(6):066041, doi:10.1088/1741-2552/aca8ce) already published ~3,900 muscle
+dipole/tripole sources built from **MIDA's own** muscle segmentation, fibre
+directions by **PCA on neighbouring grid points** (this paper's proposed
+method), as FEM leadfields on the New York Head. It asserts the same gap
+verbatim before closing it. **Verified by direct fetch**, not taken from the
+agent.
+
+**What survives:** muscle as both source **and its own anisotropic tissue**,
+in MIDA's native geometry, for an ear-electrode coupling question HArtMuT has
+no electrodes for. HArtMuT's sources radiate through **homogeneous scalp** and
+its authors say so in print. Yarici et al. 2023 is undamaged.
+
+**Rewriting the novelty framing is Carl's**, not an agent's. The PCA
+fibre-axis method must cite HArtMuT as precedent rather than claim it.
+Full analysis in `paper/GAP_CHECK.md` (merged).
+
+**One UNVERIFIED item gates a further claim.** HArtMuT sampled MIDA's pooled
+`Muscle (General)` label and calls it "lower neck"; our inventory shows it
+holds the suprahyoids. The public atlas is anonymised to four classes, so the
+paper cannot settle it. **Load `HArtMuT_NYhead_small.mat` and read the labels
+before writing any suprahyoid novelty claim.** Ten minutes.
+
+**Useful by-catch:** Ernie Extended (Van Hoornweder et al. 2024, *Imaging
+Neuroscience* 2, doi:10.1162/imag_a_00379, verified via Crossref, from
+Thielscher's SimNIBS group) is neck-extended and includes muscle as a tissue.
+Likely a cheaper route out of the broken neck-extension mesh than debugging
+the extruded slab.
+
+---
+
 ## 0. RUNNING RIGHT NOW — stage 3
 
 `src/03_leadfields.py --conditions iso`, **22 solves**, background, started
