@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import re
 import sys
 from pathlib import Path
 
@@ -88,6 +89,32 @@ def calls_in(tree):
     return out
 
 
+def pipeline_scripts_exist():
+    """The sibling failure: DOCUMENTED BUT NEVER WRITTEN.
+
+    "Written but never wired" had a twin nobody was looking for.
+    `03_leadfields.py` and `04_analyze.py` sit in CLAUDE.md's pipeline table,
+    are referenced as the stage-3 and stage-4 entry points, and **do not exist
+    on disk**. The table read as a description of the repository and was
+    actually a description of an intention.
+
+    Same class as an unwired guard, same fix: enumerate and assert.
+    """
+    md = ROOT / "CLAUDE.md"
+    if not md.exists():
+        return [f"{md} missing; cannot check the pipeline table"]
+    missing = []
+    for line in md.read_text().splitlines():
+        # pipeline table rows look like: | 3 | `03_leadfields.py` | ... |
+        if not line.strip().startswith("|"):
+            continue
+        for tok in re.findall(r"`([A-Za-z0-9_]+\.py)`", line):
+            if not (SRC / tok).exists():
+                missing.append(f"CLAUDE.md pipeline table references "
+                               f"src/{tok}, which does not exist")
+    return missing
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="test_guard_coverage.py")
     ap.add_argument("--strict", action="store_true",
@@ -119,6 +146,8 @@ def main(argv=None) -> int:
         if missing:
             failures.append((p.name, missing))
 
+    pipeline_missing = pipeline_scripts_exist()
+
     print("GUARD COVERAGE")
     print("=" * 68)
     print(f"  solving scripts checked : {len(checked)}")
@@ -129,22 +158,40 @@ def main(argv=None) -> int:
         for n, why in exempted:
             print(f"      {n}\n          {why}")
 
-    print()
-    if failures:
-        print(f"  FAILED — {len(failures)} script(s) solve without their guards:")
-        for name, missing in failures:
-            print(f"\n    {name}")
-            for m in missing:
-                print(f"      MISSING: {m}")
+    if pipeline_missing:
         print()
-        print("  A guard that is written but not invoked is not a guard. Wire")
-        print("  it in, or add the script to EXEMPT with a reason that would")
-        print("  survive a reviewer reading it.")
+        print(f"  PIPELINE TABLE — {len(pipeline_missing)} referenced "
+              f"script(s) do not exist:")
+        for m in pipeline_missing:
+            print(f"      {m}")
+        print("      A table that documents a script into existence is the")
+        print("      same failure as a guard that is written but never")
+        print("      called: it reads as done and is not.")
+
+    print()
+    if failures or pipeline_missing:
+        print("  FAILED")
+        if failures:
+            print(f"    {len(failures)} script(s) solve without their guards:")
+            for name, missing in failures:
+                print(f"\n      {name}")
+                for m in missing:
+                    print(f"        MISSING: {m}")
+            print()
+            print("    A guard that is written but not invoked is not a guard.")
+            print("    Wire it in, or add the script to EXEMPT with a reason")
+            print("    that would survive a reviewer reading it.")
+        if pipeline_missing:
+            print(f"    {len(pipeline_missing)} pipeline-table script(s) do "
+                  f"not exist (listed above).")
+            print("    Write them, or correct the table. Do not leave a table")
+            print("    describing an intention as though it described the repo.")
         print("=" * 68)
         return 1 if a.strict else 0
 
     print("  PASSED — every solving script invokes calibration reading, the")
-    print("  invariants, and the conductivity-span gate.")
+    print("  invariants, and the conductivity-span gate, and every script the")
+    print("  CLAUDE.md pipeline table references exists on disk.")
     print("=" * 68)
     return 0
 
