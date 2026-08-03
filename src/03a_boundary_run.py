@@ -201,6 +201,23 @@ def main(argv=None) -> int:
     print(f"injecting {config.INJECTION_CURRENT_A*1e3:.0f} mA between "
           f"{INJECT_FROM} and {INJECT_TO}\n")
 
+    # SimNIBS refuses to write into a directory that already holds a
+    # simnibs_simulation*.mat, but only AFTER loading the mesh. Check first, and
+    # say what to do about it, rather than surfacing an OSError minutes in.
+    # Do NOT auto-delete: a stale directory may hold a real earlier result.
+    stale = [d for d in (a.workdir / "truncated",
+                         *(a.workdir / c for c in SLAB_CONDUCTIVITIES))
+             if list(d.glob("simnibs_simulation*.mat"))]
+    if stale:
+        print("ERROR: these output directories already hold simulation "
+              "results:", file=sys.stderr)
+        for d in stale:
+            print(f"  {d}", file=sys.stderr)
+        print("\nMove them aside (do not delete -- they may hold a real "
+              "earlier result)\nand re-run, or pass --workdir with a fresh "
+              "path.", file=sys.stderr)
+        return 1
+
     sig = load_table1()
     print(f"conductivities: {len(sig)} tags from Table 1\n")
 
