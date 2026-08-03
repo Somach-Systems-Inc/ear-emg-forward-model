@@ -1,0 +1,14 @@
+# Cerelog ESP-EEG bench suite.
+#
+# Deliberately small. Everything here is either numerics or the serial link;
+# there is no framework, no config system, and no plotting wrapper.
+#
+# Verified against: numpy 2.5.1, scipy 1.18.0, matplotlib 3.11.1, pyserial 3.5
+# on CPython 3.12.
+
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+
+# Hardware mode only. Every analysis path runs without it via --synthetic.
+pyserial>=3.5
