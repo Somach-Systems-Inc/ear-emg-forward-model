@@ -8,3 +8,23 @@
 [ simnibs 4.6.0 - 2026-08-03 10:27:14,133 - 80710 ]INFO: Began to run tDCS simulation
 [ simnibs 4.6.0 - 2026-08-03 10:27:14,133 - 80710 ]INFO: Channels: [1, 2]
 [ simnibs 4.6.0 - 2026-08-03 10:27:14,133 - 80710 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-03 10:27:54,690 - 80710 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(78.76), np.float64(7.24), np.float64(13.61)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-03 10:28:01,898 - 80710 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-71.65), np.float64(7.94), np.float64(-33.44)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 2
+number of holes: 0
+

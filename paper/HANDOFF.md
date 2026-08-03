@@ -7,6 +7,37 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
+## 0. RUNNING RIGHT NOW — stage 3
+
+`src/03_leadfields.py --conditions iso`, **22 solves**, background, started
+2026-08-03. ~4 min each, so ~90 min. Writes `results/03_leadfields.csv`
+**incrementally, one row per solve**, and is **resumable**: re-running skips
+completed solves and clears partial ones. If it died, just run it again.
+
+**Do NOT run anything memory-hungry beside it.** Free memory was 1.98 GB with
+it running; a solve peaks near 12 GB.
+
+**The anisotropic condition RAISES `NotImplementedError` by design.** It needs
+a per-element conductivity tensor built from `orientation.principal_axis()`
+for the `config.FIBRE_MODEL` "pca" compartments, and that is unwritten.
+Falling through with the isotropic map would have produced a plausible, fake
+"anisotropic" column and a Fig 4 comparing a condition against itself.
+**Writing that tensor path is the next real task after stage 3.**
+
+---
+
+## 0a. IT'IS — CLOSED
+
+**Carl sent the self-report on 2026-08-03.** Nothing pending unless they
+reply. Repo is private and verified clean; history purged; old public repo
+deleted. Do not contact anyone further.
+
+**The cavity finding was re-checked and STANDS.** All 16 solves parsed:
+14 clean, 2 warned (`cg10` air and filled, identical 11.90%, inside the
+measured 11–15% benign band), **0 outside**. rho = −0.881, p = 0.004.
+
+---
+
 ## 0. STATE — 2026-08-03, remote is LIVE
 
 **Backed up off-machine at last.** `github.com/Somach-Systems-Inc/ear-emg-forward-model`,
