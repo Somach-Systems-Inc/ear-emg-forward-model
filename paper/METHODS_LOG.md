@@ -428,3 +428,68 @@ That is a Methods term, not a headline result.
 Provenance note: the claim was tagged `asserted` on the first pass and attacked
 first for that reason. It had already been written into OUTLINE as a numbered
 result with a testable prediction attached.
+
+---
+
+## 2026-08-02 — Invariant 1 rebuilt: two wrong diagnoses before the right one
+
+The flux invariant went through two incorrect explanations before the actual
+cause was found. Both are recorded because the second violated a conservation
+law, and that is worth remembering.
+
+**Killed hypothesis 1 — "current escapes a closed shell."** I wrote that buccal
+showed low flux because current spreads laterally through thin cheek and leaves
+the shell. **This violates Gauss's law.** A closed surface enclosing a source
+carries flux equal to that source regardless of how current moves inside it.
+Lateral spreading cannot reduce enclosed flux. Carl caught it.
+
+**Killed hypothesis 2 — "triangle elements corrupt the centroid."** I predicted
+that `find_closest_element` returning surface triangles would put a 0 in the
+4th node slot and wrap the index. Tested: the 4th slot is never 0, and
+triangles are only 6-12% of hits. Falsified by measurement.
+
+**Actual cause, part 1 — masking.** The inside test was
+`distance-to-nearest-element-centroid <= 2h`, with h ≈ 0.94 mm. A point can sit
+legitimately inside an irregular tetrahedron and still lie further than 1.87 mm
+from its centroid, so the test discarded points genuinely in tissue — 41-52% of
+them, at a rate that varied by electrode (buccal 41-42%, hyoid 41-52%). **That
+is what produced the "~19% quadrature bias" I had been reporting as an accepted
+property.** It was not quadrature; it was a broken classifier.
+
+**Actual cause, part 2 — the invariant's premise was wrong.** Replacing the
+sampled shell with an exact tet patch gave flux ≈ 0, not ≈ 1. The reason is
+physical: **SimNIBS injects current as a Dirichlet condition on the electrode's
+exterior surface, not as a volumetric source.** A patch around the electrode
+therefore contains no source. Current enters through the mesh's outer face and
+leaves through the cut, netting zero — measured as +0.968 out through the cut
+against −0.938 in through the exterior.
+
+The quantity that equals the injected current is the flux through the
+**interior cut only**, separated by face multiplicity in the full mesh (2 =
+interior, 1 = mesh exterior).
+
+**Result.** Corrected invariant on the known-good solve: 0.9606, CV 0.49%
+across six radii from 25 to 75 mm. The residual ~4% deficit is *not* absorbed
+silently: it is consistent with first-order error from the piecewise-constant
+per-tetrahedron **E**, which matches the p ≈ 0.98 convergence rate measured
+independently on the sphere. It should shrink on a finer mesh, and that is a
+testable prediction rather than an excuse.
+
+**Plateau criterion**, no absolute band:
+
+| case | plateau | mean | CV | verdict |
+|---|---|---|---|---|
+| known-good 1e-6 | 25-75 mm, 6 radii | 0.9606 | 0.49% | PASS |
+| known-bad 1e-15 | none (diverges to −8.94) | — | — | FAIL |
+| buccal | 45-75 mm, 4 radii | 0.8861 | 1.53% | PASS |
+
+buccal's earlier failure was a false positive of the old test. It needs r ≥ 45
+mm before the patch contains the injection surface, which the plateau
+requirement discovers automatically instead of needing a hand-picked radius per
+electrode.
+
+Open and recorded rather than absorbed: buccal reports exactly zero exterior
+flux at r = 25 and 35 mm, meaning the patch reaches no mesh-exterior face at
+those radii. That is unexplained for an electrode sitting on the skin. It does
+not affect the criterion, which handles it via the plateau, but it is not
+understood.

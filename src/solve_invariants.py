@@ -295,3 +295,171 @@ def needs_escalation(cv, gate=None):
     gate = ENCLOSED_CURRENT_CV_TOL if gate is None else gate
     lo = ENCLOSED_CURRENT_CV_ESCALATE
     return bool(np.isfinite(cv) and lo < cv <= gate)
+
+
+# ----------------------------------------------------------------------
+# Tet-patch flux: exact enclosure, mesh's own faces as the quadrature
+# ----------------------------------------------------------------------
+# SimNIBS adds electrode volumes to the mesh with its own tag ranges, and they
+# ARE part of the conductor -- a surface enclosing the electrode necessarily
+# cuts through them. Values read from
+# simnibs/utils/mesh_element_properties.py, not assumed.
+ELECTRODE_RUBBER_RANGE = (100, 499)    # sigma 29.4 S/m
+SALINE_GEL_RANGE = (500, 899)          # sigma 1.0 S/m
+ELECTRODE_RUBBER_SIGMA = 29.4
+SALINE_GEL_SIGMA = 1.0
+
+
+def with_electrode_tags(sigma_by_tag):
+    """Extend a Table-1 conductivity map with SimNIBS's electrode tags."""
+    out = dict(sigma_by_tag)
+    for t in range(ELECTRODE_RUBBER_RANGE[0], ELECTRODE_RUBBER_RANGE[1] + 1):
+        out.setdefault(t, ELECTRODE_RUBBER_SIGMA)
+    for t in range(SALINE_GEL_RANGE[0], SALINE_GEL_RANGE[1] + 1):
+        out.setdefault(t, SALINE_GEL_SIGMA)
+    return out
+
+
+def patch_flux(m, centre, radius_mm, sigma_by_tag):
+    """Current crossing OUT of the tet patch through its INTERIOR cut, in A.
+
+    THE PREMISE THAT HAD TO BE FIXED. SimNIBS injects current as a Dirichlet
+    condition on the electrode's EXTERIOR surface, not as a volumetric source.
+    A patch around the electrode therefore contains no source at all: current
+    enters through the mesh's outer face and leaves through the cut, and the
+    NET flux is exactly zero. Measured: +0.968 out through the cut, -0.938 in
+    through the exterior, total +0.030.
+
+    So the quantity that equals the injected current is the flux through the
+    interior cut ONLY. Boundary faces are split by their multiplicity in the
+    FULL mesh: 2 means an interior face (part of the cut), 1 means it lies on
+    the mesh exterior (where the current is imposed).
+
+    Enclosure and orientation are exact by construction -- the patch surface
+    closes to 1.2e-16 of its own area -- and there is no inside/outside test.
+
+    Returns (cut_flux_A, exterior_flux_A, n_cut_faces).
+    """
+    centre = np.asarray(centre, dtype=np.float64)
+    nodes = m.nodes.node_coord.astype(np.float64)
+    tets = m.elm.elm_type == 4
+    nl = m.elm.node_number_list[tets][:, :4] - 1
+    tags = m.elm.tag1[tets]
+    E = np.asarray(m.field["E"].value)
+    if E.ndim != 2 or E.shape[1] != 3:
+        raise RuntimeError(f"E must be (n,3), got {E.shape}")
+    E = E[tets]
+
+    FACES = ((0, 1, 2, 3), (0, 1, 3, 2), (0, 2, 3, 1), (1, 2, 3, 0))
+    n_t = len(nl)
+    all_faces = np.sort(np.concatenate(
+        [nl[:, list(f[:3])] for f in FACES]), axis=1)
+    _, inv_all, cnt_all = np.unique(all_faces, axis=0,
+                                    return_inverse=True, return_counts=True)
+
+    sel = np.linalg.norm(nodes[nl].mean(axis=1) - centre, axis=1) <= radius_mm
+    if not sel.any():
+        raise RuntimeError(f"no tetrahedra within {radius_mm} mm of {centre}")
+    idx = np.flatnonzero(sel)
+    own = np.tile(idx, 4)
+    slot = np.concatenate([idx + k * n_t for k in range(4)])
+    tri = np.concatenate([nl[sel][:, list(f[:3])] for f in FACES])
+    opp = np.concatenate([nl[sel][:, f[3]] for f in FACES])
+
+    _, iv, cv = np.unique(np.sort(tri, axis=1), axis=0,
+                          return_inverse=True, return_counts=True)
+    bnd = cv[iv] == 1
+
+    a = nodes[tri[bnd][:, 0]]
+    b = nodes[tri[bnd][:, 1]]
+    c = nodes[tri[bnd][:, 2]]
+    nrm = np.cross(b - a, c - a)
+    two_area = np.linalg.norm(nrm, axis=1)
+    nhat = nrm / np.maximum(two_area, 1e-30)[:, None]
+    nhat[np.einsum("ij,ij->i", nhat, nodes[opp[bnd]] - a) > 0] *= -1.0
+    area_m2 = 0.5 * two_area * 1e-6
+
+    sig = np.array([sigma_by_tag.get(int(t), np.nan) for t in tags[own[bnd]]])
+    if not np.isfinite(sig).all():
+        missing = sorted({int(t) for t, s in zip(tags[own[bnd]], sig)
+                          if not np.isfinite(s)})
+        raise RuntimeError(f"tags on the patch boundary have no conductivity: "
+                           f"{missing}")
+    Jn = sig * np.einsum("ij,ij->i", E[own[bnd]], nhat) * area_m2
+    is_cut = cnt_all[inv_all[slot[bnd]]] == 2
+    return (float(Jn[is_cut].sum()), float(Jn[~is_cut].sum()),
+            int(is_cut.sum()))
+
+
+# ----------------------------------------------------------------------
+# Plateau criterion on the corrected (cut-faces-only) flux
+# ----------------------------------------------------------------------
+PLATEAU_MIN_RADII = 3        # stationary across at least this many radii
+PLATEAU_MIN_SPAN_MM = 20.0   # ...spanning at least this range
+PLATEAU_CV_TOL = 0.03        # CV within the plateau
+
+# NO absolute band. An absolute acceptance window would have to be derived
+# from observed values, which is the circularity the plateau design exists to
+# avoid, and the known-bad case already fails on plateau existence alone.
+RADIUS_SCAN_MM = (25., 35., 45., 55., 65., 75.)
+
+
+def find_plateau(radii, vals, cv_tol=PLATEAU_CV_TOL,
+                 min_n=PLATEAU_MIN_RADII, min_span=PLATEAU_MIN_SPAN_MM):
+    """Longest run of consecutive radii that is stationary. None if none is.
+
+    A patch must be large enough to contain the whole injection surface before
+    the cut flux means anything -- buccal sits on thin cheek and does not
+    stabilise until r >= 45 mm. Requiring a plateau makes that automatic
+    instead of requiring a hand-picked radius per electrode.
+    """
+    r = np.asarray(radii, float)
+    v = np.asarray(vals, float)
+    best = None
+    for i in range(len(r)):
+        for j in range(len(r), i, -1):
+            if j - i < min_n or (r[j - 1] - r[i]) < min_span:
+                continue
+            seg = v[i:j]
+            if not np.all(np.isfinite(seg)) or abs(seg.mean()) < 1e-12:
+                continue
+            cv = float(np.std(seg) / abs(np.mean(seg)))
+            if cv <= cv_tol and (best is None or (j - i) > best[2] - best[1]):
+                best = (cv, i, j)
+        if best is not None and best[1] == i:
+            break
+    if best is None:
+        return None
+    cv, i, j = best
+    return dict(cv=cv, i=i, j=j, radii=list(r[i:j]), vals=list(v[i:j]),
+                mean=float(v[i:j].mean()))
+
+
+def check_solve_plateau(mesh_path, elec_centre, sigma_by_tag,
+                        injected_A=None, radii=RADIUS_SCAN_MM, verbose=True):
+    """Invariant 1, corrected. Scans radii, requires a stationary plateau."""
+    from simnibs import mesh_io
+    injected_A = injected_A or config.INJECTION_CURRENT_A
+    m = mesh_io.read_msh(str(mesh_path))
+    vals, exts = [], []
+    for r in radii:
+        cut, ext, _ = patch_flux(m, elec_centre, float(r), sigma_by_tag)
+        vals.append(cut / injected_A)
+        exts.append(ext / injected_A)
+        if verbose:
+            print(f"    r={r:>4.0f} mm  cut {cut/injected_A:+.4f}  "
+                  f"exterior {ext/injected_A:+.4f}")
+    pl = find_plateau(radii, vals)
+    if pl is None:
+        raise RuntimeError(
+            f"INVARIANT 1 FAILED: no stationary plateau in the cut flux across "
+            f"{list(radii)} mm ({[round(v,3) for v in vals]}). Charge "
+            f"conservation requires the flux through any enclosing cut to be "
+            f"radius-independent once the patch contains the injection "
+            f"surface, so the solve did not converge.")
+    if verbose:
+        print(f"    plateau r={pl['radii'][0]:.0f}-{pl['radii'][-1]:.0f} mm, "
+              f"{len(pl['radii'])} radii, mean {pl['mean']:+.4f}, "
+              f"CV {pl['cv']*100:.2f}%")
+    return dict(vals=vals, exterior=exts, plateau=pl, cv=pl["cv"],
+                mean_ratio=pl["mean"])
