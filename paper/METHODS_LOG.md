@@ -493,3 +493,47 @@ flux at r = 25 and 35 mm, meaning the patch reaches no mesh-exterior face at
 those radii. That is unexplained for an electrode sitting on the skin. It does
 not affect the criterion, which handles it via the plateau, but it is not
 understood.
+
+---
+
+## 2026-08-02 — RETRACTION: the ~4% flux deficit is NOT first-order discretisation
+
+Last commit recorded that the corrected integral's 0.96 reading was "consistent
+with first-order error from the piecewise-constant per-tetrahedron E, matching
+the p ~ 0.98 convergence rate measured independently on the sphere", and called
+it a testable prediction. **Tested. It fails.**
+
+Corrected tet-patch cut flux on all three existing sphere densities:
+
+| density | h_mean | cut flux | plateau CV | deficit |
+|---|---|---|---|---|
+| vcoarse | 2.957 | 0.9406 | 0.69% | **+0.059** |
+| coarse | 2.257 | **1.2481** | 0.53% | **−0.248** |
+| medium | 1.677 | 1.1134 | 0.48% | −0.113 |
+
+The deficit is non-monotone in h and **changes sign**. A first-order
+discretisation error approaches unity monotonically from one side; it does not
+overshoot by 25%. The story is falsified.
+
+Each reading is internally consistent — every plateau CV is under 0.7% — so the
+*consistency* invariant is unaffected and remains valid. What is wrong is the
+explanation of the *level*.
+
+**More likely explanation, and it is not yet tested:** the sphere solves use
+15 mm electrodes, electrode meshing changes with mesh density, and per-electrode
+contact geometry was already measured not to cancel between sites. Level
+variation tracking electrode realisation rather than volume discretisation fits
+every observation, including the electrode-dependent spread on the head mesh
+(hyoid 0.9606 vs buccal 0.8861).
+
+**Consequence for the invariant.** Invariant 1 must be used as a
+radius-consistency test only, never as an absolute measurement of delivered
+current. That is how it is written, so nothing downstream changes — but the
+reason is now measured rather than assumed, and the earlier "~4% is
+discretisation" claim is withdrawn.
+
+**Provenance lesson.** The claim was tagged `derived` — it followed from a
+measured number (0.96) plus reasoning (p ≈ 0.98 elsewhere). The reasoning was
+plausible and the arithmetic fine; the inference was still wrong, because a
+matching exponent from a different measurement is not evidence about this one.
+`derived` is not a safe tier.
