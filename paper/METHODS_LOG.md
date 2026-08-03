@@ -291,3 +291,40 @@ records the downgraded version and the reason.
 
 The two suggestions that stand independently: warn when σ_max/σ_min exceeds
 ~1e8 at setup, and expose the iterative solver's residual and iteration count.
+
+---
+
+## 2026-08-02 — A wrong diagnosis that travelled attached to a right one
+
+Worth recording as a pattern, not just an incident.
+
+The conditioning hypothesis was **correct**: conductivity span near the
+double-precision limit drove the iterative solver to return fields 10–20x too
+large, and 1e-15 → 1e-6 fixed it. That diagnosis was reasoned from the round
+`200.00%` figure and the `Cannot locate subjects m2m folder` message, and it was
+right.
+
+Attached to it was a second inference — that the calibration check itself was
+broken and reported a constant 200.00% on custom meshes. **That was wrong, and
+wrong in the dangerous direction.** On MIDA the check discriminated correctly:
+200.00% on the broken solve, silent on the good one. Acting on the inference
+would have meant suppressing or ignoring a signal that was working.
+
+The reason this is worth a log entry: the wrong advice arrived **bundled with a
+correct hypothesis, from a source that had just been right about something
+harder**. That is the configuration most likely to pass unchallenged, because
+the surrounding reasoning is sound and the conclusion feels earned. It only
+surfaced because the claim was about to be published upstream under a real name,
+which forced a check that ordinary internal use would not have.
+
+Two working rules from it:
+
+1. **Verify each claim separately, even when they arrive together and the hard
+   one checks out.** Correctness does not propagate across a conjunction.
+2. **Prefer the check that has an external consequence.** Drafting the issue for
+   publication is what caught this; the same claim sat unchallenged in an
+   internal log for two commits.
+
+The direction also matters. An over-cautious wrong diagnosis costs a wasted
+check. This one pointed at *disabling* a working alarm, and would have removed
+the only signal that caught the original failure.

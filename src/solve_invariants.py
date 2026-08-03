@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
 """
-Physical invariants for every production solve, replacing SimNIBS's broken
+Physical invariants for every production solve, alongside SimNIBS's own
 current-calibration check.
 
 WHY THIS EXISTS
 
-SimNIBS's own check emits exactly 200.00% on any custom mesh because it cannot
-locate an m2m folder, so it is useless as a signal: it fires on good solves and
-bad ones alike. Meanwhile the real failure -- a conductivity span near the
-double-precision limit driving the iterative `hypre` solver to return fields
-10-20x too large -- produced no distinguishable message. And hypre exposes
-neither a residual nor an iteration count.
+Not because SimNIBS's check is broken. It is not. On the MIDA mesh it
+discriminated correctly: it reported 200.00% on the solve that was wrong and
+stayed silent on the solve that was right. The failure was that nobody read
+`fields_summary.txt`. (An earlier version of this docstring asserted the check
+was useless. That was wrong and is corrected here rather than deleted.)
+
+These invariants exist for three reasons that survive that correction:
+
+  - the SimNIBS check is BINARY and gives no severity, and `hypre` exposes
+    neither residual nor iteration count, so there is nothing to trend
+  - it produces false positives on well-conditioned custom meshes (5 of 16
+    sphere solves warned while matching the analytic oracle to RDM 4.36%)
+  - it lives in a file that must be opened, whereas these raise
 
 So the checks here are computed from the FIELD ALONE. They need no solver
 internals and no m2m folder, and they are physical invariants rather than
@@ -24,8 +31,40 @@ diagnostics: if any fails, the solve is wrong regardless of what the log says.
   3. LINEARITY          doubling the injection doubles the field exactly
   4. RECIPROCITY        L(A->B) = -L(B->A) on the head mesh, not just the sphere
 
-1 and 2 run on any single solve. 3 and 4 need a paired solve and run on the
-first montage of a production batch.
+BATCH POLICY
+
+1 and 2 run on EVERY solve; they need no extra work.
+
+3 and 4 need a paired solve, so they run on the FIRST and LAST solve of a batch,
+not the first alone. Four extra solves for a 44-solve production run instead of
+forty-four, and unlike a first-solve check it catches drift that appears partway
+through. They also run on any solve whose invariant-1 CV is elevated but still
+under threshold, since that is the signature of a solve heading toward failure.
+
+COVERAGE MAP, INCLUDING THE GAP
+
+    invariant 1  (radius-independent flux) -> stalled / non-converged solve
+    invariant 2  (outer boundary nets zero) -> unconserved current
+    invariant 3  (linearity in I)           -> nonlinearity
+    invariant 4  (L(A->B) = -L(B->A))       -> reciprocity broken on real geometry
+    ANALYTIC SPHERE                         -> UNIFORM SCALE ERROR
+
+The last row is the gap, and it is why the sphere stays in pre-flight
+permanently rather than being retired as a one-off. **No head-mesh invariant can
+detect a globally scaled field.** Multiply every E by a constant and the flux
+stays radius-independent, the outer boundary still nets zero, linearity still
+holds exactly, and reciprocity symmetry is untouched. Every check here passes.
+Only comparison against an absolute external reference catches it, and the
+analytic multilayer sphere is the only absolute reference available.
+
+QUADRATURE BIAS, AND WHY IT IS TOLERATED
+
+The flux integral runs ~19% low, from the discrete inside/outside test on a
+sampled shell. It is used as a CONSISTENCY test only, never as an absolute
+measurement, because a common-mode bias cancels from a radius-comparison while
+contaminating an absolute one. That is worth stating generally: when a
+measurement is biased but the bias is common to all conditions, compare
+conditions rather than trying to remove the bias.
 """
 from __future__ import annotations
 
@@ -206,3 +245,28 @@ if __name__ == "__main__":
     print(f"tolerances: enclosed {ENCLOSED_CURRENT_TOL:.0%}, "
           f"outer {BOUNDARY_NET_TOL:.0%}, linearity {LINEARITY_TOL:.0e}, "
           f"reciprocity {RECIPROCITY_TOL:.0e}")
+
+
+# ----------------------------------------------------------------------
+# Batch policy
+# ----------------------------------------------------------------------
+CV_ELEVATED_FRAC = 0.5   # "elevated" = above half the gate
+
+
+def batch_plan(n_solves):
+    """Which solve indices get the paired invariants 3 and 4."""
+    if n_solves <= 0:
+        return set()
+    if n_solves == 1:
+        return {0}
+    return {0, n_solves - 1}
+
+
+def needs_escalation(cv, gate=None):
+    """True if invariant-1 CV passed but is elevated enough to warrant 3 and 4.
+
+    A solve drifting toward non-convergence shows a rising CV before it crosses
+    the gate, so this catches the approach rather than only the arrival.
+    """
+    gate = ENCLOSED_CURRENT_CV_TOL if gate is None else gate
+    return bool(np.isfinite(cv) and CV_ELEVATED_FRAC * gate < cv <= gate)
