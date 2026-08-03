@@ -7,7 +7,32 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
-## 0. STAGE 3 STANDS — SimNIBS's calibration check was the error
+## 0. STAGE 3 IS COMPLETE — 22/22, data is in `results/03_leadfields.csv`
+
+All 22 electrodes solved against `earlobe_contra` on the truncated mesh,
+**isotropic condition only**. `throat_scm` correctly skipped. Montages: 10
+cEEGrid, 7 jaw, 4 ear, 1 reference. **220 lead-field values, all finite, all
+positive.**
+
+| | |
+|---|---|
+| delivered current | **0.887–1.075 mA** against 1 mA requested |
+| invariant 1 CV | 0.32–1.53%, plateau on every solve |
+| invariant 2 max net | 13.8 µA of 1000 µA |
+
+**Next, in order:** invariant 2's known-bad case (owed under the new norm),
+the mesh-quality regression (still owed), the anisotropy tensor, then
+`04_analyze.py`.
+
+**The anisotropy path still raises `NotImplementedError` deliberately.** It
+needs a per-element tensor (0.4 along fibre, 0.1 across) from
+`orientation.principal_axis()` for `config.FIBRE_MODEL` "pca" compartments
+only. Never let it fall through to the isotropic map: that would fabricate
+Fig 4 by comparing a condition against itself.
+
+---
+
+## 0b-was. STAGE 3 STANDS — SimNIBS's calibration check was the error
 
 **BRANCH A fired.** The tet-patch integral, run on all 18 completed solves,
 says every one delivers **0.887–1.075 mA** against a requested 1 mA (max
