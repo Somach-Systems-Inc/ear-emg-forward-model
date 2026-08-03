@@ -7,30 +7,30 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
-## 0-STOP. STAGE 3 CALIBRATION IS UNRESOLVED — numbers are PROVISIONAL
+## 0. STAGE 3 STANDS — SimNIBS's calibration check was the error
 
-**7 of 16 completed solves report calibration errors ABOVE the benign band**,
-up to **32.99%** (`mental`), with `cg08` 28.82, `cg04` 26.83, `cg09` 25.27,
-`cg01` 19.67, `earlobe_ipsi` 17.03, `cg06` 15.57.
+**BRANCH A fired.** The tet-patch integral, run on all 18 completed solves,
+says every one delivers **0.887–1.075 mA** against a requested 1 mA (max
+deviation 11.3%), not the 15.6–33.0% SimNIBS claims.
 
-**15.6–33.0% is a NEW population.** The three characterised ones are 11–15%
-(measured benign against an analytic oracle), ~100% (extended-mesh leak),
-200% (conditioning). The benign finding was measured at 11–15% and **does not
-extrapolate to 33%**.
+Three discriminators: correlation between the warning and true deviation is
+**−0.322, p = 0.193** (not significant, and the wrong sign); warned solves
+average **1.0138 mA** against un-warned **0.9434 mA**, so the warned ones are
+*closer* to correct; and the single worst delivery, **`buccal` at 0.8870 mA**,
+is reported **clean**.
 
-**Both invariants PASS on every solve** (inv1 CV 0.38–1.53%, inv2 near zero
-bar one), so charge conservation holds while the solver reports delivering
-the wrong current. That combination is not yet explained.
+**15.6–33.0% is recorded as a FOURTH measured band** (false positive on the
+MIDA mesh) beside the three established ones. SimNIBS's calibration line is
+**demoted from gate to recorded quantity** for MIDA solves; the tet-patch
+integral is the authority. Still parsed and stored per solve.
 
-**Suggestive, tagged `derived`:** `mental` has both the worst calibration and
-the worst invariant-2 residual (+0.01379, 6x the next). It is also the most
-thinly resolved compartment in the mesh (3,226 tets, the smallest). Plausible
-common cause, and testable.
+`mental`'s invariant-2 residual in absolute terms: **+13.8 µA of 1000 µA**
+(`buccal` −2.3 µA). Small, despite being 6x the next worst.
 
-**Do not put stage-3 numbers into Results until this is settled.** Decisive
-test is the one that worked before: solve a known-answer case while
-inspecting delivered current per electrode. Then either widen the recorded
-band with the measurement beside it, or re-run the affected solves.
+**Unresolved and worth knowing:** why the check misfires on this mesh, and why
+the misfire is *anti*-correlated with true delivery.
+
+**Stage 3 may proceed to anisotropy and stage 4.**
 
 ---
 

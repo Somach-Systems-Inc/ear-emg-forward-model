@@ -54,6 +54,29 @@ Fill `mida_label` in `src/config.py` with real integers once known. Leave `None`
 
 ## Rules for you specifically
 
+**A check may not report "clean" until it has been shown to fire.** No guard
+counts as verified until it has returned DIRTY on a known-bad case, in the
+same session, before you trust a clean result from it. A check that has never
+failed has not been demonstrated capable of failing.
+
+This norm was applied to the allowlist hook (tested against a staged `.geo`
+and a 4.6 MB file before being trusted) and **not** applied to a log grep,
+which searched for a string the program never prints, returned zero hits, and
+was reported as "run is clean". Zero hits and working-correctly are
+indistinguishable without a positive control.
+
+Record the known-bad case beside each guard:
+
+| guard | known-bad case it was shown to fire on |
+|---|---|
+| `.githooks/pre-commit` | staged 500-byte `.geo` (extension), staged 4.6 MB `.csv` (size) |
+| `preflight.check_conductivity_range` | σ span 1.879e15, the air-at-1e-15 failure |
+| `preflight.read_calibration` | `air__cg10`, returns 11.90 not the 10 threshold |
+| `solve_invariants` invariant 1 | known-bad 1e-15 solve, diverges to −8.94, no plateau |
+| `solve_invariants` invariant 2 | **NOT YET DEMONSTRATED — owed a known-bad case** |
+| `test_guard_coverage` | found `03b` missing all three guards, `03d` missing two |
+| `render_common.anonymise_head` | first crop left the profile legible; caught by rendering and looking |
+
 **Never publish a recognisable face.** MIDA licence clause 2.3.3: *"Any images
 based on the Model Data may be published only if the face is disguised so as to
 render the individual unrecognizable in any and all communications of any kind,
