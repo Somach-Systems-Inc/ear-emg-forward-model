@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+#
+# Pre-commit ALLOWLIST. Rejects anything not explicitly permitted.
+#
+# WHY THIS EXISTS
+#
+# .gitignore is a DENYLIST and it failed open. It excluded *.msh, *.nii and
+# data/, which looked comprehensive, and said nothing about *.geo. SimNIBS
+# writes <mesh>_el_currents.geo into every solve directory: 126,945 triangles,
+# 63,582 vertices, the entire MIDA head surface, 22.9 MB each. 255 were
+# committed and 109 reached a public GitHub repo, where they sat for ~11.5
+# hours before anyone asked what the file actually contained.
+#
+# The failure was structural, not careless. A denylist only blocks what you
+# thought of in advance, so the next tool that writes an unanticipated format
+# gets through exactly the same way. An allowlist fails CLOSED: a new
+# extension is rejected until someone deliberately adds it here.
+#
+# Bypass with --no-verify only if you can say what the file contains.
+#
+# Enable (required once per clone, hooks are not cloned):
+#     git config core.hooksPath .githooks
+
+set -uo pipefail
+
+MAX_BYTES=2097152          # 2 MiB, any extension
+
+# Extensions this repo legitimately contains. Enumerated from the tracked
+# tree, not guessed. Adding one is a deliberate edit.
+ALLOWED_EXT=(
+    py md txt csv json bib ini toml yml yaml     # source, prose, config, data
+    log mat npy npz png pdf                      # solve byproducts and figures
+)
+# Exact filenames with no extension, or dotfiles.
+ALLOWED_NAMES=(
+    .gitignore .gitkeep .gitattributes LICENSE Makefile
+    pre-commit README
+)
+
+fail=0
+note() { printf '  %s\n' "$1" >&2; }
+
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$staged" ] && exit 0
+
+while IFS= read -r f; do
+    [ -z "$f" ] && continue
+    base=${f##*/}
+
+    # --- size gate, applies regardless of extension
+    if [ -f "$f" ]; then
+        size=$(wc -c < "$f" | tr -d ' ')
+        if [ "$size" -gt "$MAX_BYTES" ]; then
+            if [ "$fail" -eq 0 ]; then
+                printf '\nPRE-COMMIT REJECTED THIS COMMIT\n\n' >&2
+            fi
+            note "TOO LARGE  $f"
+            note "           $(( size / 1048576 )) MiB exceeds the $(( MAX_BYTES / 1048576 )) MiB cap."
+            note "           Large files here have meant licensed geometry. If this"
+            note "           one is legitimate, say what it contains and raise"
+            note "           MAX_BYTES deliberately."
+            note ""
+            fail=1
+            continue
+        fi
+    fi
+
+    # --- extension gate
+    ok=0
+    for n in "${ALLOWED_NAMES[@]}"; do [ "$base" = "$n" ] && ok=1 && break; done
+    if [ "$ok" -eq 0 ]; then
+        if [ "$base" = "${base%.*}" ]; then
+            ext=""                                  # genuinely no extension
+        else
+            ext=$(printf '%s' "${base##*.}" | tr '[:upper:]' '[:lower:]')
+        fi
+        for e in "${ALLOWED_EXT[@]}"; do [ "$ext" = "$e" ] && ok=1 && break; done
+    fi
+
+    if [ "$ok" -eq 0 ]; then
+        if [ "$fail" -eq 0 ]; then
+            printf '\nPRE-COMMIT REJECTED THIS COMMIT\n\n' >&2
+        fi
+        note "NOT ALLOWED  $f"
+        note "             extension '.${ext:-<none>}' is not on the allowlist."
+        note "             This is an ALLOWLIST: unknown formats are refused by"
+        note "             default, because *.geo was refused by nothing and"
+        note "             reached a public repo carrying the MIDA head surface."
+        note "             If this file is safe to publish, add its extension to"
+        note "             ALLOWED_EXT in .githooks/pre-commit, in its own commit."
+        note ""
+        fail=1
+    fi
+done <<< "$staged"
+
+if [ "$fail" -ne 0 ]; then
+    printf 'Nothing was committed. Unstage the files above, or amend the allowlist.\n\n' >&2
+    exit 1
+fi
+exit 0
