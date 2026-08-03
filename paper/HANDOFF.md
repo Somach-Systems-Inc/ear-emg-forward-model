@@ -7,7 +7,43 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
-## 0. LICENSING STOP — DO NOT PUSH, DO NOT CREATE A REMOTE
+## 0. OPEN INCIDENT — licensed data was public; remote is private, awaiting Carl
+
+**2026-08-03: `github.com/Somach-Systems-Inc/ear-emg-forward-model` was PUBLIC
+for ~11.5 hours** (created 04:59:57Z, private 16:31Z) carrying **109 `.geo`
+files at ~22.9 MB each**, each the full MIDA head surface.
+
+**Dissemination appears nil:** 0 forks, 0 stars, 0 watchers, 0 clones, 0
+unique cloners, 0 views, 0 unique visitors across the whole window.
+
+**Done:** repo set to **private**, verified. Local history purged
+(`git filter-repo --path-glob '*.geo' --invert-paths`); 0 `.geo` additions
+remain in local history, `.git` went 23.11 → 10.64 MiB.
+
+**NOT done, and it is Carl's call:** the remote is private but its history
+still holds the 109 files. Either **delete and recreate the repo private,
+then push the purged history** (removes the objects; cheap here because
+nobody cloned it), or **force-push** (interim only: old objects persist
+unreachable-but-fetchable-by-SHA until GitHub GCs). **Nothing was pushed**,
+because a force-push would look clean while leaving the objects there.
+
+Backups verified before any of this: `/Users/carl/ear-emg-backup-20260803.tar.gz`
+and a copy in `~/Documents/ear-emg-backups/`, md5
+`85ef361856a9afb91a3f428f6f72fdee`, 2,213 entries, zero `.geo`/`.msh`/`.nii`/`data`.
+**Keep both until the remote is settled.** They bundle `.git`, so they carry
+licensed blobs: keep them local, never in iCloud/Dropbox.
+
+The external drive copy failed on macOS TCC, not permissions. Carl can run:
+`cp /Users/carl/ear-emg-backup-20260803.tar.gz /Volumes/T7_MAC_BACKUP/`
+
+Commit hashes recorded before the purge resolve via
+`paper/COMMIT_MAP_PRE_PURGE.txt`; see the note atop METHODS_LOG.
+
+**Still blocked behind this:** the `gap-check` and `bench-scripts` worktrees.
+
+---
+
+## 0b. ORIGINAL LICENSING FINDING (kept for context)
 
 **MIDA-derived geometry is in git history.** SimNIBS writes
 `<mesh>_el_currents.geo` into every solve directory, and each is **not** an
