@@ -635,3 +635,33 @@ It is replaced by 0.1310 dB in the cavity criterion and as the
 channel-redundancy resolution floor (Fig 5), where a tighter floor means
 adjacent sites are distinguishable at smaller differences than previously
 believed.
+
+---
+
+## 2026-08-02 — MEASURED: solve resource profile, and the concurrency it allows
+
+Sampled a live production solve on the 12.3 M-tet MIDA mesh for 60 s:
+
+| | value |
+|---|---|
+| CPU | **100% of one core**, steady (98.0–100.0 across 10 samples) |
+| Peak RSS | **10.8 GB** |
+| Threads | single busy thread |
+
+**hypre does not saturate the machine.** It uses one core of 18, so the binding
+constraint is memory, not CPU. *(measured)*
+
+    cores allow   18 concurrent
+    48 GB allows   4 concurrent at 10.8 GB peak
+      N=3  32.4 GB used, 15.6 GB headroom
+      N=4  43.2 GB used,  4.8 GB headroom
+      N=5  54.0 GB      — over
+
+**Default N = 3, not 4.** Four workers leave under 5 GB for everything else, and
+this machine was already observed with 3.9 GB of swap in use while running a
+*single* solve. Swapping would erase the gain, so the default trades one worker
+for headroom. `src/run_solves_parallel.py --workers` overrides.
+
+Expected effect on stage 3: ~44 solves at ~4 min serial is roughly 3 hours;
+at N=3 roughly 1 hour. The solves are independent — one electrode each — so
+there is no coordination beyond the worker cap.
