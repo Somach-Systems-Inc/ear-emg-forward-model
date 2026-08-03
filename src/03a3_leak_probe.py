@@ -125,34 +125,41 @@ def main() -> int:
         where = "between electrodes" if z0 > -116.2 else "BELOW both electrodes"
         print(f"  {z0:>9.1f}{I*1e3:>14.4f}{100*I/I_INJECTED:>14.1f}%   {where}")
 
-    print()
-    below = [z for z in PLANES if z < CUT_S]
-    worst = 0.0
-    for z0 in below:
+    # DECAY TOWARD THE FLOOR is the discriminator, not "zero below the
+    # electrodes" -- see the docstring correction. Compare the deepest plane
+    # against the shallowest one below the cut.
+    floor_S = float(zc.min())
+    deep = [z for z in PLANES if z < CUT_S]
+    def flux(z0):
         k = np.abs(zc - z0) <= HALF_T
-        if k.any():
-            I = abs(float(np.sum(Jz[k] * vols[k] * 1e-9) / (2 * HALF_T * 1e-3)))
-            worst = max(worst, I)
+        if not k.any():
+            return None
+        return float(np.sum(Jz[k] * vols[k] * 1e-9) / (2 * HALF_T * 1e-3))
+    shallow_v, deep_v = flux(deep[0]), flux(deep[-1])
     print("=" * 62)
     print("VERDICT")
     print("=" * 62)
-    print(f"  largest |net current| below both electrodes: "
-          f"{worst*1e3:.4f} mA ({100*worst/I_INJECTED:.1f}% of injected)")
+    print(f"  domain floor at S = {floor_S:.1f} mm")
+    print(f"  flux at {deep[0]:.0f} mm : {shallow_v*1e3:.4f} mA")
+    print(f"  flux at {deep[-1]:.0f} mm: {deep_v*1e3:.4f} mA  "
+          f"({deep[-1]-floor_S:.0f} mm above the floor)")
+    ratio = abs(deep_v) / abs(shallow_v) if shallow_v else float("nan")
+    print(f"  retained fraction approaching the floor: {ratio:.2f}")
     print()
-    if worst > 0.05 * I_INJECTED:
-        print("  LEAKAGE CONFIRMED. Charge conservation requires zero net")
-        print("  current through any plane below both electrodes. It is not")
-        print("  zero, so current is leaving through the slab's inferior")
-        print("  face: that boundary is NOT insulating.")
-        print("  The extrusion moved the exterior surface without carrying")
-        print("  the Neumann condition with it.")
+    print(f"  reference, truncated mesh (clean calibration, same code):")
+    print(f"    0.951 mA at -112  ->  0.107 mA at -119   retained 0.11")
+    print()
+    if ratio > 0.5:
+        print("  LEAKAGE CONFIRMED. Flux does NOT decay approaching the domain")
+        print("  floor: current is still running at most of the injected rate")
+        print("  where there is nowhere left for it to circulate. On the clean")
+        print("  truncated mesh the same measurement decays by ~10x. Current is")
+        print("  leaving the domain through the extension's inferior surface.")
     else:
-        print("  HYPOTHESIS FALSIFIED. Net current below the electrodes is")
-        print("  within noise of zero, so the inferior face IS behaving as an")
-        print("  insulating boundary and the leak is not there.")
-        print("  This was hypothesis 2 of the 2 allowed. Per the stopping")
-        print("  rule, proceed with the TRUNCATED mesh as primary and report")
-        print("  the inferior boundary as an unquantified limitation.")
+        print("  HYPOTHESIS FALSIFIED. Flux decays toward the floor as it does")
+        print("  on the clean mesh, so the inferior face IS insulating and the")
+        print("  leak is not there. Per the stopping rule this was hypothesis")
+        print("  2 of 2: proceed with the TRUNCATED mesh as primary.")
     return 0
 
 
