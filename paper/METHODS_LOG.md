@@ -1965,3 +1965,81 @@ analytic oracle instead). The exemption is deliberately verbose so that adding
 one feels like a decision rather than a shortcut.
 
 **Runs before any production run, always.**
+
+---
+
+## 2026-08-03 — IT'IS SELF-REPORT SENT. Licensing incident CLOSED.
+
+**Carl sent the self-report to the IT'IS Foundation on 2026-08-03.** No
+further action is pending unless they reply.
+
+This closes the incident recorded above: the ~11.5-hour public exposure of 109
+`.geo` files, each the full MIDA head surface, on what was then a public
+GitHub repository. Sequence, in full:
+
+| step | outcome |
+|---|---|
+| detected | at Step E of publication, while checking whether the repo existed |
+| exposure | 2026-08-03 04:59:57Z → 16:31Z, ~11.5 h |
+| dissemination | 0 forks, 0 stars, 0 watchers, 0 clones, 0 unique cloners, 0 views, 0 unique visitors |
+| immediate | repository set to **private** on detection |
+| local | history purged with `git filter-repo --path-glob '*.geo' --invert-paths` |
+| remote | old repo **deleted**, recreated **private**, purged history pushed and verified |
+| disclosure | **self-reported to IT'IS, 2026-08-03** |
+
+The traffic counters lag slightly and do not capture every automated crawler,
+so nil dissemination is strong evidence rather than proof, and the self-report
+was sent on that understanding rather than in spite of it.
+
+**The licence findings that made the decision are recorded above** and are what
+tipped it: clause **2.3.2** bars distributing "the Model Data or works derived
+from the Model Data ... in the original form or in any modified or updated
+form", which covers a derived surface with no room for interpretation; and
+clause **5** terminates the agreement **with immediate effect** on breach and
+obliges written confirmation that all copies are deleted. A clause that severe
+is not one to sit on.
+
+Also still binding and unaffected: **2.3.3**, the face-disguise requirement,
+now enforced structurally in `figures/render_common.py`.
+
+---
+
+## 2026-08-03 — RE-READ: all 16 cavity calibration lines. The finding STANDS.
+
+`03d` did not read calibration output when the cavity run executed, so its 16
+solves were never checked. Re-read from the existing `fields_summary.txt`
+files — no solves re-run — because the cavity result is **the only surviving
+positive finding in the paper** and it had been computed from output nobody
+had checked.
+
+| | count |
+|---|---|
+| solves parsed | **16 / 16** |
+| clean, no calibration line | **14** |
+| warned, inside the measured 11–15% benign band | **2** |
+| **outside the band, or missing a summary** | **0** |
+
+The two warnings are `air__cg10` and `filled__cg10`, both at **11.90%**.
+
+**VERDICT: the cavity finding stands.** Spearman rho = −0.881, p = 0.004,
+max |residual| 1.6006 dB. *(measured)*
+
+Three independent reasons the `cg10` warning cannot carry the result, none of
+which required re-solving:
+
+1. **It is inside the measured false-positive band.** On the sphere, 5 of 16
+   solves warned while matching the analytic oracle, and the warned electrodes
+   were not less accurate.
+2. **It is identical in both halves of the pair**, to two decimal places,
+   across two different conductivity fields. A random current-delivery failure
+   does not reproduce like that, and being identical it cancels in the
+   air-versus-filled ratio the analysis actually takes.
+3. **`03c` already recomputed the verdict without `cg10` entirely**:
+   rho = −0.893, p = 0.007, max |residual| unchanged at 1.6006 dB because that
+   value sits at `hyoid`. **UNCHANGED.**
+
+**What this exercise actually demonstrates** is that the guard gap was real and
+the recovery was luck-independent: the analysis script `03c` had been wired to
+read calibration even though the solve script had not, so the warning surfaced
+before the number reached Results rather than after. That redundancy was not
+designed, and the guard-coverage test now makes it unnecessary to rely on.
