@@ -108,9 +108,14 @@ def main() -> int:
     if not monotone:
         print("  Not asymptotic -- p is not meaningful. Escalate to the 0.25 mm")
         print("  label volume before quoting a discretisation term.")
-    elif 1.2 <= p <= 3.0:
-        print(f"  p = {p:.2f} is a plausible rate for linear tetrahedra, so the")
-        print("  densities look asymptotic and the extrapolation stands.")
+    elif 0.7 <= p <= 1.4:
+        print(f"  p = {p:.2f} is the EXPECTED rate. Linear tetrahedra converge at")
+        print("  p ~ 2 for the potential and p ~ 1 for its GRADIENT, and RDM is")
+        print("  computed on an E-derived quantity. This confirms the densities")
+        print("  are asymptotic; the extrapolation stands.")
+    elif 1.4 < p <= 3.0:
+        print(f"  p = {p:.2f} is between the gradient rate (~1) and the potential")
+        print("  rate (~2). Plausible but worth noting which quantity dominates.")
     else:
         print(f"  p = {p:.2f} is outside the plausible band for linear tets.")
         print("  Report the fit but do not treat RDM_0 as a converged value.")

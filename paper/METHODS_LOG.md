@@ -264,3 +264,30 @@ cases:
 Not achievable: recording solver residual and iteration count per solve.
 SimNIBS logs neither. The calibration line is the available proxy and is now
 mandatory.
+
+---
+
+## 2026-08-02 — CORRECTION: SimNIBS's calibration check was not broken; I did not read it
+
+An earlier entry here and an upstream issue draft both claimed the
+current-calibration check "emits exactly 200.00% on custom meshes ... while the
+actual failure goes undetected". Checking that claim before filing it showed it
+is false.
+
+| Case | σ span | calibration line | solve correct? |
+|---|---|---|---|
+| MIDA, air 1e-15 | 1.879e15 | **200.00%** | no |
+| MIDA, air 1e-6 | 1.879e6 | **no warning** | yes |
+| Sphere, 4 layers | 2.5e2 | warning on 5/16 | yes |
+
+**On MIDA the check discriminated correctly.** It fired on the broken solve and
+was silent on the good one. The failure was entirely mine: I did not read
+`fields_summary.txt`, and SimNIBS had reported the problem in writing.
+
+What survives is much narrower: a false-positive rate on well-conditioned
+custom meshes (5 of 16 sphere solves warned while matching the analytic oracle).
+The upstream issue is **held, not filed** — `paper/simnibs_issue_draft.md`
+records the downgraded version and the reason.
+
+The two suggestions that stand independently: warn when σ_max/σ_min exceeds
+~1e8 at setup, and expose the iterative solver's residual and iteration count.
