@@ -1,0 +1,372 @@
+% references.bib — ear-emg-forward-model / Paper 1
+%
+% Every entry below was verified against a primary source (publisher page,
+% DOI content-negotiation via Crossref, PubMed, NCBI Bookshelf, ACL Anthology,
+% or the authoritative software repository) on 2026-08-02. Verification status,
+% the source consulted, and all corrections relative to paper/OUTLINE.md are
+% recorded in paper/CITATIONS.md — READ THAT FILE before citing.
+%
+% LOAD-BEARING CORRECTION: the "gap statement" is NOT a Kappel paper. The exact
+% sentence quoted in OUTLINE.md ("...to date, there is no theoretical study of
+% such artifacts in ear-EEG") is from Yarici, Thornton & Mandic (2023) below
+% (key: yarici2023earsens). The "Kappel 2023 high-density ear-EEG" entry is
+% actually Meiser, Knoll & Bleichner (2024) (key: meiser2024hdeeg). A genuine
+% Kappel forward-model paper exists (kappel2019forward) but does not contain the
+% muscle-gap claim. See CITATIONS.md.
+
+% ===========================================================================
+% Head model & solver (method)
+% ===========================================================================
+
+@article{iacono2015mida,
+  author  = {Iacono, Maria Ida and Neufeld, Esra and Akinnagbe, Esther and Bower, Kelsey and Wolf, Johanna and Vogiatzis Oikonomidis, Ioannis and Sharma, Deepika and Lloyd, Bryn and Wilm, Bertram J. and Wyss, Michael and Pruessmann, Klaas P. and Jakab, Andras and Makris, Nikos and Cohen, Ethan D. and Kuster, Niels and Kainz, Wolfgang and Angelone, Leonardo M.},
+  title   = {{MIDA}: A Multimodal Imaging-Based Detailed Anatomical Model of the Human Head and Neck},
+  journal = {PLOS ONE},
+  year    = {2015},
+  volume  = {10},
+  number  = {4},
+  pages   = {e0124126},
+  doi     = {10.1371/journal.pone.0124126}
+}
+
+@misc{itis2015midamodel,
+  author       = {Iacono, Maria Ida and Neufeld, Esra and Akinnagbe, Esther and Bower, Kelsey and Wolf, Johanna and Vogiatzis Oikonomidis, Ioannis and Sharma, Deepika and Lloyd, Bryn and Wilm, Bertram J. and Wyss, Michael and Pruessmann, Klaas P. and Jakab, Andras and Makris, Nikos and Cohen, Ethan D. and Kuster, Niels and Kainz, Wolfgang and Angelone, Leonardo M.},
+  title        = {{MIDA}: Multimodal Imaging-Based Detailed Anatomical Model of the Human Head and Neck, Version 1.0},
+  howpublished = {IT'IS Foundation, Virtual Population},
+  year         = {2015},
+  doi          = {10.13099/ViP-MIDA-V1.0},
+  note         = {Dataset DOI, distinct from the Iacono et al. 2015 paper. A V1.1 also exists; cite the version actually downloaded.}
+}
+
+@inproceedings{thielscher2015simnibs,
+  author    = {Thielscher, Axel and Antunes, Andre and Saturnino, Guilherme B.},
+  title     = {Field modeling for transcranial magnetic stimulation: A useful tool to understand the physiological effects of {TMS}?},
+  booktitle = {2015 37th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)},
+  year      = {2015},
+  pages     = {222--225},
+  publisher = {IEEE},
+  doi       = {10.1109/EMBC.2015.7318340}
+}
+
+@article{saturnino2019fem,
+  author  = {Saturnino, Guilherme B. and Madsen, Kristoffer H. and Thielscher, Axel},
+  title   = {Electric field simulations for transcranial brain stimulation using {FEM}: an efficient implementation and error analysis},
+  journal = {Journal of Neural Engineering},
+  year    = {2019},
+  volume  = {16},
+  number  = {6},
+  pages   = {066032},
+  doi     = {10.1088/1741-2552/ab41ba}
+}
+
+% ===========================================================================
+% Forward-model accuracy metrics (RDM / MAG)
+% ===========================================================================
+
+@article{meijs1989bem,
+  author  = {Meijs, J. W. H. and Weier, O. W. and Peters, M. J. and van Oosterom, A.},
+  title   = {On the numerical accuracy of the boundary element method ({EEG} application)},
+  journal = {IEEE Transactions on Biomedical Engineering},
+  year    = {1989},
+  volume  = {36},
+  number  = {10},
+  pages   = {1038--1049},
+  doi     = {10.1109/10.40805}
+}
+
+@article{gullmar2010anisotropy,
+  author  = {G{\"u}llmar, Daniel and Haueisen, Jens and Reichenbach, J{\"u}rgen R.},
+  title   = {Influence of anisotropic electrical conductivity in white matter tissue on the {EEG/MEG} forward and inverse solution. A high-resolution whole head simulation study},
+  journal = {NeuroImage},
+  year    = {2010},
+  volume  = {51},
+  number  = {1},
+  pages   = {145--163},
+  doi     = {10.1016/j.neuroimage.2010.02.014}
+}
+
+% ===========================================================================
+% Air-cavity conductivity (source of the 2.5e-14 S/m value)
+% ===========================================================================
+
+@article{huang2019roast,
+  author  = {Huang, Yu and Datta, Abhishek and Bikson, Marom and Parra, Lucas C.},
+  title   = {Realistic volumetric-approach to simulate transcranial electric stimulation---{ROAST}---a fully automated open-source pipeline},
+  journal = {Journal of Neural Engineering},
+  year    = {2019},
+  volume  = {16},
+  number  = {5},
+  pages   = {056006},
+  doi     = {10.1088/1741-2552/ab208d}
+}
+
+@misc{roast_repo,
+  author       = {Huang, Yu and Datta, Abhishek and Bikson, Marom and Parra, Lucas C.},
+  title        = {{ROAST}: Realistic vOlumetric-Approach to Simulate Transcranial electric stimulation (source repository)},
+  howpublished = {\url{https://github.com/andypotatohy/roast}},
+  year         = {2019},
+  note         = {README documents the default air conductivity of 2.5e-14 S/m used in this study.}
+}
+
+% ===========================================================================
+% Ear-EEG modelling & the gap statement
+% ===========================================================================
+
+@article{yarici2023earsens,
+  author  = {Yarici, Metin C. and Thornton, Mike and Mandic, Danilo P.},
+  title   = {Ear-{EEG} sensitivity modeling for neural sources and ocular artifacts},
+  journal = {Frontiers in Neuroscience},
+  year    = {2023},
+  volume  = {16},
+  pages   = {997377},
+  doi     = {10.3389/fnins.2022.997377},
+  note    = {THE GAP STATEMENT. Contains: "...to date, there is no theoretical study of such artifacts in ear-EEG." Frontiers lists publication year 2023; volume 16 and the DOI stem carry a 2022 stamp. Sets internal air conductivity to 0 S/m.}
+}
+
+@article{kappel2019forward,
+  author  = {Kappel, Simon L. and Makeig, Scott and Kidmose, Preben},
+  title   = {Ear-{EEG} Forward Models: Improved Head-Models for Ear-{EEG}},
+  journal = {Frontiers in Neuroscience},
+  year    = {2019},
+  volume  = {13},
+  pages   = {943},
+  doi     = {10.3389/fnins.2019.00943},
+  note    = {The genuine Kappel forward-model paper. Does NOT contain the muscle-gap statement; do not hang that claim on it.}
+}
+
+@article{meiser2024hdeeg,
+  author  = {Meiser, Arnd and Knoll, Anna Lena and Bleichner, Martin G.},
+  title   = {High-density ear-{EEG} for understanding ear-centered {EEG}},
+  journal = {Journal of Neural Engineering},
+  year    = {2024},
+  volume  = {21},
+  number  = {1},
+  pages   = {016001},
+  doi     = {10.1088/1741-2552/ad1783},
+  note    = {OUTLINE.md mis-cited this as "Kappel et al. (2023)". Correct authorship is Meiser, Knoll & Bleichner; correct year is 2024.}
+}
+
+@article{debener2015ceegrid,
+  author  = {Debener, Stefan and Emkes, Reiner and De Vos, Maarten and Bleichner, Martin},
+  title   = {Unobtrusive ambulatory {EEG} using a smartphone and flexible printed electrodes around the ear},
+  journal = {Scientific Reports},
+  year    = {2015},
+  volume  = {5},
+  pages   = {16743},
+  doi     = {10.1038/srep16743}
+}
+
+@inproceedings{avramidou2024earexg,
+  author    = {Avramidou, Ioanna and Derleth, Ralph Peter and Keller, Matthias and Djilas, Milan and Launer, Stefan and Hadjileontiadis, Leontios},
+  title     = {From Ear-{EEG} to Ear-{ExG}: The Jaw Artifact is a Keeper},
+  booktitle = {Proceedings of the 11th International Conference on Software Development and Technologies for Enhancing Accessibility and Fighting Info-exclusion (DSAI '24)},
+  year      = {2024},
+  pages     = {384--393},
+  publisher = {ACM},
+  doi       = {10.1145/3696593.3696601}
+}
+
+@inproceedings{an2025idears,
+  author    = {An, Hyunjin and Oh, Eunkyu and Kim, Yoosung and Kim, Seonho and Park, Dasom and Oh, Changhoon},
+  title     = {{ID.EARS}: One-Ear {EEG} Device with Biosignal Noise for Real-Time Gesture Recognition and Various Interactions},
+  booktitle = {Proceedings of the 2025 CHI Conference on Human Factors in Computing Systems (CHI '25)},
+  year      = {2025},
+  pages     = {1--18},
+  publisher = {ACM},
+  doi       = {10.1145/3706598.3714185}
+}
+
+% ===========================================================================
+% Silent speech / EMG speech interfaces
+% ===========================================================================
+
+@inproceedings{kapur2018alterego,
+  author    = {Kapur, Arnav and Kapur, Shreyas and Maes, Pattie},
+  title     = {{AlterEgo}: A Personalized Wearable Silent Speech Interface},
+  booktitle = {Proceedings of the 23rd International Conference on Intelligent User Interfaces (IUI '18)},
+  year      = {2018},
+  pages     = {43--53},
+  publisher = {ACM},
+  doi       = {10.1145/3172944.3172977}
+}
+
+@inproceedings{gaddy2020digital,
+  author    = {Gaddy, David and Klein, Dan},
+  title     = {Digital Voicing of Silent Speech},
+  booktitle = {Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  year      = {2020},
+  pages     = {5521--5530},
+  publisher = {Association for Computational Linguistics},
+  doi       = {10.18653/v1/2020.emnlp-main.445}
+}
+
+@inproceedings{wand2011session,
+  author    = {Wand, Michael and Schultz, Tanja},
+  title     = {Session-Independent {EMG}-Based Speech Recognition},
+  booktitle = {Proceedings of the International Conference on Bio-inspired Systems and Signal Processing (BIOSIGNALS 2011)},
+  year      = {2011},
+  pages     = {295--300},
+  publisher = {SciTePress},
+  doi       = {10.5220/0003169702950300}
+}
+
+% ===========================================================================
+% Surface EMG: crosstalk, subcutaneous fat, electrode spacing
+% ===========================================================================
+
+@article{mesin2020crosstalk,
+  author  = {Mesin, Luca},
+  title   = {Crosstalk in surface electromyogram: literature review and some insights},
+  journal = {Physical and Engineering Sciences in Medicine},
+  year    = {2020},
+  volume  = {43},
+  number  = {2},
+  pages   = {481--492},
+  doi     = {10.1007/s13246-020-00868-1}
+}
+
+@article{kuiken2003fat,
+  author  = {Kuiken, T. A. and Lowery, M. M. and Stoykov, N. S.},
+  title   = {The effect of subcutaneous fat on myoelectric signal amplitude and cross-talk},
+  journal = {Prosthetics and Orthotics International},
+  year    = {2003},
+  volume  = {27},
+  number  = {1},
+  pages   = {48--54},
+  doi     = {10.3109/03093640309167976},
+  note    = {PMID 12812327. FE upper-arm model; fat layers of 3/9/18 mm reduce surface RMS amplitude by 31.3/80.2/90.0\% with crosstalk rising. The abstract does NOT adjudicate distance vs. adipose material properties as the cause.}
+}
+
+@article{deluca2012spacing,
+  author  = {De Luca, Carlo J. and Kuznetsov, Mikhail and Gilmore, L. Donald and Roy, Serge H.},
+  title   = {Inter-electrode spacing of surface {EMG} sensors: Reduction of crosstalk contamination during voluntary contractions},
+  journal = {Journal of Biomechanics},
+  year    = {2012},
+  volume  = {45},
+  number  = {3},
+  pages   = {555--561},
+  doi     = {10.1016/j.jbiomech.2011.11.010},
+  note    = {OUTLINE.md lists 2011; issue-of-record is 2012, 45(3).}
+}
+
+@article{sato2023facial,
+  author  = {Sato, Wataru and Kochiyama, Takanori},
+  title   = {Crosstalk in Facial {EMG} and Its Reduction Using {ICA}},
+  journal = {Sensors},
+  year    = {2023},
+  volume  = {23},
+  number  = {5},
+  pages   = {2720},
+  doi     = {10.3390/s23052720}
+}
+
+@article{nordander2003fat,
+  author  = {Nordander, C. and Willner, J. and Hansson, G.-{\AA}. and Larsson, B. and Unge, J. and Granquist, L. and Skerfving, S.},
+  title   = {Influence of the subcutaneous fat layer, as measured by ultrasound, skinfold calipers and {BMI}, on the {EMG} amplitude},
+  journal = {European Journal of Applied Physiology},
+  year    = {2003},
+  volume  = {89},
+  number  = {6},
+  pages   = {514--519},
+  doi     = {10.1007/s00421-003-0819-1}
+}
+
+@article{lowery2002fem,
+  author  = {Lowery, Madeleine M. and Stoykov, Nikolay S. and Taflove, Allen and Kuiken, Todd A.},
+  title   = {A multiple-layer finite-element model of the surface {EMG} signal},
+  journal = {IEEE Transactions on Biomedical Engineering},
+  year    = {2002},
+  volume  = {49},
+  number  = {5},
+  pages   = {446--454},
+  doi     = {10.1109/10.995683}
+}
+
+@article{lowery2003crosstalk,
+  author  = {Lowery, Madeleine M. and Stoykov, Nikolay S. and Kuiken, Todd A.},
+  title   = {A simulation study to examine the use of cross-correlation as an estimate of surface {EMG} cross talk},
+  journal = {Journal of Applied Physiology},
+  year    = {2003},
+  volume  = {94},
+  number  = {4},
+  pages   = {1324--1334},
+  doi     = {10.1152/japplphysiol.00698.2002}
+}
+
+@article{maksymenko2023digitaltwin,
+  author  = {Maksymenko, Kostiantyn and Clarke, Alexander Kenneth and Mendez Guerra, Irene and Deslauriers-Gauthier, Samuel and Farina, Dario},
+  title   = {A myoelectric digital twin for fast and realistic modelling in deep learning},
+  journal = {Nature Communications},
+  year    = {2023},
+  volume  = {14},
+  pages   = {1600},
+  doi     = {10.1038/s41467-023-37238-w},
+  note    = {Peer-reviewed successor to the 2021 bioRxiv preprint cited in OUTLINE.md. Prefer this version.}
+}
+
+@misc{maksymenko2021biorxiv,
+  author       = {Maksymenko, Kostiantyn and Deslauriers-Gauthier, Samuel and Farina, Dario},
+  title        = {Ultra Fast and Highly Realistic Numerical Modelling of the Surface {EMG}},
+  howpublished = {bioRxiv},
+  year         = {2021},
+  doi          = {10.1101/2021.06.07.447390},
+  note         = {Preprint. Superseded by maksymenko2023digitaltwin (Nature Communications). Retain only if the earlier form is specifically needed.}
+}
+
+% ===========================================================================
+% EMG contamination of EEG; anterior-neck innervation zones; anatomy
+% ===========================================================================
+
+@article{yao2019reference,
+  author  = {Yao, Dezhong and Qin, Yun and Hu, Shiang and Dong, Li and Bringas Vega, Mar{\'i}a L. and Vald{\'e}s Sosa, Pedro A.},
+  title   = {Which Reference Should We Use for {EEG} and {ERP} practice?},
+  journal = {Brain Topography},
+  year    = {2019},
+  volume  = {32},
+  number  = {4},
+  pages   = {530--549},
+  doi     = {10.1007/s10548-019-00707-x}
+}
+
+@article{goncharova2003emg,
+  author  = {Goncharova, I. I. and McFarland, D. J. and Vaughan, T. M. and Wolpaw, J. R.},
+  title   = {{EMG} contamination of {EEG}: spectral and topographical characteristics},
+  journal = {Clinical Neurophysiology},
+  year    = {2003},
+  volume  = {114},
+  number  = {9},
+  pages   = {1580--1593},
+  doi     = {10.1016/S1388-2457(03)00093-2}
+}
+
+@article{falla2002innervation,
+  author  = {Falla, Deborah and Dall'Alba, Paul and Rainoldi, Alberto and Merletti, Roberto and Jull, Gwendolen},
+  title   = {Location of innervation zones of sternocleidomastoid and scalene muscles---a basis for clinical and research electromyography applications},
+  journal = {Clinical Neurophysiology},
+  year    = {2002},
+  volume  = {113},
+  number  = {1},
+  pages   = {57--63},
+  doi     = {10.1016/S1388-2457(01)00708-8},
+  note    = {OUTLINE.md wrote "Falla, Dahl \& Merletti 2002"; the second author is Dall'Alba and there are five authors.}
+}
+
+@incollection{tranchito2024digastric,
+  author    = {Tranchito, Eve N. and Bordoni, Bruno},
+  title     = {Anatomy, Head and Neck, Digastric Muscle},
+  booktitle = {StatPearls [Internet]},
+  publisher = {StatPearls Publishing},
+  address   = {Treasure Island (FL)},
+  year      = {2024},
+  note      = {NCBI Bookshelf NBK544352. Last updated 2024-01-30. OUTLINE.md attributed this chapter to "Kim \& Loukas"; the current authors are Tranchito \& Bordoni.}
+}
+
+@incollection{khan2025suprahyoid,
+  author    = {Khan, Yusuf S. and Fakoya, Adegbenro O. and Bordoni, Bruno},
+  title     = {Anatomy, Head and Neck: Suprahyoid Muscle},
+  booktitle = {StatPearls [Internet]},
+  publisher = {StatPearls Publishing},
+  address   = {Treasure Island (FL)},
+  year      = {2025},
+  note      = {NCBI Bookshelf NBK546710. Last updated 2025-03-25.}
+}
