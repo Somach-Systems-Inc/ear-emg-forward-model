@@ -34,3 +34,34 @@ number of holes: 0
 [ simnibs 4.6.0 - 2026-08-02 22:03:18,656 - 37833 ]INFO: 0.55 s to assemble FEM matrix
 [ simnibs 4.6.0 - 2026-08-02 22:03:18,657 - 37833 ]DEBUG: Solving FEM System
 [ simnibs 4.6.0 - 2026-08-02 22:03:18,657 - 37833 ]INFO: Using solver options: hypre
+[ simnibs 4.6.0 - 2026-08-02 22:03:18,847 - 37833 ]INFO: Time to set up KSP:   0.1607 s
+[ simnibs 4.6.0 - 2026-08-02 22:03:19,158 - 37833 ]INFO: Time to solve:   0.3086 s
+[ simnibs 4.6.0 - 2026-08-02 22:03:19,278 - 37833 ]WARNING: The current calibration error exceeded 10%! Estimated error value: 14.34%
+[ simnibs 4.6.0 - 2026-08-02 22:03:19,592 - 37833 ]INFO: Creating visualizations
+[ simnibs 4.6.0 - 2026-08-02 22:03:20,091 - 37833 ]SUMMARY: 
+val_sphere_fine_TDCS_1
+======================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |3.17e-01 V/m |2.19e-01 V/m |9.52e-02 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |2.49e+03 mm³ |6.53e+03 mm³ |
+
+[ simnibs 4.6.0 - 2026-08-02 22:03:20,130 - 37833 ]INFO: Finished Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 22:03:20,130 - 37833 ]INFO: Result Files:
+/Users/carl/CODELocalProjects/ear-emg-forward-model/results/e10mm_fine/e15/val_sphere_fine_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 22:03:20,159 - 37833 ]INFO: =====================================
+[ simnibs 4.6.0 - 2026-08-02 22:03:20,159 - 37833 ]INFO: SimNIBS finished running simulations
+[ simnibs 4.6.0 - 2026-08-02 22:03:20,159 - 37833 ]INFO: Simulation Result Meshes:
+[ simnibs 4.6.0 - 2026-08-02 22:03:20,159 - 37833 ]INFO: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/e10mm_fine/e15/val_sphere_fine_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 22:03:20,159 - 37833 ]INFO: =====================================

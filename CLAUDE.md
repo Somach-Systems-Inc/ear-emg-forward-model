@@ -70,6 +70,56 @@ Worked example, both directions. The hyoid depth band was specified 10–15 mm a
 
 **When Carl's instructions conflict, the later one supersedes.** Flag the conflict explicitly, say which one you are following and why, then proceed. Do not block waiting for the contradiction to be resolved, and do not silently pick one. Worked example: one list said not to run the boundary experiment while a validation contradiction was open, a later list said to run it before any further validation. The right move was to follow the later ordering, state the technical reason the earlier caution mattered (the measured 0.43 dB noise floor sits close to the 1.0 dB decision threshold), and run it.
 
+## Standing decision policy
+
+Apply this yourself. Do not escalate anything it already covers.
+
+### Thresholds
+- A threshold may be revised **only** when an independent measurement
+  establishes the physical bound, recorded inline with that measurement.
+  **Never** because something failed it.
+- For any threshold-gated claim, report the value **and** the threshold at which
+  the verdict flips. Never report a bare binary.
+
+### When something can't be sourced or segmented
+- **Missing landmark** → bound the consequence with geometry derived from
+  structures that *are* segmented. Never fabricate the landmark.
+- **Unsourceable value** → measure its insensitivity across a plausible range.
+  Never defend the value by argument alone.
+- An annotation that enters no calculation may cite a literature mean. An
+  operand may not.
+
+### Claims
+- Tag every claim `measured` | `derived` | `asserted`. Attack `asserted` first.
+  `derived` inherits the confidence of its weakest link.
+- Never assert a categorical claim about anatomy. Measure the gradient and let
+  the category fall out.
+- Both outcomes publish. Never tune toward the interesting one.
+- Never fabricate a number.
+
+### Code
+- Identify by identity (labels); threshold by physics (values, with the
+  derivation recorded). Every classification test asserts a non-empty set.
+- Fail loudly. Never silently zero, skip, or clamp.
+- Read the tool's own output before reporting its result.
+- Verify an edit landed by parsing the file, not by assuming the replacement
+  applied.
+- Kill a run built on a bad input rather than let it finish.
+
+### Instructions
+- When Carl's instructions conflict, the later supersedes. Flag it and proceed.
+
+### Escalation — the part that matters
+Interrupt **immediately** only for:
+- a decision no rule above covers
+- a falsified claim that later work depends on
+- an unphysical input
+- a run over ~2h not already authorised
+
+**Everything else accumulates and is reported once, at the next stage
+boundary.** Do not ping for progress, for confirmations, or for decisions this
+policy already answers.
+
 ## Pipeline
 
 | Step | Script | Done when |

@@ -1,0 +1,10 @@
+[ simnibs 4.6.0 - 2026-08-02 22:04:16,458 - 30868 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-02 22:04:16,458 - 30868 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-02 22:04:16,458 - 30868 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/mida_headneck.msh
+[ simnibs 4.6.0 - 2026-08-02 22:04:16,458 - 30868 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-02 22:04:16,458 - 30868 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__submental_lat
+[ simnibs 4.6.0 - 2026-08-02 22:04:17,220 - 30868 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__submental_lat
+[ simnibs 4.6.0 - 2026-08-02 22:04:17,332 - 30868 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 22:04:17,332 - 30868 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-02 22:04:17,333 - 30868 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-02 22:04:17,333 - 30868 ]INFO: Currents (A): [0.001, -0.001]

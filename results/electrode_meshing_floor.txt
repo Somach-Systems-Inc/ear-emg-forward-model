@@ -1,0 +1,6 @@
+0.131014
+# electrode-meshing floor, dB
+# electrode diameter 10.0 mm (production)
+# from |dMAG| = 1.5198 pp between two nominally-identical meshes
+# n = 2 (one difference, not a distribution)
+# supersedes the 0.43 dB figure measured with a 15 mm electrode

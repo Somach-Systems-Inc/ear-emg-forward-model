@@ -595,3 +595,43 @@ refuses to compute anything until `results/electrode_meshing_floor.txt` exists.
 The floor is measured and committed in its own commit; only then are the cavity
 residuals opened. This makes "the threshold followed the result" impossible
 rather than merely undesirable.
+
+---
+
+## 2026-08-02 — MEASURED: electrode-meshing floor at the production diameter
+
+Re-measured at 10 mm, the diameter production actually uses. Two
+nominally-identical sphere meshes, same electrode, same solver.
+
+| electrode | mesh pair | ΔRDM | ΔMAG | floor |
+|---|---|---|---|---|
+| 15 mm (old) | medium vs fine | — | 5.06 pp | **0.43 dB** |
+| **10 mm (production)** | medium vs fine | 0.396 pp | 1.520 pp | **0.1310 dB** |
+
+**The floor is 3.3x tighter than the figure it replaces.** *(measured)*
+
+**This confirms the electrode-realisation hypothesis** and closes the question
+item 4 was going to attack: meshing variance tracks electrode diameter, so the
+level spread was electrode realisation rather than local element quality. Item 4
+stays dropped, as agreed. *(measured)*
+
+**Direction of the correction, flagged because it favours the hypothesis under
+test.** The corrected floor is *lower*, which makes the cavity criterion (b)
+**easier** to pass. A correction that loosens the bar on a live hypothesis
+deserves more scrutiny than one that tightens it. Three things make this safe:
+the mismatch was found by auditing harness parameters against config, before any
+cavity residual existed; the correction was measured and committed in its own
+commit before the residuals were opened, enforced by a guard that exits rather
+than computing; and the analysis reports the flip point with both floors side by
+side, so the verdict under the old floor stays visible.
+
+**Also measured, at 10 mm:** RDM median 4.111 (medium) and 3.715 (fine), against
+4.355 and 3.812 at 15 mm. RDM is fairly stable across electrode diameter. MAG is
+not — +5.996/+7.516 at 10 mm against +4.400/+9.464 at 15 mm — which is further
+evidence for the earlier MAG retraction and for RDM carrying the headline.
+
+**Superseded everywhere:** 0.43 dB is withdrawn as the electrode-meshing floor.
+It is replaced by 0.1310 dB in the cavity criterion and as the
+channel-redundancy resolution floor (Fig 5), where a tighter floor means
+adjacent sites are distinguishable at smaller differences than previously
+believed.
