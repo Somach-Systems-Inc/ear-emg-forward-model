@@ -82,8 +82,20 @@ import config  # noqa: E402
 # alone; 15% is generous for that while still catching the observed failure,
 # which was 1000-2000% wrong.
 # The discriminating tolerance is on RADIUS-INDEPENDENCE, not absolute value.
-# Measured: converged 2.6%, failed 22%. 8% sits between them with margin.
-ENCLOSED_CURRENT_CV_TOL = 0.08   # coefficient of variation across shells
+#
+# CALIBRATED from a set of 4 known-good solves (the sigma_air sweep at 1e-6,
+# 1e-5, 1e-4, 1e-3; all clean, none carrying a calibration warning), rather
+# than picked as a round number between the good and bad cases:
+#
+#     CVs        2.144, 2.146, 2.167, 2.318 %      mean 2.194, sd 0.084
+#     GATE       rule: max(known-good) x 3          -> 6.95 %
+#     ESCALATE   rule: mean + 3sd .. gate           -> 2.44 .. 6.95 %
+#
+# The observed failure sat at 22.1%, i.e. 3.2x above the gate. The calibration
+# set is n=4 and spans only sigma_air; it does not sample mesh or montage
+# variation, so widen it if either changes materially.
+ENCLOSED_CURRENT_CV_TOL = 0.0695   # calibrated, n=4 known-good
+ENCLOSED_CURRENT_CV_ESCALATE = 0.0244  # mean + 3sd of the same set
 BOUNDARY_NET_TOL = 0.05          # fraction of injected current
 LINEARITY_TOL = 1e-6             # relative
 RECIPROCITY_TOL = 1e-6           # relative
@@ -250,7 +262,9 @@ if __name__ == "__main__":
 # ----------------------------------------------------------------------
 # Batch policy
 # ----------------------------------------------------------------------
-CV_ELEVATED_FRAC = 0.5   # "elevated" = above half the gate
+# Superseded by the calibrated band above; kept only as the fallback if no
+# calibration set is available.
+CV_ELEVATED_FRAC = 0.5
 
 
 def batch_plan(n_solves):
@@ -269,4 +283,5 @@ def needs_escalation(cv, gate=None):
     the gate, so this catches the approach rather than only the arrival.
     """
     gate = ENCLOSED_CURRENT_CV_TOL if gate is None else gate
-    return bool(np.isfinite(cv) and CV_ELEVATED_FRAC * gate < cv <= gate)
+    lo = ENCLOSED_CURRENT_CV_ESCALATE
+    return bool(np.isfinite(cv) and lo < cv <= gate)
