@@ -1,0 +1,22 @@
+Cannot locate subjects m2m folder
+some postprocessing options might fail
+The current calibration error exceeded 10%! Estimated error value: 20.48%
+
+val_sphere_medium_TDCS_1
+========================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |2.96e-01 V/m |2.03e-01 V/m |8.86e-02 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |2.46e+03 mm³ |6.58e+03 mm³ |
+

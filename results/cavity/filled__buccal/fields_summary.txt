@@ -1,0 +1,21 @@
+Cannot locate subjects m2m folder
+some postprocessing options might fail
+
+mida_headneck_TDCS_1
+====================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |1.42e-01 V/m |1.01e-01 V/m |7.80e-02 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |6.39e+02 mm³ |7.34e+03 mm³ |
+

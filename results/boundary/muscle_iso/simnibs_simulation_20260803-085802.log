@@ -1,0 +1,67 @@
+[ simnibs 4.6.0 - 2026-08-03 08:58:02,758 - 7127 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-03 08:58:02,758 - 7127 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-03 08:58:02,758 - 7127 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/mida_neckext.msh
+[ simnibs 4.6.0 - 2026-08-03 08:58:02,758 - 7127 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-03 08:58:02,758 - 7127 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/muscle_iso
+[ simnibs 4.6.0 - 2026-08-03 08:58:03,218 - 7127 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/muscle_iso
+[ simnibs 4.6.0 - 2026-08-03 08:58:03,299 - 7127 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-03 08:58:03,300 - 7127 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-03 08:58:03,300 - 7127 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-03 08:58:03,300 - 7127 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-03 08:58:40,023 - 7127 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-9.33), np.float64(42.74), np.float64(-108.23)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-03 08:58:47,239 - 7127 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-71.65), np.float64(7.94), np.float64(-33.44)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 2
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-03 08:59:34,740 - 7127 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-03 08:59:37,837 - 7127 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-03 08:59:37,945 - 7127 ]INFO: Assembling FEM Matrix
+[ simnibs 4.6.0 - 2026-08-03 08:59:48,388 - 7127 ]INFO: 10.44 s to assemble FEM matrix
+[ simnibs 4.6.0 - 2026-08-03 08:59:48,412 - 7127 ]DEBUG: Solving FEM System
+[ simnibs 4.6.0 - 2026-08-03 08:59:48,414 - 7127 ]INFO: Using solver options: hypre
+[ simnibs 4.6.0 - 2026-08-03 08:59:52,064 - 7127 ]INFO: Time to set up KSP:   3.1050 s
+[ simnibs 4.6.0 - 2026-08-03 09:00:03,173 - 7127 ]INFO: Time to solve:  11.0803 s
+[ simnibs 4.6.0 - 2026-08-03 09:00:03,988 - 7127 ]WARNING: The current calibration error exceeded 10%! Estimated error value: 100.49%
+[ simnibs 4.6.0 - 2026-08-03 09:00:09,174 - 7127 ]INFO: Creating visualizations
+[ simnibs 4.6.0 - 2026-08-03 09:00:12,899 - 7127 ]SUMMARY: 
+mida_neckext_TDCS_1
+===================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |3.47e-01 V/m |2.47e-01 V/m |1.72e-01 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |6.57e+02 mm³ |4.31e+03 mm³ |
+
+[ simnibs 4.6.0 - 2026-08-03 09:00:12,955 - 7127 ]INFO: Finished Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-03 09:00:12,955 - 7127 ]INFO: Result Files:
+/Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/muscle_iso/mida_neckext_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-03 09:00:12,999 - 7127 ]INFO: =====================================
+[ simnibs 4.6.0 - 2026-08-03 09:00:12,999 - 7127 ]INFO: SimNIBS finished running simulations
+[ simnibs 4.6.0 - 2026-08-03 09:00:12,999 - 7127 ]INFO: Simulation Result Meshes:
+[ simnibs 4.6.0 - 2026-08-03 09:00:12,999 - 7127 ]INFO: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/muscle_iso/mida_neckext_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-03 09:00:12,999 - 7127 ]INFO: =====================================

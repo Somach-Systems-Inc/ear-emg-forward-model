@@ -1,0 +1,23 @@
+[ simnibs 4.6.0 - 2026-08-03 08:54:40,506 - 6100 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-03 08:54:40,506 - 6100 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-03 08:54:40,506 - 6100 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/mida_headneck.msh
+[ simnibs 4.6.0 - 2026-08-03 08:54:40,506 - 6100 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-03 08:54:40,506 - 6100 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/truncated
+[ simnibs 4.6.0 - 2026-08-03 08:54:40,961 - 6100 ]DEBUG: Traceback
+Traceback (most recent call last):
+  File "/Users/carl/CODELocalProjects/ear-emg-forward-model/src/03a_boundary_run.py", line 279, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/carl/CODELocalProjects/ear-emg-forward-model/src/03a_boundary_run.py", line 208, in main
+    msh, calib["truncated"] = solve(a.truncated, a.workdir / "truncated",
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/carl/CODELocalProjects/ear-emg-forward-model/src/03a_boundary_run.py", line 145, in solve
+    run_simnibs(S)
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/simulation/run_simnibs.py", line 23, in run_simnibs
+    out = p.run(cpus=cpus)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/simulation/sim_struct.py", line 245, in run
+    raise IOError(
+OSError: Found already existing simulation results in directory. Please run the simulation in a new directory or delete the simnibs_simulation*.mat files from the folder : /Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/truncated
+[ simnibs 4.6.0 - 2026-08-03 08:54:40,962 - 6100 ]CRITICAL: Uncaught exception
+OSError: Found already existing simulation results in directory. Please run the simulation in a new directory or delete the simnibs_simulation*.mat files from the folder : /Users/carl/CODELocalProjects/ear-emg-forward-model/results/boundary/truncated

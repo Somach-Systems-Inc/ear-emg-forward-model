@@ -1,12 +1,21 @@
 Cannot locate subjects m2m folder
 some postprocessing options might fail
-Uncaught exception
-Traceback (most recent call last):
-  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/utils/cond_utils.py", line 182, in test_numerical
-    c = float(v)
-        ^^^^^^^^
-TypeError: float() argument must be a string or a real number, not 'NoneType'
 
-During handling of the above exception, another exception occurred:
+mida_headneck_TDCS_1
+====================
+Gray Matter
 
-TypeError: The value 12 in cond_list is not numerical
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |1.55e-01 V/m |1.08e-01 V/m |7.78e-02 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |5.77e+02 mm³ |4.46e+03 mm³ |
+

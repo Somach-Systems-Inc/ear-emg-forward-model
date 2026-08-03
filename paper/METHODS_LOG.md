@@ -1019,3 +1019,270 @@ is better than the three observations that motivated it, because those varied
 mesh density or electrode diameter and this varies neither. Nothing physical
 differs between draw 1 and draw 3. MAG measures the electrode realisation;
 RDM measures the field solution.
+
+---
+
+## 2026-08-03 — ADVERSARIAL PASS #3, on the floor measurement, before it was used
+
+Run on my own result the same day it was produced, because it had just been
+written into two gates. Four attacks, two hits.
+
+**A. "draws 0 and 3 are suspiciously identical" — REFUTED, and worth the
+check.** Draw 0 gave median MAG +5.9959 and draw 3 gave +5.9971, 0.0012 pp
+apart when the population SD is 4.6 pp. That is a ~1-in-thousands coincidence
+and the obvious explanation is a duplicated draw. Tested by comparing the
+per-electrode vectors rather than the summary: **they differ by up to 12.19
+pp**. Not a duplicate. The median over 120 sources is simply a coarse enough
+statistic to collide. Harness clean.
+
+**B. "0.272 dB" — FALSE PRECISION, the same sin I had just criticised.** The
+0.1310 dB figure was attacked for quoting four significant figures from n=2.
+I then reported 0.272 dB from n=6, which is three. An SD from six draws is
+not that well determined. Bootstrapped over draws, 20,000 resamples:
+
+| | pp | dB |
+|---|---|---|
+| point estimate | 3.181 | 0.272 |
+| 95% CI | 1.912 – 3.254 | **0.16 – 0.28** |
+
+The interval spans a factor of 1.7. **Report the floor as ~0.27 dB with the
+interval attached, not as 0.272.** Two decimals is already generous.
+
+Recorded rather than quietly fixed, because the failure mode is instructive:
+criticising someone else's precision does not immunise you against repeating
+it one decimal place later.
+
+**C. "the electrode-meshing floor is the right floor for a PAIRED comparison"
+— OVERSTATED, and it makes the criterion conservative.** The cavity test
+compares filled against air *at the same electrode on the same mesh*. The
+contact triangulation is therefore identical in both halves of the pair, so
+the contact-area error is common to numerator and denominator and cancels to
+first order in the ratio. The true noise floor for a paired dB shift is
+consequently **smaller** than the electrode-meshing floor, and the criterion
+as registered is stricter than it needs to be.
+
+**Deliberately not acted on.** Lowering a floor makes a live hypothesis easier
+to pass, and the cavity residuals already existed when this was noticed. That
+is precisely the ordering the project forbids. It is registered here as a
+measurable quantity — solve one electrode twice with identical settings, or
+air against air — and left for a session where no verdict is waiting on it.
+Using the conservative floor costs nothing, because the verdict clears it by
+5.9x.
+
+**D. "the harness measures the same quantity as the number it replaces" —
+UPHELD on evidence rather than assertion.** Draw 0 is the identity rotation
+and reproduces `e10mm_medium.csv` at median MAG +5.996 pp and RDM 4.111, both
+to three decimals. Two independent metrics agreeing to that precision is not
+a coincidence available to a different configuration.
+
+---
+
+## 2026-08-03 — RESULT: the cavity hypothesis SURVIVES, and the verdict does not depend on the floor
+
+All 16 solves complete. Analysed with `03c_cavity_analysis.py`; the verdict
+printed by `03d` is superseded and was not used.
+
+**Common-mode shift: −0.507 dB.** This is a Methods term in its own right and
+is independent of the verdict: *head models omitting the oral cavity and
+nasopharynx are systematically off by 0.51 dB in absolute lead field.*
+
+| electrode | dist mm | signed dB | residual | median abs dB |
+|---|---|---|---|---|
+| hyoid | 14.5 | −2.107 | **−1.601** | 2.107 |
+| buccal | 19.6 | −0.856 | −0.350 | 0.920 |
+| submental_lat | 24.3 | −0.800 | −0.293 | 0.889 |
+| midjaw | 36.9 | −0.453 | +0.053 | 0.751 |
+| cg10 | 48.1 | −0.520 | −0.014 | 0.818 |
+| pre_tragus | 58.1 | −0.493 | +0.014 | 0.725 |
+| mastoid | 65.9 | −0.462 | +0.045 | 0.795 |
+| above_ear | 75.5 | −0.322 | +0.185 | 0.484 |
+
+- **(a)** Spearman rho(distance, median |dB|) = **−0.881**, p = 0.004 → PASS
+- **(b)** max |residual| = **1.6006 dB** → PASS
+- **VERDICT: SURVIVES**
+
+**The flip point is 1.60 dB, and every floor the criterion has ever been
+judged against sits far below it:**
+
+| floor | (b) | overall |
+|---|---|---|
+| registered 0.43 dB (15 mm, n=2) | PASS | SURVIVES |
+| superseded 0.1310 dB (10 mm, n=2) | PASS | SURVIVES |
+| measured 0.27 dB (10 mm, n=6, per-site) | PASS | SURVIVES |
+
+**This is the outcome that makes all the floor work moot for this particular
+verdict, and that is a good outcome, not a wasted one.** The result clears the
+measured floor by 5.9x, so no choice of floor decides it. Had the residual
+landed at 0.2 dB the three rows would have disagreed and the floor measurement
+would have been load-bearing. Reporting the flip point is what makes that
+visible either way.
+
+**The sign structure is physically coherent and was not designed for.** Near
+sites lose signal when the cavity is filled and far sites gain slightly, which
+is what shunting current into a newly conductive volume next to the electrode
+should do. The crossover sits between `submental_lat` (24.3 mm, −0.293) and
+`midjaw` (36.9 mm, +0.053).
+
+### Adversarial pass on this result, run immediately
+
+**Leave-one-out, all eight:** criterion (a) survives every deletion, rho
+between −0.821 and −0.964, every p ≤ 0.024. Criterion (b) survives every
+deletion. **The verdict is robust to dropping any single electrode.**
+
+**But the (b) margin is concentrated in one site, and this must be stated.**
+`hyoid` supplies the 1.601 dB. Drop it and the largest residual is `buccal` at
+**0.350 dB**, which still passes the measured floor but by only **1.29x**, and
+**would FAIL the registered 0.43 dB floor.**
+
+| floor | all 8 | hyoid dropped |
+|---|---|---|
+| registered 0.43 | SURVIVES | **FALSIFIED** |
+| superseded 0.131 | SURVIVES | SURVIVES |
+| measured 0.27 | SURVIVES | SURVIVES |
+
+So the honest reading: **as registered, on all eight electrodes, the verdict is
+floor-independent. The magnitude criterion is carried by the single closest
+electrode.** That is not a defect — `hyoid` is 14.5 mm from the cavity and the
+next nearest is 19.6 mm, so the largest effect belongs exactly where the
+physics puts it — but a reader must not be left to discover it.
+
+### Calibration
+
+`cg10` warned at **11.90% in both the air and the filled solve, identically**.
+That reproducibility is itself informative: a random current-delivery failure
+would not repeat to two decimal places across two different conductivity
+fields, so this is a deterministic property of that electrode's realisation,
+and being identical in both halves it cancels in the pair's ratio.
+
+Excluding the `cg10` pair entirely: rho = −0.893 (p = 0.007), max |residual|
+unchanged at 1.6006 dB (it is at `hyoid`), **verdict UNCHANGED**. The warned
+solve does not carry the result.
+
+### What this does and does not license
+
+The cavity test was the condition attached to replacing the deleted Fig 7. It
+passed. **The figure's framing is Carl's decision and is not written here.**
+What is established is the measurement: articulatory volume-conductor exposure
+falls monotonically with distance to the oral cavity, over 14.5–75.5 mm, at
+p = 0.004, with the residual at the nearest site 5.9x the per-site noise floor.
+
+The upper-bound framing holds and should travel with the number: MIDA is
+static, complete cavity filling is the most extreme configuration physically
+available, so real articulation lies strictly inside this envelope.
+
+---
+
+## 2026-08-03 — BLOCKED: the boundary run's verdict is NOT usable; both extended-mesh solves failed calibration
+
+**Do not act on `results/03_boundary_sensitivity.csv`.** The run completed,
+printed a decision, and that decision is withheld. This is a stop-and-report
+trigger: the boundary run selects the mesh for **every published result**.
+
+### What it printed
+
+    largest |dB| shift: 8.66 dB   (threshold 1.00 dB)
+    DECISION: extended mesh becomes PRIMARY for all published results
+
+### Why it is not usable
+
+The calibration guard wired in earlier today fired, and the pattern is
+systematic rather than incidental:
+
+| solve | mesh | calibration |
+|---|---|---|
+| truncated | `mida_headneck.msh` | **clean** |
+| extended, slab 0.355 | `mida_neckext.msh` | **WARNED 100.49%** |
+| extended, slab 0.190 | `mida_neckext.msh` | **WARNED 95.84%** |
+
+**The truncated solve is clean and both extended solves are broken.** The mesh
+is the only thing that differs. ~100% is a *new* population: the established
+ones are 200.00% (conditioning failure, fields 10–20x too large, fatal) and
+11–15% (measured false positive on well-conditioned custom meshes). 100% is
+nowhere near the benign band.
+
+**The field values corroborate it rather than merely permitting it.** SCM goes
+2.615e-01 → 7.086e-01, a factor of 2.7. A ~100% current-calibration error is
+exactly a delivered current off by about a factor of two, and in the 200% case
+the fields were 10–20x out. The error magnitude tracks the field error in both
+cases, which is what a real current-delivery failure looks like and is not
+what a post-processing false positive looks like.
+
+**The dB pattern is not the shape of a boundary artefact.** An insulating cut
+face inflates lead fields *near* it and leaves distant structures alone. The
+run reports **temporalis +3.96 dB**, and temporalis is nowhere near the cut at
+S = −116.2 mm. A term that moves a structure at the top of the head by 4 dB is
+global, not a boundary condition.
+
+### The likely mechanism, measured not guessed
+
+The extended mesh is **0.83% larger than the truncated mesh**:
+
+| mesh | nodes | elements |
+|---|---|---|
+| `mida_headneck.msh` | 2,140,917 | 15,415,273 |
+| `mida_neckext.msh` | 2,162,905 | 15,542,772 |
+
+A 70 mm extrusion of a full neck cross-section adds on the order of 10% of the
+head's volume. Getting **0.83% more elements** for it means the slab is meshed
+at roughly an order of magnitude coarser element volume than the head it is
+attached to. `01c_extend_neck.py` builds it as a deliberately homogeneous slab,
+which is sound as a design, but a large jump in element size across a shared
+interface is a classic way to wreck the conditioning of an iterative solve, and
+hypre is iterative.
+
+Conductivity conditioning is **excluded** as the cause: σ_max/σ_min is
+1.879e6 for these solves, identical to the truncated run and three orders
+inside the 1e8 guard, and `check_conductivity_range()` passed. So this is not
+a repeat of the air-at-1e-15 failure.
+
+### What happens next, and what must not
+
+**The mesh decision is deferred, not made.** The pre-committed 1.0 dB rule is
+untouched and still stands; what is missing is a trustworthy number to apply
+it to. Nothing about the rule is revised because a run failed.
+
+Required before the boundary decision can be made:
+
+1. Diagnose the extended mesh's element-size transition at the slab interface,
+   and rebuild it with the slab meshed at a size comparable to the adjacent
+   head elements.
+2. Re-run and confirm both extended solves report clean calibration.
+3. Only then apply the rule.
+
+Until then **stage 3 must not start on the extended mesh**, and it cannot
+start on the truncated mesh either, because the whole point of the boundary
+run is that we do not yet know which is primary.
+
+**This is exactly what the guard was wired in for.** Six hours ago
+`check_solve_output()` existed but nothing called it, and this run would have
+printed "extended mesh becomes PRIMARY for all published results" from two
+broken solves, with no indication anything was wrong. That decision would have
+propagated into every figure in the paper.
+
+---
+
+## 2026-08-03 — MEASURED: extended-mesh memory, flagged before stage 3 rather than discovered during it
+
+The question asked was whether the extended mesh's peak memory would make
+stage 3 infeasible. **It would not.** Measured, not estimated:
+
+| | value |
+|---|---|
+| element count difference | **+0.83%** (15.54 M vs 15.42 M) |
+| observed RSS, extended-mesh solves | 8.3 – 9.7 GB |
+| observed RSS, cavity solves (truncated) | up to **11.9 GB** |
+
+Peak memory is set by the mesh, and the two meshes differ by under 1%, so
+**budget ~12 GB per solve on either mesh**. The extended mesh introduces no
+memory problem for stage 3.
+
+That is the reassuring half. The unreassuring half is that the same 0.83%
+figure is evidence the slab is meshed far too coarsely (see the entry above),
+so the reason memory does not grow is the same reason the solve may be
+failing. **A cheap answer to the memory question and a warning about the mesh
+turned out to be the same measurement.**
+
+If the extended mesh is rebuilt with the slab refined to match adjacent head
+element sizes, **both numbers change**: element count rises meaningfully and
+peak RSS with it. Re-measure after any rebuild rather than carrying the 12 GB
+figure forward.
