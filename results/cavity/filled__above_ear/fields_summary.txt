@@ -1,2 +1,0 @@
-Cannot locate subjects m2m folder
-some postprocessing options might fail
