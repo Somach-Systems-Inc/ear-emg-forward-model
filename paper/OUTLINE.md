@@ -27,12 +27,16 @@ Two literatures exist and they do not touch:
 
 Nobody has published muscle-source dipoles in an anatomically detailed head model.
 
-The gap is stated explicitly in the ear-EEG modelling literature: forward models exist for neural and **ocular** sources, but *"to date, there is no theoretical study of such artifacts in ear-EEG"* for muscle (Kappel et al., ear-EEG sensitivity modelling).
+The gap is stated explicitly in the ear-EEG modelling literature: forward models exist for neural and **ocular** sources, but *"to date, there is no theoretical study of such artifacts in ear-EEG"* for muscle (**Yarici, Thornton & Mandic 2023**, *Ear-EEG sensitivity modeling for neural sources and ocular artifacts*, Front. Neurosci. 16:997377).
+
+> **Attribution corrected 2026-08-03.** This sentence was previously attributed here to "Kappel et al." **Kappel is not an author of it.** Verified by fetching the Frontiers article directly: the sentence appears verbatim in Yarici, Thornton & Mandic (2023), and the paper's own title — neural sources and ocular artifacts, with muscle conspicuously absent — is what makes it the right citation for this gap. A genuine Kappel forward-model paper exists (Kappel, Makeig & Kidmose 2019, Front. Neurosci. 13:943) and may be cited alongside, but it carries no muscle-gap statement. **The gap changes owner, not validity.** See `paper/CITATIONS.md`.
 
 Meanwhile the empirical side has moved without theory:
 - Retroauricular arrays demonstrably capture chewing and **speaking** EMG (Avramidou et al. 2024, *"From Ear-EEG to Ear-ExG: The Jaw Artifact is a Keeper"*)
 - Ear-mounted electrodes classify jaw clench and chew at >90% (An et al. 2025, ID.EARS)
-- AlterEgo's 2026 device moved from a jaw-wrapping band to an ear-mounted form factor
+- AlterEgo's *Silent Sense* prototype (publicly demonstrated **September 2025**) adopted a head-worn form factor sitting around the ears ⚠️ **non-peer-reviewed, news coverage only**
+
+> **Corrected 2026-08-03, and deliberately weakened.** This previously read "AlterEgo's **2026** device moved from a jaw-wrapping band to an **ear-mounted** form factor." Two problems, both found by the citation audit. The **year was wrong**: the public reveal was September 2025 (demos 8–9 Sept, Axios AI+ Summit 17 Sept). And **"ear-mounted" overstates the sources**, which describe a device worn around the ears like spectacles, resting largely on the back of the head, with sEMG still sensing "face, jaw, and neck" muscles. There is no paper, dated white paper, or press release with a stable identifier, so this claim has **no citable primary source** and is not in `references.bib`. The 2018 IUI paper is the only peer-reviewed AlterEgo source. **Do not let this line carry weight in the motivation** — the Avramidou and An citations are peer-reviewed and carry it on their own.
 
 **So: devices are being designed for a coupling nobody has modelled.** That is the paper.
 
@@ -404,8 +408,9 @@ Write the discussion so that either direction is publishable. A large loss says 
 ## Reference list (starting set, all verified)
 
 - Iacono et al. (2015). *MIDA: A Multimodal Imaging-Based Detailed Anatomical Model of the Human Head and Neck.* PLOS ONE. doi:10.1371/journal.pone.0124126
-- Kappel et al. *Ear-EEG sensitivity modelling for neural and artifact sources.* — the gap statement
-- Kappel et al. (2023). *High-density ear-EEG for understanding ear-centered EEG.* J. Neural Eng.
+- **Yarici, Thornton & Mandic (2023).** *Ear-EEG sensitivity modeling for neural sources and ocular artifacts.* Front. Neurosci. 16:997377. doi:10.3389/fnins.2022.997377 — **the gap statement.** Verified by direct fetch; previously and wrongly attributed here to Kappel.
+- **Kappel, Makeig & Kidmose (2019).** *Ear-EEG Forward Models: Improved Head-Models for Ear-EEG.* Front. Neurosci. 13:943. doi:10.3389/fnins.2019.00943 — a real Kappel forward model. Contains **no** muscle-gap statement; do not cite it for the gap.
+- **Meiser, Knoll & Bleichner (2024).** *High-density ear-EEG for understanding ear-centered EEG.* J. Neural Eng. 21(1):016001. doi:10.1088/1741-2552/ad1783 — verified by direct fetch. Previously listed here as "Kappel et al. (2023)": wrong authors, wrong year.
 - Thielscher et al. — SimNIBS
 - Maksymenko, Deslauriers-Gauthier & Farina (2021). *Ultra fast and highly realistic numerical modelling of surface EMG.* bioRxiv — limb-geometry precedent
 - Mesin (2020). *Crosstalk in surface electromyogram: literature review.* Phys Eng Sci Med. doi:10.1007/s13246-020-00868-1

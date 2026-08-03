@@ -16,7 +16,9 @@ Two literatures exist and do not touch. Head volume-conduction modelling (EEG/ME
 
 The ear-EEG modelling literature says this explicitly — forward models exist for neural and ocular sources, but there is no theoretical study of *muscle* artifacts in ear-EEG.
 
-Meanwhile hardware has moved without theory: retroauricular arrays demonstrably pick up speaking EMG (Avramidou 2024), ear electrodes classify jaw gestures >90% (An 2025), and AlterEgo's 2026 device moved to an ear-mounted form factor. Devices are being designed for a coupling nobody has modelled.
+Meanwhile hardware has moved without theory: retroauricular arrays demonstrably pick up speaking EMG (Avramidou 2024), ear electrodes classify jaw gestures >90% (An 2025), and AlterEgo's *Silent Sense* prototype (demonstrated September 2025) adopted a head-worn form factor around the ears. Devices are being designed for a coupling nobody has modelled.
+
+*(AlterEgo line corrected 2026-08-03 from "2026 device moved to an ear-mounted form factor". The year was wrong and "ear-mounted" overstated the sources, which describe a device resting largely on the back of the head. It has no citable primary source and must not carry weight in the motivation. See `paper/CITATIONS.md`.)*
 
 ## The method — do not get this wrong
 
