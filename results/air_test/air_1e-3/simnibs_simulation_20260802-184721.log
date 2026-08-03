@@ -1,0 +1,33 @@
+[ simnibs 4.6.0 - 2026-08-02 18:47:21,633 - 48424 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-02 18:47:21,633 - 48424 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-02 18:47:21,633 - 48424 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/mida_headneck.msh
+[ simnibs 4.6.0 - 2026-08-02 18:47:21,633 - 48424 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-02 18:47:21,633 - 48424 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/air_test/air_1e-3
+[ simnibs 4.6.0 - 2026-08-02 18:47:22,085 - 48424 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/air_test/air_1e-3
+[ simnibs 4.6.0 - 2026-08-02 18:47:22,167 - 48424 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 18:47:22,168 - 48424 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-02 18:47:22,168 - 48424 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-02 18:47:22,168 - 48424 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-02 18:48:00,010 - 48424 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-9.33), np.float64(42.74), np.float64(-108.23)]
+pos_ydir: []
+dimensions: [10, 10]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 18:48:07,423 - 48424 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-71.65), np.float64(7.94), np.float64(-33.44)]
+pos_ydir: []
+dimensions: [10, 10]
+thickness:2
+channelnr: 2
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 18:48:52,207 - 48424 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-02 18:48:55,374 - 48424 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-02 18:48:55,481 - 48424 ]INFO: Assembling FEM Matrix

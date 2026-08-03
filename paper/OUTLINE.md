@@ -282,7 +282,7 @@ One row per term. Each is filled in only when its run completes, and any row sti
 | 3 | **Inferior boundary** | MIDA's cut face at S = −116.2 mm | yes | **yes** — hits jaw sites, not ear sites | *TODO — run in progress* |
 | 4 | **Muscle anisotropy** | σ tensor vs scalar | yes | **yes** | *TODO — stage 3* |
 | 5 | **Fibre orientation** | n̂ unknown in MIDA | yes | **yes** | *partially measured, per-muscle envelope* |
-| 6 | **Electrode meshing** | contact area realised from incidental surface triangulation | yes | **yes — per-site, does not cancel** | **0.43 dB** (measured) |
+| 6 | **Electrode meshing** | contact area realised from incidental surface triangulation | yes | **yes — per-site, does not cancel** | **~0.43 dB (n=2, single difference)** |
 | 7 | **Single anatomy** | MIDA is one subject | yes | unknown | **not quantifiable from one head** |
 
 **Row 6 was nearly mis-filed as a cancelling term and is the clearest case for the two-column split.** It would be natural to treat electrode modelling as a global scale factor that divides out. It does not: each electrode's contact area is realised independently from whatever surface triangles happen to fall under it, so it is per-site noise, not global scale. Measured at **5.06 percentage points in MAG between two meshes differing by 0.13% in element count**, which is 20·log₁₀(1.0506) = **0.43 dB**.

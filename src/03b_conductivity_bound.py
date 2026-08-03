@@ -72,6 +72,9 @@ def conductivity_sets(rows):
     """Four label -> sigma dicts, one per condition."""
     base = {int(r["mida_label"]): float(r["sigma_S_per_m"]) for r in rows}
     judge = [r for r in rows if r["assignment"] == "judgement"]
+    # Every classification test asserts its matched set is non-empty. A silent
+    # empty match is how the air sweep ran four identical solves.
+    assert judge, "no rows with assignment == 'judgement' in Table 1"
 
     generic = dict(base)
     for r in judge:
@@ -81,14 +84,19 @@ def conductivity_sets(rows):
     for r in judge:
         lab = int(r["mida_label"])
         if r["sigma_low"]:
-            low[lab] = max(float(r["sigma_low"]), 1e-15)
+            # Clamp to the CURRENT air value, never a literal. A hardcoded
+            # 1e-15 here would silently reintroduce the conditioning failure
+            # that voided a 20-solve run.
+            low[lab] = max(float(r["sigma_low"]), config.SIGMA["air"])
         if r["sigma_high"]:
-            high[lab] = max(float(r["sigma_high"]), 1e-15)
+            high[lab] = max(float(r["sigma_high"]), config.SIGMA["air"])
 
     # Designed comparison, not a sensitivity variant: air voids filled with
     # the surrounding temporal bone. Tests whether the superficial air voids
     # at the ear are themselves a mechanism for ear-versus-jaw difference.
     filled = dict(base)
+    missing = [l for l in AIR_VOID_LABELS if l not in base]
+    assert not missing, f"air-void labels absent from Table 1: {missing}"
     for lab in AIR_VOID_LABELS:
         filled[lab] = config.SIGMA[AIR_VOID_FILL]
 
@@ -258,7 +266,7 @@ def main(argv=None) -> int:
         if ear_max > 2 * jaw_max:
             print("\nVERDICT: exceeds the noise floor but is LOCALISED TO EAR "
                   "SITES.\n         This is not a sourcing failure -- sigma_air "
-                  "is 1e-15 and correct.\n         It is a physical result "
+                  f"is {config.SIGMA['air']:.0e} and correct.\n         It is a physical result "
                   "about superficial air voids; see the\n         air-void "
                   "comparison below.")
         else:

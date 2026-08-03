@@ -328,3 +328,50 @@ Two working rules from it:
 The direction also matters. An over-cautious wrong diagnosis costs a wasted
 check. This one pointed at *disabling* a working alarm, and would have removed
 the only signal that caught the original failure.
+
+---
+
+## 2026-08-02 — ADVERSARIAL PASS #1 (stage boundary before queue restart)
+
+Job: falsify what is already recorded, not extend it. Four claims examined.
+
+**A. "p = 0.980 confirms the densities are asymptotic" — FALSIFIED.**
+Three data points fitted with three free parameters (RDM_0, C, p) is an exact
+fit by construction; the reported residual was 5.3e-26. **A fit that cannot fail
+carries no goodness-of-fit evidence.** p is determined algebraically, not
+corroborated. Softened at source to "consistent with", with the reason inline.
+A fourth density would make it testable.
+
+**B. "0.43 dB electrode-meshing noise floor" — OVERSTATED.**
+Derived from exactly two meshes. n = 2 is one difference, not a distribution,
+and "floor" implies a spread never measured. Table 3 now reads
+"~0.43 dB (n=2, single difference)". It has been used to size two decision
+thresholds, so the qualification matters.
+
+**C. "the sphere calibration warnings are false positives" — UPHELD, and now
+tested rather than asserted.** The original argument was aggregate: overall RDM
+matched the oracle. That is weak, because RDM is computed per source across all
+16 electrodes, so one bad electrode dilutes. Tested per electrode:
+
+    warned    (e02, e06, e07, e10, e11)  n=5   median |L_num|/|L_ana| 0.9814
+    un-warned                            n=11  median                 1.0345
+
+Difference 0.053, inside the scatter of either group. The warned electrodes are
+not less accurate. Claim survives, on better evidence than it had.
+
+**D. "suprahyoid corridor, length 85.1 mm" — PRECISION OVERSTATED.**
+Recorded separately: the mastoid air-cell inferior tip sits above the true
+digastric fossa, so the ROI "effectively begins ~10 mm distal". That is a 12%
+bias on an 85.1 mm corridor, yet the length is quoted to 0.1 mm. Quote it as
+~85 mm with the landmark bias attached, or measure the offset.
+
+### Why this pass exists
+
+The SimNIBS claim survived two commits in an internal log and died within
+minutes of being drafted for an external audience. A log written for oneself is
+not read adversarially. This manufactures that scrutiny on a schedule instead of
+waiting for an audience to supply it.
+
+Two of four claims needed correction and one needed upgrading from asserted to
+tested. That hit rate on already-reviewed material is the argument for running
+it at every stage boundary.

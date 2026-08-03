@@ -130,7 +130,7 @@ MAP: dict[int, object] = {
                                   "inner-ear fluid entry"),
     34:  J("Cerebrospinal Fluid", "semicircular canal endolymph, as above"),
     # NOT IT'IS "Air": that entry is exactly 0 S/m, which makes the FEM system
-    # singular. config.SIGMA["air"] = 1e-15 exists precisely to avoid that, so
+    # singular. config.SIGMA["air"] (currently 1e-6) exists to avoid that, so
     # air lumens take the SimNIBS value even though the tissue identification
     # itself is a judgement.
     # The two air lumens are NOT the same case, and treating them alike was an
