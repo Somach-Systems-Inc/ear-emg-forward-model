@@ -7,6 +7,30 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
+## 0-pre. BOTH AGENT BRANCHES ARE MERGED
+
+`carl/gap-check` and `carl/bench-scripts` are both in `main` and pushed.
+Ownership held mechanically on both. Their worktrees at
+`../gap-check` and `../bench-scripts` can be removed with
+`git worktree remove` whenever convenient.
+
+**bench/** is the Cerelog ESP-EEG suite for hardware landing **Aug 6**: 19
+files, `bench/selftest.py` passes **85/85**, verified by running it here
+rather than trusting the report. The PGA gain guard is the point of it —
+`config.PGA_GAIN` is the only host-side declaration, `counts_to_volts()`
+cannot run without a verification, and `bench/00_gain_check.py` confirms the
+scale factor physically off the ADS1299's internal test signal with no
+external hardware. Carl will lower the board from gain 24 to ~8; the guard
+exists so that cannot silently become a 3x voltage error.
+
+Untested without hardware, documented in `bench/README.md`: serial port open,
+OpenBCI command dialect, frame decoder, AD3 auto-detect, and the lower-gain
+rows of the expected-noise table (modelled, labelled as estimates).
+`vet --agentic` produced no output on that branch, so the selftest is what
+stands behind it.
+
+---
+
 ## 0. 🛑 THE NOVELTY CLAIM IS FALSIFIED — read before writing anything
 
 **HArtMuT** (Harmening, Klug, Gramann & Miklody 2022, *J. Neural Eng.*

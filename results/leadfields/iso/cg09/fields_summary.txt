@@ -1,0 +1,3 @@
+Cannot locate subjects m2m folder
+some postprocessing options might fail
+The current calibration error exceeded 10%! Estimated error value: 25.27%

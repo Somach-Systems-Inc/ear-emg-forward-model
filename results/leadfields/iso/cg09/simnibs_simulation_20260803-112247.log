@@ -1,0 +1,40 @@
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,032 - 80710 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,032 - 80710 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,032 - 80710 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/mida_headneck.msh
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,032 - 80710 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,032 - 80710 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/leadfields/iso/cg09
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,507 - 80710 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/leadfields/iso/cg09
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,589 - 80710 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,589 - 80710 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,589 - 80710 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-03 11:22:47,589 - 80710 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-03 11:23:26,831 - 80710 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(65.34), np.float64(6.37), np.float64(-41.97)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-03 11:23:33,924 - 80710 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-71.65), np.float64(7.94), np.float64(-33.44)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 2
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-03 11:24:23,624 - 80710 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-03 11:24:26,975 - 80710 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-03 11:24:27,081 - 80710 ]INFO: Assembling FEM Matrix
+[ simnibs 4.6.0 - 2026-08-03 11:24:37,426 - 80710 ]INFO: 10.35 s to assemble FEM matrix
+[ simnibs 4.6.0 - 2026-08-03 11:24:37,441 - 80710 ]DEBUG: Solving FEM System
+[ simnibs 4.6.0 - 2026-08-03 11:24:37,442 - 80710 ]INFO: Using solver options: hypre
+[ simnibs 4.6.0 - 2026-08-03 11:24:41,249 - 80710 ]INFO: Time to set up KSP:   3.2424 s
+[ simnibs 4.6.0 - 2026-08-03 11:24:54,584 - 80710 ]INFO: Time to solve:  13.3083 s
+[ simnibs 4.6.0 - 2026-08-03 11:24:55,407 - 80710 ]WARNING: The current calibration error exceeded 10%! Estimated error value: 25.27%
+[ simnibs 4.6.0 - 2026-08-03 11:25:00,647 - 80710 ]INFO: Creating visualizations
