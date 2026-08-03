@@ -1,2 +1,4 @@
 Cannot locate subjects m2m folder
 some postprocessing options might fail
+Uncaught exception
+OSError: Found already existing simulation results in directory. Please run the simulation in a new directory or delete the simnibs_simulation*.mat files from the folder : /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__hyoid

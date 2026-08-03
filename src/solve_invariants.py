@@ -91,9 +91,19 @@ import config  # noqa: E402
 #     GATE       rule: max(known-good) x 3          -> 6.95 %
 #     ESCALATE   rule: mean + 3sd .. gate           -> 2.44 .. 6.95 %
 #
-# The observed failure sat at 22.1%, i.e. 3.2x above the gate. The calibration
-# set is n=4 and spans only sigma_air; it does not sample mesh or montage
-# variation, so widen it if either changes materially.
+# The observed failure sat at 22.1%, i.e. 3.2x above the gate.
+#
+# CALIBRATION 1 (n=4): varies ONLY sigma_air, on one mesh and one montage, so
+# sd = 0.084 pp captures none of the mesh or montage variance that a production
+# batch contains. EXPECT ESCALATION TO FIRE ON MOST STAGE-3 SOLVES. That is the
+# predicted behaviour of a band calibrated on an unrepresentative set, not a
+# sign of trouble, and it should not be read as evidence of drift.
+#
+# CALIBRATION 2 (pending): recalibrate the escalation band from the first 10
+# stage-3 solves, once real mesh and montage variance is represented. Record it
+# as a SECOND calibration with its own n beside the first, rather than
+# overwriting -- the two answer different questions and the first stays the
+# reference for sigma_air sensitivity.
 ENCLOSED_CURRENT_CV_TOL = 0.0695   # calibrated, n=4 known-good
 ENCLOSED_CURRENT_CV_ESCALATE = 0.0244  # mean + 3sd of the same set
 BOUNDARY_NET_TOL = 0.05          # fraction of injected current

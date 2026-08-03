@@ -1,0 +1,20 @@
+[ simnibs 4.6.0 - 2026-08-02 20:26:54,175 - 90024 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-02 20:26:54,175 - 90024 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-02 20:26:54,175 - 90024 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/mida_headneck.msh
+[ simnibs 4.6.0 - 2026-08-02 20:26:54,175 - 90024 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-02 20:26:54,175 - 90024 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__hyoid
+[ simnibs 4.6.0 - 2026-08-02 20:26:54,624 - 90024 ]DEBUG: Traceback
+Traceback (most recent call last):
+  File "/private/tmp/claude-501/-Users-carl-Downloads-carl/39641ddb-9dfc-46b1-8ed3-d8b57ac08bdf/scratchpad/cavity_test.py", line 83, in <module>
+    for e in ELECS: R[(tag,e)]=solve(sig,e,tag)
+                               ^^^^^^^^^^^^^^^^
+  File "/private/tmp/claude-501/-Users-carl-Downloads-carl/39641ddb-9dfc-46b1-8ed3-d8b57ac08bdf/scratchpad/cavity_test.py", line 63, in solve
+    run_simnibs(S)
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/simulation/run_simnibs.py", line 23, in run_simnibs
+    out = p.run(cpus=cpus)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/carl/Applications/SimNIBS-4.6/simnibs_env/lib/python3.11/site-packages/simnibs/simulation/sim_struct.py", line 245, in run
+    raise IOError(
+OSError: Found already existing simulation results in directory. Please run the simulation in a new directory or delete the simnibs_simulation*.mat files from the folder : /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__hyoid
+[ simnibs 4.6.0 - 2026-08-02 20:26:54,630 - 90024 ]CRITICAL: Uncaught exception
+OSError: Found already existing simulation results in directory. Please run the simulation in a new directory or delete the simnibs_simulation*.mat files from the folder : /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__hyoid
