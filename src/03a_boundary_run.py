@@ -150,6 +150,19 @@ def solve(mesh: Path, out: Path, pos, base_sigma, slab_sigma=None, label=""):
     hits = sorted(out.glob("*_scalar.msh")) or sorted(out.glob("*.msh"))
     if not hits:
         raise RuntimeError(f"no result mesh in {out}")
+
+    # Invariants 1 and 2. This script previously ran NEITHER, which is how a
+    # mesh that leaks 1.6 mA of a 1 mA injection got as far as printing
+    # "extended mesh becomes PRIMARY for all published results". Invariant 2
+    # is exactly the unconserved-current test that would have caught it.
+    import solve_invariants as SI
+    inv = SI.check_solve_plateau(hits[0], pos[INJECT_FROM],
+                                 SI.with_electrode_tags(assigned),
+                                 verbose=False)
+    print(f"    invariant 1: mean {inv['mean_ratio']:.4f} "
+          f"CV {inv['cv']*100:.2f}% over "
+          f"{inv['plateau']['radii'][0]:.0f}-{inv['plateau']['radii'][-1]:.0f} mm",
+          flush=True)
     return hits[0], cal
 
 

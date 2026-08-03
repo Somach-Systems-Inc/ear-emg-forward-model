@@ -188,6 +188,41 @@ cancel.
 > to supplementary.** Otherwise the truncated mesh stays primary and this
 > becomes one paragraph in Limitations. Written down in advance so the
 > threshold cannot be chosen after seeing which answer is more convenient.
+>
+> ### ⚠️ THE RULE COULD NOT BE EXECUTED, and is recorded unexecuted
+>
+> **The neck-extended mesh is unusable.** Its solves do not conserve charge.
+> Both electrodes sit above the truncation plane, so net vertical current
+> through any plane below both of them must be exactly zero; it is measured at
+> **1.07–1.64 mA against a 1 mA injection**, and planes *between* the
+> electrodes carry 1.59–1.61 mA where they must carry exactly 1.00. Every
+> extended-mesh solve reported a current-calibration error near 100%, at both
+> a near electrode (`hyoid`, 8 mm from the cut) and a far one (`above_ear`,
+> 130 mm), while the truncated mesh solved cleanly throughout.
+>
+> Two hypotheses were tested against a pre-committed budget of two and both are
+> spent: a coarse-element jump at the slab interface (**falsified** — the
+> failure is identical 130 mm away) and a non-insulating inferior boundary
+> (**confirmed as a conservation violation**, though not cleanly separated
+> from simple non-convergence). Detail in `METHODS_LOG.md`.
+>
+> **The 1.0 dB threshold is neither applied nor revised.** It required a
+> trustworthy shift measured on both meshes and no trustworthy extended-mesh
+> solve exists. **The truncated mesh is primary by default rather than by
+> test**, and the difference between those two things is stated here rather
+> than glossed.
+>
+> **This therefore remains an UNQUANTIFIED limitation, and the direction of
+> its bias is against us.** MIDA is cut at S = −116.2 mm with an insulating
+> face there, and three jaw sites sit within 10 mm of it — `hyoid` **8.0 mm**,
+> `submental_lat` **8.4 mm**, `submental_mid` **9.7 mm** — while **every ear
+> site is 80 mm or more away**. Reflection at the cut face therefore inflates
+> the lead field at the jaw sites and leaves the ear sites essentially
+> untouched. Since the paper's headline is a jaw-versus-ear comparison, the
+> artefact **flatters that comparison**: it makes the jaw look better than it
+> is, and so makes the ear's deficit look larger than it is. A reviewer should
+> be told this plainly, in these terms, with the magnitude stated as unknown
+> rather than estimated.
 
 Either way the comparison is a supplementary figure.
 
