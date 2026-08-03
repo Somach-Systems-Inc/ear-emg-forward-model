@@ -309,6 +309,37 @@ Two consequences. A discretisation term cannot be extracted at this precision un
 
 The redesign this calls for: refine the **label volume** to 0.25 mm rather than asking for smaller elements on a 0.5 mm volume; and either shrink the electrodes toward point contacts or average each density over several electrode montages, so electrode meshing is a controlled variable instead of an uncontrolled one. RDM is the more robust metric of the two and should carry the headline regardless.
 
+### The disposition of MAG, settled
+
+MAG is **kept and reported**, because RDM/MAG is the conventional validation
+pair in this literature and dropping half of it invites the reviewer question
+"what happened to the magnitude error?". But it is reported with an explicit
+statement of what its variance actually measures, because three independent
+observations now agree that it is not measuring solver accuracy:
+
+| observation | MAG | RDM |
+|---|---|---|
+| two nominally identical meshes, 15 mm electrode | 5.06 pp apart | 0.54 pp |
+| repeatability of the quoted accuracy figure | +4.4% vs +9.5% | stable |
+| across electrode diameter (15 mm vs 10 mm) | +4.400/+9.464 vs +5.996/+7.516 | moved 0.4 pp |
+
+The pattern is consistent: **MAG tracks electrode diameter and surface
+triangulation, and RDM does not.** A metric whose spread is set by how a disc
+contact happens to land on surface triangles is measuring the electrode model,
+not the field solution.
+
+So the paper states the small finding directly rather than burying it:
+*MAG is not a useful solver-accuracy metric when the source of comparison is a
+meshed surface electrode rather than a point sensor.* That is worth one
+sentence in Methods and it is defensible from the table above. It also
+explains, rather than excuses, why **RDM carries the headline validation
+claim** everywhere in this paper.
+
+This costs nothing. Per the error-budget split above, a flat magnitude offset
+cancels exactly in every ratio the paper publishes, and every published claim
+here is a ratio. MAG being unquotable at 5 pp precision does not move a single
+conclusion; it only removes a number that was never load-bearing.
+
 **Row 2 is blocked by a confound, not by effort.** The intent was to measure how forward error grows for sources near a conductivity boundary, which matters because in MIDA nearly every muscle is bounded by fat at a 14x contrast. On a concentric sphere this cannot be measured: a source at radius *r* is at distance (78 − *r*) mm from the innermost interface **by construction**, so distance-to-interface and eccentricity are perfectly collinear and no regression can separate them.
 
 The measurement itself comes out backwards from the hypothesis, which is what exposed the confound. RDM *falls* as sources approach the interface:

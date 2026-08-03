@@ -683,6 +683,12 @@ limit. **Not tested — try `OMP_NUM_THREADS` / `n_workers>1` before building
 process parallelism.** Threads cost no extra memory; processes cost 10.8 GB
 each.
 
+> **TESTED 2026-08-02, and the answer is no on all three counts.** See
+> "RESOLVED: threads are not available" below. The hopeful reading above —
+> that `n_workers` might be threads, or that hypre's OpenMP might be one
+> environment variable away — is **withdrawn**. Process parallelism at
+> 10.8 GB per worker is the only option available.
+
 ### The memory measurement that changes the plan
 
 Measured with everything running:
@@ -700,3 +706,209 @@ choose N. With ollama running, N=1.
 
 This is why the resource budget had to be measured rather than computed from
 total RAM: the arithmetic said 4 concurrent solves, the machine had 536 MB free.
+
+---
+
+## 2026-08-02 — RESOLVED: threads are not available, and `n_workers` cannot help this montage
+
+The previous entry left `n_workers` and `OMP_NUM_THREADS` untested and hoped
+threads would remove the memory constraint. Tested. **Three independent lines
+of evidence, all negative.** Two of the three cost no solve time.
+
+**1. `n_workers` is processes, not threads.** `fem.tdcs` dispatches through
+`run_in_multiprocessing_pool` (`simnibs/utils/threading.py`), which is a
+`multiprocessing` pool despite the module name. Each worker is a full process
+carrying its own copy of the mesh, so it costs the same 10.8 GB that the
+process pool in `run_solves_parallel.py` already costs. It was never the
+cheap option.
+
+**2. `n_workers` is silently clamped to 1 for a bipolar montage.** `fem.py`
+line 1468 reads `n_workers = min(len(currents) - 1, n_workers)`. It
+parallelises across electrode *pairs within one montage*, and every montage in
+this paper is bipolar, so `len(currents) = 2` and the effective worker count is
+`min(1, N) = 1` for any N. Verified by evaluating the clamp:
+
+| montage | requested | effective |
+|---|---|---|
+| bipolar (this paper) | 1, 4, 8 | **1, 1, 1** |
+| 4-electrode | 1, 4, 8 | 1, 3, 3 |
+
+Passing `n_workers=8` is not an error and produces no warning. It simply does
+nothing. That is the failure mode worth remembering: a parameter that accepts
+your value, reports nothing, and ignores it.
+
+**3. Neither PETSc nor HYPRE was built with OpenMP.** `nm -u` on
+`libpetsc.3.22.2.dylib` and `libHYPRE-2.31.0.dylib` returns **zero** undefined
+`GOMP_*`, `omp_*` or `kmpc` symbols, and neither links an OpenMP runtime.
+`libgomp`/`libomp` do exist under `simnibs_env/lib`, but they belong to other
+packages (pygpc), not to the solver stack. There is no OpenMP code in the
+linear solve for `OMP_NUM_THREADS` to enable.
+
+Confirmed by measurement on the sphere (`val_sphere_medium.msh`, cheap enough
+to run beside a live head solve):
+
+| `OMP_NUM_THREADS` | wall | CPU median | CPU peak |
+|---|---|---|---|
+| 1 | 7.2 s | 98.9% | 99.5% |
+| 8 | 7.3 s | 99.1% | **101.6%** |
+
+Eight threads bought 0.98x, which is nothing. Peak CPU never approached the
+150% that would indicate a second core doing work.
+
+**Consequence, and it is the opposite of what the previous entry hoped.**
+Process parallelism at 10.8 GB per worker is the only concurrency available.
+The memory budget is therefore the real and permanent constraint on stage 3,
+not a temporary condition to be engineered around. `run_solves_parallel.py`
+stays as the mechanism, and N is set from measured free memory each time.
+
+**PETSc links MPI**, so a multi-rank `mpirun` decomposition is theoretically
+available, but SimNIBS drives PETSc in-process through petsc4py at one rank
+and exposes no path to launch it otherwise. Recorded as noticed and rejected,
+not as untried.
+
+Harness: `scratchpad/omp_test.py`. Not committed, because it answers a
+question that is now closed and the answer is recorded here.
+
+---
+
+## 2026-08-02 — MEMORY RE-MEASURED: ollama's model server had already exited
+
+The previous entry recorded 536 MB unused with `ollama llama-server` holding
+14.76 GB, and set N=1 on that basis. Re-measured at the start of the next
+session:
+
+```
+PhysMem: 32G used, 15G unused     (one head solve running)
+swap:    3909 MB of 5120 MB used  (flat, not growing)
+```
+
+`ollama serve` is still up but its `llama-server` child, which is what held
+the 14.76 GB, is gone. Model servers exit on an idle timeout, so the 47G
+reading was a transient captured at the worst possible moment.
+
+**This does not vindicate computing the budget from total RAM.** The lesson
+from the previous entry stands and is reinforced: the number moved by 14 GB
+between two sessions with no deliberate action, so N must be chosen from a
+fresh measurement at the moment of launch, never from a figure recorded
+earlier. A memory budget has a shelf life measured in minutes.
+
+The 3909 MB of swap in use is **residual, not active**. It stayed flat while
+two jobs ran concurrently, which means those pages are stale and not being
+faulted back in. Swap *in use* and swap *thrashing* are different readings and
+only the second one costs anything.
+
+---
+
+## 2026-08-02 — DEFECT: the "permanent guards" were never called by anything
+
+Recorded as its own entry because the claim is in this log, in writing, and it
+was false.
+
+The 2026-08-02 conditioning entry states that `src/preflight.py` gained
+`check_solve_output()`, which "reads `fields_summary.txt` after every solve and
+refuses to return a result from one that reported a calibration error", and
+calls both additions **permanent guards**.
+
+`grep` over `src/*.py` returns **no caller** for either
+`check_solve_output()` or `check_conductivity_range()`. They were written,
+tested against the known-good and known-bad cases, and then never wired into a
+single solve script. Every solve run since has been unchecked.
+
+**This is the same failure the whole log exists to prevent**, one level up. The
+original error was not reading the solver's output. The correction was a
+function that reads it. What was never done was calling the function, and the
+log recorded the intention as though it were the state.
+
+**It was not harmless.** Reading the calibration line directly off the cavity
+run currently in progress:
+
+| solve | calibration |
+|---|---|
+| `air__cg10` | **WARNED, 11.90%** |
+| the other seven air solves | clean |
+
+So one of the eight electrode pairs feeding the cavity verdict contains a
+solve the solver itself flagged, and nothing in the pipeline would have
+mentioned it.
+
+### What was changed, and what deliberately was not
+
+Wired in, so it runs: `03a_boundary_run.py` and `03c_cavity_analysis.py` now
+read the calibration line for every solve they consume and print it before any
+verdict.
+
+**The gate's threshold was NOT touched.** `cg10` tripped the guard, and moving
+a threshold because something failed it is the one move this project forbids.
+Instead `preflight.read_calibration()` was added beside
+`check_solve_output()`: it returns the reported percentage rather than raising,
+so the value is carried with the result. Two populations are already measured
+and they are far apart:
+
+- **200.00%** the conductivity-conditioning failure, fields 10-20x too large,
+  fatal
+- **11-15%** seen on well-conditioned custom meshes; on the sphere 5 of 16
+  solves warned while matching the analytic oracle, and the warned electrodes
+  were *not* less accurate (median |L_num|/|L_ana| 0.9814 warned against
+  1.0345 un-warned, a gap inside the scatter of either group)
+
+`cg10` at 11.90% sits in the second population, and the conductivity span for
+this run is 1.879e6, three orders inside the 1e8 guard, so the conditioning
+mechanism is not available as an explanation. That is evidence, not proof, so
+no threshold was invented to encode it.
+
+`03c` instead recomputes the verdict **with and without** the warned pairs and
+prints whether the exclusion changes the answer. If the verdict is unchanged,
+the warning is irrelevant and the result stands on eight pairs. If it changes,
+the result is declared not reportable until those solves are re-run. That
+converts an unquantified worry into a stated dependency, which is the same
+move the flip-point reporting makes for thresholds.
+
+---
+
+## 2026-08-02 — DEFECT: `03a_boundary_run.py` would have crashed on launch
+
+Caught by inspection **before** the run, which is the only reason it cost
+nothing.
+
+The boundary run is the next queued item and it gates the stage 3 mesh choice.
+It bound conductivities like this:
+
+```python
+for name, sigma in config.SIGMA.items():
+    pass                              # tissue conductivities bind below
+for mname, _, lab, _ in config.MUSCLES:
+    if lab is not None:
+        t.cond[lab - 1].value = config.SIGMA["muscle_iso"]
+```
+
+That is **11 of the 117 tags** the mesh carries: 10 muscles plus the neck slab.
+The other 106 stay `None`, and SimNIBS raises
+`TypeError: The value N in cond_list is not numerical` for the whole list.
+
+**This is the identical blocker recorded in this log** under "106 of 116 MIDA
+labels have no conductivity". That blocker was fixed by building Table 1, and
+`03d_cavity_solves.py` was updated to read it. `03a` was not. It has been
+sitting in the repo since, looking runnable, in a state where it cannot
+complete a single solve.
+
+Note also the dead `for ... in config.SIGMA.items(): pass` loop, which reads as
+though it binds tissue conductivities and binds nothing. A loop whose body is
+`pass` under a comment claiming it does the work is worse than no loop.
+
+Fixed: `03a` now loads all 116 tags from
+`results/01_table1_conductivities.csv` exactly as `03d` does, adds the slab
+label on top for the extended mesh, and runs
+`preflight.check_conductivity_range()` over the assembled list before solving.
+
+**Generalisable lesson.** Table 1 was a cross-cutting fix and it was applied to
+the one script that happened to be running at the time. Nothing swept the other
+call sites. When a shared input changes shape, grep for every consumer rather
+than fixing the one in front of you: the cost of the miss is paid much later,
+by a run that fails after being queued behind an hour of other work.
+
+Also corrected in the same pass: `03a` hardcoded the superseded **0.43 dB**
+noise floor in its docstring, in its printed output, and in the `elif` of its
+decision ladder. It now reads the measured value from
+`results/electrode_meshing_floor.txt`, the file the measurement writes. The
+pre-committed **1.0 dB** decision threshold is deliberately left hardcoded and
+is not read from anywhere, because it must not move.
