@@ -34,9 +34,13 @@ The gap is stated explicitly in the ear-EEG modelling literature: forward models
 Meanwhile the empirical side has moved without theory:
 - Retroauricular arrays demonstrably capture chewing and **speaking** EMG (Avramidou et al. 2024, *"From Ear-EEG to Ear-ExG: The Jaw Artifact is a Keeper"*)
 - Ear-mounted electrodes classify jaw clench and chew at >90% (An et al. 2025, ID.EARS)
-- AlterEgo's *Silent Sense* prototype (publicly demonstrated **September 2025**) adopted a head-worn form factor sitting around the ears ⚠️ **non-peer-reviewed, news coverage only**
+- Ear-mounted electrode grids around the pinna (**cEEGrid**) are an established, widely replicated wearable form factor (Debener et al. 2015, Sci Rep 5:16743)
 
-> **Corrected 2026-08-03, and deliberately weakened.** This previously read "AlterEgo's **2026** device moved from a jaw-wrapping band to an **ear-mounted** form factor." Two problems, both found by the citation audit. The **year was wrong**: the public reveal was September 2025 (demos 8–9 Sept, Axios AI+ Summit 17 Sept). And **"ear-mounted" overstates the sources**, which describe a device worn around the ears like spectacles, resting largely on the back of the head, with sEMG still sensing "face, jaw, and neck" muscles. There is no paper, dated white paper, or press release with a stable identifier, so this claim has **no citable primary source** and is not in `references.bib`. The 2018 IUI paper is the only peer-reviewed AlterEgo source. **Do not let this line carry weight in the motivation** — the Avramidou and An citations are peer-reviewed and carry it on their own.
+> **The AlterEgo line was REMOVED here on 2026-08-03, not corrected.** It read "AlterEgo's **2026** device moved from a jaw-wrapping band to an **ear-mounted** form factor." The year was wrong (the *Silent Sense* reveal was **September 2025**), "ear-mounted" overstated sources describing a device resting largely on the back of the head and still sensing face, jaw and neck, and no paper, white paper or press release with a stable identifier exists. It had **no citable primary source**.
+>
+> **Provenance, recorded because it matters more than the correction:** the claim was Carl's, written in the first session, and it sat unverified in this file and in `CLAUDE.md` for several days, propagating into the motivation as though it were sourced. A wrong year that happens to match the current one is the hardest kind to catch, because it reads as up to date.
+>
+> The motivation does not need it. The three citations above are peer-reviewed and carry "devices are being designed for a coupling nobody has modelled" on their own. Kapur, Kapur & Maes (2018, IUI) remains the only peer-reviewed AlterEgo source and may be cited for the *original* jaw-wrapping device.
 
 **So: devices are being designed for a coupling nobody has modelled.** That is the paper.
 
@@ -284,7 +288,7 @@ One row per term. Each is filled in only when its run completes, and any row sti
 | 3 | **Inferior boundary** | MIDA's cut face at S = −116.2 mm | yes | **yes** — hits jaw sites, not ear sites | *TODO — run in progress* |
 | 4 | **Muscle anisotropy** | σ tensor vs scalar | yes | **yes** | *TODO — stage 3* |
 | 5 | **Fibre orientation** | n̂ unknown in MIDA | yes | **yes** | *partially measured, per-muscle envelope* |
-| 6 | **Electrode meshing** | contact area realised from incidental surface triangulation | yes | **yes — per-site, does not cancel** | **0.27 dB (n=6, per-site, common mode removed)** |
+| 6 | **Electrode meshing** | contact area realised from incidental surface triangulation | yes | **yes — per-site, does not cancel** | **~0.27 dB, 95% CI [0.17, 0.65] (n=6, per-site, common mode removed)** |
 | 7 | **Single anatomy** | MIDA is one subject | yes | unknown | **not quantifiable from one head** |
 
 **Row 6 was nearly mis-filed as a cancelling term and is the clearest case for the two-column split.** It would be natural to treat electrode modelling as a global scale factor that divides out. It does not: each electrode's contact area is realised independently from whatever surface triangles happen to fall under it, so it is per-site noise, not global scale.
@@ -296,7 +300,7 @@ One row per term. Each is filled in only when its run completes, and any row sti
 | common-mode | 4.93 pp | 0.42 | **yes** |
 | electrode-specific residual | 3.18 pp | **0.27** | **no** |
 
-**0.27 dB is the reported floor**, with a per-site spread of 0.12–0.49 dB. Only the residual survives into a site-to-site claim, which is exactly the distinction the two right-hand columns of this table exist to draw.
+**~0.27 dB is the reported floor, 95% CI [0.17, 0.65]**, with a per-site spread of 0.12–0.49 dB. The statistic is the **mean over 16 electrodes of the per-electrode SD across 6 draws**; the interval is chi-square on an SD at df = 5, so each per-site value is known only to within about a factor of two. An earlier bootstrap interval of [0.16, 0.28] is **withdrawn**: resampling 6 draws with replacement leaves only ~4 distinct draws, and duplicates shrink a spread statistic, so it described a downward-biased estimator rather than this one. Site-to-site heterogeneity (0.12–0.49 dB) is comparable to the sampling uncertainty, so more draws alone will not tighten it. Only the residual survives into a site-to-site claim, which is exactly the distinction the two right-hand columns of this table exist to draw.
 
 That number matters twice over. It sets the **resolution floor for the channel-redundancy analysis** (Fig 5), where adjacent sites differing by less than 0.27 dB are indistinguishable rather than genuinely redundant. And it sits ~3.7x below the boundary run's 1.0 dB decision threshold, so that run has real resolution.
 
