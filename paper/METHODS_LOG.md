@@ -2310,3 +2310,44 @@ authority. That is a downgrade of a check, so it is recorded loudly rather
 than quietly applied — and it is licensed by measurement, not by convenience,
 since it is exactly the "independent measurement establishes the bound" clause
 the threshold norm allows.
+
+---
+
+## 2026-08-03 — Invariant 2 is UNREACHABLE on its own known-bad case
+
+Applying the new norm — no check counts as verified until it has been shown to
+return DIRTY — to the one guard lacking a demonstration. **It failed the
+demonstration, in an instructive way.**
+
+The known-bad case is the extended-mesh solve measured to leak **1.07 mA of a
+1 mA injection**. That is a gross charge-conservation violation and invariant 2
+exists precisely to catch it.
+
+**Invariant 2 never ran.** `check_solve_plateau()` raised
+**`INVARIANT 1 FAILED: no stationary plateau in the cut flux`** and returned.
+The invariant-2 block sits *after* that raise, so it is unreachable on any
+solve broken enough to disturb the radius plateau.
+
+**This is a structural problem, not a missing test case.** The two invariants
+are ordered, and the ordering means invariant 2 can only ever fire on a solve
+that violates whole-domain charge conservation **while** maintaining a clean
+radius plateau. That is a narrow and possibly empty class. In this repository
+invariant 2 has, so far, never been reachable on any solve that would fail it.
+
+So the honest status of invariant 2 is not "passing" and not "untested" but
+**"never demonstrated, and structurally hard to demonstrate as currently
+ordered"**. It has been reported as a passing check in this log and in commit
+messages; that reporting was accurate about what the code returned and
+misleading about what it established. *(measured)*
+
+**The fix is not to reorder blindly.** Invariant 1's raise is legitimate and
+should stay loud. The right shape is to compute **both** invariants, then
+raise once with **everything** that failed, so a solve that violates both
+reports both. That is a change to shared solve machinery and it deserves a
+session with room to write and verify it, not the tail of one.
+
+**Recorded rather than quietly fixed**, because the finding is more valuable
+than the patch: a check placed after another check's hard failure is not a
+check, it is a comment. The guard-coverage test enumerates whether a guard is
+*called*; it cannot see that a called guard is *unreachable*. Both were needed
+to find this, and only the norm surfaced it.
