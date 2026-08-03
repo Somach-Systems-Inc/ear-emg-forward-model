@@ -32,7 +32,29 @@ SIGMA = {
     "grey_matter":     0.275,
     "white_matter":    0.126,
     "eye":             1.500,
-    "air":             1e-15,   # not exactly zero -- keeps the solver happy
+    # DELIBERATE NUMERICAL CHOICE, not a physical measurement. Flagged as such
+    # in Table 1 and in Methods.
+    #
+    # Was 1e-15. That value silently broke every solve on the MIDA mesh.
+    #
+    # Physics: 1e-6 S/m is four orders below compact bone (0.008), so current
+    # avoids an air cavity identically at 1e-6 and at 1e-15. Nothing physical
+    # distinguishes them.
+    #
+    # Numerics: MIDA carries 10 air-filled tags. At 1e-15 the assigned
+    # conductivities span sigma_max/sigma_min = 1.879e15, against roughly
+    # 1.8e16 of double-precision range, and the stiffness matrix inherits that
+    # as its condition number. SimNIBS solves with `hypre`, an ITERATIVE
+    # multigrid solver, which then fails to converge. Measured: all 20 solves
+    # of the conductivity-bound run reported "current calibration error ...
+    # 200.00%" and returned fields 10-20x too large. At 1e-6 the span is
+    # 1.879e6, the same solve completes with no calibration warning, and the
+    # fields are physical (0.11-0.70 V/m for 1 mA).
+    #
+    # No source to defer to: SimNIBS's standard table (verified in
+    # simnibs/utils/mesh_element_properties.py) has 14 tissues and NO air
+    # entry, so this is not a convention being followed or broken.
+    "air":             1e-6,
 }
 
 # Anisotropy ratio, quoted in the paper as a single number

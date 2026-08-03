@@ -37,6 +37,51 @@ import config  # noqa: E402
 RDM_MEDIAN_MAX = 5.0      # percent
 MAG_ABS_MEDIAN_MAX = 5.0  # percent
 
+# Conductivity dynamic range. The stiffness matrix inherits sigma_max/sigma_min
+# as its condition number, and SimNIBS solves iteratively (hypre), so an
+# excessive span makes the solve fail to converge while still writing a result
+# file. Measured: 1.879e15 broke every solve; 1.879e6 was clean. 1e8 leaves
+# two orders of headroom over the working case and is eight orders below the
+# failing one.
+SIGMA_RATIO_MAX = 1e8
+
+
+def check_conductivity_range(sigmas, label=""):
+    """Fail loudly if the assigned conductivities span too many orders."""
+    v = [float(x) for x in sigmas if float(x) > 0]
+    if not v:
+        raise ValueError(f"{label}: no positive conductivities")
+    ratio = max(v) / min(v)
+    if ratio > SIGMA_RATIO_MAX:
+        raise ValueError(
+            f"{label}: conductivity span {ratio:.3e} exceeds "
+            f"{SIGMA_RATIO_MAX:.0e}. The iterative solver will not converge "
+            f"and SimNIBS will still write a result file. Raise the smallest "
+            f"conductivity (min {min(v):.3e}, max {max(v):.3e}).")
+    return ratio
+
+
+def check_solve_output(pathfem):
+    """Read the solver's own summary and fail on a calibration error.
+
+    SimNIBS writes 'The current calibration error exceeded 10%!' into
+    fields_summary.txt when the solve did not deliver the requested current.
+    It is not an exception and the result file is written regardless, so it
+    must be read explicitly. Not reading it cost this project a full 20-solve
+    run whose numbers were 10-20x wrong.
+    """
+    from pathlib import Path as _P
+    f = _P(pathfem) / "fields_summary.txt"
+    if not f.exists():
+        raise FileNotFoundError(f"no fields_summary.txt in {pathfem}; "
+                                f"cannot confirm the solve succeeded")
+    for line in f.read_text(errors="replace").splitlines():
+        if "calibration error" in line:
+            raise RuntimeError(
+                f"solve in {pathfem} FAILED current calibration: "
+                f"{line.strip()} -- result withheld")
+    return True
+
 
 def current_env():
     info = {"python": sys.version.split()[0], "platform": platform.platform()}

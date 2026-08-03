@@ -196,3 +196,71 @@ current per electrode separates the two readings.
 Conditions b, c1 and c2 gave *sane* values at masseter (−2.3, +3.4, −1.3 dB),
 so the conductivity sensitivity may well be small. That is a hint, not a
 result, and it is not going in the error budget until the solves are clean.
+
+---
+
+## 2026-08-02 — RESOLVED: the 200% calibration failure was conductivity conditioning
+
+Carl's hypothesis, confirmed in three steps, two of which cost no solve time.
+
+**Step 0, free.** Conductivity dynamic range per mesh:
+
+| Mesh | Tags | σ range | σ_max/σ_min | tags at 1e-15 |
+|---|---|---|---|---|
+| Sphere | 4 | 0.004 – 1.0 | **2.5e2** | none |
+| MIDA | 116 | 1e-15 – 1.879 | **1.879e15** | 10 |
+
+Double precision carries ~1.8e16 of range. **The sphere was never exposed to
+this, so the reciprocity validation does not need retracting.**
+
+**Step 1, free.** The MIDA logs show `Using solver options: hypre` — an
+*iterative* algebraic-multigrid solver, which is the proposed mechanism. The
+same solver on the well-conditioned sphere converged and matched the analytic
+oracle. Note: SimNIBS does not print a residual or iteration count, so the
+calibration line is the only convergence signal available.
+
+**Step 2, one solve.** MIDA baseline re-run with air at 1e-6, everything else
+identical:
+
+| | air 1e-15 | air 1e-6 |
+|---|---|---|
+| σ_max/σ_min | 1.879e15 | 1.879e6 |
+| calibration | 200.00% error | **no warning** |
+| field at hyoid | 2.8 – 6.1 V/m | **0.11 – 0.70 V/m** |
+
+The broken solves returned fields 10–20x too large. Step 3, the sphere
+current-delivery test, is therefore unnecessary as a discriminator.
+
+### The value, and why it is not a physical measurement
+
+`SIGMA["air"]` is now **1e-6 S/m**, flagged in Table 1 as a **deliberate
+numerical choice**.
+
+*Physics:* 1e-6 is four orders below compact bone (0.008), so current avoids an
+air cavity identically at 1e-6 and at 1e-15. Nothing physical distinguishes
+them.
+
+*Numerics:* the stiffness matrix inherits σ_max/σ_min as its condition number.
+At 1e-15 that is within a factor of ten of the double-precision limit and the
+iterative solver fails; at 1e-6 it is 1.879e6 and the solve is clean.
+
+*No convention to follow.* SimNIBS's standard table — verified directly in
+`simnibs/utils/mesh_element_properties.py` — has 14 tissues and **no air entry
+at all**. A web search surfaced a figure of 2.5e-14 for tDCS head models, but
+it could not be traced to a primary source and is **not cited**. Any value
+below ~1e-5 is physically equivalent here, so the choice is defensible on the
+numerical argument alone and is presented that way.
+
+### Permanent guards added
+
+`src/preflight.py` gains two, both tested against the known-bad and known-good
+cases:
+
+- `check_conductivity_range()` — fails above σ_max/σ_min of 1e8 (two orders of
+  headroom over the working case, eight below the failing one)
+- `check_solve_output()` — reads `fields_summary.txt` after every solve and
+  refuses to return a result from one that reported a calibration error
+
+Not achievable: recording solver residual and iteration count per solve.
+SimNIBS logs neither. The calibration line is the available proxy and is now
+mandatory.

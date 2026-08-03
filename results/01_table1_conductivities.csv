@@ -24,7 +24,7 @@ mida_label,mida_name,assigned_tissue,sigma_S_per_m,frequency_Hz,source,assignmen
 37,Mucosa,Mucous Membrane,0.4610075264456888,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.1,0.726,0.01077,13.51,
 2,Cerebellum Gray Matter,Cerebellum,0.5766124444444444,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",judgement,0.48,0.646504,0.020041,19.16,"IT'IS carries one Cerebellum entry, not split into grey and white matter"
 25,Blood Veins,blood,0.7,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.007009,11.89,
-31,Air Internal - Nasal/Pharynx,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.010299,15.1,
+31,Air Internal - Nasal/Pharynx,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.010299,15.1,
 73,Muscle - Depressor Labii,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000703,4.35,
 42,Tongue,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.015368,25.5,
 41,Teeth,Tooth,0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.001851851851851852,0.0091,0.004493,14.68,
@@ -33,18 +33,18 @@ mida_label,mida_name,assigned_tissue,sigma_S_per_m,frequency_Hz,source,assignmen
 84,Muscle - Buccinator,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.00209,11.06,
 88,Submandibular Gland,Salivary Gland,0.5585997222608695,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.435631853,0.743,0.007198,21.79,
 24,Blood Arteries,blood,0.7,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.003119,14.6,
-97,Air Internal - Oral Cavity,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.005035,19.7,
+97,Air Internal - Oral Cavity,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.005035,19.7,
 71,Muscle - Mentalis,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000264,5.14,
 75,Muscle - Orbicularis Oris,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.002573,17.57,
 61,Tendon - Galea Aponeurotica,Tendon\Ligament,0.3675772277227722,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.3675772277227722,0.3675772277227722,0.009629,35.75,
 81,Muscle - Medial Pterygoid,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.004639,28.94,
-85,Ear Auditory Canal,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),judgement,1e-15,1e-15,0.000326,7.76,"external auditory canal, air-filled and non-collapsing in a healthy ear. Uses 1e-15 rather than IT'IS Air = 0 S/m, which would make the system singular. No range: cerumen occlusion has no sourced conductivity and is not modelled."
+85,Ear Auditory Canal,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),judgement,1e-06,1e-06,0.000326,7.76,"external auditory canal, air-filled and non-collapsing in a healthy ear. Uses 1e-15 rather than IT'IS Air = 0 S/m, which would make the system singular. No range: cerumen occlusion has no sourced conductivity and is not modelled."
 83,Muscles - Risorius,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.001301,15.97,
 78,Muscle - Zygomaticus Major,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000877,14.11,
 90,Sublingual Gland,Salivary Gland,0.5585997222608695,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.435631853,0.743,0.001167,16.47,
 44,Vertebra - C1 (atlas),Vertebrae,0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.001851851851851852,0.0091,0.002563,32.04,
 80,Muscle - Levator Scapulae,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.00312,37.36,
-28,Air Internal - Maxillary Sinus,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.002866,38.48,
+28,Air Internal - Maxillary Sinus,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.002866,38.48,
 6,CSF Ventricles,csf,1.79,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.002828,40.4,
 108,Cranial Nerve V3 - Mandibular Division,Nerve,0.3479543931346832,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.06435,0.85244,0.000178,10.32,
 45,Vertebra - C2 (axis),Vertebrae,0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.001851851851851852,0.0091,0.003609,46.69,
@@ -53,13 +53,13 @@ mida_label,mida_name,assigned_tissue,sigma_S_per_m,frequency_Hz,source,assignmen
 70,Muscle - Trapezius,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.003802,54.53,
 8,Putamen,Brain (Grey Matter),0.4190548817650446,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",judgement,0.06,0.83,0.002291,43.71,"deep grey nucleus, no IT'IS entry"
 116,Thalamus,Thalamus,0.475,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.475,0.475,0.003147,52.57,
-30,Air Internal - Mastoid,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000331,17.13,
+30,Air Internal - Mastoid,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000331,17.13,
 46,Vertebra - C3,Vertebrae,0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.001851851851851852,0.0091,0.001957,42.31,
 47,Vertebra - C4,Vertebrae,0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.001851851851851852,0.0091,0.001857,41.6,
 14,Brainstem Pons,Pons,0.558392,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.369,0.747784,0.003179,55.19,
 48,Vertebra - C5,Vertebrae,0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.001851851851851852,0.0091,0.001935,44.13,
 39,Nasal Septum (Cartilage),cartilage,0.17,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.002536,53.87,
-86,Ear Pharyngotympanic Tube,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),judgement,1e-15,0.4610075264456888,0.000275,19.25,"pharyngotympanic tube, normally collapsed and mucosa-lined, so the range spans an open air lumen to a collapsed mucosal one. 1e-15 for the same singularity reason."
+86,Ear Pharyngotympanic Tube,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),judgement,1e-06,0.4610075264456888,0.000275,19.25,"pharyngotympanic tube, normally collapsed and mucosa-lined, so the range spans an open air lumen to a collapsed mucosal one. 1e-15 for the same singularity reason."
 87,Hyoid Bone,Bone (Cortical),0.00630199709513435,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",judgement,0.001851851851851852,0.0091,0.000285,19.68,IT'IS has no hyoid entry; hyoid is a small cortical-shelled bone
 11,Brainstem Midbrain,Midbrain,0.35,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.35,0.35,0.001911,52.96,
 5,Hippocampus,Hippocampus,0.4190548817650446,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.06,0.83,0.001181,42.14,
@@ -67,7 +67,7 @@ mida_label,mida_name,assigned_tissue,sigma_S_per_m,frequency_Hz,source,assignmen
 77,Muscle - Levator Labii Superioris,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000665,39.88,
 7,Caudate Nucleus,Brain (Grey Matter),0.4190548817650446,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",judgement,0.06,0.83,0.001439,60.08,"deep grey nucleus, no IT'IS entry"
 13,Spinal Cord,Spinal Cord,0.6109538492063492,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.49734388,0.781544,0.001373,59.95,
-26,Air Internal - Ethmoidal Sinus,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.0013,58.89,
+26,Air Internal - Ethmoidal Sinus,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.0013,58.89,
 15,Brainstem Medulla,Medulla Oblongata,0.357,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.357,0.357,0.001147,55.96,
 4,Amygdala,Brain (Grey Matter),0.4190548817650446,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",judgement,0.06,0.83,0.000689,45.28,"deep grey nucleus, no IT'IS entry"
 49,Intervertebral Discs,Intervertebral Disc,0.7392595578616339,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.600084,1.433653433962262,0.000625,43.94,
@@ -77,9 +77,9 @@ mida_label,mida_name,assigned_tissue,sigma_S_per_m,frequency_Hz,source,assignmen
 82,Muscle - Zygomaticus Minor,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000202,34.83,
 74,Muscle - Nasalis,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000502,55.05,
 64,Muscle - Occipitiofrontalis - Frontal Belly,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000978,79.26,
-29,Air Internal - Sphenoidal Sinus,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000422,61.16,
+29,Air Internal - Sphenoidal Sinus,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000422,61.16,
 92,Muscle - Medial Rectus,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000348,56.19,
-27,Air Internal - Frontal Sinus,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000734,82.52,
+27,Air Internal - Frontal Sinus,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000734,82.52,
 91,Muscle - Superior Rectus,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000287,51.93,
 94,Muscle - Inferior Rectus,muscle_iso,0.355,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.000257,51.05,
 34,Ear Semicircular Canals,Cerebrospinal Fluid,1.878999709695023,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",judgement,1.13,3.186944,8.1e-05,29.26,"semicircular canal endolymph, as above"
@@ -114,4 +114,4 @@ mida_label,mida_name,assigned_tissue,sigma_S_per_m,frequency_Hz,source,assignmen
 3,Pineal Body,Pineal Body,0.4811,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.4811,0.4811,2.6e-05,73.79,
 115,Cranial Nerve XII - Hypoglossal,Nerve,0.3479543931346832,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.06435,0.85244,4e-06,52.69,
 23,Commissura (Posterior),Commissura Posterior,0.3479543931346832,100.0,"IT'IS LF v4.2, DOI 10.13099/VIP21000-04-2, released 2024-06-04, downloaded 2026-08-02",lookup,0.06435,0.85244,7e-06,75.06,
-50,Background,air,1e-15,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.0,,"background, outside the head"
+50,Background,air,1e-06,100.0,SimNIBS 4.6 default (head-modelling convention),lookup,,,0.0,,"background, outside the head"
