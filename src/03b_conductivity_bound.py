@@ -158,6 +158,23 @@ def compartment_medians(res: Path):
     return out
 
 
+def read_measured_floor():
+    """The electrode-meshing floor is MEASURED and has moved twice: 0.43 dB
+    (15 mm, n=2), 0.1310 dB (10 mm, n=2), now 0.272 dB (10 mm, n=6, per-site
+    with common mode removed). Hardcoding it here is how a superseded number
+    survives in a decision ladder, which is exactly what happened before."""
+    f = config.RESULTS / "electrode_meshing_floor.txt"
+    if not f.exists():
+        raise FileNotFoundError(
+            f"{f} missing. Run src/measure_floor_multidraw.py; this verdict is "
+            f"reported against the measured floor.")
+    for line in f.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            return float(line.split()[0])
+    raise RuntimeError(f"no numeric floor value in {f}")
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="03b_conductivity_bound.py")
     ap.add_argument("--mesh", type=Path, default=config.DATA / "mida_headneck.msh")
@@ -241,12 +258,15 @@ def main(argv=None) -> int:
           f"{sens_worst:.3f} dB")
     if sens_at:
         print(f"  worst at: {sens_at[0]} @ {sens_at[1]} under {sens_at[2]}")
-    print(f"electrode-meshing noise floor (measured)         : 0.430 dB")
+    floor = read_measured_floor()
+    print(f"electrode-meshing noise floor (measured)         : {floor:.3f} dB")
+    print(f"  FLIP POINT: this verdict changes at {floor:.3f} dB; measured "
+          f"{sens_worst:.3f} dB")
 
     if sens_worst < 0.1:
         print("\nVERDICT: under 0.1 dB. The 17 judgement calls do not affect any\n"
               "         result. Methods carries one sentence.")
-    elif sens_worst < 0.43:
+    elif sens_worst < floor:
         print("\nVERDICT: above 0.1 dB but below the electrode-meshing noise\n"
               "         floor, so it is real but not the limiting term.")
     else:

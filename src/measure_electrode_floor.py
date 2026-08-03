@@ -59,6 +59,27 @@ def main() -> int:
     print(f"  change: {floor_db - 0.43:+.4f} dB")
 
     out = config.RESULTS / "electrode_meshing_floor.txt"
+
+    # SUPERSEDED. This script's n=2 estimate is no longer the floor, and it
+    # must not silently overwrite the n=6 measurement that replaced it.
+    #
+    # The number it produces is not wrong in method, it is under-sampled: one
+    # pairwise difference of 1.52 pp drawn from a distribution whose SD is
+    # 4.61 pp, so it lands low by roughly a factor of three. Re-running this
+    # after the n=6 measurement would quietly loosen every threshold the floor
+    # gates, which is the exact failure the ordering guard exists to prevent.
+    if out.exists() and "n = 6" in out.read_text():
+        print(f"\nREFUSING TO OVERWRITE {out}", file=sys.stderr)
+        print("  It holds the n=6 per-site measurement from "
+              "src/measure_floor_multidraw.py,", file=sys.stderr)
+        print("  which supersedes this n=2 estimate. This script is kept for "
+              "provenance;", file=sys.stderr)
+        print(f"  its value ({floor_db:.4f} dB) is printed above and NOT "
+              f"written.", file=sys.stderr)
+        print("  To re-measure the floor, run measure_floor_multidraw.py.",
+              file=sys.stderr)
+        return 3
+
     out.write_text(
         f"{floor_db:.6f}\n"
         f"# electrode-meshing floor, dB\n"

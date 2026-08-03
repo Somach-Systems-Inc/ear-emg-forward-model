@@ -912,3 +912,110 @@ decision ladder. It now reads the measured value from
 `results/electrode_meshing_floor.txt`, the file the measurement writes. The
 pre-committed **1.0 dB** decision threshold is deliberately left hardcoded and
 is not read from anywhere, because it must not move.
+
+---
+
+## 2026-08-02 — MEASURED: the floor is 0.27 dB, and 0.1310 dB was an unlucky draw
+
+The queued follow-up asked for n ≥ 5 draws and an uncertainty on the floor.
+Done, n = 6, and **the answer moved by a factor of two in the direction that
+makes the cavity criterion harder.**
+
+### The design, and the one thing it had to get right
+
+A draw is **one rigid rotation applied to both the electrode array and the
+source points**, solved on a single fixed mesh. Rotating both is the whole
+trick. Every source-to-electrode vector is preserved, so the exact answer is
+identical in every draw, so any measured spread is realisation noise and
+nothing else. Verified at machine precision: the maximum change in any
+source-to-electrode distance across 6 proper rotations is 2.8e-14 mm.
+
+Rotating the electrodes *alone* would have been wrong. Sources would then sit
+at different relative positions, the exact answer would genuinely differ
+between draws, and real geometry change would have been counted as noise.
+
+### The harness reproduces the number it replaces
+
+Draw 0 is the identity rotation, so it is the committed measurement re-run:
+
+| | median MAG | median RDM |
+|---|---|---|
+| draw 0 (identity) | **+5.996 pp** | **4.111** |
+| committed `e10mm_medium.csv` | +5.996 pp | 4.111 |
+
+Three decimals, both metrics. This is the same measurement resampled, not a
+different one, which is what licenses the replacement.
+
+### The result
+
+| draw | rotation | median MAG | median RDM |
+|---|---|---|---|
+| 0 | 0.00° | +5.996 | 4.111 |
+| 1 | 5.04° | −4.013 | 4.007 |
+| 2 | 4.74° | +3.283 | 4.015 |
+| 3 | 4.96° | +5.997 | 4.007 |
+| 4 | 6.55° | +5.308 | 4.269 |
+| 5 | 4.28° | −3.079 | 4.010 |
+
+**MAG SD 4.607 pp. RDM SD 0.106 pp.**
+
+### Why the answer is 0.27 and not 0.48
+
+The raw per-electrode spread is 0.48 dB, but that is the wrong quantity.
+Within a draw all 16 electrodes see the same source points, so whatever
+source-sampling contributes is **common to all of them** and cancels in any
+site-to-site comparison. Decomposing exactly as `03c` decomposes the cavity
+shift:
+
+| term | SD | dB | cancels in a ratio? |
+|---|---|---|---|
+| common-mode | 4.926 pp | 0.418 | **yes** |
+| electrode-specific residual | 3.181 pp | **0.272** | **no** |
+
+`03c` strips the common mode from the cavity result and tests
+`max |residual|` against the floor. **So the floor has to be a
+common-mode-removed per-site quantity too, or the two sides of criterion (b)
+are different things.** Judging a decomposed residual against an undecomposed
+0.48 dB floor would have made the criterion sharply and silently too strict.
+That is the same two-column argument the error budget already makes; it simply
+had not been applied to the floor itself.
+
+**Floor: 0.27 dB per site, spread 0.12 to 0.49 dB across the 16 electrodes.**
+
+### What was wrong with 0.1310 dB
+
+Not the method. The sample size. It was **one pairwise difference of 1.5198
+pp drawn from a distribution whose SD is 4.607 pp**. For normal data a single
+difference has expectation 2σ/√π ≈ 5.2 pp, so 1.52 pp was a low draw by a
+factor of about three. It did not merely lack an error bar, **it landed short**,
+and it was then quoted to four significant figures and used to gate two
+analyses.
+
+The corrected value lands nearer the original 0.43 dB than the 0.131 that
+replaced it. That is coincidence, not vindication of the 15 mm figure: n = 2
+at either diameter cannot resolve a spread this wide.
+
+### Direction of the correction, flagged because last time it went the other way
+
+The previous floor correction *loosened* criterion (b) and that was called out
+at the time as deserving extra scrutiny. **This one tightens it**, from 0.131
+to 0.272 dB, which is the conservative direction and the one that cannot
+flatter a live hypothesis.
+
+The ordering discipline held either way: this was queued in HANDOFF before any
+cavity residual existed, the filled solves were still running when it was
+measured, and `03c` prints the flip point with all three floors side by side,
+so no single choice of floor decides the verdict.
+
+### A by-product that settles the MAG question
+
+These draws hold the physical geometry *exactly* fixed and change only the
+triangulation. Under that operation **MAG's spread is 44x RDM's and MAG
+changes sign**, swinging from −4.013 to +5.997 pp while RDM sits in
+4.007–4.269.
+
+This is the cleanest evidence the project has for the MAG disposition, and it
+is better than the three observations that motivated it, because those varied
+mesh density or electrode diameter and this varies neither. Nothing physical
+differs between draw 1 and draw 3. MAG measures the electrode realisation;
+RDM measures the field solution.

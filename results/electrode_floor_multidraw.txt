@@ -1,0 +1,65 @@
+====================================================================
+ELECTRODE-MESHING FLOOR, n = 6 DRAWS
+====================================================================
+mesh held fixed : val_sphere_medium.msh
+electrode       : 10.0 mm
+a draw          : one rigid rotation of electrodes AND sources
+                  (relative geometry invariant -> exact answer
+                   invariant -> all spread is realisation noise)
+
+ draw   rot deg   median MAG %   median RDM %
+---------------------------------------------
+    0      0.00         +5.996          4.111
+    1      5.04         -4.013          4.007
+    2      4.74         +3.283          4.015
+    3      4.96         +5.997          4.007
+    4      6.55         +5.308          4.269
+    5      4.28         -3.079          4.010
+
+ESTIMATOR 1 -- median MAG across sources (the REGISTERED estimator,
+               directly comparable to the n=2 figure)
+  mean            : +2.249 pp
+  SD (n=6)       : 4.607 pp   -> 0.3912 dB
+  mean |pairwise| : 5.287 pp   -> 0.4475 dB
+  max  |pairwise| : 10.010 pp   -> 0.8287 dB
+
+  The n=2 measurement was ONE pairwise difference (1.5198 pp,
+  0.1310 dB). Its expectation for normal data is 2*sd/sqrt(pi)
+  = 5.199 pp, so a single difference estimates
+  ~1.13 sd with enormous relative uncertainty. Quote the SD.
+
+ESTIMATOR 2 -- per-ELECTRODE MAG (the per-SITE quantity the floor is
+               actually USED as: criterion (b) tests a per-electrode
+               residual, Fig 5 asks whether two SITES differ)
+  per-electrode SD across draws, 16 electrodes:
+    median : 5.524 pp  -> 0.4670 dB
+    mean   : 5.686 pp  -> 0.4804 dB
+    max    : 9.527 pp  -> 0.7904 dB
+
+ESTIMATOR 3 -- DECOMPOSED, and this is the one criterion (b) needs
+  common-mode SD across draws  : 4.926 pp  -> 0.4177 dB
+    shared by all 16 electrodes (source-sampling plus any global
+    realisation term). CANCELS in every site-to-site comparison.
+  electrode-specific residual SD, 16 electrodes:
+    median : 3.205 pp  -> 0.2741 dB
+    mean   : 3.181 pp  -> 0.2720 dB
+    max    : 5.836 pp  -> 0.4926 dB
+    this is the term that does NOT cancel: the per-site floor.
+
+RDM, FOR CONTRAST -- the same draws, the same re-triangulation
+  RDM mean 4.070 pp, SD 0.106 pp, range 4.007 to 4.269
+  MAG mean +2.249 pp, SD 4.607 pp, range -4.013 to +5.997
+  MAG's spread is 44x RDM's, and MAG changes SIGN across draws.
+  Pure re-triangulation, identical physical geometry. This is the
+  strongest available evidence that MAG measures the electrode
+  realisation and RDM measures the field solution.
+
+RECOMMENDED REPORTING
+  floor = 0.27 dB  (per-site, common mode
+          removed, mean over 16 electrodes, n=6 draws)
+  per-site spread: 0.12 to 0.49 dB
+
+  Report to TWO decimals, not four. The previous 0.1310 dB implied
+  precision a single difference cannot carry, and it was low: one
+  pairwise difference of 1.52 pp drawn from a spread whose SD is
+  4.61 pp. n=2 did not just lack error bars, it landed short.

@@ -280,12 +280,25 @@ One row per term. Each is filled in only when its run completes, and any row sti
 | 3 | **Inferior boundary** | MIDA's cut face at S = −116.2 mm | yes | **yes** — hits jaw sites, not ear sites | *TODO — run in progress* |
 | 4 | **Muscle anisotropy** | σ tensor vs scalar | yes | **yes** | *TODO — stage 3* |
 | 5 | **Fibre orientation** | n̂ unknown in MIDA | yes | **yes** | *partially measured, per-muscle envelope* |
-| 6 | **Electrode meshing** | contact area realised from incidental surface triangulation | yes | **yes — per-site, does not cancel** | **~0.43 dB (n=2, single difference)** |
+| 6 | **Electrode meshing** | contact area realised from incidental surface triangulation | yes | **yes — per-site, does not cancel** | **0.27 dB (n=6, per-site, common mode removed)** |
 | 7 | **Single anatomy** | MIDA is one subject | yes | unknown | **not quantifiable from one head** |
 
-**Row 6 was nearly mis-filed as a cancelling term and is the clearest case for the two-column split.** It would be natural to treat electrode modelling as a global scale factor that divides out. It does not: each electrode's contact area is realised independently from whatever surface triangles happen to fall under it, so it is per-site noise, not global scale. Measured at **5.06 percentage points in MAG between two meshes differing by 0.13% in element count**, which is 20·log₁₀(1.0506) = **0.43 dB**.
+**Row 6 was nearly mis-filed as a cancelling term and is the clearest case for the two-column split.** It would be natural to treat electrode modelling as a global scale factor that divides out. It does not: each electrode's contact area is realised independently from whatever surface triangles happen to fall under it, so it is per-site noise, not global scale.
 
-That number matters twice over. It sets the **resolution floor for the channel-redundancy analysis** (Fig 5), where adjacent sites may differ by less than 0.43 dB and would then be indistinguishable rather than genuinely redundant. And it sits only ~2.3x below the boundary run's 1.0 dB decision threshold, so a boundary shift under ~0.5 dB cannot be separated from meshing noise by one pair of solves. It must be measured on the **production** montage, by repeating it across several mesh realisations and reporting per-site spread in dB.
+**Measured properly at n = 6**, by rotating the electrode array and the source points together on a fixed mesh. Rotating both preserves every source-to-electrode vector (verified to 2.8 × 10⁻¹⁴ mm), so the exact answer is identical across draws and the whole spread is realisation noise. The term then splits, and the split is what row 6 is about:
+
+| term | SD | dB | cancels in a site ratio? |
+|---|---|---|---|
+| common-mode | 4.93 pp | 0.42 | **yes** |
+| electrode-specific residual | 3.18 pp | **0.27** | **no** |
+
+**0.27 dB is the reported floor**, with a per-site spread of 0.12–0.49 dB. Only the residual survives into a site-to-site claim, which is exactly the distinction the two right-hand columns of this table exist to draw.
+
+That number matters twice over. It sets the **resolution floor for the channel-redundancy analysis** (Fig 5), where adjacent sites differing by less than 0.27 dB are indistinguishable rather than genuinely redundant. And it sits ~3.7x below the boundary run's 1.0 dB decision threshold, so that run has real resolution.
+
+> **Two earlier values are superseded and both are recorded rather than quietly replaced.** 0.43 dB was measured with a 15 mm electrode while production runs 10 mm. Its replacement, 0.1310 dB, was measured at the right diameter but from **n = 2** — one pairwise difference of 1.52 pp drawn from a distribution whose SD is 4.61 pp, so it landed low by roughly a factor of three and was then quoted to four significant figures. The n = 6 harness reproduces that measurement's own input exactly (identity rotation gives median MAG +5.996 pp, RDM 4.111, matching `e10mm_medium.csv` to three decimals), so this is the same quantity resampled, not a different one. The correction **tightens** the criterion it gates, which is the direction that cannot flatter a live hypothesis.
+
+**These draws also settle the MAG question, and settle it better than the observations that raised it.** Holding the physical geometry exactly fixed and changing only the triangulation, **MAG's spread is 44x RDM's and MAG changes sign** (−4.01 to +6.00 pp, against RDM's 4.01–4.27). Nothing physical differs between those draws. Earlier evidence varied mesh density or electrode diameter and so could always be argued to have moved something real; this varies neither.
 
 **Worked cancellation, for the terms that do cancel.** A flat 4.4% magnitude offset is 20·log₁₀(1.044) = 0.37 dB on every site equally. In a ratio of site A to site B both numerator and denominator carry it, so it subtracts to exactly 0 dB. This is why the retracted MAG figure, though embarrassing as an accuracy claim, would not have moved a single published conclusion — and why RDM, which measures *topography*, is the metric that actually matters here.
 

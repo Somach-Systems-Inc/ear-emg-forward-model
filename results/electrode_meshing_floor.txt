@@ -1,6 +1,34 @@
-0.131014
-# electrode-meshing floor, dB
+0.272
+# electrode-meshing floor, dB -- the PER-SITE term, common mode removed
 # electrode diameter 10.0 mm (production)
-# from |dMAG| = 1.5198 pp between two nominally-identical meshes
-# n = 2 (one difference, not a distribution)
-# supersedes the 0.43 dB figure measured with a 15 mm electrode
+# n = 6 draws, one rigid rotation of electrodes AND sources per draw,
+#   solved on a single fixed mesh (val_sphere_medium.msh)
+# electrode-specific residual SD = 3.181 pp across draws
+# per-site spread 0.12 to 0.49 dB
+# source: src/measure_floor_multidraw.py
+#         results/electrode_floor_multidraw.txt
+#
+# WHY THIS IS THE RIGHT QUANTITY
+# 03c removes the common-mode shift from the cavity result and tests
+# max |RESIDUAL| against this floor. So the floor must also be a
+# common-mode-removed per-site quantity, or the two sides of criterion (b)
+# are different things. The undecomposed spread is 0.48 dB; judging a
+# common-mode-removed residual against that would make the criterion
+# sharply too strict.
+#
+# History -- demoted, not overwritten.
+#
+# 0.131014  (10 mm, n=2, medium vs fine mesh, 2026-08-02)
+#   SUPERSEDED. Not wrong in method, wrong in sample size: it was ONE
+#   pairwise difference of 1.5198 pp drawn from a distribution whose SD is
+#   4.607 pp. It did not merely lack an error bar, it landed short by ~2x.
+#   This harness reproduces its exact input -- draw 0, the identity
+#   rotation, gives median MAG +5.996 pp and RDM 4.111, matching
+#   results/e10mm_medium.csv to three decimals -- so this is the same
+#   measurement resampled properly, not a different one.
+#
+# 0.43      (15 mm electrode, n=2, 2026-08-02)
+#   SUPERSEDED. Measured at the wrong electrode diameter; production runs
+#   10 mm. Note the corrected value lands nearer this figure than the
+#   0.131 that replaced it. That is coincidence, not vindication: n=2 at
+#   either diameter cannot resolve a spread this wide.

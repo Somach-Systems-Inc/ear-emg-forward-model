@@ -1,5 +1,25 @@
 """Articulatory volume-conductor exposure vs distance to the oral cavity.
 
+*** THE VERDICT THIS SCRIPT PRINTS IS SUPERSEDED. DO NOT QUOTE IT. ***
+
+This script SOLVES. Read the verdict from `src/03c_cavity_analysis.py`, which
+supersedes everything below the solve loop for three reasons:
+
+  1. it decomposes the common-mode shift from the per-electrode residual, and
+     criterion (b) is about the residual. Filling the oral cavity and
+     nasopharynx lowers total head conductance and moves EVERY electrode,
+     including ear sites 76 mm away, so a raw-shift test can pass while the
+     hypothesis under test fails.
+  2. the 0.43 dB floor hardcoded below is superseded twice over. It is now
+     0.272 dB (10 mm, n=6, per-site, common mode removed) and is READ FROM
+     `results/electrode_meshing_floor.txt` by 03c rather than hardcoded.
+  3. 03c reads each solve's calibration line and recomputes the verdict with
+     and without any warned solve. This script reads no calibration output.
+
+The printed block below is left intact rather than deleted so that the
+superseded numbers stay auditable, but it must not be quoted.
+
+
 NOT a jaw-vs-ear test. That is a categorical claim of the same shape as the one
 that killed Fig 7 -- it assumes the grouping it should be measuring. Electrodes
 are chosen to SPAN electrode-to-cavity distance (14.5 to 75.5 mm), not to

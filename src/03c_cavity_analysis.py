@@ -17,8 +17,18 @@ RE-REGISTERED CRITERION (criterion 2 amended before any number was seen):
   (a) Spearman rho(distance, median |dB|) NEGATIVE
       -- unaffected by the decomposition; rank order is invariant to a
          constant offset, so this is the criterion as originally written
-  (b) max |RESIDUAL| exceeds 0.43 dB   <- was max |raw shift|
+  (b) max |RESIDUAL| exceeds the electrode-meshing floor  <- was max |raw shift|
 Both must hold. Failing either = FALSIFIED.
+
+The floor is READ FROM MEASUREMENT, never hardcoded, and the verdict is
+printed against every floor the criterion has ever been judged against
+(0.43 registered, 0.1310 superseded, and the current measured value) plus the
+flip point. If those rows disagree, the disagreement is the result.
+
+Note the floor must be a COMMON-MODE-REMOVED per-site quantity, because that
+is what this script tests: it strips the common-mode shift from the cavity
+result and tests the residual. Judging that residual against an undecomposed
+floor would compare two different quantities.
 
 REPORTED SEPARATELY:
   common-mode -> a Methods term, now measured: "head models omitting the oral
@@ -47,6 +57,8 @@ CAVITY = (31, 97)
 # a 15 mm electrode while production runs 10 mm, so it is being re-measured.
 # Until that lands this analysis refuses to run -- see the ordering guard.
 REGISTERED_FLOOR_DB = 0.43           # what criterion (b) was registered against
+SUPERSEDED_FLOOR_DB = 0.1310         # 10 mm but n=2; landed ~2x short of the
+#                                      spread, kept so its verdict stays visible
 FLOOR_FILE = "electrode_meshing_floor.txt"   # written by the 10 mm re-run
 
 
@@ -195,10 +207,16 @@ def main() -> int:
           f"{max_res:.4f} dB\n                and fails for any floor above it.")
 
     measured = read_measured_floor()
-    verdicts = [("registered 0.43 dB (15 mm electrode)", REGISTERED_FLOOR_DB)]
+    # Every floor this criterion has ever been judged against, side by side.
+    # The verdict is not allowed to depend on which one is "current": if the
+    # rows disagree, that disagreement IS the result and must be visible.
+    verdicts = [
+        ("registered 0.43 dB (15 mm, n=2)", REGISTERED_FLOOR_DB),
+        ("superseded 0.1310 dB (10 mm, n=2)", SUPERSEDED_FLOOR_DB),
+    ]
     if measured is not None:
-        verdicts.append((f"measured {measured:.4f} dB (10 mm, production)",
-                         measured))
+        verdicts.append(
+            (f"measured {measured:.3f} dB (10 mm, n=6, per-site)", measured))
     print(f"\n    {'floor':<40}{'(b)':>6}   {'overall':>9}")
     for lbl, fl in verdicts:
         b = max_res > fl

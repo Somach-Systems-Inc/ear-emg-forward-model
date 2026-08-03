@@ -287,16 +287,60 @@ def phase_analytic(npz: Path, out_txt: Path) -> int:
     say(f"    median : {np.median(el_sd):.3f} pp  -> {to_db(np.median(el_sd)):.4f} dB")
     say(f"    mean   : {el_sd.mean():.3f} pp  -> {to_db(el_sd.mean()):.4f} dB")
     say(f"    max    : {el_sd.max():.3f} pp  -> {to_db(el_sd.max()):.4f} dB")
+
+    # ---- estimator 3: the decomposition. This is the one criterion (b) needs.
+    #
+    # Within a draw every electrode sees the SAME source points, so anything
+    # source-sampling contributes is COMMON to all 16 and cancels in any
+    # site-to-site comparison -- the same argument the error budget's
+    # "affects ratios?" column makes, and the same decomposition
+    # 03c_cavity_analysis.py applies to the cavity shifts.
+    #
+    # This matters for consistency, not elegance. 03c removes common mode from
+    # the cavity shift and tests max |RESIDUAL| against the floor. Judging a
+    # common-mode-removed residual against a floor that still CONTAINS common
+    # mode would compare two different quantities and make the criterion
+    # sharply too strict.
+    common = per_el_mag.mean(axis=1)
+    resid = per_el_mag - common[:, None]
+    common_sd = float(common.std(ddof=1))
+    res_sd = resid.std(axis=0, ddof=1)
+
+    say("")
+    say("ESTIMATOR 3 -- DECOMPOSED, and this is the one criterion (b) needs")
+    say(f"  common-mode SD across draws  : {common_sd:.3f} pp  -> "
+        f"{to_db(common_sd):.4f} dB")
+    say("    shared by all 16 electrodes (source-sampling plus any global")
+    say("    realisation term). CANCELS in every site-to-site comparison.")
+    say(f"  electrode-specific residual SD, {n_el} electrodes:")
+    say(f"    median : {np.median(res_sd):.3f} pp  -> {to_db(np.median(res_sd)):.4f} dB")
+    say(f"    mean   : {res_sd.mean():.3f} pp  -> {to_db(res_sd.mean()):.4f} dB")
+    say(f"    max    : {res_sd.max():.3f} pp  -> {to_db(res_sd.max()):.4f} dB")
+    say("    this is the term that does NOT cancel: the per-site floor.")
+
+    say("")
+    say("RDM, FOR CONTRAST -- the same draws, the same re-triangulation")
+    say(f"  RDM mean {med_rdm.mean():.3f} pp, SD {med_rdm.std(ddof=1):.3f} pp, "
+        f"range {med_rdm.min():.3f} to {med_rdm.max():.3f}")
+    say(f"  MAG mean {med_mag.mean():+.3f} pp, SD {sd:.3f} pp, "
+        f"range {med_mag.min():+.3f} to {med_mag.max():+.3f}")
+    say(f"  MAG's spread is {sd / med_rdm.std(ddof=1):.0f}x RDM's, and MAG "
+        f"changes SIGN across draws.")
+    say("  Pure re-triangulation, identical physical geometry. This is the")
+    say("  strongest available evidence that MAG measures the electrode")
+    say("  realisation and RDM measures the field solution.")
+
     say("")
     say("RECOMMENDED REPORTING")
-    say(f"  floor = {to_db(el_sd.mean()):.3f} dB  "
-        f"(per-site, mean over {n_el} electrodes, n={n_draws} draws)")
-    say(f"  spread across sites: {to_db(el_sd.min()):.3f} to "
-        f"{to_db(el_sd.max()):.3f} dB")
+    say(f"  floor = {to_db(res_sd.mean()):.2f} dB  (per-site, common mode")
+    say(f"          removed, mean over {n_el} electrodes, n={n_draws} draws)")
+    say(f"  per-site spread: {to_db(res_sd.min()):.2f} to "
+        f"{to_db(res_sd.max()):.2f} dB")
     say("")
-    say("  Report to TWO decimals, not four. The underlying spread does not")
-    say("  support more, and the previous 0.1310 dB implied precision that")
-    say("  a single difference cannot carry.")
+    say("  Report to TWO decimals, not four. The previous 0.1310 dB implied")
+    say("  precision a single difference cannot carry, and it was low: one")
+    say("  pairwise difference of 1.52 pp drawn from a spread whose SD is")
+    say(f"  {sd:.2f} pp. n=2 did not just lack error bars, it landed short.")
 
     out_txt.parent.mkdir(parents=True, exist_ok=True)
     out_txt.write_text("\n".join(lines) + "\n")
