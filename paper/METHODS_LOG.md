@@ -1506,3 +1506,76 @@ and neither `libpetsc` nor `libHYPRE` contains a single OpenMP symbol, with
 `OMP_NUM_THREADS=8` measuring 7.3 s against 7.2 s at one thread.
 
 **Serial at ~3 h for stage 3 is accepted.** Stop pursuing concurrency.
+
+---
+
+## 2026-08-03 — INCIDENT: licensed MIDA geometry was PUBLIC on GitHub for ~11.5 hours
+
+Found at Step E of the publication sequence, while checking whether the
+target repo existed. It did, and it was **public**.
+
+### What was exposed
+
+`github.com/Somach-Systems-Inc/ear-emg-forward-model`, created
+**2026-08-03T04:59:57Z**, pushed 12 seconds later at **05:00:09Z**, public
+until **16:31Z**. Roughly **11.5 hours**.
+
+Its tree at HEAD (`5908e18`) carried **109 `.geo` files at ~22.9 MB each**,
+each one the full MIDA head-and-neck surface (126,945 triangles, 63,582
+vertices). No `.msh` and no `.nii`, but the `.geo` files alone are a
+reconstructible surface of the licensed model.
+
+This predates and is independent of the local purge: the push happened
+**before** anyone checked what `.geo` contained.
+
+### Actual dissemination: none detectable
+
+| metric | value |
+|---|---|
+| forks | **0** |
+| stars / watchers | **0** |
+| clones (14 d), unique cloners | **0 / 0** |
+| views (14 d), unique visitors | **0 / 0** |
+
+Zero across every counter over the whole public window. The repository was
+new and unlinked from anywhere. GitHub's traffic counters lag slightly and do
+not capture every automated crawler, so this is strong evidence rather than
+proof, but nothing indicates the data was fetched by anyone.
+
+### Action taken immediately
+
+**Repository set to private**, verified. That was done without waiting,
+because the instruction for this repo was explicitly *"PRIVATE repo,
+Somach-Systems-Inc/ear-emg-forward-model"*, so making it private executes the
+stated intent and stops an ongoing licence breach at the same time. It is
+reversible and cost nothing to get wrong.
+
+**Nothing was pushed.** The purged local history was NOT force-pushed,
+because that would leave the old objects on GitHub as unreachable-but-present
+and would create a false impression that the remote was clean.
+
+### What remains, and why it is Carl's call
+
+The remote is private but its history still contains the 109 files. Two ways
+to finish it:
+
+1. **Delete the repository and recreate it private, then push the purged
+   history.** Removes the objects outright. Cleanest, and cheap here precisely
+   because nobody has cloned it. Destructive and outward-facing, so not done
+   unilaterally.
+2. **Force-push the purged history.** Makes the old objects unreachable, but
+   they persist on GitHub and remain fetchable by SHA until GitHub garbage
+   collects. With the repo private that is only reachable by someone with
+   access, so it is an acceptable interim, but it is not equivalent to (1) and
+   should not be described as if it were.
+
+### The lesson, which is an ordering lesson
+
+The licensing check and the publication were done in the wrong order. A repo
+was created and pushed in **12 seconds**, and the question "what is actually
+inside `*_el_currents.geo`?" was not asked until eleven hours later. The file
+name says *electrode currents*, which sounds like a small patch; it is the
+whole head.
+
+**Check what a file contains before publishing it, not after.** A name is not
+a description, and 22.9 MB should have prompted the question on its own.
