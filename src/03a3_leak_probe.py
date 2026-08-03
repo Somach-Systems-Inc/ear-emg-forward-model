@@ -25,10 +25,20 @@ net vertical current through ANY horizontal plane below both of them be
 **exactly zero** -- whatever flows down must come back up, because there is
 nowhere else for it to go if the boundary is insulating.
 
-    flux ~ 0 through planes at S = -130, -150, -170  -> boundary is fine,
-                                                        hypothesis FALSIFIED
-    flux ~ +/- I_injected                            -> current is leaking out
-                                                        the bottom, CONFIRMED
+    CORRECTED after the control run (adversarial pass #4). "Zero below both
+    electrodes" is too naive for planes just BELOW an electrode: current
+    injected at hyoid spreads downward into tissue and returns, so a plane a
+    few mm under it legitimately carries circulating current. The truncated
+    control shows 0.951 mA at S = -112 and is correct.
+
+    The test that actually discriminates is DECAY TOWARD THE DOMAIN FLOOR,
+    where there is nowhere left to circulate:
+
+        truncated (clean)  0.951 mA at -112  ->  0.107 mA at -119 (floor -122)
+        extended (broken)  1.594 mA at -112  ->  1.070 mA at -182 (floor -192)
+
+    Flux that fails to decay approaching the floor means current is leaving
+    the domain there.
 
 Net vertical current through a plane is obtained as the volume integral of
 J_z over a thin horizontal slab divided by its thickness, which converges to

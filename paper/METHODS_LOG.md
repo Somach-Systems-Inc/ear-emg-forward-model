@@ -1857,3 +1857,58 @@ that is recorded rather than hidden.
 `03a_boundary_run.py` after every solve, exactly as `03d` already did. A solve
 that violates conservation now fails loudly instead of printing a mesh
 decision.
+
+---
+
+## 2026-08-03 — ADVERSARIAL PASS #4: the leak conclusion, checked against a control
+
+Attacked my own conclusion from the previous entry, because "the mesh violates
+charge conservation" was measured with a method that had never been validated.
+If the method were wrong it would report nonsense on a *good* mesh too.
+
+**Control: the same code on the truncated mesh, which calibrates clean.**
+
+| plane S (mm) | truncated (clean) | extended (broken) |
+|---|---|---|
+| −60 | 0.934 mA | 1.611 mA |
+| −90 | 0.948 mA | 1.597 mA |
+| −112 | 0.951 mA | 1.594 mA |
+| near its own floor | **0.107 mA** (at −119, floor −122) | **1.070 mA** (at −182, floor −192) |
+
+**The method is validated.** Between the electrodes the truncated mesh returns
+0.93–0.95 mA against a 1.00 mA injection, a 5–7% shortfall consistent with the
+~4% discretisation deficit already characterised for this pipeline. It is not
+returning nonsense.
+
+**And the decisive contrast is cleaner than the one I first drew.** Approaching
+its own inferior boundary the truncated mesh's net flux **collapses to 0.107
+mA**, which is what an insulating face does: current cannot escape, so net
+transport through planes near it goes to zero. The extended mesh at the
+equivalent position still carries **1.070 mA**, a **10x difference**, with
+current running at essentially the full injected rate right at the floor of
+the domain.
+
+Same code, same montage, same conductivities. Only the mesh differs.
+
+### A correction to my own framing
+
+The previous entry asserted that any plane below both electrodes must carry
+zero net current, and applied that at S = −112 and −130. **That expectation is
+too naive for planes just below an electrode.** Current injected at `hyoid`
+(S = −108.2) genuinely spreads downward into tissue and returns, so a plane a
+few mm below it carries real circulating current — the truncated control shows
+0.951 mA at S = −112 and it is behaving correctly. The zero-flux argument only
+bites once you are near the domain floor, where there is nowhere left for
+current to circulate.
+
+**The conclusion is unchanged and now rests on better evidence:** not "flux is
+nonzero where it should be zero", which over-claimed, but "flux fails to decay
+toward the domain floor, where the control shows it decaying by 10x". That is
+the falsifiable version, and it is the one to quote.
+
+Recorded rather than silently amended, because the first framing would have
+survived unchallenged: it reached the right verdict by an argument that does
+not hold everywhere it was applied.
+
+`src/03a3_leak_probe.py` now runs the control alongside the test rather than
+asserting the expectation.
