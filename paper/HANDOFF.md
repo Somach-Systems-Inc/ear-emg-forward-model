@@ -7,6 +7,35 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
+## 0-NEXT. WHAT IS OWED, in order
+
+1. **INVARIANT 2 IS UNREACHABLE — fix the ordering first.** Tested against its
+   known-bad case (the extended mesh leaking 1.07 mA) and **it never ran**:
+   `check_solve_plateau()` raises `INVARIANT 1 FAILED` and returns, and the
+   invariant-2 block sits after that raise. As ordered it can only fire on a
+   solve that breaks charge conservation *while* keeping a clean radius
+   plateau — a narrow, possibly empty class. **Its status is "never
+   demonstrated", not "passing".** Fix: compute BOTH invariants, then raise
+   once with everything that failed. This is shared solve machinery; do it
+   with room to verify, and re-run the known-bad case to confirm it fires.
+2. **Mesh-quality regression** (still owed): calibration error against local
+   element count and quality within each electrode patch, to test the
+   mesh-quality hypothesis for the 15.6–33.0% false-positive band.
+3. **Anisotropy tensor** in `03_leadfields.py`. Still raises
+   `NotImplementedError` **by design**. Needs a per-element tensor (0.4 along
+   fibre, 0.1 across) from `orientation.principal_axis()` for
+   `config.FIBRE_MODEL` "pca" compartments only. **Never let it fall through
+   to the isotropic map — that fabricates Fig 4 by comparing a condition
+   against itself.**
+4. **`src/04_analyze.py`**, with the truncation sensitivity: jaw-versus-ear
+   gap reported twice, with all jaw sites and excluding
+   `hyoid`/`submental_lat`/`submental_mid`, from the `clearance_to_cut_mm`
+   column already in the CSV. If the gap does not survive, report before any
+   Discussion.
+5. Figure captions and Results only. No Discussion, Introduction or Abstract.
+
+---
+
 ## 0. STAGE 3 IS COMPLETE — 22/22, data is in `results/03_leadfields.csv`
 
 All 22 electrodes solved against `earlobe_contra` on the truncated mesh,
