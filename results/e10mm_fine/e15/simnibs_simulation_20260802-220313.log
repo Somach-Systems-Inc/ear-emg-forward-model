@@ -1,0 +1,36 @@
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,495 - 37833 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,495 - 37833 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,495 - 37833 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/val_sphere_fine.msh
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,495 - 37833 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,495 - 37833 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/e10mm_fine/e15
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,525 - 37833 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/e10mm_fine/e15
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,611 - 37833 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,611 - 37833 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,611 - 37833 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-02 22:03:13,611 - 37833 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-02 22:03:14,373 - 37833 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(27.489499277199208), np.float64(15.006225524390334), np.float64(-84.375)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 22:03:15,753 - 37833 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(0.0), np.float64(0.0), np.float64(-90.0)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 2
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 22:03:18,064 - 37833 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-02 22:03:18,103 - 37833 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-02 22:03:18,109 - 37833 ]INFO: Assembling FEM Matrix
+[ simnibs 4.6.0 - 2026-08-02 22:03:18,656 - 37833 ]INFO: 0.55 s to assemble FEM matrix
+[ simnibs 4.6.0 - 2026-08-02 22:03:18,657 - 37833 ]DEBUG: Solving FEM System
+[ simnibs 4.6.0 - 2026-08-02 22:03:18,657 - 37833 ]INFO: Using solver options: hypre

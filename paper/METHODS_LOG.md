@@ -555,3 +555,43 @@ back null.
 `src/test_no_hardcoded_geometry.py` makes the mismatch class a test failure:
 it greps for literal `dimensions = [n, n]` anywhere in `src/` and fails. The
 original slipped through an entire validation campaign unnoticed.
+
+---
+
+## 2026-08-02 — RULING: correcting the electrode-meshing floor is permitted
+
+**Question.** The 0.43 dB electrode-meshing floor was measured with a 15 mm
+electrode while production runs 10 mm. Criterion (b) of the cavity test was
+registered against 0.43 dB. Re-measuring the floor moves a registered threshold
+after registration, which the CLAUDE.md norm exists to prevent.
+
+**Ruling (Carl).** Permitted. **Nothing failed 0.43 dB.** The quantity that
+figure references was measured with the wrong electrode. That falls under the
+norm's *"an independent measurement establishes the physical bound"* clause,
+not the *"revised because something failed it"* prohibition.
+
+**Why the distinction is the whole point.** The prohibited move is: run a test,
+see it fail, widen the threshold. The permitted move is: discover the threshold
+was measuring the wrong thing, measure the right thing, and record both. The
+test outcome played no part in noticing the electrode mismatch — it was found by
+auditing harness parameters against config, before the cavity residuals existed.
+Order of discovery is what separates the two cases, and it is auditable here
+because the correction was committed before the residuals were opened.
+
+**Superseding mechanism, better than either threshold.** Rather than choosing a
+floor, the analysis reports the residual in dB *and* the floor value at which
+the verdict flips. The floor measurement then **locates** the result on that
+axis instead of deciding it, and there is no threshold left to move. Both
+readings — against the registered 0.43 dB and against the corrected 10 mm
+value — are printed side by side so any change of verdict is visible.
+
+**Generalised.** This applies to every threshold-gated claim in the paper.
+Reporting where a result sits on the threshold axis is strictly more
+informative than reporting which side of one line it landed on, and it survives
+the threshold turning out to be wrong.
+
+**Ordering guard, enforced in code.** `src/03c_cavity_analysis.py` exits 2 and
+refuses to compute anything until `results/electrode_meshing_floor.txt` exists.
+The floor is measured and committed in its own commit; only then are the cavity
+residuals opened. This makes "the threshold followed the result" impossible
+rather than merely undesirable.

@@ -18,3 +18,50 @@ thickness:2
 channelnr: 1
 number of holes: 0
 
+[ simnibs 4.6.0 - 2026-08-02 22:02:48,416 - 37833 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(0.0), np.float64(0.0), np.float64(-90.0)]
+pos_ydir: []
+dimensions: [10.0, 10.0]
+thickness:2
+channelnr: 2
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 22:02:50,669 - 37833 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-02 22:02:50,709 - 37833 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-02 22:02:50,716 - 37833 ]INFO: Assembling FEM Matrix
+[ simnibs 4.6.0 - 2026-08-02 22:02:51,243 - 37833 ]INFO: 0.53 s to assemble FEM matrix
+[ simnibs 4.6.0 - 2026-08-02 22:02:51,244 - 37833 ]DEBUG: Solving FEM System
+[ simnibs 4.6.0 - 2026-08-02 22:02:51,244 - 37833 ]INFO: Using solver options: hypre
+[ simnibs 4.6.0 - 2026-08-02 22:02:51,431 - 37833 ]INFO: Time to set up KSP:   0.1566 s
+[ simnibs 4.6.0 - 2026-08-02 22:02:51,735 - 37833 ]INFO: Time to solve:   0.3016 s
+[ simnibs 4.6.0 - 2026-08-02 22:02:51,835 - 37833 ]INFO: Estimated current calibration error: 8.3%
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,129 - 37833 ]INFO: Creating visualizations
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,634 - 37833 ]SUMMARY: 
+val_sphere_fine_TDCS_1
+======================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |2.95e-01 V/m |2.79e-01 V/m |2.29e-01 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |1.81e+04 mm³ |4.39e+04 mm³ |
+
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,669 - 37833 ]INFO: Finished Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,669 - 37833 ]INFO: Result Files:
+/Users/carl/CODELocalProjects/ear-emg-forward-model/results/e10mm_fine/e11/val_sphere_fine_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,699 - 37833 ]INFO: =====================================
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,700 - 37833 ]INFO: SimNIBS finished running simulations
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,700 - 37833 ]INFO: Simulation Result Meshes:
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,700 - 37833 ]INFO: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/e10mm_fine/e11/val_sphere_fine_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-02 22:02:52,700 - 37833 ]INFO: =====================================
