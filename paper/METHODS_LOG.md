@@ -537,3 +537,21 @@ measured number (0.96) plus reasoning (p ≈ 0.98 elsewhere). The reasoning was
 plausible and the arithmetic fine; the inference was still wrong, because a
 matching exponent from a different measurement is not evidence about this one.
 `derived` is not a safe tier.
+
+**Lesson, recorded verbatim because the wording matters:** a matching exponent
+measured elsewhere is not evidence about this quantity. `derived` is not a safe
+tier — it inherits the confidence of its weakest link, and mine was an analogy.
+
+**Consolidated fix.** The 15/20 mm harness mismatch and the unexplained level
+spread are plausibly the same defect, so one re-run at the production diameter
+answers four open questions at once: it removes the mismatch, re-measures the
+electrode-meshing floor at 10 mm (replacing 0.43 dB everywhere it has been used,
+including the cavity criterion and the channel-redundancy resolution floor),
+tests the electrode-realisation hypothesis for the 0.96 vs 0.886 spread, and
+re-measures RDM/MAG, which are headline validation numbers currently carrying a
+15 mm electrode. The local-element-quality test is dropped unless that comes
+back null.
+
+`src/test_no_hardcoded_geometry.py` makes the mismatch class a test failure:
+it greps for literal `dimensions = [n, n]` anywhere in `src/` and fails. The
+original slipped through an entire validation campaign unnoticed.

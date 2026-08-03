@@ -138,7 +138,10 @@ def run_simnibs(mesh_path: Path, out_dir: Path, current: float,
         el.channelnr = 1 if centre is ELEC_A else 2
         el.centre = list(centre)
         el.shape = "ellipse"
-        el.dimensions = [20, 20]
+        # geometry ALWAYS from config -- a hardcoded diameter here is what
+        # left the validation on a 15/20 mm electrode while production ran
+        # 10 mm, silently invalidating the electrode-meshing floor.
+        el.dimensions = [config.ELECTRODE_DIAMETER_MM] * 2
         el.thickness = 2
     run_simnibs(S)
     hits = sorted(out_dir.glob("*_scalar.msh")) or sorted(out_dir.glob("*.msh"))

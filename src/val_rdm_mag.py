@@ -138,7 +138,11 @@ def phase_simnibs(mesh: Path, workdir: Path, npz: Path):
             el.channelnr = j + 1
             el.centre = list(c)
             el.shape = "ellipse"
-            el.dimensions = [15, 15]
+            # geometry ALWAYS from config -- a hardcoded diameter here
+            # is what left validation on a 15/20 mm electrode while
+            # production ran 10 mm, silently invalidating the
+            # electrode-meshing floor.
+            el.dimensions = [config.ELECTRODE_DIAMETER_MM] * 2
             el.thickness = 2
         run_simnibs(S)
         res = sorted(out.glob("*_scalar.msh")) or sorted(out.glob("*.msh"))
