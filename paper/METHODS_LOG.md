@@ -375,3 +375,56 @@ waiting for an audience to supply it.
 Two of four claims needed correction and one needed upgrading from asserted to
 tested. That hit rate on already-reviewed material is the argument for running
 it at every stage boundary.
+
+---
+
+## 2026-08-02 — ADVERSARIAL PASS #2: the Fig 7 premise is FALSE
+
+**Attacked an `asserted` claim and it did not survive.** Fig 7 is a numbered
+result, so this is a stop-and-report trigger.
+
+**The claim (asserted, never measured):** "the retroauricular region contains
+the head's only large superficial skin-adjacent air voids, and they sit
+directly between the electrode and the target muscles. No jaw site has anything
+comparable."
+
+**Test 1 — air-void inventory by volume and depth below skin** *(measured)*:
+
+| Label | Structure | Volume mm³ | Min depth | Median depth |
+|---|---|---|---|---|
+| 31 | Air Internal - Nasal/Pharynx | **43,650** | **0.5** | 31.6 |
+| 97 | Air Internal - Oral Cavity | 21,339 | 5.4 | 37.4 |
+| 28 | Maxillary Sinus | 12,147 | 15.6 | 29.5 |
+| 26 | Ethmoidal Sinus | 5,511 | 3.8 | 23.0 |
+| 27 | Frontal Sinus | 3,109 | 8.0 | **12.7** |
+| 30 | **Air Internal - Mastoid** | **1,402** | 11.3 | 16.4 |
+| 85 | Ear Auditory Canal | 1,384 | 0.5 | 3.8 |
+
+The mastoid air cells are among the **smallest** air voids in the head, 31x
+smaller than the nasopharyngeal airway, which reaches the same 0.5 mm minimum
+depth. The frontal sinus has a *shallower* median depth than the mastoid.
+
+**Test 2 — distance from each electrode to its nearest air void** *(measured)*:
+
+    ear sites   min 16.4   median 21.2 mm
+    jaw sites   min 14.5   median 22.4 mm
+
+**Indistinguishable, and the single closest electrode in the montage is
+`hyoid` — a jaw site — at 14.5 mm.** Every jaw site sits over the oral cavity
+or nasopharynx at the same range the ear sites sit over the mastoid.
+
+**Verdict.** The premise fails on all three counts: not the only, not the
+largest, not uniquely close to electrodes. Fig 7 as framed — air voids as an
+*ear-specific* mechanism explaining ear-versus-jaw difference — is not
+supported. The inter-subject variability prediction inherits the problem:
+sinus pneumatisation varies as much as mastoid pneumatisation and sits next to
+the jaw sites.
+
+**What could still survive**, if the measurement supports it: air voids as a
+*general* modelling term affecting both montages, tested by the same
+filled-versus-air comparison but reported without the ear-specific framing.
+That is a Methods term, not a headline result.
+
+Provenance note: the claim was tagged `asserted` on the first pass and attacked
+first for that reason. It had already been written into OUTLINE as a numbered
+result with a testable prediction attached.
