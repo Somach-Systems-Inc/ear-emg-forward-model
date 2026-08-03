@@ -198,9 +198,16 @@ cavity and nasopharynx are off by **0.507 dB** in absolute lead field.
 **State this caveat with the result.** Leave-one-out survives all eight
 deletions, but the (b) margin is carried by `hyoid`. Drop it and the largest
 residual is `buccal` at 0.350 dB, clearing the measured floor by only 1.29x
-**which PASSES the operative 0.27 dB floor.** (An earlier report called this
-a failure by quoting the retired 0.43 dB floor; that was wrong and made the
-result look weaker than it is.)
+**and the drop-hyoid fallback does NOT hold.** 0.350 dB clears the 0.27 dB
+point estimate, but the floor's own 95% CI reaches **0.65 dB**, and 0.350
+sits below that upper bound. A fallback that survives only against the point
+estimate of a quantity known to within a factor of two is not a fallback.
+(An earlier report additionally mis-stated this as failing the *retired*
+0.43 dB floor; that comparison was against a threshold this paper no longer
+uses.)
+
+**So the magnitude criterion rests on `hyoid` alone** — and `hyoid` is the
+site nearest the unresolved truncation face.
 
 **The verdict is PROVISIONAL.** `hyoid` is simultaneously the site nearest the
 oral cavity (14.5 mm) and nearest the truncation face (8.0 mm) whose model is

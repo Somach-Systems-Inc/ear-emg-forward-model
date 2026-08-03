@@ -1676,3 +1676,37 @@ rather than contact anyone. The facts a decision needs are all in the incident
 entry above: ~11.5 hours public, 109 files, every traffic counter zero,
 remediated the same day. Recorded for Carl, who is the only person who should
 weigh a self-report against clause 5's automatic-termination language.
+
+---
+
+## 2026-08-03 — CAVITY CAVEAT TIGHTENED: the drop-hyoid fallback does not hold
+
+Correcting my own reporting a second time, in the stricter direction.
+
+I had presented the leave-one-out result as reassurance: drop `hyoid` and
+`buccal` still clears the floor at 0.350 dB against 0.27 dB, so the verdict
+survives without its largest contributor.
+
+**That reassurance does not survive the floor's own uncertainty.** The floor
+is ~0.27 dB with a **95% CI of [0.17, 0.65]**. `buccal` at 0.350 dB sits
+**below the upper bound**. A fallback that holds against the point estimate
+but not across the interval of a quantity known only to within a factor of two
+is not a fallback at all.
+
+**The magnitude criterion therefore rests on `hyoid` alone.** And `hyoid` is
+the worst site to be depending on: it is simultaneously the electrode nearest
+the oral cavity (14.5 mm, so the largest effect belongs there physically) and
+the electrode nearest the truncation face (8.0 mm), whose model is currently
+broken and whose boundary run is withheld.
+
+That is not a refutation. Criterion (a), the rank correlation, survives every
+leave-one-out at rho between −0.821 and −0.964, p ≤ 0.024, and it is the
+criterion carrying the actual claim about distance. But criterion (b) has one
+load-bearing point, and the paper must say so.
+
+**Verdict stays PROVISIONAL. Re-run once a trustworthy extended mesh exists.**
+
+Two errors in a row on the same number, both now corrected: first quoting a
+retired threshold, then quoting a point estimate without its interval. The
+second is the more instructive, because the interval had been computed in the
+same session and simply was not carried into the comparison.
