@@ -1710,3 +1710,63 @@ Two errors in a row on the same number, both now corrected: first quoting a
 retired threshold, then quoting a point estimate without its interval. The
 second is the more instructive, because the interval had been computed in the
 same session and simply was not carried into the comparison.
+
+---
+
+## 2026-08-03 — PROBE: the extended-mesh failure is GLOBAL. Do not remesh.
+
+One solve, and it cancels a 40-minute remesh that would not have worked.
+
+`src/03a2_boundary_probe.py` injects at `above_ear`, **130 mm** from the
+truncation plane, on the **unchanged** extended mesh. If the coarse slab were
+the cause, a montage that far from it should solve cleanly.
+
+| solve | distance from cut plane | slab σ | calibration |
+|---|---|---|---|
+| truncated, `hyoid` | — | — | **clean** |
+| extended, `hyoid` | 8 mm | 0.355 | WARNED **100.49%** |
+| extended, `above_ear` | **130 mm** | 0.355 | WARNED **100.49%** |
+| extended, `hyoid` | 8 mm | 0.190 | WARNED **95.84%** |
+
+**VERDICT: GLOBAL.** Calibration fails just as hard 130 mm away as it does
+8 mm away. The element-size hypothesis is **falsified**, and refining the slab
+would not have fixed it.
+
+### The identical value is the real finding
+
+`hyoid` and `above_ear` are entirely different montages, different current
+paths, opposite ends of the head, and both return **100.49%** — not similar
+values, the same value to two decimals. Local conditioning would not do that.
+
+Cross-referencing the slab conductivity makes the pattern unambiguous:
+
+    slab 0.355 S/m  ->  100.49%   (at BOTH hyoid and above_ear)
+    slab 0.190 S/m  ->   95.84%
+
+**The calibration error tracks the slab conductivity and is independent of
+electrode position.** Whatever is wrong is a property of the extended mesh as
+a whole and scales with how conductive the added region is. It is not
+discretisation, and it is not local.
+
+That also retires the hypothesis recorded this morning. The
+element-size jump was reasoned from the 0.83% element-count anomaly, it was
+plausible, and it was wrong. **A hypothesis that survives a conforming-
+interface test and a labelling test can still fail the one measurement that
+varies the thing it actually predicts** — here, distance from the slab.
+
+### What this costs and what it does not
+
+**Stage 3 is still blocked**, and the boundary question is now harder than
+"refine and re-run". The truncated mesh remains the only one producing clean
+solves, so the pre-committed 1.0 dB rule still has no trustworthy number to
+act on. The rule is untouched.
+
+Next candidates, none yet tested: whether the extrusion introduces a second
+exterior surface that SimNIBS integrates current over when calibrating;
+whether the slab's outer boundary needs an explicit tag; whether
+`01c_extend_neck.py` should extend the *label volume* and re-run `meshmesh`
+rather than concatenating a pre-built slab. Ordered cheapest first, and each
+is a diagnostic rather than a rebuild.
+
+**One solve against a 40-minute remesh was the right trade** and it paid for
+itself immediately. Run the cheap discriminator before the expensive repair.
