@@ -25,7 +25,26 @@ Two literatures exist and they do not touch:
 | Head volume conduction (EEG / MEG / tDCS) | **brain** dipoles, sometimes ocular | detailed head models — but tissue segmentation stops at brain/CSF/skull/scalp |
 | Surface EMG volume conduction | **muscle** fibres | cylindrical or limb FEM geometries |
 
-Nobody has published muscle-source dipoles in an anatomically detailed head model.
+> ## 🛑 THIS CLAIM IS FALSIFIED — DO NOT WRITE ON IT
+>
+> **Harmening, Klug, Gramann & Miklody (2022), *HArtMuT*, J. Neural Eng.
+> 19(6):066041, doi:10.1088/1741-2552/aca8ce** already published ~3,900 muscle
+> dipole/tripole sources built from **MIDA's own** muscle segmentation, with
+> fibre directions from **PCA on neighbouring grid points** (this paper's
+> proposed method), solved as FEM leadfields on the New York Head. It asserts
+> the same gap verbatim before closing it. Verified by direct fetch, not
+> inferred.
+>
+> **What survives:** muscle as both source AND its own anisotropic tissue,
+> in MIDA's native geometry, for a coupling question at ear electrodes.
+> HArtMuT's muscle sources radiate through **homogeneous scalp** and its
+> authors say so in print. Yarici et al. 2023 is undamaged.
+>
+> **Rewriting the novelty framing is Carl's call**, not an agent's. See
+> `paper/GAP_CHECK.md` and METHODS_LOG. The PCA fibre-axis method must cite
+> HArtMuT as precedent rather than claim it.
+
+~~Nobody has published muscle-source dipoles in an anatomically detailed head model.~~
 
 The gap is stated explicitly in the ear-EEG modelling literature: forward models exist for neural and **ocular** sources, but *"to date, there is no theoretical study of such artifacts in ear-EEG"* for muscle (**Yarici, Thornton & Mandic 2023**, *Ear-EEG sensitivity modeling for neural sources and ocular artifacts*, Front. Neurosci. 16:997377).
 

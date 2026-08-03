@@ -1,0 +1,2 @@
+electrode,condition,montage,side,depth_mm,clearance_to_cut_mm,calibration_pct,inv1_mean,inv1_cv,inv2_net_frac,masseter,temporalis,medial_pterygoid,lateral_pterygoid,orbicularis_oris,buccinator,mentalis,depressor_anguli_oris,platysma,sternocleidomastoid
+above_ear,iso,ear,right,,129.81,,0.9463,0.00529,-2.9e-05,0.20909588503373064,0.29269977129106384,0.21132652242465472,0.21078010077724846,0.1813308094763946,0.19966065152744597,0.08897636283855717,0.15075279537746192,0.15325700687715788,0.1685953690231845

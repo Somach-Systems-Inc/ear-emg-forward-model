@@ -28,3 +28,40 @@ thickness:2
 channelnr: 2
 number of holes: 0
 
+[ simnibs 4.6.0 - 2026-08-03 10:28:51,822 - 80710 ]INFO: Using isotropic conductivities
+[ simnibs 4.6.0 - 2026-08-03 10:28:55,150 - 80710 ]INFO: Simulating electrode pair 2101 - 2102
+[ simnibs 4.6.0 - 2026-08-03 10:28:55,261 - 80710 ]INFO: Assembling FEM Matrix
+[ simnibs 4.6.0 - 2026-08-03 10:29:05,647 - 80710 ]INFO: 10.39 s to assemble FEM matrix
+[ simnibs 4.6.0 - 2026-08-03 10:29:05,662 - 80710 ]DEBUG: Solving FEM System
+[ simnibs 4.6.0 - 2026-08-03 10:29:05,662 - 80710 ]INFO: Using solver options: hypre
+[ simnibs 4.6.0 - 2026-08-03 10:29:09,488 - 80710 ]INFO: Time to set up KSP:   3.2623 s
+[ simnibs 4.6.0 - 2026-08-03 10:29:22,911 - 80710 ]INFO: Time to solve:  13.3925 s
+[ simnibs 4.6.0 - 2026-08-03 10:29:23,707 - 80710 ]INFO: Estimated current calibration error: 6.3%
+[ simnibs 4.6.0 - 2026-08-03 10:29:29,007 - 80710 ]INFO: Creating visualizations
+[ simnibs 4.6.0 - 2026-08-03 10:29:32,830 - 80710 ]SUMMARY: 
+mida_headneck_TDCS_1
+====================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |2.35e-01 V/m |1.73e-01 V/m |1.39e-01 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |7.63e+02 mm³ |1.57e+04 mm³ |
+
+[ simnibs 4.6.0 - 2026-08-03 10:29:32,889 - 80710 ]INFO: Finished Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-03 10:29:32,889 - 80710 ]INFO: Result Files:
+/Users/carl/CODELocalProjects/ear-emg-forward-model/results/leadfields/iso/above_ear/mida_headneck_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-03 10:29:32,939 - 80710 ]INFO: =====================================
+[ simnibs 4.6.0 - 2026-08-03 10:29:32,939 - 80710 ]INFO: SimNIBS finished running simulations
+[ simnibs 4.6.0 - 2026-08-03 10:29:32,939 - 80710 ]INFO: Simulation Result Meshes:
+[ simnibs 4.6.0 - 2026-08-03 10:29:32,939 - 80710 ]INFO: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/leadfields/iso/above_ear/mida_headneck_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-03 10:29:32,939 - 80710 ]INFO: =====================================

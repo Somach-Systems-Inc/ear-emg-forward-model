@@ -2043,3 +2043,92 @@ the recovery was luck-independent: the analysis script `03c` had been wired to
 read calibration even though the solve script had not, so the warning surfaced
 before the number reached Results rather than after. That redundancy was not
 designed, and the guard-coverage test now makes it unnecessary to rely on.
+
+---
+
+## 2026-08-03 — FALSIFIED: the central novelty claim. HArtMuT got there in 2022.
+
+**Stop-and-report trigger: a falsified claim that everything downstream
+depends on.** The gap-check worktree was told to attack the paper's central
+`asserted` claim, and it broke it. **Re-verified independently against
+IOPscience before recording**, because a finding this consequential must not
+rest on one agent's reading.
+
+**The claim, as written since day one:**
+
+> "Nobody has published muscle-source dipoles in an anatomically detailed head
+> model."
+
+**The paper that falsifies it:**
+
+Harmening, Klug, Gramann & Miklody (2022), *HArtMuT — modeling eye and muscle
+contributors in neuroelectric imaging*, **J. Neural Eng. 19(6):066041**,
+doi:10.1088/1741-2552/aca8ce.
+
+Confirmed by direct fetch, every element:
+
+| element of our claim | HArtMuT |
+|---|---|
+| muscle sources as dipoles | **yes**, dipolar and tripolar, ~3,900 sources |
+| in a detailed head model | **yes**, FEM leadfields on the New York Head |
+| muscle geometry from MIDA | **yes**, "extracted from the open-source MIDA model" |
+| fibre direction by PCA | **yes**, "a PCA on close neighboring grid points" |
+| asserts the same gap | **yes**, "muscular sources, to our knowledge, have not been added to any head model so far" |
+
+It is not a near miss. It is the same construction, from the same atlas, by
+the same fibre-axis technique this paper proposed as its own, published four
+years ago and already shipped into SEREEGA and UnfoldSim.jl.
+
+### What survives, and it is narrower and better defended
+
+**HArtMuT's muscle sources radiate through homogeneous scalp.** Its authors
+say so in print: *"this approach lacks modeling eyeballs (and muscles) as
+their own tissue(s) with different conductivity than the remaining scalp."*
+Neither volume conductor it uses contains muscle or fat as a compartment.
+
+So the surviving claim is **muscle as both source and its own anisotropic
+tissue**, solved in **MIDA's native geometry** rather than warped onto another
+head, applied to a **coupling question at ear electrodes** HArtMuT has no
+electrodes for. That is a real gap and it is defensible. It is also a much
+smaller one than the paper has been written around.
+
+**Yarici et al. 2023 is undamaged.** Its gap statement is scoped to ear-EEG
+and HArtMuT does not touch ear-EEG, so it carries more weight now, not less.
+
+### Consequences, none of them optional
+
+1. **The framing is Carl's to rewrite, not mine.** Novelty framing is
+   Introduction/Discussion territory and is his by standing rule. `OUTLINE.md`
+   is flagged at the claim so nobody writes on the dead premise meanwhile.
+2. **The PCA fibre-axis method must cite HArtMuT as precedent** rather than
+   presenting it as new. It is currently presented as this paper's own
+   methodological angle.
+3. **The second half of the claim is also overstated.** sEMG forward models
+   are no longer only cylindrical or limb-shaped; the agent found DTI-derived
+   hand, MRI upper-arm and multi-compartment abdomen models.
+4. **UNVERIFIED and it gates a claim.** HArtMuT sampled MIDA's pooled
+   `Muscle (General)` label and describes it as "lower neck", while our own
+   inventory shows that label holds the suprahyoids. The public atlas is
+   anonymised to four classes at IT'IS's request, so whether HArtMuT already
+   covers the suprahyoid corridor **could not be settled from the paper**.
+   Load `HArtMuT_NYhead_small.mat` and read the labels **before** any
+   suprahyoid novelty claim is written. Ten minutes, and it decides whether
+   the surviving claim is as narrow as stated or narrower still.
+
+### An unrelated gift, worth taking
+
+**Ernie Extended** (Van Hoornweder et al. 2024, *Imaging Neuroscience* 2,
+doi:10.1162/imag_a_00379) is a 13-tissue head model that **includes muscle at
+0.160 S/m** and is already neck-extended. It is the cleanest
+tissue-not-source near-miss for the related-work ladder, and separately it is
+a **cheaper route out of the broken neck-extension mesh than debugging the
+extruded slab** — which is the problem this session stopped on under the
+two-hypothesis rule.
+
+### Why this was worth doing before Results
+
+The claim sat tagged `asserted` from day one and was never attacked, while
+five sessions of effort were spent on meshes, floors and invariants beneath
+it. **The cheapest possible check — a literature search against the paper's
+own headline — was the last one run.** Attack the load-bearing `asserted`
+claim first, not last.
