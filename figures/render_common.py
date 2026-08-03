@@ -375,7 +375,18 @@ def anonymise_head(pts, mode="crop", label_volume=None):
         aff = img.affine.astype(np.float64)
         idx = np.argwhere(np.isin(arr, EYE_LABELS)).astype(np.float64)
         A_eye = float((idx @ aff[:3, :3].T + aff[:3, 3])[:, 1].min())
-        face = (pts[:, 2] >= rim) & (pts[:, 1] >= A_eye)
+        # CORRECTED after visual inspection. The first version dropped points
+        # only where S >= rim AND A >= A_eye, i.e. the forehead and upper
+        # orbit. That is not the face: the identifying features -- nose tip,
+        # lips, chin profile -- all sit BELOW the orbital rim, and the
+        # re-rendered figure still showed a legible profile. Counting dropped
+        # points said it had worked; looking at the output said otherwise.
+        #
+        # The anterior limit now applies at ALL heights. This removes the
+        # profile outright and costs the anterior skin context around the
+        # chin-adjacent electrodes, which is a real loss and is the correct
+        # trade against a licence clause.
+        face = pts[:, 1] >= A_eye
         return ~face
     if mode == "silhouette":
         return np.ones(len(pts), dtype=bool)

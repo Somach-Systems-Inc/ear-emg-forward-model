@@ -2132,3 +2132,38 @@ five sessions of effort were spent on meshes, floors and invariants beneath
 it. **The cheapest possible check — a literature search against the paper's
 own headline — was the last one run.** Attack the load-bearing `asserted`
 claim first, not last.
+
+---
+
+## 2026-08-03 — Face anonymisation: the first crop was insufficient, and only looking caught it
+
+`02b_qa_render.py` now routes the skin and mandible surfaces through
+`render_common.anonymise_head()` before plotting, per MIDA clause 2.3.3.
+
+**The first implementation did not work, and the metric said it did.** It
+dropped points where `S >= orbital_rim AND A >= A_eye`, which removes the
+forehead and upper orbit. It reported "dropped 5,263 of 60,000 points" and
+looked like a success. **Rendering it and looking showed a legible facial
+profile still there**: the identifying features — nose tip, lips, chin — all
+sit *below* the orbital rim, so the mask had removed the least identifying
+part of the face and kept the most.
+
+Corrected to drop everything anterior of the eyes **at all heights**. Now
+14,088 of 60,000 skin points and a third of the mandible go, and the lateral
+view is a cranium and neck with no profile.
+
+**The cost is real and is the right trade.** The anterior skin around
+`mental`, `submental_mid`, `submental_lat` and `buccal` is gone, so those
+markers now sit against empty space rather than against the chin they are
+placed on. A licence clause outranks figure context, and the electrode
+positions themselves are unaffected.
+
+**Side effect, recorded not hidden:** the per-view position counts changed
+(posterior 15 → 13, frontal 19 → 22) because the script's per-view visibility
+test consults the surface point cloud, which is now sparser at the front. That
+is a rendering artefact of the mask, not a change to any coordinate. Worth
+knowing before anyone reads a count off this figure.
+
+**The lesson is the cheap one and I nearly missed it.** A count of dropped
+points is not evidence that the right points were dropped. The check that
+worked was rendering the image and looking at it, which took ten seconds.

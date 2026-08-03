@@ -97,6 +97,21 @@ def main(argv=None) -> int:
     skin = sidx @ aff[:3, :3].T + aff[:3, 3]
     pinna = ras_of(MIDA_PINNA, 20000)
     mand = ras_of(MIDA_MANDIBLE, 20000)
+
+    # MIDA licence clause 2.3.3: any published image must have the face
+    # disguised so the individual is unrecognizable. The lateral view of this
+    # figure previously showed a legible facial profile (nose, lips, chin).
+    # The rim is DERIVED from MIDA's own eye labels, never hardcoded.
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "figures"))
+    import render_common as rc
+    n_before = len(skin)
+    skin = skin[rc.anonymise_head(skin, mode="crop")]
+    mand = mand[rc.anonymise_head(mand, mode="crop")]
+    rc.assert_anonymised("02_electrode_qa", True)
+    print(f"  anonymised per licence 2.3.3: dropped "
+          f"{n_before - len(skin):,} of {n_before:,} skin points above the "
+          f"orbital rim (S = {rc.orbital_rim_S():.1f} mm) and anterior of "
+          f"the eyes")
     print(f"  skin {len(skin):,}  pinna {len(pinna):,}  mandible {len(mand):,}")
 
     # Held positions carry no coordinates by design (throat_scm awaits a

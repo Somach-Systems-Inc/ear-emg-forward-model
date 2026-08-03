@@ -1,5 +1,6 @@
 Cannot locate subjects m2m folder
 some postprocessing options might fail
+The current calibration error exceeded 10%! Estimated error value: 26.83%
 
 mida_headneck_TDCS_1
 ====================
@@ -10,12 +11,12 @@ Field Percentiles
 Top percentiles of the field (or field magnitude for vector fields)
 |Field |99.9%        |99.0%        |95.0%        |
 |------|-------------|-------------|-------------|
-|E     |1.54e-01 V/m |1.07e-01 V/m |8.19e-02 V/m |
+|E     |2.83e-01 V/m |2.14e-01 V/m |1.78e-01 V/m |
 
 Field Focality
 ---------------
 Mesh volume or area with a field >= X% of the 99.9th percentile
 |Field |75.0%        |50.0%        |
 |------|-------------|-------------|
-|E     |5.52e+02 mm³ |6.16e+03 mm³ |
+|E     |9.47e+02 mm³ |2.23e+04 mm³ |
 
