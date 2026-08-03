@@ -1,5 +1,24 @@
 # Methods log
 
+> **⚠️ COMMIT HASHES RECORDED BEFORE 2026-08-03 DO NOT RESOLVE DIRECTLY.**
+> On 2026-08-03 the history was rewritten with
+> `git filter-repo --path-glob '*.geo' --invert-paths` to purge MIDA-derived
+> surface geometry that should never have been committed (see the licensing
+> entry near the end of this file). **Every commit from the first `.geo`
+> addition onward received a new SHA.**
+>
+> `paper/COMMIT_MAP_PRE_PURGE.txt` maps old to new for all 57 commits. To
+> resolve a hash quoted anywhere in this log:
+>
+>     grep -i ^<oldhash> paper/COMMIT_MAP_PRE_PURGE.txt
+>
+> Worked examples: `304fcca` resolves to `8ba2295`, and `5908e18` to
+> `acf76be`. Commits predating the first `.geo` addition kept their original
+> SHA and map to themselves, so a hash that appears unchanged is not an error.
+>
+> **No content was lost.** Only `.geo` files were removed, and SimNIBS
+> regenerates them on every solve.
+
 Decisions, specification defects and non-obvious tool behaviour, recorded as
 they happen. Kept because the corrections here are often more instructive than
 the original plans, and because a defect that is not written down gets paid for
