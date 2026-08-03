@@ -7,6 +7,74 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
+## 0. STATE — 2026-08-03, remote is LIVE
+
+**Backed up off-machine at last.** `github.com/Somach-Systems-Inc/ear-emg-forward-model`,
+**PRIVATE**, `main` pushed. Verified after push: **0** `.geo` in the remote
+tree, **0** `.msh`/`.nii`, **no blob over 2 MB**, allowlist hook present.
+Local history carries **0** `.geo` additions.
+
+The licensing incident is closed operationally: the old public repo was
+deleted, history purged with `git filter-repo`, and the repo recreated
+private. Pre-purge commit hashes resolve via `paper/COMMIT_MAP_PRE_PURGE.txt`.
+**Still open and Carl's alone:** whether to self-report to IT'IS. Licence
+clause 5 terminates the agreement with immediate effect on breach, which meets
+his own "revisit if strongly worded" condition. Do not contact anyone.
+
+Local backups `/Users/carl/ear-emg-backup-20260803.tar.gz` and
+`~/Documents/ear-emg-backups/` (md5 `85ef361856a9afb91a3f428f6f72fdee`) can be
+retired now that the push is verified, but they bundle `.git` so they carry
+licensed blobs: delete them or keep them local, never sync them.
+
+**Two agents were running at handoff** in worktrees `../gap-check`
+(`carl/gap-check`, owns only `paper/GAP_CHECK.md`) and `../bench-scripts`
+(`carl/bench-scripts`, owns only `bench/`). Check their branches for
+committed work; merge only if file ownership held and nothing was fabricated.
+
+---
+
+## 0b. ⚠️ STAGE 3 NEEDS A SCRIPT WRITTEN FIRST
+
+**`src/03_leadfields.py` DOES NOT EXIST. Neither does `src/04_analyze.py`.**
+CLAUDE.md's pipeline table lists both as though they do. Stage 3 is therefore
+"write the production driver", not "run it". What exists is the machinery it
+should compose: `run_solves_parallel.py`, `solve_invariants.py`,
+`preflight.py`, `orientation.py`, `roi_corridor.py`, and the four `03a`–`03d`
+one-off experiments.
+
+Requirements for `03_leadfields.py`, all pre-committed elsewhere:
+
+- 24 positions from `results/02_electrode_positions.csv`; `throat_scm` is
+  `verified=held` with blank coordinates and every consumer must skip it
+- **both** anisotropy conditions (isotropic, anisotropic per
+  `config.FIBRE_MODEL`)
+- the **truncated** mesh `mida_headneck.msh` (see section 1)
+- invariants 1 and 2 on **every** solve; 3 and 4 on first and last, plus any
+  solve whose invariant-1 CV is elevated (`solve_invariants.needs_escalation`)
+- expect CV escalation to fire often. The band was calibrated on n=4 solves
+  varying only σ_air, on one mesh and one montage. **Recalibrate from the
+  first 10 stage-3 solves and record as calibration 2 with its own n,
+  ALONGSIDE the first, never overwriting it.**
+- `python src/test_guard_coverage.py --strict` must pass before it runs, and
+  the new script must itself pass that test
+- serial, ~3 h, authorised. Threads are settled and unavailable. Budget
+  ~12 GB per solve and re-measure free memory at launch.
+
+### Truncation sensitivity — costs nothing, do it in stage 4
+
+Report the jaw-versus-ear gap **twice**: once with all jaw sites, once
+**excluding `hyoid`, `submental_lat` and `submental_mid`**, the three within
+10 mm of the cut face. Same solves, different subset.
+
+If the gap survives the exclusion, that is a one-line answer to the obvious
+reviewer objection that the truncation flatters the headline. If it does not
+survive, **that must be known before any Discussion is written.**
+
+Also emit **each electrode's clearance to the cut face as a column beside its
+sensitivity**, so per-site exposure is visible rather than argued.
+
+---
+
 ## 0. OPEN INCIDENT — licensed data was public; remote is private, awaiting Carl
 
 **2026-08-03: `github.com/Somach-Systems-Inc/ear-emg-forward-model` was PUBLIC
