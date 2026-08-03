@@ -7,6 +7,33 @@ Repo clean, all work committed, `main` at the Sculptor-review commit.
 
 ---
 
+## 0-STOP. STAGE 3 CALIBRATION IS UNRESOLVED — numbers are PROVISIONAL
+
+**7 of 16 completed solves report calibration errors ABOVE the benign band**,
+up to **32.99%** (`mental`), with `cg08` 28.82, `cg04` 26.83, `cg09` 25.27,
+`cg01` 19.67, `earlobe_ipsi` 17.03, `cg06` 15.57.
+
+**15.6–33.0% is a NEW population.** The three characterised ones are 11–15%
+(measured benign against an analytic oracle), ~100% (extended-mesh leak),
+200% (conditioning). The benign finding was measured at 11–15% and **does not
+extrapolate to 33%**.
+
+**Both invariants PASS on every solve** (inv1 CV 0.38–1.53%, inv2 near zero
+bar one), so charge conservation holds while the solver reports delivering
+the wrong current. That combination is not yet explained.
+
+**Suggestive, tagged `derived`:** `mental` has both the worst calibration and
+the worst invariant-2 residual (+0.01379, 6x the next). It is also the most
+thinly resolved compartment in the mesh (3,226 tets, the smallest). Plausible
+common cause, and testable.
+
+**Do not put stage-3 numbers into Results until this is settled.** Decisive
+test is the one that worked before: solve a known-answer case while
+inspecting delivered current per electrode. Then either widen the recorded
+band with the measurement beside it, or re-run the affected solves.
+
+---
+
 ## 0-pre. BOTH AGENT BRANCHES ARE MERGED
 
 `carl/gap-check` and `carl/bench-scripts` are both in `main` and pushed.

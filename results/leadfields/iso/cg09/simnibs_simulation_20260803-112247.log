@@ -38,3 +38,30 @@ number of holes: 0
 [ simnibs 4.6.0 - 2026-08-03 11:24:54,584 - 80710 ]INFO: Time to solve:  13.3083 s
 [ simnibs 4.6.0 - 2026-08-03 11:24:55,407 - 80710 ]WARNING: The current calibration error exceeded 10%! Estimated error value: 25.27%
 [ simnibs 4.6.0 - 2026-08-03 11:25:00,647 - 80710 ]INFO: Creating visualizations
+[ simnibs 4.6.0 - 2026-08-03 11:25:04,364 - 80710 ]SUMMARY: 
+mida_headneck_TDCS_1
+====================
+Gray Matter
+
+Field Percentiles
+-----------------
+Top percentiles of the field (or field magnitude for vector fields)
+|Field |99.9%        |99.0%        |95.0%        |
+|------|-------------|-------------|-------------|
+|E     |2.83e-01 V/m |1.79e-01 V/m |1.31e-01 V/m |
+
+Field Focality
+---------------
+Mesh volume or area with a field >= X% of the 99.9th percentile
+|Field |75.0%        |50.0%        |
+|------|-------------|-------------|
+|E     |3.76e+02 mm³ |2.87e+03 mm³ |
+
+[ simnibs 4.6.0 - 2026-08-03 11:25:04,418 - 80710 ]INFO: Finished Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-03 11:25:04,418 - 80710 ]INFO: Result Files:
+/Users/carl/CODELocalProjects/ear-emg-forward-model/results/leadfields/iso/cg09/mida_headneck_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-03 11:25:04,466 - 80710 ]INFO: =====================================
+[ simnibs 4.6.0 - 2026-08-03 11:25:04,466 - 80710 ]INFO: SimNIBS finished running simulations
+[ simnibs 4.6.0 - 2026-08-03 11:25:04,466 - 80710 ]INFO: Simulation Result Meshes:
+[ simnibs 4.6.0 - 2026-08-03 11:25:04,466 - 80710 ]INFO: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/leadfields/iso/cg09/mida_headneck_TDCS_1_scalar.msh
+[ simnibs 4.6.0 - 2026-08-03 11:25:04,466 - 80710 ]INFO: =====================================

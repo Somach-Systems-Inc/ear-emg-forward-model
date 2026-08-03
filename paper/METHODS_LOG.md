@@ -2167,3 +2167,77 @@ knowing before anyone reads a count off this figure.
 **The lesson is the cheap one and I nearly missed it.** A count of dropped
 points is not evidence that the right points were dropped. The check that
 worked was rendering the image and looking at it, which took ten seconds.
+
+---
+
+## 2026-08-03 — STOP: stage 3 calibration is a NEW population, 7 of 16 above the benign band
+
+**Stage-3 numbers are PROVISIONAL and must not reach Results until this is
+settled.** Everything downstream depends on them.
+
+| electrode | calibration | |
+|---|---|---|
+| `mental` | **32.99%** | above band |
+| `cg08` | 28.82% | above band |
+| `cg04` | 26.83% | above band |
+| `cg09` | 25.27% | above band |
+| `cg01` | 19.67% | above band |
+| `earlobe_ipsi` | 17.03% | above band |
+| `cg06` | 15.57% | above band |
+| `cg03` | 13.99% | inside 11–15% |
+| `cg10` | 11.90% | inside 11–15% |
+
+Seven of sixteen completed solves sit **above** the only band ever measured as
+benign. Three populations were characterised before today, all on measurement:
+**11–15%** (false positive on well-conditioned custom meshes, 5 of 16 sphere
+solves warned while matching the analytic oracle), **~100%** (the extended-mesh
+charge leak), **200.00%** (conductivity conditioning). **15.6–33.0% is none of
+them.**
+
+**The benign finding does not extrapolate.** It was measured at 11–15% against
+an analytic oracle. Asserting that 33% is equally harmless because 12% was
+would be exactly the reasoning this project keeps having to retract.
+
+**Both invariants PASS on every solve**, which is the genuinely confusing part:
+invariant 1 plateaus everywhere (CV 0.38–1.53%, mean 0.887–1.075) and
+invariant 2 is near zero for all but one. So charge conservation and radius
+independence are satisfied while the solver reports delivering the wrong
+current.
+
+**One co-occurrence is suggestive and is tagged `derived`, not `measured`:**
+`mental` carries both the worst calibration (32.99%) **and** the worst
+invariant-2 residual (+0.01379 x injected, six times the next worst). If the
+warnings were pure post-processing artefact, they should not correlate with
+the one physical conservation measure available. n = 1 co-occurrence is not
+evidence, but it is the thread to pull.
+
+`mental` is also independently known to be the most thinly resolved
+compartment in the mesh (1,786 voxels on the right, 3,226 tetrahedra, the
+smallest in the model), which is a plausible common cause for both readings
+and is testable.
+
+### A false reassurance I gave, and how
+
+I checked run health by grepping the log for `WARNED|ESCALATE|INVARIANT.*FAILED`
+and got **zero hits**, and reported the run as clean. **The grep was wrong:**
+`03_leadfields.py` prints `calibration 32.99%`, never the word "WARNED" — that
+wording belongs to `03a` and `03b`. The warnings were in the CSV the whole
+time and the log search could not have found them.
+
+Caught only because the CSV was inspected directly a few minutes later. **A
+grep for a string the program never emits returns zero and looks exactly like
+good news.** The lesson is the same one as the face-crop count: check the
+artifact, not a proxy for it.
+
+### Required before any stage-3 number is used
+
+1. Determine what the 15–33% population is. The decisive test is the one that
+   worked before: solve a case with a known answer while inspecting delivered
+   current per electrode.
+2. If it is benign, characterise it properly and widen the recorded band with
+   the measurement beside it.
+3. If it is not, the affected solves are void and must be re-run.
+
+The run was left to finish (17/22 at the time of writing) because it writes
+incrementally and the data is worth having as evidence, not because it is
+trusted.
