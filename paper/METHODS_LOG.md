@@ -2241,3 +2241,72 @@ artifact, not a proxy for it.
 The run was left to finish (17/22 at the time of writing) because it writes
 incrementally and the data is worth having as evidence, not because it is
 trusted.
+
+---
+
+## 2026-08-03 — BRANCH A: SimNIBS's calibration check is wrong, not the solves. Fourth band recorded.
+
+Ran the pre-decided decisive test with **no new solves**: the validated
+tet-patch integral already runs on every stage-3 solve, and its `mean_ratio`
+**is** delivered current over requested.
+
+### The evidence, and it is stronger than "they disagree"
+
+| electrode | tet-patch integral | SimNIBS says | requested |
+|---|---|---|---|
+| `mental` | **1.0746 mA** | 32.99% error | 1.000 mA |
+| `cg08` | 1.0508 mA | 28.82% | 1.000 mA |
+| `cg04` | 1.0431 mA | 26.83% | 1.000 mA |
+| `post_lobule` | 1.0134 mA | 21.24% | 1.000 mA |
+| `cg06` | 0.9841 mA | 15.57% | 1.000 mA |
+| **`buccal`** | **0.8870 mA** | **clean** | 1.000 mA |
+| `mastoid` | 0.9420 mA | clean | 1.000 mA |
+
+Every solve delivers **0.887–1.075 mA**, max deviation **11.3%**, nowhere near
+the 15.6–33.0% claimed. **BRANCH A.** *(measured)*
+
+**Three independent discriminators, not one:**
+
+1. **No correlation.** Spearman(SimNIBS calibration, |my deviation|) =
+   **−0.322, p = 0.193**; Pearson −0.294, p = 0.237. If the solves were
+   genuinely mis-delivering current these would be strongly positive. They are
+   not significant in *either* direction.
+2. **The sign is backwards.** Warned solves average **1.0138 mA**; un-warned
+   solves average **0.9434 mA**. The warned ones are *closer* to the requested
+   current.
+3. **The single worst delivery is reported clean.** `buccal` at **0.8870 mA**
+   is the largest true deviation in the set and SimNIBS raises nothing, while
+   `mental` at 1.0746 — closer to correct — is flagged at 32.99%.
+
+A check that is anti-correlated with the error it claims to measure, and
+silent on the worst case, is not measuring that error.
+
+### FOURTH MEASURED BAND, recorded with its discriminating evidence
+
+| band | meaning | how established |
+|---|---|---|
+| 11–15% | false positive, custom mesh | 5/16 sphere solves warned while matching the analytic oracle |
+| **15.6–33.0%** | **false positive, MIDA mesh** | **tet-patch integral says 0.887–1.075 mA; correlation with the warning is −0.32, n.s.; worst true deviation is un-warned** |
+| ~100% | real: charge leaking out the domain | flux fails to decay toward the floor; control decays 10x |
+| 200.00% | real: conductivity conditioning | fields 10–20x too large; fixed by air 1e-15 → 1e-6 |
+
+**The stage-3 solves STAND.** Anisotropy and stage 4 may proceed.
+
+### Carl's correction on invariant 2, and he was right
+
+I reported `mental`'s invariant-2 residual as "6x the next worst", which reads
+as alarming. In absolute terms it is **+13.8 µA of 1000 µA (1.4%)**; the next
+worst, `buccal`, is **−2.3 µA (0.23%)**. Six times a small number is still a
+small number, and quoting the ratio without the magnitude was the misleading
+choice. *(measured)*
+
+### What this does NOT resolve
+
+Why SimNIBS's check misfires on this mesh at all, and why the misfire is
+*anti*-correlated with true delivery, are both unexplained. The check is now
+**demoted to a recorded quantity rather than a gate** for MIDA solves: it is
+still parsed and stored per solve, and the tet-patch integral is the
+authority. That is a downgrade of a check, so it is recorded loudly rather
+than quietly applied — and it is licensed by measurement, not by convenience,
+since it is exactly the "independent measurement establishes the bound" clause
+the threshold norm allows.
