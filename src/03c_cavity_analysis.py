@@ -114,6 +114,8 @@ def main() -> int:
               file=sys.stderr)
         return 2
 
+    import preflight
+
     rows = []
     for e in ELECS:
         a = config.RESULTS / f"cavity/air__{e}"
@@ -121,12 +123,20 @@ def main() -> int:
         if not (a.exists() and f.exists()):
             print(f"missing solve pair for {e}", file=sys.stderr)
             return 1
+        # Read the solver's own calibration line for BOTH halves of the pair.
+        # SimNIBS writes the result file whether or not the solve delivered the
+        # requested current, so a verdict computed without reading this is a
+        # verdict that has not checked its own inputs.
+        cal_a = preflight.read_calibration(a)
+        cal_f = preflight.read_calibration(f)
         A, F = medians(a), medians(f)
         db = [20 * np.log10(F[n] / A[n]) for n in sorted(A)]
         rows.append(dict(elec=e, dist=float(tree.query(pos[e])[0]),
                          signed=float(np.median(db)),
                          absmed=float(np.median(np.abs(db))),
-                         absmax=float(np.max(np.abs(db)))))
+                         absmax=float(np.max(np.abs(db))),
+                         cal_air=cal_a, cal_filled=cal_f,
+                         warned=(cal_a is not None or cal_f is not None)))
 
     common = float(np.median([r["signed"] for r in rows]))
     for r in rows:
@@ -142,9 +152,33 @@ def main() -> int:
         print(f"{r['elec']:<16}{r['dist']:>9.1f}{r['signed']:>+11.3f}"
               f"{r['residual']:>+10.3f}{r['absmed']:>9.3f}")
 
-    rho, p = spearmanr([r["dist"] for r in rows], [r["absmed"] for r in rows])
-    max_res = max(abs(r["residual"]) for r in rows)
+    def criteria(subset):
+        """(a) rank correlation, (b) max |residual|, on any subset of rows."""
+        rr, pp = spearmanr([r["dist"] for r in subset],
+                           [r["absmed"] for r in subset])
+        return rr, pp, max(abs(r["residual"]) for r in subset)
+
+    rho, p, max_res = criteria(rows)
     a_ok = rho < 0
+
+    # ---- calibration status of every input solve, stated before the verdict
+    warned = [r for r in rows if r["warned"]]
+    print("\ncalibration reported by the solver, per input solve:")
+    for r in rows:
+        ca = "clean" if r["cal_air"] is None else f"{r['cal_air']:.2f}%"
+        cf = "clean" if r["cal_filled"] is None else f"{r['cal_filled']:.2f}%"
+        print(f"  {r['elec']:<16} air {ca:>8}   filled {cf:>8}")
+    if warned:
+        print(f"\n  {len(warned)} of {len(rows)} electrode pairs contain a "
+              f"warned solve.")
+        print("  Two populations have been measured: 200.00% is the")
+        print("  conductivity-conditioning failure and is fatal; 11-15% on a")
+        print("  well-conditioned custom mesh has been measured as a false")
+        print("  positive (5 of 16 sphere solves warned while matching the")
+        print("  analytic oracle, and were not less accurate).")
+        print("  No threshold separating them is invented here. Instead the")
+        print("  verdict is recomputed without the warned pairs, below, so")
+        print("  their influence is visible rather than assumed away.")
 
     print(f"\n(a) Spearman rho(distance, median|dB|) = {rho:+.3f}  p = {p:.3f}"
           f"   -> {'PASS' if a_ok else 'FAIL'}")
@@ -175,6 +209,28 @@ def main() -> int:
     print("\nVERDICT:", "SURVIVES" if (a_ok and b_ok) else "FALSIFIED",
           f"(against the {'measured' if measured is not None else 'registered'}"
           f" floor)")
+
+    # ---- does the verdict depend on the warned solves?
+    if warned:
+        keep = [r for r in rows if not r["warned"]]
+        fl = measured if measured is not None else REGISTERED_FLOOR_DB
+        if len(keep) < 3:
+            print(f"\n  Only {len(keep)} clean pairs remain; too few for a rank"
+                  f" correlation.\n  The verdict CANNOT be shown independent "
+                  f"of the warned solves. Re-solve them.")
+        else:
+            rho2, p2, mr2 = criteria(keep)
+            v2 = (rho2 < 0) and (mr2 > fl)
+            print(f"\n  excluding {len(warned)} warned pair(s), n={len(keep)}:")
+            print(f"    rho = {rho2:+.3f} (p = {p2:.3f}), "
+                  f"max |residual| = {mr2:.4f} dB")
+            print(f"    verdict {'SURVIVES' if v2 else 'FALSIFIED'}"
+                  f"  ->  {'UNCHANGED' if v2 == (a_ok and b_ok) else 'CHANGED'}"
+                  f" by the exclusion")
+            if v2 != (a_ok and b_ok):
+                print("    The verdict depends on solves the solver itself")
+                print("    flagged. It is NOT reportable until those solves")
+                print("    are re-run clean.")
     if not (a_ok and b_ok):
         print("\nThis is a STRONG NEGATIVE, not a null. Complete cavity filling")
         print("is the most extreme configuration change physically available,")

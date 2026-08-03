@@ -9,10 +9,14 @@ result and the truncated mesh moves to supplementary.
 
 NOISE FLOOR, stated up front so the rule is applied against a known resolution.
 Electrode contact geometry is realised from incidental surface triangulation,
-and two statistically identical sphere meshes gave MAG differing by 5.06
-percentage points = 20*log10(1.0506) = 0.43 dB. The decision threshold is
-therefore only ~2.3x the measured per-realisation noise. A shift below ~0.5 dB
-cannot be distinguished from meshing noise by a single pair of solves.
+so nominally identical meshes disagree. That floor is READ FROM THE MEASUREMENT
+FILE, never hardcoded here: it was 0.43 dB with a 15 mm electrode and 0.131 dB
+re-measured at the 10 mm production diameter, and hardcoding it is how a
+superseded number survives. At the corrected floor the 1.0 dB threshold sits
+~7.6x above the noise rather than ~2.3x, so this run has more resolution than
+was originally feared.
+
+The 1.0 dB threshold itself is pre-committed in OUTLINE and does NOT move.
 
 Injects between a jaw site and the contralateral earlobe -- the jaw-versus-ear
 comparison the paper is actually about, and the montage most exposed to the cut
@@ -54,8 +58,57 @@ def load_positions():
             if r.get("verified") != "held" and r["R"] != ""}
 
 
-def solve(mesh: Path, out: Path, pos, slab_sigma=None, label=""):
+def read_measured_floor():
+    """The electrode-meshing floor is a MEASURED quantity, not a constant.
+
+    It was 0.43 dB (15 mm electrode), re-measured at 0.131 dB (10 mm, the
+    production diameter). Hardcoding it here would silently keep using a
+    superseded number, so it is read from the file the measurement writes.
+    The 1.0 dB decision threshold is NOT read from anywhere: it is
+    pre-committed in OUTLINE and must not move.
+    """
+    f = config.RESULTS / "electrode_meshing_floor.txt"
+    if not f.exists():
+        raise FileNotFoundError(
+            f"{f} missing. Run src/measure_electrode_floor.py first; the "
+            f"boundary shift is reported against the measured floor.")
+    for line in f.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            return float(line.split()[0])
+    raise RuntimeError(f"no numeric floor value in {f}")
+
+
+def load_table1():
+    """Every tag in the mesh needs a conductivity, not just the ones the
+    analysis reads.
+
+    This script previously bound only the 10 muscle labels plus the slab: 11
+    of the 117 tags present. SimNIBS raises
+    `TypeError: The value N in cond_list is not numerical` for the other 106,
+    which is the exact blocker recorded in METHODS_LOG that stopped the first
+    attempt at this run. The script was never updated after Table 1 was built,
+    so it would have crashed on launch.
+    """
+    p = config.RESULTS / "01_table1_conductivities.csv"
+    if not p.exists():
+        raise FileNotFoundError(
+            f"{p} missing. Every mesh tag needs a sourced conductivity; "
+            f"run src/build_table1.py first.")
+    sig = {}
+    for r in csv.DictReader(p.open()):
+        lab = r.get("mida_label", "").strip()
+        val = r.get("sigma_S_per_m", "").strip()
+        if lab.isdigit() and val:
+            sig[int(lab)] = float(val)
+    if not sig:
+        raise RuntimeError(f"{p} yielded no label->sigma pairs")
+    return sig
+
+
+def solve(mesh: Path, out: Path, pos, base_sigma, slab_sigma=None, label=""):
     from simnibs import sim_struct, run_simnibs, mesh_io
+    import preflight
     out.parent.mkdir(parents=True, exist_ok=True)
     S = sim_struct.SESSION()
     S.fnamehead = str(mesh)
@@ -65,15 +118,21 @@ def solve(mesh: Path, out: Path, pos, slab_sigma=None, label=""):
     S.map_to_surf = False
     t = S.add_tdcslist()
     t.currents = [config.INJECTION_CURRENT_A, -config.INJECTION_CURRENT_A]
-    for name, sigma in config.SIGMA.items():
-        pass                              # tissue conductivities bind below
-    # muscle compartments and the slab
+    # EVERY tag in the mesh, from Table 1. Binding only the muscles leaves 106
+    # tags at None and SimNIBS refuses the whole cond_list.
+    assigned = dict(base_sigma)
+    if slab_sigma is not None:
+        assigned[EXTENSION_LABEL] = slab_sigma
+    preflight.check_conductivity_range(assigned.values(), label=label)
+    for lab, v in assigned.items():
+        t.cond[lab - 1].value = v
+        t.cond[lab - 1].name = f"tag{lab}"
+    # muscle compartments keep their isotropic value and gain readable names
     for mname, _, lab, _ in config.MUSCLES:
         if lab is not None:
             t.cond[lab - 1].value = config.SIGMA["muscle_iso"]
             t.cond[lab - 1].name = mname
     if slab_sigma is not None:
-        t.cond[EXTENSION_LABEL - 1].value = slab_sigma
         t.cond[EXTENSION_LABEL - 1].name = "neck_extension"
     for j, nm in enumerate((INJECT_FROM, INJECT_TO)):
         el = t.add_electrode()
@@ -84,8 +143,14 @@ def solve(mesh: Path, out: Path, pos, slab_sigma=None, label=""):
         el.thickness = 2
     print(f"  solving {label} ...", flush=True)
     run_simnibs(S)
+    # Read the solver's own output. Not doing this cost a full 20-solve run.
+    cal = preflight.read_calibration(out)
+    print(f"    calibration: "
+          f"{'clean' if cal is None else f'WARNED {cal:.2f}%'}", flush=True)
     hits = sorted(out.glob("*_scalar.msh")) or sorted(out.glob("*.msh"))
-    return hits[0]
+    if not hits:
+        raise RuntimeError(f"no result mesh in {out}")
+    return hits[0], cal
 
 
 def compartment_medians(res_msh: Path):
@@ -136,13 +201,18 @@ def main(argv=None) -> int:
     print(f"injecting {config.INJECTION_CURRENT_A*1e3:.0f} mA between "
           f"{INJECT_FROM} and {INJECT_TO}\n")
 
-    base = compartment_medians(
-        solve(a.truncated, a.workdir / "truncated", pos, None, "truncated"))
+    sig = load_table1()
+    print(f"conductivities: {len(sig)} tags from Table 1\n")
+
+    calib = {}
+    msh, calib["truncated"] = solve(a.truncated, a.workdir / "truncated",
+                                    pos, sig, None, "truncated")
+    base = compartment_medians(msh)
     results = {"truncated": base}
     for cname, sigma in SLAB_CONDUCTIVITIES.items():
-        results[cname] = compartment_medians(
-            solve(a.extended, a.workdir / cname, pos, sigma,
-                  f"extended, slab {sigma:.3f} S/m"))
+        msh, calib[cname] = solve(a.extended, a.workdir / cname, pos, sig,
+                                  sigma, f"extended, slab {sigma:.3f} S/m")
+        results[cname] = compartment_medians(msh)
 
     print(f"\n{'compartment':<24} {'truncated':>12} "
           + "".join(f"{c:>22}" for c in SLAB_CONDUCTIVITIES))
@@ -162,14 +232,31 @@ def main(argv=None) -> int:
         print(line)
         rows.append(rec)
 
+    floor = read_measured_floor()
     print(f"\nlargest |dB| shift across all compartments and both "
           f"conductivities: {worst:.2f} dB")
-    print(f"measured electrode-meshing noise floor: ~0.43 dB")
-    print(f"pre-committed decision threshold       : 1.00 dB")
+    print(f"measured electrode-meshing noise floor: {floor:.3f} dB")
+    print(f"pre-committed decision threshold       : 1.00 dB  (NOT movable)")
+
+    print("\ncalibration reported by the solver, per solve:")
+    for k, v in calib.items():
+        print(f"  {k:<20} {'clean' if v is None else f'WARNED {v:.2f}%'}")
+    if any(v is not None for v in calib.values()):
+        print("  At least one solve warned. The 200% conditioning failure is")
+        print("  fatal; 11-15% on a well-conditioned custom mesh has been")
+        print("  measured as a false positive. Judge by the value, and state")
+        print("  it alongside the result rather than dropping it silently.")
+
+    # Report where the verdict sits on the axis, not just which side it landed.
+    print(f"\nFLIP POINT: the mesh decision changes at 1.00 dB; this run "
+          f"measured {worst:.2f} dB,")
+    print(f"            a factor of {worst / 1.0:.2f} of the threshold and "
+          f"{worst / floor:.1f}x the noise floor.")
+
     if worst > 1.0:
         print("\nDECISION: extended mesh becomes PRIMARY for all published "
               "results;\n          truncated mesh moves to supplementary.")
-    elif worst > 0.43:
+    elif worst > floor:
         print("\nDECISION: below the 1.0 dB threshold, so the truncated mesh "
               "stays primary,\n          but the shift exceeds the meshing "
               "noise floor and is therefore real.\n          Report in "

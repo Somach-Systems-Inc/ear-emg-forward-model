@@ -83,6 +83,50 @@ def check_solve_output(pathfem):
     return True
 
 
+def read_calibration(pathfem):
+    """Return the reported current-calibration error in percent, or None if the
+    solver printed no calibration warning at all.
+
+    WHY THIS EXISTS ALONGSIDE check_solve_output()
+
+    check_solve_output() raises on any calibration line. That is the right
+    behaviour for a gate, but it is the wrong behaviour for a RECORD, and this
+    project needs both. Two distinct populations have been measured:
+
+      - 200.00%  the conductivity-conditioning failure. Fields came back
+                 10-20x too large. Real, and fatal.
+      - 11-15%   seen on well-conditioned custom meshes. On the sphere, 5 of
+                 16 solves warned while matching the analytic oracle, and the
+                 warned electrodes were NOT less accurate (median
+                 |L_num|/|L_ana| 0.9814 warned vs 1.0345 un-warned, a
+                 difference inside the scatter of either group).
+
+    A single threshold separating those two populations is NOT invented here.
+    Inventing one after a solve tripped the gate is exactly the prohibited
+    move. Instead the value is recorded, carried alongside the result, and any
+    downstream verdict states how many of its inputs warned and whether
+    excluding them changes the answer.
+    """
+    from pathlib import Path as _P
+    import re as _re
+    f = _P(pathfem) / "fields_summary.txt"
+    if not f.exists():
+        raise FileNotFoundError(f"no fields_summary.txt in {pathfem}; "
+                                f"cannot confirm the solve succeeded")
+    for line in f.read_text(errors="replace").splitlines():
+        if "calibration error" in line:
+            # The line reads:
+            #   "...calibration error exceeded 10%! Estimated error value: 11.90%"
+            # so a plain "first percentage" match returns the THRESHOLD (10),
+            # not the error (11.90). Anchor on the label.
+            m = _re.search(r"Estimated error value:\s*([0-9]+\.?[0-9]*)\s*%",
+                           line)
+            if m:
+                return float(m.group(1))
+            return float("nan")     # warned, but the value could not be parsed
+    return None
+
+
 def current_env():
     info = {"python": sys.version.split()[0], "platform": platform.platform()}
     for mod in ("numpy", "scipy", "mne", "nibabel"):
