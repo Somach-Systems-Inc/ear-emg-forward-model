@@ -54,6 +54,24 @@ Fill `mida_label` in `src/config.py` with real integers once known. Leave `None`
 
 ## Rules for you specifically
 
+**Never publish a recognisable face.** MIDA licence clause 2.3.3: *"Any images
+based on the Model Data may be published only if the face is disguised so as to
+render the individual unrecognizable in any and all communications of any kind,
+including but not limited to reports, papers, and oral or poster
+presentations."* This binds preprints, posters and slides, not just the journal
+version. Every head rendering goes through `figures/render_common.anonymise_head()`
+and is gated by `assert_anonymised()`; the orbital rim is **derived from MIDA's
+own eye labels** (S = 13.8 mm), never hardcoded, and the helper raises rather
+than guessing if it cannot derive it. Do not add a per-figure exception: one
+forgotten figure is a licence breach that is only visible after publication.
+
+**Never commit a file type that is not on the allowlist.** `.gitignore` is a
+denylist and it failed open once already, letting 255 files of MIDA-derived
+surface geometry into the history and 109 of them onto a public GitHub repo.
+`.githooks/pre-commit` is the allowlist; enable it with
+`git config core.hooksPath .githooks`. Adding a format is a deliberate edit,
+not a `--no-verify`.
+
 **Never fabricate a number.** If a solve hasn't run, the result is unknown. Write `TODO` or `None`, not a plausible-looking value. This is a paper; an invented figure is misconduct, not a placeholder.
 
 **Flag uncertainty inline.** If a conductivity, label, or coordinate is assumed rather than verified, mark it `# UNVERIFIED:` in code and call it out in the commit message.

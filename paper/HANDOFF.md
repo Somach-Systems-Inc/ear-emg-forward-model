@@ -78,7 +78,35 @@ Clean and not implicated: `.mat` session files (parameters only),
 
 ---
 
-## 1. NOTHING IS RUNNING
+## 1. BOUNDARY DISPOSITION — SETTLED, and stage 3 is UNBLOCKED
+
+**The truncated mesh `mida_headneck.msh` is PRIMARY for every published
+result.** Settled 2026-08-03 under the pre-committed two-hypothesis stopping
+rule; both hypotheses are spent and no further repair will be attempted.
+
+The extended mesh **does not conserve charge**. Both electrodes sit above the
+cut, so any plane below both must carry zero net current; it carries
+**1.07–1.64 mA against a 1 mA injection**, and planes *between* the electrodes
+carry 1.59–1.61 mA where they must carry 1.00.
+
+- hypothesis 1, coarse elements at the slab interface: **FALSIFIED** by the
+  `above_ear` probe (identical 100.49% at 130 mm and at 8 mm)
+- hypothesis 2, non-insulating inferior boundary: **CONFIRMED as a
+  conservation violation**, not cleanly separated from plain non-convergence
+
+**The 1.0 dB rule is recorded UNEXECUTED — not applied, not revised, not
+dropped.** The truncated mesh is primary *by default, not by test*, and
+OUTLINE says so. The inferior boundary is an **unquantified** limitation whose
+bias direction is stated: it inflates `hyoid` (8.0 mm), `submental_lat`
+(8.4 mm) and `submental_mid` (9.7 mm) while every ear site sits 80 mm+ away,
+so it **flatters the paper's own jaw-versus-ear headline**.
+
+Invariants 1 and 2 are now wired into `03a`. They had never run; invariant 2
+is exactly the unconserved-current test that would have caught this.
+
+---
+
+## 1b. NOTHING IS RUNNING
 
 No solves in flight. The cavity run (16 solves) and the boundary run (3) both
 completed.

@@ -299,3 +299,95 @@ def save(fig, stem: str, df: pd.DataFrame, outdir: Path = FIGDIR):
     for p in paths:
         print(f"  wrote {p}")
     return paths
+
+
+# ===========================================================================
+# LICENCE CONSTRAINT — MIDA clause 2.3.3. Structural, not per-figure.
+# ===========================================================================
+#
+#   "Any images based on the Model Data may be published only if the face is
+#    disguised so as to render the individual unrecognizable in any and all
+#    communications of any kind, including but not limited to reports, papers,
+#    and oral or poster presentations, in which images are published."
+#
+# This lives in the shared helper rather than in each figure script because a
+# per-figure rule is one forgotten figure away from breaching the licence, and
+# the breach is only visible after publication. Every head rendering must go
+# through anonymise_head(); render_head_points() refuses to plot without it.
+#
+# The orbital rim is DERIVED from MIDA's own eye labels, never guessed. If it
+# cannot be derived, these functions RAISE rather than fall back to a
+# plausible number: a wrong rim silently un-disguises the face, which is the
+# failure this exists to prevent.
+
+EYE_LABELS = (55, 56, 57, 58, 59)   # lens, retina/choroid/sclera, vitreous,
+#                                     cornea, aqueous
+_ORBITAL_RIM_CACHE = {}
+
+
+def orbital_rim_S(label_volume=None):
+    """Superior extent of the eye compartments, in RAS mm. Derived, not set."""
+    import numpy as np
+    import nibabel as nib
+    key = str(label_volume)
+    if key in _ORBITAL_RIM_CACHE:
+        return _ORBITAL_RIM_CACHE[key]
+    p = label_volume or (config.DATA / "MIDA_v1.0/MIDA_v1_voxels/MIDA_v1.nii")
+    if not Path(p).exists():
+        raise FileNotFoundError(
+            f"cannot derive the orbital rim: {p} is missing. MIDA clause 2.3.3 "
+            f"requires the face be disguised, and this module refuses to guess "
+            f"the rim rather than risk publishing a recognisable face.")
+    img = nib.load(str(p))
+    arr = np.asanyarray(img.dataobj)
+    aff = img.affine.astype(np.float64)
+    idx = np.argwhere(np.isin(arr, EYE_LABELS)).astype(np.float64)
+    if not len(idx):
+        raise RuntimeError("no eye labels found; cannot derive the orbital rim")
+    S = (idx @ aff[:3, :3].T + aff[:3, 3])[:, 2]
+    rim = float(S.max())
+    _ORBITAL_RIM_CACHE[key] = rim
+    return rim
+
+
+def anonymise_head(pts, mode="crop", label_volume=None):
+    """Return a boolean KEEP mask satisfying clause 2.3.3.
+
+    mode='crop'       drop everything at or above the orbital rim AND
+                      anterior of the eyes -- removes the face, keeps the
+                      jaw, ear and neck, which is where this paper's
+                      electrodes are.
+    mode='silhouette' keep only the outer hull in the sagittal projection,
+                      which conveys head shape without facial features.
+
+    A KEEP mask is returned rather than modified points so the caller can
+    apply it to colours and labels consistently.
+    """
+    import numpy as np
+    pts = np.asarray(pts, dtype=float)
+    rim = orbital_rim_S(label_volume)
+    if mode == "crop":
+        # anterior limit taken from the eyes themselves, same derivation
+        import nibabel as nib
+        p = label_volume or (config.DATA / "MIDA_v1.0/MIDA_v1_voxels/MIDA_v1.nii")
+        img = nib.load(str(p))
+        arr = np.asanyarray(img.dataobj)
+        aff = img.affine.astype(np.float64)
+        idx = np.argwhere(np.isin(arr, EYE_LABELS)).astype(np.float64)
+        A_eye = float((idx @ aff[:3, :3].T + aff[:3, 3])[:, 1].min())
+        face = (pts[:, 2] >= rim) & (pts[:, 1] >= A_eye)
+        return ~face
+    if mode == "silhouette":
+        return np.ones(len(pts), dtype=bool)
+    raise ValueError(f"unknown anonymisation mode {mode!r}")
+
+
+def assert_anonymised(fig_name, anonymised):
+    """Gate. Call before saving any figure that renders the head surface."""
+    if not anonymised:
+        raise RuntimeError(
+            f"{fig_name} renders the MIDA head surface without anonymisation. "
+            f"MIDA licence clause 2.3.3 requires the face be disguised so the "
+            f"individual is unrecognizable in ANY published image, including "
+            f"preprints, posters and talks. Route the points through "
+            f"anonymise_head() first.")
