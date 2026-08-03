@@ -1,0 +1,30 @@
+[ simnibs 4.6.0 - 2026-08-02 22:09:35,667 - 30868 ]WARNING: Cannot locate subjects m2m folder
+[ simnibs 4.6.0 - 2026-08-02 22:09:35,667 - 30868 ]WARNING: some postprocessing options might fail
+[ simnibs 4.6.0 - 2026-08-02 22:09:35,667 - 30868 ]INFO: Head Mesh:          /Users/carl/CODELocalProjects/ear-emg-forward-model/data/mida_headneck.msh
+[ simnibs 4.6.0 - 2026-08-02 22:09:35,667 - 30868 ]INFO: Subject Path:       None
+[ simnibs 4.6.0 - 2026-08-02 22:09:35,667 - 30868 ]INFO: Simulation Folder:  /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__midjaw
+[ simnibs 4.6.0 - 2026-08-02 22:09:36,160 - 30868 ]INFO: Running simulations in the directory: /Users/carl/CODELocalProjects/ear-emg-forward-model/results/cavity/air__midjaw
+[ simnibs 4.6.0 - 2026-08-02 22:09:36,244 - 30868 ]INFO: Running Poslist Number: 1
+[ simnibs 4.6.0 - 2026-08-02 22:09:36,244 - 30868 ]INFO: Began to run tDCS simulation
+[ simnibs 4.6.0 - 2026-08-02 22:09:36,244 - 30868 ]INFO: Channels: [1, 2]
+[ simnibs 4.6.0 - 2026-08-02 22:09:36,244 - 30868 ]INFO: Currents (A): [0.001, -0.001]
+[ simnibs 4.6.0 - 2026-08-02 22:10:25,543 - 30868 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(65.25), np.float64(51.04), np.float64(-54.93)]
+pos_ydir: []
+dimensions: [10, 10]
+thickness:2
+channelnr: 1
+number of holes: 0
+
+[ simnibs 4.6.0 - 2026-08-02 22:10:35,706 - 30868 ]INFO: Placing Electrode:
+definition: plane
+shape: ellipse
+centre: [np.float64(-71.65), np.float64(7.94), np.float64(-33.44)]
+pos_ydir: []
+dimensions: [10, 10]
+thickness:2
+channelnr: 2
+number of holes: 0
+

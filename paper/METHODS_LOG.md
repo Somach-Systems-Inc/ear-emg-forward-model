@@ -665,3 +665,38 @@ for headroom. `src/run_solves_parallel.py --workers` overrides.
 Expected effect on stage 3: ~44 solves at ~4 min serial is roughly 3 hours;
 at N=3 roughly 1 hour. The solves are independent — one electrode each — so
 there is no coordination beyond the worker cap.
+
+---
+
+## 2026-08-02 — TOOL BEHAVIOUR: hypre runs single-threaded under SimNIBS
+
+Same class as the `meshmesh` size-range floor: a non-obvious tool behaviour
+that costs real time if you assume otherwise.
+
+A production solve on the 12.3 M-tet mesh uses **100% of exactly one core**
+(measured, 10 samples over 60 s, 98.0–100.0%) and **10.8 GB peak RSS**. On an
+18-core machine, 17 cores sit idle through every solve.
+
+`simnibs.simulation.fem.tdcs()` exposes an `n_workers` parameter defaulting to
+1, and hypre supports OpenMP, so this may be configuration rather than a hard
+limit. **Not tested — try `OMP_NUM_THREADS` / `n_workers>1` before building
+process parallelism.** Threads cost no extra memory; processes cost 10.8 GB
+each.
+
+### The memory measurement that changes the plan
+
+Measured with everything running:
+
+```
+PhysMem: 47G used, 536M unused
+swap:    3917 MB of 5120 MB used
+largest: ollama llama-server  14.76 GB
+```
+
+**The machine is already swapping with a single solve running.** The N=3 default
+in `run_solves_parallel.py` was derived from a nominally free 48 GB and is
+**unsafe as things stand**. Stop `ollama` (frees 14.76 GB), re-measure, then
+choose N. With ollama running, N=1.
+
+This is why the resource budget had to be measured rather than computed from
+total RAM: the arithmetic said 4 concurrent solves, the machine had 536 MB free.
