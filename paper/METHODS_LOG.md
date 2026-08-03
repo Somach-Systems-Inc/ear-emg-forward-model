@@ -2351,3 +2351,69 @@ than the patch: a check placed after another check's hard failure is not a
 check, it is a comment. The guard-coverage test enumerates whether a guard is
 *called*; it cannot see that a called guard is *unreachable*. Both were needed
 to find this, and only the norm surfaced it.
+
+---
+
+## 2026-08-03 — Branch A/B table, all 22 solves. And a precise retraction.
+
+### The owed table
+
+| electrode | tet-patch delivered | SimNIBS says | requested |
+|---|---|---|---|
+| `mental` | 1.0746 mA | 32.99% | 1.0000 mA |
+| `cg08` | 1.0508 mA | 28.82% | 1.0000 mA |
+| `cg04` | 1.0431 mA | 26.83% | 1.0000 mA |
+| `cg09` | 1.0296 mA | 25.27% | 1.0000 mA |
+| `post_lobule` | 1.0134 mA | 21.24% | 1.0000 mA |
+| `cg01` | 1.0055 mA | 19.67% | 1.0000 mA |
+| `earlobe_ipsi` | 0.9887 mA | 17.03% | 1.0000 mA |
+| `cg06` | 0.9841 mA | 15.57% | 1.0000 mA |
+| `cg03` | 0.9812 mA | 13.99% | 1.0000 mA |
+| `submental_mid` | 0.9864 mA | 13.65% | 1.0000 mA |
+| `cg10` | 0.9671 mA | 11.90% | 1.0000 mA |
+| `above_ear` | 0.9463 mA | clean | 1.0000 mA |
+| **`buccal`** | **0.8870 mA** | **clean** | 1.0000 mA |
+| `cg02` | 0.9579 mA | clean | 1.0000 mA |
+| `cg05` | 0.9452 mA | clean | 1.0000 mA |
+| `cg07` | 0.9619 mA | clean | 1.0000 mA |
+| `hyoid` | 0.9606 mA | clean | 1.0000 mA |
+| `mastoid` | 0.9420 mA | clean | 1.0000 mA |
+| `midjaw` | 0.9461 mA | clean | 1.0000 mA |
+| `pre_tragus` | 0.9210 mA | clean | 1.0000 mA |
+| `submaxillary` | 0.9431 mA | clean | 1.0000 mA |
+| `submental_lat` | 0.9593 mA | clean | 1.0000 mA |
+
+**BRANCH A FIRED.** *(measured)*
+
+- tet-patch implied error **0.5–11.3%**; SimNIBS claims **0–32.99%**
+- the two **agree on 4 of 22** solves
+- **Spearman −0.425, p = 0.048**
+
+### Correction to my own statistic
+
+I earlier reported this correlation as **−0.322, n.s. (p = 0.193)** on the 18
+solves then complete. On the full 22 it is **−0.425, p = 0.048**, which is
+**significant**. The conclusion does not change but its strength does, and in
+the more damning direction: SimNIBS's calibration error is not merely
+uncorrelated with true delivery error, it is **significantly
+anti-correlated** with it. Quoting the interim n.s. figure as final would
+have understated the case. *(measured)*
+
+### RETRACT PRECISELY — what falls and what stands
+
+The previous entry risked over-retracting. Separating the two claims:
+
+**STANDS — the measurements.** Invariant 2's computation *did* execute on
+every solve where invariant 1 passed, which is all 22 stage-3 solves. **Net
+outer-boundary current measured at up to 13.8 µA of 1000 µA** is a real
+number produced by real code on real fields. `buccal` at −2.3 µA likewise.
+Those are `measured` and they are quotable.
+
+**FALLS — the inference.** "Invariant 2 passed, therefore charge conservation
+is verified" does **not** stand. The check has never been demonstrated capable
+of returning dirty, so its silence carries no information. A passing result
+from an unvalidated check is not evidence of correctness; it is an absence of
+evidence either way.
+
+The distinction matters because the numbers remain usable in the error budget
+while the *guarantee* does not. **Keep the measurement, drop the assurance.**
