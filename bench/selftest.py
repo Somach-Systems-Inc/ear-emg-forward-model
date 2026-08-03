@@ -170,6 +170,28 @@ def unit_tests() -> None:
 
     close("CMRR arithmetic", float(dsp.cmrr_db(1.0, 1e-6)), 120.0, 1e-9, " dB")
 
+    # A doubtful figure must SAY it is doubtful. The badge logic is the only
+    # thing standing between a modelled curve and someone quoting it.
+    import matplotlib.pyplot as plt
+
+    import vizstyle
+    for meta, want in (
+            ({"synthetic": True, "gain_verified": True}, ["SYNTHETIC"]),
+            ({"synthetic": False, "gain_verified": False}, ["NOT VERIFIED"]),
+            ({"synthetic": True, "gain_verified": False},
+             ["SYNTHETIC", "NOT VERIFIED"]),
+            ({"synthetic": False, "gain_verified": True}, [])):
+        with vizstyle.theme(vizstyle.LIGHT) as t:
+            fig = plt.figure(figsize=(3, 2))
+            fig.add_subplot(111)
+            vizstyle.stamp(fig, meta, t)
+            texts = " | ".join(a.get_text() for a in fig.texts)
+            plt.close(fig)
+        ok = (all(w in texts for w in want) and
+              (want or ("SYNTHETIC" not in texts and "NOT VERIFIED" not in texts)))
+        check(f"figure badges for synthetic={meta['synthetic']} "
+              f"verified={meta['gain_verified']}", bool(ok), texts[:90])
+
 
 # ===========================================================================
 # GUARD

@@ -307,13 +307,16 @@ def key_handle(label: str, color: str) -> Line2D:
 # Provenance -- badges and footer
 # ===========================================================================
 
-def badge(fig, text: str, t: Theme, kind: str = "warning") -> None:
+def badge(fig, text: str, t: Theme, kind: str = "warning",
+          row: int = 0) -> None:
+    """A status badge, top right. Status colors always ship with a label."""
     color = {"warning": t.warning, "critical": t.critical,
              "good": t.good, "serious": t.serious}[kind]
     glyph = {"warning": "!", "critical": "!!", "good": "ok",
              "serious": "!"}[kind]
-    fig.text(0.995, 0.995, f"[{glyph}] {text}", ha="right", va="top",
-             fontsize=8, color=color, weight="bold", zorder=10)
+    fig.text(0.995, 0.995 - row * 0.017, f"[{glyph}] {text}",
+             ha="right", va="top", fontsize=8, color=color, weight="bold",
+             zorder=10)
 
 
 def footer(fig, meta: dict, t: Theme) -> None:
@@ -322,16 +325,30 @@ def footer(fig, meta: dict, t: Theme) -> None:
     Gain and its verification status are on the face of the figure because a
     figure outlives the terminal it was made in.
     """
+    def num(key: str, fmt: str = "g") -> str:
+        """Format a numeric field, or say it is missing.
+
+        A figure must never fail to render because a metadata key is absent --
+        the footer is what tells you whether to trust the figure, so it has to
+        survive an incomplete metadata dict rather than take the whole plot
+        down with it.
+        """
+        v = meta.get(key)
+        try:
+            return format(float(v), fmt)
+        except (TypeError, ValueError):
+            return "?"
+
     gain = meta.get("host_pga_gain", "?")
     verified = meta.get("gain_verified", False)
-    lsb = meta.get("lsb_volts", 0.0) * 1e6
-    src = meta.get("source", "?")
     bits = [
-        f"PGA gain {gain} ({lsb:.5f} uV/count)",
+        f"PGA gain {gain} ({num('lsb_volts_uv', '.5f')} uV/count)"
+        if "lsb_volts_uv" in meta else
+        f"PGA gain {gain} ({float(meta.get('lsb_volts') or 0.0) * 1e6:.5f} uV/count)",
         "gain verified" if verified else "GAIN NOT VERIFIED",
-        f"source {src}",
-        f"fs {meta.get('fs_hz', '?'):g} SPS",
-        f"mains {meta.get('mains_hz', '?'):g} Hz",
+        f"source {meta.get('source', '?')}",
+        f"fs {num('fs_hz')} SPS",
+        f"mains {num('mains_hz')} Hz",
         meta.get("timestamp_utc", ""),
         f"rev {meta.get('git_revision', '?')}",
     ]
@@ -346,11 +363,12 @@ def stamp(fig, meta: dict, t: Theme, *, top: Optional[float] = None) -> None:
     label of the bottom panel lands on top of the provenance line, and the
     provenance line is the part that says whether the gain was verified.
     """
-    has_badge = bool(meta.get("synthetic")) or not meta.get("gain_verified", False)
+    n_badges = (bool(meta.get("synthetic"))
+                + (not meta.get("gain_verified", False)))
     bottom = 0.035
     # `top` is an absolute figure fraction; matplotlib's rect wants a height,
     # and conflating the two put the panels back under the badge.
-    top_f = top if top is not None else (0.962 if has_badge else 0.992)
+    top_f = top if top is not None else (0.992 - 0.030 * n_badges)
     engine = fig.get_layout_engine()
     if engine is not None:
         try:
@@ -358,10 +376,16 @@ def stamp(fig, meta: dict, t: Theme, *, top: Optional[float] = None) -> None:
         except (AttributeError, TypeError):
             pass
     footer(fig, meta, t)
+    # Both, when both apply. A figure that is synthetic AND unverified is the
+    # least trustworthy artifact this suite can produce, and showing only the
+    # first badge would understate that.
+    row = 0
     if meta.get("synthetic"):
-        badge(fig, "SYNTHETIC -- modelled, not measured", t, "warning")
-    elif not meta.get("gain_verified", False):
-        badge(fig, "GAIN NOT VERIFIED", t, "critical")
+        badge(fig, "SYNTHETIC -- modelled, not measured", t, "warning", row)
+        row += 1
+    if not meta.get("gain_verified", False):
+        badge(fig, "GAIN NOT VERIFIED -- voltages are provisional", t,
+              "critical", row)
 
 
 # ===========================================================================
