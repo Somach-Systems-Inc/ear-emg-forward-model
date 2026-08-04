@@ -3140,3 +3140,46 @@ into a scalar dominated by the labial group where the jaw wins by 10–23 dB —
 the three muscles the ear is better at would vanish from the figure that is
 supposed to be the design deliverable.
 
+---
+
+## 2026-08-03 — Fig 4's scope is three compartments, not nine. Checked before building it.
+
+Before implementing the anisotropy tensor I cross-referenced
+`config.FIBRE_PCA_MUSCLES` against which muscles MIDA actually segments. They
+are not the same set, and the difference matters.
+
+| | |
+|---|---|
+| PCA-defensible **and** segmented | `sternocleidomastoid` (68), `medial_pterygoid` (81), `mentalis` (71) |
+| PCA-defensible, **not** segmented | `digastric_posterior`, `stylohyoid`, `styloglossus`, `hyoglossus`, `geniohyoid`, `digastric_anterior` |
+
+Six of nine are pooled into `Muscle (General)` (38) and `Tongue` (42), so they
+cannot receive a per-compartment fibre axis.
+
+**A claim in `config.py` was false and is corrected.** It read: *"The muscles
+carrying the ear argument — digastric posterior, stylohyoid, SCM, and the
+styloid-origin tongue muscles — are all in the PCA-defensible set. That is a
+genuine piece of luck ... the anisotropy treatment is strongest exactly where
+the argument needs it."*
+
+**True of the table, false of the model.** Being PCA-defensible is necessary
+but not sufficient — the compartment must also be individually segmented. Of
+the four muscles named there, exactly **one** (SCM) can receive a tensor. The
+anisotropy treatment is available in one place the ear argument needs it and
+absent in three. This is the sub-segmentation limitation propagating into a
+place nobody had re-checked it, and it read as a strength.
+
+**Consequence for Fig 4:** the isotropic-versus-anisotropic comparison can
+differ in only **three compartments**, and the figure must state that rather
+than present itself as a model-wide anisotropy sensitivity. It is not thereby
+uninteresting — SCM is one of the three muscles the ear wins on, so anisotropy
+bears directly on the principal finding for that muscle — but its scope is
+three rows, not ten.
+
+**Recorded before the tensor was written, not after**, because the natural
+failure here is to implement the tensor, run 22 solves, produce a plausible
+Fig 4, and only then notice that seven of its ten rows are identical by
+construction. A reader seeing seven zero-difference rows would reasonably infer
+"anisotropy does not matter", when the correct statement is "anisotropy was
+not applied there."
+

@@ -124,10 +124,33 @@ FIBRE_MODEL = {
     "depressor_anguli_oris": ("isotropic", "converging triangular fibres"),
 }
 
-# The muscles carrying the ear argument -- digastric posterior, stylohyoid,
-# SCM, and the styloid-origin tongue muscles -- are all in the PCA-defensible
-# set. That is a genuine piece of luck and is worth stating in the paper: the
-# anisotropy treatment is strongest exactly where the argument needs it.
+# CORRECTED 2026-08-03. This block previously read: "The muscles carrying the
+# ear argument -- digastric posterior, stylohyoid, SCM, and the styloid-origin
+# tongue muscles -- are all in the PCA-defensible set. That is a genuine piece
+# of luck ... the anisotropy treatment is strongest exactly where the argument
+# needs it."
+#
+# **It is true of the TABLE and false of the MODEL.** Being PCA-defensible is
+# necessary but not sufficient: the compartment must also be individually
+# segmented in MIDA, and six of the nine are not. Cross-referencing
+# FIBRE_PCA_MUSCLES against the MUSCLES labels:
+#
+#     PCA-defensible AND segmented : sternocleidomastoid (68),
+#                                    medial_pterygoid (81), mentalis (71)
+#     PCA-defensible, NOT segmented: digastric_posterior, stylohyoid,
+#                                    styloglossus, hyoglossus, geniohyoid,
+#                                    digastric_anterior
+#
+# The second list is pooled into MIDA's `Muscle (General)` (38) and `Tongue`
+# (42). So of the four muscles named as carrying the ear argument, exactly ONE
+# -- SCM -- can receive a fibre tensor at all. The anisotropy treatment is
+# NOT strongest where the argument needs it; it is available in one place the
+# argument needs and absent in three.
+#
+# Consequence for Fig 4: the isotropic/anisotropic comparison can differ in
+# only three compartments, and it must say so rather than being presented as a
+# model-wide sensitivity. SCM is one of the three muscles the ear wins on, so
+# anisotropy does bear on the principal finding -- for that one muscle.
 FIBRE_PCA_MUSCLES = tuple(m for m, (k, _) in FIBRE_MODEL.items() if k == "pca")
 
 # Directions sampled over the hemisphere for the orientation sweep. n_hat and
