@@ -2748,3 +2748,37 @@ Print the tag map. Assert the coordinate appears in the solver's own log. The
 project already had the rule — *read the tool's own output before reporting its
 result* — and applied it to the solver while trusting its own callers.
 
+---
+
+## 2026-08-03 — Filed upstream: simnibs/simnibs#665
+
+https://github.com/simnibs/simnibs/issues/665
+
+Led with the disagreement **pattern**, not the statistic: `buccal` at 0.8870 mA
+is the largest true deviation in the set and is reported clean, while `mental`
+at 1.0746 mA — closer to correct — is flagged 32.99%; warned solves average
+1.0113 mA against un-warned 0.9428 mA. The Spearman −0.425, p = 0.048, n = 22
+is included as supporting only, with the fragility of a marginal p on n = 22
+stated in the issue rather than left for a maintainer to point out.
+
+**The "4 of 22 agreement" figure went in with its tolerance attached**, under
+the interim-statistic rule added to CLAUDE.md today. It reproduces only at an
+unstated ±5 pp window and moves to 9 of 22 at ±6 pp, so the issue gives the
+whole sensitivity curve (0 / 2 / 4 / 9 at ±3 / 4 / 5 / 6 pp) and tells the
+reader to treat the parameter-free extremes as the claim.
+
+**One claim was deliberately weakened before filing.** The handoff asked for
+"the tet-patch method and its validation against the analytic sphere". The
+sphere validates the method's **radius-consistency** (plateau CV < 0.7% at
+every density) and the forward setup (RDM 4.36%, MAG +4.40%, n = 120) — it does
+**not** validate the integral's absolute level, which reads 0.9406 / 1.2481 /
+1.1134 across three sphere densities, non-monotone and sign-changing
+(METHODS_LOG 2026-08-02). Filing "every solve delivers within 11.3%, so
+SimNIBS's 15.6–33.0% is wrong" would have rested a magnitude claim on an
+instrument whose magnitude is uncertain by more than the discrepancy.
+
+So the issue claims **ordering**, not magnitude. A per-realisation scale factor
+shifts every solve together and cannot invert a ranking, so the `buccal`/
+`mental` inversion and the warned-vs-un-warned means survive it. The absolute
+band is reported and its unvalidated level is stated in the issue itself.
+
