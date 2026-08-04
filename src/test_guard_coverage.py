@@ -102,6 +102,20 @@ EXEMPT = {
                                   "compared against the analytic oracle",
     "03a2_boundary_probe.py": "single diagnostic probe whose entire purpose "
                               "is to READ a calibration value, not gate on it",
+    "03f_aniso_solve.py":
+        "calls fem.tdcs directly on a mesh the ISOTROPIC run already put "
+        "through the full chain, rather than running a SESSION. It writes no "
+        "fields_summary.txt, so read_calibration has nothing to read, and the "
+        "geometry it solves on is byte-identical to a solve that already "
+        "passed invariants 1 and 2 and the sigma-span gate. Its NEW quantity "
+        "is the conductivity field, and that is validated two ways instead: "
+        "the tensor eigenvalues are read back off the ElementData before any "
+        "solve (0.4/0.1/0.1, axis |dot| 1.0000, no other compartment "
+        "anisotropic), and the eight NON-tensor compartments are a control -- "
+        "they return at ratio 1.036 +/- 0.016 of their isotropic values while "
+        "the two tensor compartments move +3.92 and +5.02 dB. A per-solve "
+        "plateau scan would add ~12 patch integrals per electrode to re-check "
+        "a geometry that has not changed.",
 }
 
 
