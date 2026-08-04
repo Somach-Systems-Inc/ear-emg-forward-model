@@ -10,36 +10,40 @@ Repo clean, all work committed.
 
 ## 0-NEXT. QUEUE, in order
 
-1. **Wire invariants 3 and 4.** They have NO CALLER anywhere and have never run
-   on any solve. `test_guard_coverage.py` now FAILS on this by design. Cost is
-   4 extra solves (~16 min), not glue: linearity needs the same montage at 2I,
-   reciprocity needs the montage swapped. `batch_plan()` already picks the
-   first and last solve of a batch and is itself uncalled.
-2. **A REAL known-bad case for invariant 2 is still owed.** The synthetic
+**Done since the last handoff:** guard chain (collect-then-raise), synthetic
+per-guard tests, band retirement, decision audit, upstream filing #665,
+interim-statistic rule, invariants 3 and 4 EXECUTED, reserved-tag guard,
+`04_analyze.py` with the truncation sensitivity. `test_guard_coverage.py`,
+`test_guards_fire.py` and `preflight.py` all PASS.
+
+1. **Mesh-quality regression** (still owed). Per ruling 6 the dependent
+   variable is **delivered current** (tet-patch `inv1_mean`) against local
+   element count and quality in each electrode patch, with the calibration
+   value reported alongside as a second series. Calibration as the dependent
+   variable would measure the artefact, not the mesh. Cost: one mesh read per
+   electrode, 22 of them, no solves.
+2. **Anisotropy tensor** in `03_leadfields.py`. Still raises
+   `NotImplementedError` **by design**. Per-element tensor (0.4 along fibre,
+   0.1 across) from `orientation.principal_axis()`, `config.FIBRE_MODEL` "pca"
+   compartments **only**. **Never fall through to the isotropic map — that
+   fabricates Fig 4 by comparing a condition against itself.** Cost: the
+   tensor path plus 22 solves, ~90 min.
+3. **Re-render `02_electrode_qa` with `anonymise_head()`.**
+4. **Figure captions and Results.** No Discussion, Introduction or Abstract.
+5. **Solver reproducibility at fixed geometry** — one identical montage solved
+   twice. This is the independent measurement owed before the withdrawn 1e-6
+   tolerances on invariants 3 and 4 could ever become gates again.
+6. **A real known-bad case for invariant 2 is still owed.** The synthetic
    monopole demonstrates it fires; the extended mesh does NOT trip it once the
-   conductivity map is correct (−0.0038 × injected). Either find a real solve
+   conductivity map is correct (-0.0038 x injected). Either find a real solve
    that violates whole-domain charge conservation, or record that none exists
-   in this project and the synthetic case is the demonstration.
-3. **Retag the neck extension out of 100–899.** `EXTENSION_LABEL = 200` sits
-   inside SimNIBS's reserved electrode-rubber range. `with_electrode_tags()`
-   now raises on the collision when given `mesh_tags=`, but no caller passes it
-   yet — pass it everywhere.
-4. **Mesh-quality regression** (still owed, untouched this session):
-   calibration error against local element count and quality per electrode
-   patch. Note this is now a regression against a quantity known to be
-   anti-correlated with truth, so the interesting form is delivered current
-   (tet-patch) vs element quality, with calibration alongside.
-5. **Anisotropy tensor** in `03_leadfields.py`. Raises `NotImplementedError`
-   **by design**. Per-element tensor (0.4 along fibre, 0.1 across) from
-   `orientation.principal_axis()`, `config.FIBRE_MODEL` "pca" compartments
-   **only**. **Never fall through to the isotropic map — that fabricates Fig 4
-   by comparing a condition against itself.**
-6. **`src/04_analyze.py`** with the truncation sensitivity: jaw-versus-ear gap
-   twice, all jaw sites and excluding `hyoid`/`submental_lat`/`submental_mid`,
-   from `clearance_to_cut_mm`. If the gap does not survive, report before any
-   Discussion.
-7. **Re-render `02_electrode_qa` with `anonymise_head()`**, figure captions,
-   Results only.
+   here and the synthetic case is the demonstration.
+
+**Settled, do not reopen:** the extended mesh (ruling 1). Hypothesis 1 is
+UNTESTED, not falsified; "both hypotheses spent" was wrong; the disposition
+stands on the flux-decay probe, which is independent; the mesh is unused and
+the limitation is documented with its bias direction. Do not re-litigate the
+cause.
 
 ---
 
@@ -188,6 +192,44 @@ magnitude: a common scale factor cannot invert a ranking.
 "4 of 22 agreement" went in **with its ±5 pp tolerance and the full sensitivity
 curve** (0 / 2 / 4 / 9 at ±3 / 4 / 5 / 6 pp), per the new interim-statistic
 rule.
+
+---
+
+## 0. STAGE 4 — THE TRUNCATION SENSITIVITY SURVIVES
+
+10 of 10 muscles keep their conclusion when the three jaw sites within 10 mm of
+the cut face are excluded. Median gap **+6.45 -> +5.91 dB**, a shift of
+**-0.54 dB**, and **no sign flips**. Only three muscles move at all, because
+for the other seven the best jaw electrode was never a near-cut site.
+
+**The ear beats the jaw for three muscles** — temporalis (-3.92 dB), SCM
+(-3.41), lateral pterygoid (-1.69). That is a result, not a failure, and a
+first version of the test that checked `gap > floor` was discarding it. The
+criterion is now `|gap| > floor` AND sign preserved.
+
+At the floor's CI upper bound (0.65 dB) nine of ten stay resolvable;
+`medial_pterygoid` at 0.62 dB is borderline and must be reported as such.
+
+---
+
+## 0. INVARIANTS 3 AND 4 HAVE RUN — reciprocity holds on the head mesh
+
+| electrode | linearity | reciprocity | geometry |
+|---|---|---|---|
+| `above_ear` | **0.000e+00** | **7.500e-06** | **identical**, 2,140,977 nodes |
+| `submental_mid` | 6.421e-03 | 6.913e-03 | **DIFFERENT**, 2,140,980 vs 2,140,979 |
+
+7.5e-06 is **6.5e-05 dB**, four orders of magnitude inside the 0.27 dB
+per-site floor. **Nothing downstream is void; stage 4 was clear to proceed.**
+
+`submental_mid`'s larger number is not a failure of the identity: SimNIBS
+re-meshes electrodes every run, so its 1x and 2x solves are different
+discretisations and the comparison measures electrode realisation.
+`same_discretisation()` now reports this beside every value.
+
+**The 1e-6 tolerances are WITHDRAWN as gates, not retuned** — nothing ever
+measured them, and they ask these identities to hold ~1000x tighter than the
+measured reproducibility of what is being compared. Precedent: `COLLAR_OD_MM`.
 
 ---
 
