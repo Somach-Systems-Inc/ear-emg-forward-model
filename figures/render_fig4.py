@@ -92,7 +92,7 @@ def main(argv=None) -> int:
     vmax = float(np.ceil(np.nanmax(np.abs(D)) * 10) / 10) or 1.0
 
     fig, ax = plt.subplots(figsize=(6.9, 5.3))
-    cmap = rc.diverging_cmap()
+    cmap = rc.signed_cmap()
     cmap.set_bad(rc.SURFACE)          # NOT APPLIED rows render as bare surface
     im = ax.imshow(D, aspect="auto", cmap=cmap, vmin=-vmax, vmax=vmax)
 

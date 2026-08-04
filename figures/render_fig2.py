@@ -79,7 +79,7 @@ def main(argv=None) -> int:
     norm = TwoSlopeNorm(vmin=vmin, vcenter=0.0, vmax=vmax)
 
     fig, ax = plt.subplots(figsize=(6.7, 5.3))
-    im = ax.imshow(M, aspect="auto", cmap=rc.diverging_cmap(), norm=norm)
+    im = ax.imshow(M, aspect="auto", cmap=rc.diverging_cmap(ear_is_positive=True), norm=norm)
 
     # secondary encoding of the sign
     win_r, win_c = np.where(np.nan_to_num(M, nan=-1e9) > 0)

@@ -23,13 +23,35 @@ track the reported error with a positive slope near 0.5. On all 22 solves:
 |---|---|
 | reported `e` vs **\|tet-patch − 1\|** (what #665 did) | Spearman **−0.425**, p = 0.048 |
 | reported `e` vs **signed** (tet-patch − 1) | Spearman **+0.932**, p < 1e-5 |
-| linear fit | slope **+0.359** (model predicts +0.5), R² = **0.860** |
+| linear fit | slope **+0.359**, R² = **0.860** (model predicts +0.5 — see the caveat below) |
 | residual vs `a = 1 + e/2` | sd 0.0235, against 0.0449 for a flat 1.0 — the model removes **73%** of the variance |
 
 The whole "anti-correlation" in #665 was `abs()`. Taking the absolute deviation
-destroyed the sign and inverted the ranking. Slope 0.359 rather than 0.5 is
-expected: the tet-patch integrates cut flux over r = 25–75 mm, not flux at the
-interface, and carries its own realisation scatter.
+destroyed the sign and inverted the ranking.
+
+**On the slope, stated precisely rather than favourably.** The fitted slope is
+**0.359** against the model's **0.5**, a shortfall of **28%**. We are **not**
+presenting this as confirming 0.5. Our estimator's absolute level is not
+established tightly enough to test it: the same tet-patch integral reads
+**0.9406 / 1.2481 / 1.1134** across three analytic-sphere mesh densities, a
+spread of **0.31, or 28% of its own mean**, non-monotone in element size and
+changing sign. **The slope gap and our level uncertainty are the same size**, so
+the agreement is only "within our own error bars", and those bars are wide.
+
+What survives that caveat is the **rank** relationship, which a common
+multiplicative offset cannot touch: +0.932 Spearman, and the two extreme cases
+below.
+
+**Why the 28% may nonetheless be worth your attention.** If our level
+uncertainty were the whole story the slope should scatter about 0.5 rather than
+sit consistently under it, and it is under it on all 22 solves. Two candidates
+we cannot separate from this side: our patch integrates cut flux over
+r = 25–75 mm rather than flux at the electrode interface, so it may legitimately
+capture a different quantity; or the interface-flux estimator itself is biased
+low relative to the true interface current, in which case `a` and `b` are both
+shifted and only their difference survives. The second would be a real finding
+about the estimator, and the analytic sphere in artifact (d) is where it could
+be settled, since there the true interface current is known.
 
 The two algebraic landmarks check out exactly, and both match a real failure we
 hit:

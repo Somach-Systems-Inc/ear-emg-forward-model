@@ -98,15 +98,10 @@ def main(argv=None) -> int:
     gaps = np.array([r["gap"] for r in rows])
 
     fig, ax = plt.subplots(figsize=(7.1, 0.44 * n + 2.0))
-    # COLOUR POLARITY MUST MATCH FIG 2, and the first render of this figure got
-    # it backwards. diverging_cmap() is [red, neutral, blue]. In Fig 2 the
-    # plotted value is dB re best jaw site, so BLUE (high) = the ear beats the
-    # jaw. Here the plotted value is (best jaw - best ear), whose sign is
-    # opposite, so an ear win is a NEGATIVE bar and must still be BLUE.
-    # Mapping by raw value would have made blue mean "jaw wins" in one figure
-    # and "ear wins" in the other, in the same paper.
-    cmap = rc.diverging_cmap()
-    EAR, JAW = cmap(0.88), cmap(0.12)
+    # Colours come from the SEMANTIC constants, not from picking positions on
+    # a ramp. Reading poles off a colormap by index is what inverted this
+    # figure the first time; rc.EAR_ADVANTAGE cannot be got backwards.
+    EAR, JAW = rc.EAR_ADVANTAGE, rc.JAW_ADVANTAGE
     colours = [EAR if g < 0 else JAW for g in gaps]
 
     # resolution floor as a band, drawn under the bars

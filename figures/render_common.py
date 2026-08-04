@@ -81,9 +81,66 @@ def sequential_cmap():
     return cm
 
 
-def diverging_cmap():
-    """red <-> neutral gray <-> blue for signed deltas (Fig 4)."""
-    cm = LinearSegmentedColormap.from_list("div_rb", [_DIV_RED, _DIV_MID, _DIV_BLUE])
+# ----------------------------------------------------------------------
+# THE SEMANTIC COLOUR MAPPING — defined ONCE, imported everywhere
+# ----------------------------------------------------------------------
+# Fig 5 shipped a render in which BLUE meant "the jaw wins" while Fig 2's blue
+# meant "the ear wins", in the same paper. No test could catch it: both figures
+# were internally consistent, both used the project palette, both passed every
+# gate. It was caught by a human looking at two PNGs side by side, which does
+# not scale and did not happen the first time.
+#
+# The cause is that the two figures plot quantities with OPPOSITE sign
+# conventions for the same physical statement:
+#
+#     Fig 2 plots  dB re best jaw site   ->  POSITIVE means the ear wins
+#     Fig 5 plots  best jaw - best ear   ->  POSITIVE means the JAW wins
+#
+# So mapping "positive -> blue" in both is exactly how the inversion happens.
+# The fix is structural, in the same spirit as anonymise_head(): the semantic
+# is named once, and a caller cannot obtain a diverging colormap without
+# declaring which end of ITS OWN quantity means "ear advantage".
+#
+# EAR ADVANTAGE IS ALWAYS BLUE. JAW ADVANTAGE IS ALWAYS RED. Everywhere.
+EAR_ADVANTAGE = _DIV_BLUE
+JAW_ADVANTAGE = _DIV_RED
+NO_DIFFERENCE = _DIV_MID
+
+
+def diverging_cmap(ear_is_positive):
+    """Diverging ramp oriented so EAR ADVANTAGE IS BLUE, whatever the sign.
+
+    `ear_is_positive` is REQUIRED and has no default, deliberately. A caller
+    that has not thought about which end of its quantity means "the ear wins"
+    gets a TypeError at call time instead of a silently inverted figure.
+
+        Fig 2  plots dB re best jaw site  -> ear_is_positive=True
+        Fig 4  plots aniso - iso          -> no ear/jaw semantic; see
+                                             signed_cmap() for that case
+        Fig 5  plots best jaw - best ear  -> ear_is_positive=False
+    """
+    if not isinstance(ear_is_positive, bool):
+        raise TypeError(
+            "diverging_cmap(ear_is_positive=...) must be given True or False. "
+            "It exists because Fig 5 once rendered with blue meaning 'jaw "
+            "wins' while Fig 2's blue meant 'ear wins', which no test could "
+            "catch. State which end of YOUR quantity is the ear advantage.")
+    ends = ([JAW_ADVANTAGE, NO_DIFFERENCE, EAR_ADVANTAGE] if ear_is_positive
+            else [EAR_ADVANTAGE, NO_DIFFERENCE, JAW_ADVANTAGE])
+    cm = LinearSegmentedColormap.from_list("div_semantic", ends)
+    cm.set_bad(SURFACE)
+    return cm
+
+
+def signed_cmap():
+    """Diverging ramp for a quantity with NO ear/jaw semantic (Fig 4).
+
+    Blue = the quantity increased, red = it decreased. Kept separate from
+    `diverging_cmap` so that "which end is the ear" is never answered by
+    accident for a figure where the question does not apply.
+    """
+    cm = LinearSegmentedColormap.from_list(
+        "div_signed", [_DIV_RED, _DIV_MID, _DIV_BLUE])
     cm.set_bad(SURFACE)
     return cm
 

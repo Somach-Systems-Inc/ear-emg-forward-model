@@ -82,6 +82,57 @@ This property is also the only automatic detector of an *unreachable* guard.
 a called guard sits after another guard's raise. A synthetic case that must
 make one guard fire alone does see it.
 
+**A verification check confirms a specification was APPLIED. It cannot confirm
+the specification was CORRECT.** Fidelity and correctness are separate channels
+and need separate tests. Passing one says nothing about the other.
+
+The case that established this: the anisotropy tensor was verified by reading
+the `ElementData` back off the mesh and asserting the eigenvalues were
+0.4/0.1/0.1 along the intended axis. It passed at |dot| = 1.0000 — **on a PCA
+axis that was the bilateral left-right separation between the paired muscles,
+not the fibre direction along either.** The check was working perfectly. It
+confirmed that the tensor SimNIBS received was the tensor requested, and it had
+no way to know the request was anatomically backwards. What caught it was
+reading the numbers and knowing that sternocleidomastoid does not run
+ear-to-ear.
+
+So for every check, ask which channel it covers, and say so in its docstring:
+
+- **fidelity** — "the value I asked for is the value that arrived". Cheap,
+  mechanical, and blind to the value being wrong.
+- **correctness** — "the value I asked for is the right value". Needs an
+  independent expectation: an analytic solution, a symmetry the answer must
+  obey, a control condition, or a physical fact about the world.
+
+A fidelity check without a correctness partner is not wrong, but it must be
+**labelled fidelity-only** so nobody reads its green tick as validation.
+
+**Audit, 2026-08-04.** Every verification in this repo, by channel:
+
+| check | channel | correctness partner |
+|---|---|---|
+| tensor eigenvalue readback | fidelity | **bilateral mirror-symmetry test** (paired axes must mirror in x) — added after the failure above |
+| `03e` per-side PCA axis | correctness | mirror symmetry + elongation; refuses `mentalis` at \|dot\| 0.215 |
+| aniso solve units (×1000) | correctness | the eight **non-tensor compartments as a control** — they must return at ratio ~1.0 |
+| `test_guards_fire.py` | correctness | each guard must fire in isolation AND a clean control must trip none |
+| `test_guard_coverage.py` | **fidelity-only** | it resolves that a guard is *called*; `test_guards_fire` is its correctness partner |
+| `same_discretisation()` | correctness | compares sorted coordinate sets, not counts |
+| invariant 1 plateau | correctness | radius-independence is a physical requirement |
+| invariant 2 outer net | correctness | charge conservation; **support** is a separate fidelity check (`invariant_2_coverage`) |
+| `conductivity_map_covers_mesh` | fidelity | reserved-range collision check is its correctness partner |
+| analytic sphere (pre-flight) | correctness | closed-form solution |
+| `anonymise_head()` + `assert_anonymised()` | **fidelity-only** | correctness partner is **rendering the figure and looking at it** — the first crop passed its own point count and left the profile legible |
+| allowlist pre-commit hook | correctness | it is an allowlist, so unknown formats fail closed |
+
+**And read the docstring of the thing you are about to reuse.**
+`orientation.split_sides()` carried a warning about this exact failure —
+*"Running PCA on that directly measures the left-right separation between two
+muscles, not the fibre direction along either — it reported sternocleidomastoid,
+the textbook strap muscle, as a plate"* — and the new tensor builder did not
+call it. That is the same shape as the SimNIBS calibration reversal, where three
+sessions of statistics ran against a quantity whose definition was one function
+away and nobody opened the source. **Both cost days. Both were one file away.**
+
 **Evaluate every guard, then raise once with all failures.** Fail-fast is right
 for a cheap precondition (the conductivity-span gate, which runs before a
 4-minute solve) and wrong for a diagnostic. `solve_invariants.GuardChain` is
