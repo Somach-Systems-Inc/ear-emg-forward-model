@@ -3058,3 +3058,85 @@ jaw advantage.
 Written: `results/04_jaw_vs_ear_gap.csv`,
 `results/04_sensitivity_matrix_dB.csv`.
 
+---
+
+## 2026-08-03 — THE PAPER'S PRINCIPAL FINDING, and how a test surfaced it
+
+**The two montages do not see the same muscles.** Three of ten articulators are
+picked up more strongly at the ear than at the best jaw site: temporalis
+**+3.92 dB** (best ear site `cg01`), sternocleidomastoid **+2.53 dB** (`cg08`),
+lateral pterygoid **+1.69 dB** (`pre_tragus`). All three clear the 0.27 dB
+measured floor. *(measured)*
+
+The framing is reversed accordingly: **not** "the ear loses X dB versus the
+jaw and quantifying the loss is the contribution", **but** "jaw sites dominate
+for the anterior articulators, retroauricular sites dominate for temporalis,
+SCM and lateral pterygoid". A loss figure cannot express a sign change, and a
+mean over muscles hides it.
+
+### How it surfaced, and this is the transferable part
+
+**It surfaced because a test encoded the assumption the paper was built on, and
+the data disagreed with the test.**
+
+`04_analyze.py`'s first truncation-sensitivity check asked `gap > floor` —
+"does the jaw-versus-ear gap survive?". That predicate has the conclusion built
+into it: it can only ever return "the gap survived" or "the gap was too small
+to resolve". It has no way to express *the sign flipped*, so when three muscles
+came back at −3.92, −3.41 and −1.69 dB it reported them as **"NO — under the
+floor"**, which is not merely wrong, it is wrong in the direction that protects
+the original framing. The three strongest counter-examples in the dataset were
+being filed as failures to detect an effect.
+
+The criterion is now two separate conditions — `|gap| > floor` (resolvable) and
+sign preserved (the exclusion did not flip the winner) — and the sign is
+reported as `favours: jaw|ear`.
+
+**The general form:** a test written to confirm a hypothesis will encode that
+hypothesis in its predicate, and will then report disconfirming evidence as
+absence of evidence. `CLAUDE.md` already carries the rule that catches it —
+**"Both outcomes publish. Never tune the analysis toward the interesting one"**
+— but that rule is usually read as being about *interpretation*. This is the
+same failure one level down, in the **comparison operator**, where it is much
+harder to see: `>` versus `abs() >` is a one-character difference that decides
+whether a finding exists. When a test's output vocabulary cannot express the
+opposite of the expected result, the test is not a test.
+
+*(Noted also: this is the second time in two days that a sign has carried the
+finding. SimNIBS's calibration check was anti-correlated, not uncorrelated, and
+that only became visible when the sign was looked at rather than the
+magnitude.)*
+
+### The anatomical prediction was made first, and the record proves it
+
+The three ear-winning muscles are exactly the three attaching at or near the
+temporal bone: temporalis (temporal fossa origin), SCM (mastoid process
+insertion), lateral pterygoid (mandibular condyle and TMJ capsule, articulating
+with the temporal bone's mandibular fossa).
+
+**Verified from git, not asserted from memory:** `config.MUSCLES`'s
+`expected_at_ear` column — carrying *"STRONG - directly above ear"* for
+temporalis and *"STRONG - mastoid attachment"* for SCM — entered the repository
+in the first scaffold commit **fa583f6 (2026-08-02)**, while
+`results/03_leadfields.csv` was not committed until **2026-08-03**. The
+prediction predates the measurement by a day and by the whole solve pipeline,
+so this is a confirmed a-priori prediction rather than a post-hoc story.
+
+### Figure consequences
+
+**Fig 2's colour scale must be DIVERGING about 0 dB with a neutral grey
+midpoint.** 0 dB is each muscle's best jaw site, so the sign *is* the result; a
+sequential one-hue ramp has no visual event at zero and would render the sign
+change as a slightly lighter blue. Implemented with `TwoSlopeNorm(vcenter=0)`
+because the arms are unequal (−22.8 .. +3.9) and symmetric limits at ±22.8
+would wash the entire positive arm to near-neutral — burial by the other route.
+Since unequal arms make saturation non-comparable across the midpoint, the
+colorbar states both arm ranges and **every ear-winning cell is ringed**, so
+the sign is carried by geometry as well as colour.
+
+**Fig 5 becomes a per-muscle map, not a loss ranking.** Ranking retroauricular
+sites by *total* sensitivity sums over muscles, which collapses the sign change
+into a scalar dominated by the labial group where the jaw wins by 10–23 dB —
+the three muscles the ear is better at would vanish from the figure that is
+supposed to be the design deliverable.
+

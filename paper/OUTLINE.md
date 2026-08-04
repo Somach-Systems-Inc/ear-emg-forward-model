@@ -12,7 +12,9 @@
 
 ## The one-sentence claim
 
-We compute, for the first time, how strongly each speech-articulator muscle couples to electrodes placed around the ear, and show which retroauricular positions carry the most silent-speech information.
+**The two montages do not see the same muscles.** We compute, for the first time, how strongly each speech-articulator muscle couples to electrodes placed around the ear, and find that jaw and retroauricular montages are **complementary rather than ranked**: jaw sites dominate for the anterior articulators, and retroauricular sites dominate for temporalis, sternocleidomastoid and lateral pterygoid.
+
+*(Reframed 2026-08-03 on the stage-4 measurement. The previous framing was "the ear loses X dB versus the jaw, and quantifying that loss is the contribution", which presumes a single axis on which one montage is worse. The data has a **sign change**: three of ten muscles are picked up more strongly at the ear than at the best jaw site — temporalis **+3.92 dB**, sternocleidomastoid **+2.53 dB**, lateral pterygoid **+1.69 dB**, all clearing the 0.27 dB measured floor. A loss figure cannot express that, and averaging over muscles hides it.)*
 
 ---
 
@@ -290,15 +292,63 @@ Either way the comparison is a supplementary figure.
 
 ## Results (planned figures)
 
+### Truncation sensitivity — the direct answer to the boundary limitation
+
+**The jaw-versus-ear result does not depend on the truncation.** MIDA is cut at
+S = −116.2 mm with an insulating face, and three jaw sites sit within 10 mm of
+it (`hyoid` 8.0, `submental_lat` 8.4, `submental_mid` 9.7) while every ear site
+is 80 mm or more away, so reflection at that face inflates the jaw side and
+flatters the comparison. Reporting the gap twice, over all seven jaw sites and
+again over the four clear of the cut:
+
+- median gap **+6.45 dB → +5.91 dB**, a shift of **−0.54 dB**
+- **no sign flips**: which montage wins is unchanged for **10 of 10** muscles
+- every |gap| still clears the 0.27 dB measured floor
+
+**The structural reason matters more than the number.** Only three muscles move
+at all — `medial_pterygoid` (−1.33), `platysma` (−1.18), `sternocleidomastoid`
+(−0.88). For the other seven the best jaw electrode was never one of the
+near-cut sites, so excluding them cannot change the maximum: those muscles are
+**immune by construction, not by luck**. The truncation can only inflate the
+comparison where a near-cut site was already winning, and it was winning for
+three muscles out of ten.
+
+`medial_pterygoid` at **+0.62 dB** remains **borderline** and is reported as
+such: it clears the floor's 0.27 dB point estimate but sits under the 95% CI
+upper bound of 0.65 dB.
+
+
+
 **Fig 1** — Head model with muscle compartments highlighted; electrode positions for all montages.
 
-**Fig 2** — **The money figure.** Sensitivity matrix: muscles (rows) × electrode positions (columns), colour = lead-field magnitude in dB relative to the best jaw site, taken as the **median over source orientation**. Answers "what can you see from where." Every cell also carries the orientation envelope (min/max over n̂); render it as a companion panel or cell annotation rather than dropping it, since the envelope width is itself a finding.
+**Fig 2** — **The money figure.** Sensitivity matrix: muscles (rows) × electrode positions (columns), colour = lead-field magnitude in dB relative to the best jaw site, taken as the **median over source orientation**.
+
+> **The colour scale MUST be diverging about 0 dB, with a neutral grey midpoint — never sequential.** 0 dB is each muscle's best jaw site, so the **sign is the result**. A one-hue ramp has no visual event at zero and renders the three ear-winning muscles as "slightly lighter blue", burying the finding the figure exists to carry. Arms are unequal (−22.8 .. 0 .. +3.9 dB), so saturation is not comparable across the midpoint; the colorbar states both arm ranges and **every cell where the ear wins is ringed**, so the sign is carried by geometry as well as colour. Answers "what can you see from where." Every cell also carries the orientation envelope (min/max over n̂); render it as a companion panel or cell annotation rather than dropping it, since the envelope width is itself a finding.
 
 **Fig 3** — Attenuation vs distance for each articulator muscle, jaw sites vs ear sites. Shows the cost of moving to the ear in dB.
 
 **Fig 4** — Isotropic vs anisotropic muscle conductivity, same matrix. Quantifies the modelling error.
 
-**Fig 5** — Rank ordering: the top-N retroauricular positions by total articulator sensitivity, **plus the channel-redundancy analysis that turns a ranking into a recommended subset**. **This is the design table earbud teams actually need.**
+**Fig 5** — **A per-muscle map, not a loss ranking.** For each articulator, which montage wins and by how much, with the best site named on each side. A single ranking of retroauricular sites by *total* sensitivity was the previous spec and it is now wrong for this data: summing over muscles collapses a sign change into a scalar, so the three muscles the ear is actually better at disappear into a total dominated by the anterior articulators, where the jaw wins by 10–23 dB.
+
+The measured map, from `results/04_jaw_vs_ear_gap.csv` (near-cut jaw sites excluded):
+
+| muscle | best jaw | best ear | gap | wins |
+|---|---|---|---|---|
+| mentalis | `mental` | `cg10` | +22.78 | jaw |
+| depressor_anguli_oris | `mental` | `cg10` | +15.54 | jaw |
+| buccinator | `mental` | `cg10` | +10.57 | jaw |
+| orbicularis_oris | `mental` | `cg10` | +10.37 | jaw |
+| platysma | `mental` | `cg10` | +9.29 | jaw |
+| masseter | `mental` | `cg10` | +2.53 | jaw |
+| medial_pterygoid | `submaxillary` | `cg09` | +0.62 | jaw, **borderline** |
+| lateral_pterygoid | `midjaw` | `pre_tragus` | **−1.69** | **ear** |
+| sternocleidomastoid | `midjaw` | `cg08` | **−3.41** | **ear** |
+| temporalis | `midjaw` | `cg01` | **−3.92** | **ear** |
+
+The channel-redundancy analysis still turns this into a recommended subset, and it is now a **per-muscle-group** subset: a montage chosen to cover temporalis and SCM is not the montage that covers the labial group. **This is the design table earbud teams actually need**, and it is more useful as a map than as a ranking.
+
+`medial_pterygoid` at **+0.62 dB** is flagged **borderline** and stays flagged: it clears the 0.27 dB floor point estimate but sits below the floor's 95% CI upper bound of 0.65 dB. It must not be rounded into a clean jaw advantage.
 
 ### Channel redundancy — how many electrodes do you actually need?
 
@@ -486,6 +536,48 @@ Write the discussion so that either direction is publishable. A large loss says 
 ---
 
 ## Discussion angles
+
+> **PREP NOTES ONLY — not prose, not to be pasted into a Discussion.**
+> Framing decisions here are Carl's.
+>
+> **1. The complementarity result independently reproduces the a-priori
+> anatomical argument.** The three muscles the ear wins on are exactly the
+> three whose attachments sit at or near the temporal bone: **temporalis**
+> (origin, temporal fossa — directly under the superior cEEGrid row, and its
+> best site is `cg01`), **sternocleidomastoid** (insertion, mastoid process —
+> best site `cg08`), and **lateral pterygoid** (insertion at the mandibular
+> condyle and TMJ capsule, articulating with the temporal bone's mandibular
+> fossa — best site `pre_tragus`, the most anterior ear position). The
+> prediction was written into `config.MUSCLES`'s `expected_at_ear` column
+> before any solve ran, and the volume-conductor model reproduces it without
+> being told. That is a **prediction confirmed**, not a post-hoc
+> rationalisation, and the ordering is **verified from the record, not from
+> memory**: `expected_at_ear` — including *"STRONG - directly above ear"* for
+> temporalis and *"STRONG - mastoid attachment"* for SCM — entered the repo in
+> the first scaffold commit **fa583f6, 2026-08-02**, while `results/03_leadfields.csv`
+> was not committed until **2026-08-03**. The prediction predates the
+> measurement by a day and by the entire solve pipeline.
+>
+> **2. It sharpens the Paper 2 prediction.** Paper 1 predicts what Paper 2
+> measures, and the prediction is now specific rather than a dB budget: an
+> ear montage should retain gestures driven by **temporalis** (jaw elevation,
+> clenching) and **lateral pterygoid** (protrusion, lateral excursion), and
+> should lose gestures driven by the **labial group** — `mentalis`,
+> `depressor_anguli_oris`, `buccinator`, `orbicularis_oris` — which sit
+> 10–23 dB down at the ear. `sternocleidomastoid` is a caveat rather than a
+> win: the model says the ear sees it well, and `config.MUSCLES` already
+> records "STRONG - mastoid attachment (**but low speech activity**)", so it
+> is a strong coupling to a muscle that may carry little speech information.
+> Do not let the dB number imply otherwise.
+>
+> **3. What this does NOT license.** Ten of eighteen muscles are modelled;
+> the suprahyoid and tongue groups are pooled in MIDA and are not in this
+> result. The two muscles that carry the strongest version of the ear argument
+> — digastric posterior and stylohyoid — are among the missing ones, so the
+> complementarity map is currently silent exactly where the anatomical
+> argument is strongest.
+
+
 
 1. **Design guidance** — a lookup table for anyone building an ear-worn ExG device.
 2. **Reframing artifact as signal** — the EEG field spent decades documenting mastoid EMG contamination as a nuisance (Yao et al. 2019; Goncharova et al. 2003). This model says what that contamination actually *is*, muscle by muscle.
