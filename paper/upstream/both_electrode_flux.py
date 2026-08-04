@@ -90,9 +90,12 @@ def main(argv=None) -> int:
         pct = preflight.read_calibration(d)
         act, _ = plateau_flux(m, pos[name], sigma, config.INJECTION_CURRENT_A)
         rfl, _ = plateau_flux(m, pos[ref], sigma, config.INJECTION_CURRENT_A)
-        recomputed = (2 * abs(act - abs(rfl)) / (act + abs(rfl))
-                      if np.isfinite(act) and np.isfinite(rfl) else float("nan"))
-        mean = 0.5 * (act + abs(rfl))
+        # The reference electrode's cut flux is the return path, so its sign
+        # is opposite. a and b are magnitudes.
+        A, B = abs(act), abs(rfl)
+        recomputed = (2 * abs(A - B) / (A + B)
+                      if np.isfinite(A) and np.isfinite(B) else float("nan"))
+        mean = 0.5 * (A + B)
         print(f"{name:<16}{('' if pct is None else f'{pct:.2f}'):>10}"
               f"{act:>10.4f}{rfl:>11.4f}{100*recomputed:>13.2f}%{mean:>8.4f}")
         rows.append(dict(electrode=name,
@@ -102,6 +105,7 @@ def main(argv=None) -> int:
                          recomputed_pct=round(100 * recomputed, 4),
                          mean_of_two=round(mean, 6)))
         del m
+        import gc; gc.collect()
     with a.out.open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()

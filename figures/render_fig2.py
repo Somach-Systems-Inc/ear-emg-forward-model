@@ -8,15 +8,17 @@ lead-field magnitude in dB relative to each muscle's best jaw site (0 dB). Answe
 far the ear / cEEGrid columns fall below it is the cost of moving to the ear, and
 any cell at or above 0 dB is a site that beats every jaw electrode for that muscle.
 
-Colour job: SEQUENTIAL (one blue hue, light = attenuated, dark = sensitive) — the
-data is magnitude, not identity or polarity. Reference electrodes are excluded
+Colour job: DIVERGING about 0 dB (red = jaw wins, neutral = tie, blue = ear wins).
+The data is POLARITY, not magnitude: 0 dB is each muscle's best jaw site, so the
+SIGN is the result. Three muscles cross it — temporalis, sternocleidomastoid and
+lateral pterygoid — and a sequential ramp has no visual event at zero, so it
+would bury exactly the finding the figure exists to carry. Reference electrodes are excluded
 (they are not sensing channels). No per-cell numbers (that is the "number on every
 point" anti-pattern for an 18x22 grid); exact values live in the CSV. A small ring
 marks each row's 0 dB reference site so the reader sees what every row is measured
 against.
 
-    simnibs_python figures/render_fig2.py --csv results/04_sensitivity_MOCK.csv
-    simnibs_python figures/render_fig2.py           # defaults to results/04_sensitivity.csv
+    simnibs_python figures/render_fig2.py     # results/04_sensitivity.csv, written by src/04_analyze.py
 """
 from __future__ import annotations
 
@@ -33,7 +35,10 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--csv", type=Path, default=rc.DEFAULT_CSV)
     ap.add_argument("--condition", default="iso", choices=["iso", "aniso"])
-    ap.add_argument("--mesh", default="extended", choices=["truncated", "extended"])
+    # truncated is PRIMARY for every published result; the extended mesh does
+    # not conserve charge. Defaulting to "extended" was a leftover from before
+    # that was settled and made the real-data render fail with "no rows".
+    ap.add_argument("--mesh", default="truncated", choices=["truncated", "extended"])
     ap.add_argument("--outdir", type=Path, default=rc.FIGDIR)
     a = ap.parse_args(argv)
 
@@ -94,18 +99,19 @@ def main(argv=None) -> int:
                 mec=rc.INK_PRIMARY, mew=0.8, zorder=5)
 
     cbar = fig.colorbar(im, ax=ax, fraction=0.030, pad=0.02)
-    cbar.set_label(
-        f"lead field  (dB re best jaw site)\n"
-        f"0 = best jaw site  ·  ringed cells: ear beats jaw\n"
-        f"arms are NOT equally scaled: {vmin:+.0f}..0 and 0..{vmax:+.0f} dB",
-        fontsize=6.4)
+    # Short label on the bar; the asymmetry statement belongs in the caption,
+    # where it can be read horizontally. Three lines of rotated 6pt text on the
+    # colorbar was unreadable.
+    cbar.set_label("dB re best jaw site", fontsize=7)
     cbar.ax.tick_params(labelsize=6, length=0)
     cbar.outline.set_visible(False)
 
     rc.matrix_titles(ax, "Fig 2 · Articulator sensitivity matrix",
-                     f"median lead field per compartment, dB relative to each "
-                     f"muscle's best jaw site   ·   condition = {a.condition}, "
-                     f"mesh = {a.mesh}   ·   ring = 0 dB reference site")
+                     f"median lead field per compartment, dB re each muscle's "
+                     f"best jaw site   ·   {a.condition}, {a.mesh}   ·   "
+                     f"ring = each row's 0 dB jaw reference   ·   "
+                     f"box = ear beats jaw   ·   arms NOT equally scaled "
+                     f"({vmin:+.0f}..0 vs 0..{vmax:+.0f} dB)")
 
     rc.save(fig, "fig2_sensitivity_matrix", df, a.outdir)
     return 0

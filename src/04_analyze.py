@@ -233,6 +233,23 @@ def main(argv=None) -> int:
     print(f"    at the CI's upper bound {sum(m > 0.65 for m in mags)} of "
           f"{len(mags)} remain resolvable.")
 
+    # ---- the FIGURE CONTRACT file, long format. Queue item (a): the figures
+    # read this, so emitting it here is what retires 04_sensitivity_MOCK.csv.
+    # Columns are render_common.CORE_COLUMNS exactly.
+    long = []
+    lf = d.set_index("electrode")[MUSCLE_NAMES]
+    dbi = db.set_index("electrode")[MUSCLE_NAMES]
+    for elec in d["electrode"]:
+        for m in MUSCLE_NAMES:
+            long.append(dict(electrode=elec, muscle=m, condition="iso",
+                             mesh="truncated",
+                             lead_field=float(lf.loc[elec, m]),
+                             db_rel_best_jaw=round(float(dbi.loc[elec, m]), 4)))
+    contract = config.RESULTS / "04_sensitivity.csv"
+    pd.DataFrame(long).to_csv(contract, index=False)
+    print(f"\nwrote {contract}  ({len(long)} rows, long format, "
+          f"the figure contract)")
+
     out = config.RESULTS / "04_jaw_vs_ear_gap.csv"
     pd.DataFrame(rows).to_csv(out, index=False)
     db.round(3).to_csv(config.RESULTS / "04_sensitivity_matrix_dB.csv",

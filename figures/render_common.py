@@ -276,8 +276,13 @@ def decorate_matrix(ax, rows, cols, row_labels=None):
 def matrix_titles(ax, title, subtitle):
     """Title above, caption below it — consistent with the scatter/bar figures,
     sitting clear of the montage headers that ride just above the matrix."""
-    ax.set_title(title, loc="left", fontsize=9.5, fontweight="bold", pad=34)
-    ax.text(0, 1.052, subtitle, transform=ax.transAxes, va="bottom", ha="left",
+    # pad clears the montage group headers, which ride at ~1.03-1.05 axes
+    # coords; the subtitle sits ABOVE them, not through them. The first render
+    # on real data had the subtitle running straight through "Jaw",
+    # "Retroauricular" and "cEEGrid C-path" -- caught by rendering and looking,
+    # which is the only check that finds this class of defect.
+    ax.set_title(title, loc="left", fontsize=9.5, fontweight="bold", pad=46)
+    ax.text(0, 1.105, subtitle, transform=ax.transAxes, va="bottom", ha="left",
             fontsize=6.5, color=INK_SECONDARY)
 
 
