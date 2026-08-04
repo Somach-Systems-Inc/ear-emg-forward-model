@@ -8,42 +8,56 @@ Repo clean, all work committed.
 
 ---
 
-## 0-NEXT. QUEUE, in order
+## 0-NEXT. QUEUE, in order (reprioritised 2026-08-03 per ruling 3)
 
-**Done since the last handoff:** guard chain (collect-then-raise), synthetic
-per-guard tests, band retirement, decision audit, upstream filing #665,
-interim-statistic rule, invariants 3 and 4 EXECUTED, reserved-tag guard,
-`04_analyze.py` with the truncation sensitivity. `test_guard_coverage.py`,
-`test_guards_fire.py` and `preflight.py` all PASS.
+1. **ANISOTROPY TENSOR + Fig 4 — the designed contribution, next.**
+   `03_leadfields.py` still raises `NotImplementedError` **by design**.
+   **Never fall through to the isotropic map — that fabricates Fig 4 by
+   comparing a condition against itself.**
 
-1. **Mesh-quality regression** (still owed). Per ruling 6 the dependent
-   variable is **delivered current** (tet-patch `inv1_mean`) against local
-   element count and quality in each electrode patch, with the calibration
-   value reported alongside as a second series. Calibration as the dependent
-   variable would measure the artefact, not the mesh. Cost: one mesh read per
-   electrode, 22 of them, no solves.
-2. **Anisotropy tensor** in `03_leadfields.py`. Still raises
-   `NotImplementedError` **by design**. Per-element tensor (0.4 along fibre,
-   0.1 across) from `orientation.principal_axis()`, `config.FIBRE_MODEL` "pca"
-   compartments **only**. **Never fall through to the isotropic map — that
-   fabricates Fig 4 by comparing a condition against itself.** Cost: the
-   tensor path plus 22 solves, ~90 min.
+   **Scope is THREE compartments, not nine — established before any code was
+   written.** Only `sternocleidomastoid` (68), `medial_pterygoid` (81) and
+   `mentalis` (71) are both PCA-defensible and individually segmented; the
+   other six PCA muscles are pooled into `Muscle (General)` (38) and `Tongue`
+   (42). Fig 4 must state this, or seven zero-difference rows will read as
+   "anisotropy does not matter" instead of "anisotropy was not applied here".
+   SCM is one of the three ear-winning muscles, so the figure still bears on
+   the principal finding.
+
+   **Route, researched but NOT implemented:** SimNIBS takes anisotropy as a
+   NIfTI tensor volume, not a per-element tensor. Set
+   `anisotropy_type="dir"`, `fn_tensor_nifti=<path>`,
+   `anisotropic_tissues=[68, 81, 71]`. Build the volume from MIDA's label
+   volume: per compartment, principal axis via `orientation.principal_axis()`,
+   then `D = 0.4 * a(x)a + 0.1 * (I - a(x)a)`.
+   **Watch three defaults in `simnibs.utils.cond_utils.cond2elmdata`:**
+   `correct_FSL=True` permutes tensor components, `correct_intensity=True`
+   rescales the whole field to match the scalar values, and `max_ratio=10` /
+   `max_cond=2` clamp eigenvalues. Our ratio is 4 and max eigenvalue 0.4, so
+   the clamps do not bite, but the first two will silently change the tensor.
+   **VERIFY BY READING BACK the ElementData and asserting the eigenvalues are
+   0.4/0.1/0.1 along the intended axis for the intended tags before solving.**
+   Do not trust the pipeline; that is the whole lesson of this repo.
+   Cost: builder + verification, then 22 solves (~90 min).
+
+2. **Mesh-quality regression** — DEMOTED, may end up supplementary. Its purpose
+   was explaining calibration variation; calibration is retired and stage 3
+   stands on the ratio argument. If run: dependent variable is **delivered
+   current** (tet-patch `inv1_mean`) against element count and quality per
+   electrode patch, calibration alongside as a second series.
 3. **Re-render `02_electrode_qa` with `anonymise_head()`.**
-4. **Figure captions and Results.** No Discussion, Introduction or Abstract.
-5. **Solver reproducibility at fixed geometry** — one identical montage solved
-   twice. This is the independent measurement owed before the withdrawn 1e-6
-   tolerances on invariants 3 and 4 could ever become gates again.
-6. **A real known-bad case for invariant 2 is still owed.** The synthetic
-   monopole demonstrates it fires; the extended mesh does NOT trip it once the
-   conductivity map is correct (-0.0038 x injected). Either find a real solve
-   that violates whole-domain charge conservation, or record that none exists
-   here and the synthetic case is the demonstration.
+4. **Two owed measurements.** (a) Solver reproducibility at fixed geometry —
+   one identical montage solved twice; this is what the withdrawn 1e-6
+   tolerances on invariants 3 and 4 need before they could be gates again.
+   (b) A real known-bad case for invariant 2 — the synthetic monopole
+   demonstrates it fires, the extended mesh does not trip it once the
+   conductivity map is correct (−0.0038 × injected).
+5. **Figure captions and Results.** No Discussion, Introduction or Abstract.
 
 **Settled, do not reopen:** the extended mesh (ruling 1). Hypothesis 1 is
 UNTESTED, not falsified; "both hypotheses spent" was wrong; the disposition
-stands on the flux-decay probe, which is independent; the mesh is unused and
-the limitation is documented with its bias direction. Do not re-litigate the
-cause.
+stands on the flux-decay probe; the mesh is unused and the limitation is
+documented with its bias direction.
 
 ---
 
@@ -192,6 +206,36 @@ magnitude: a common scale factor cannot invert a ranking.
 "4 of 22 agreement" went in **with its ±5 pp tolerance and the full sensitivity
 curve** (0 / 2 / 4 / 9 at ±3 / 4 / 5 / 6 pp), per the new interim-statistic
 rule.
+
+---
+
+## 0. THE PRINCIPAL FINDING — the two montages see different muscles
+
+Three of ten articulators are stronger at the ear than at the best jaw site:
+**temporalis +3.92 dB** (`cg01`), **sternocleidomastoid +2.53** (`cg08`),
+**lateral pterygoid +1.69** (`pre_tragus`). All clear the 0.27 dB floor.
+
+**Framing reversed in OUTLINE**: not "the ear loses X dB and quantifying the
+loss is the contribution", but "jaw sites dominate the anterior articulators,
+retroauricular sites dominate temporalis, SCM and lateral pterygoid". A loss
+figure cannot express a sign change and a mean over muscles hides it.
+
+The three are exactly those attaching at or near the temporal bone, and the
+prediction is **verified a-priori from git**: `expected_at_ear` entered in
+commit `fa583f6` (2026-08-02), leadfields committed 2026-08-03.
+
+**It surfaced because a test encoded the assumption.** `gap > floor` has no
+vocabulary for a sign flip, so it reported the three strongest counter-examples
+as "under the floor" — disconfirming evidence filed as absence of evidence.
+Criterion is now `|gap| > floor` AND sign preserved.
+
+**Fig 2 must be DIVERGING about 0 dB** (done: `TwoSlopeNorm`, neutral grey
+midpoint, ear-winning cells ringed since unequal arms make saturation
+non-comparable). **Fig 5 becomes a per-muscle map, not a loss ranking** — spec
+rewritten in OUTLINE; the code still ranks and needs rebuilding.
+
+`medial_pterygoid` at +0.62 dB stays flagged **borderline** (under the floor's
+0.65 dB CI upper bound). Do not round it away.
 
 ---
 
