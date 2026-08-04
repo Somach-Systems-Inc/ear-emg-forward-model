@@ -2990,3 +2990,71 @@ real value is as the control for invariant 4 — it establishes that the solver
 contributes no error at fixed geometry, which is what licenses reading
 invariant 4's 7.5e-6 as a genuine residual.
 
+---
+
+## 2026-08-03 — STAGE 4: the truncation sensitivity SURVIVES
+
+`src/04_analyze.py` written and run. This was the analysis that had to happen
+before any Discussion existed, because the truncation flatters the paper's own
+headline and the size of that flattery was unknown.
+
+**The conclusion is unchanged for 10 of 10 muscles.** *(measured)*
+
+| | all 7 jaw sites | excluding the 3 near-cut | change |
+|---|---|---|---|
+| median jaw-versus-ear gap | **+6.45 dB** | **+5.91 dB** | **−0.54 dB** |
+
+Excluded: `hyoid` (8.0 mm from the cut face), `submental_lat` (8.4),
+`submental_mid` (9.7). The script **derives** that set from the
+`clearance_to_cut_mm` column and raises if it disagrees with the hardcoded
+list, so the exclusion cannot silently go stale.
+
+| muscle | all jaw | far jaw | change | favours |
+|---|---|---|---|---|
+| mentalis | +22.78 | +22.78 | 0.00 | jaw |
+| depressor_anguli_oris | +15.55 | +15.55 | 0.00 | jaw |
+| buccinator | +10.57 | +10.57 | 0.00 | jaw |
+| orbicularis_oris | +10.37 | +10.37 | 0.00 | jaw |
+| platysma | +10.47 | +9.29 | −1.18 | jaw |
+| masseter | +2.53 | +2.53 | 0.00 | jaw |
+| medial_pterygoid | +1.95 | +0.62 | −1.33 | jaw |
+| lateral_pterygoid | −1.69 | −1.69 | 0.00 | **ear** |
+| sternocleidomastoid | −2.53 | −3.41 | −0.88 | **ear** |
+| temporalis | −3.92 | −3.92 | 0.00 | **ear** |
+
+**Only three muscles move at all**, and the reason is structural rather than
+lucky: for the other seven the best jaw electrode was never one of the near-cut
+sites, so removing them cannot change the maximum. The truncation can only
+inflate the headline where a near-cut site was already winning, and it was
+winning for `medial_pterygoid`, `platysma` and `sternocleidomastoid` only.
+
+**No sign flips.** Which montage wins is unchanged for every muscle, so the
+truncation is not what produces the jaw-versus-ear result.
+
+### A reporting bug in my own first pass, caught and fixed
+
+The first version tested `gap > floor` and reported temporalis, lateral
+pterygoid and SCM as **"NO — under the floor"**. That is wrong and it inverts a
+result: their gaps are −3.92, −1.69 and −3.41 dB, which are **resolvable gaps
+in the opposite direction** — the ear *beats* the jaw for those three muscles.
+A negative gap is not a failed gap.
+
+The criterion is now two conditions, kept separate: `|gap| > floor`
+(resolvable) **and** sign preserved (the exclusion did not flip the winner).
+This is the "both outcomes publish" rule in `CLAUDE.md` doing real work — the
+ear winning for three of the ten muscles is a finding, and a test written to
+look for a jaw advantage was quietly discarding it.
+
+### Flip point, per the no-bare-binaries rule
+
+With the near-cut sites excluded the smallest |gap| is **0.62 dB**
+(`medial_pterygoid`). Against the measured floor of 0.27 dB all ten are
+resolvable; **at the floor's 95% CI upper bound of 0.65 dB, nine of ten
+remain** and `medial_pterygoid` alone drops out. So the result does not depend
+on where in its confidence interval the floor actually sits, except for that
+one muscle, which should be reported as borderline rather than as a clean
+jaw advantage.
+
+Written: `results/04_jaw_vs_ear_gap.csv`,
+`results/04_sensitivity_matrix_dB.csv`.
+
