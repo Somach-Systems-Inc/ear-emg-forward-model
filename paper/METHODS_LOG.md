@@ -3307,3 +3307,84 @@ delivered current") compares an interface-consistency measure against a
 delivered-current measure. Artifacts for the follow-up are prepared under
 `paper/upstream/`; **Carl posts, not an agent.**
 
+---
+
+## 2026-08-04 — FIG 4: the SCM ear advantage SURVIVES anisotropy
+
+All 22 electrodes re-solved with a per-element muscle conductivity tensor,
+**on the isotropic run's own mesh**, so the two conditions differ in
+conductivity alone. 29.2 min.
+
+| muscle | iso gap | aniso gap | change | verdict |
+|---|---|---|---|---|
+| **sternocleidomastoid** † | **−3.41** | **−2.77** | **+0.64** | **ear still wins** |
+| medial_pterygoid † | +0.62 | +0.60 | −0.03 | jaw, still borderline |
+| temporalis | −3.92 | −3.81 | +0.11 | ear still wins |
+| lateral_pterygoid | −1.69 | −1.75 | −0.06 | ear still wins |
+
+† carries a fibre tensor. *(measured)*
+
+**The answer to the question Fig 4 was reframed to ask is yes.** SCM's
+retroauricular advantage shrinks by 0.64 dB and remains an ear win by 2.77 dB,
+roughly **10x the 0.27 dB measured floor**. The complementarity finding does
+not depend on the isotropy assumption.
+
+**`medial_pterygoid` moves by only −0.03 dB despite carrying a tensor**, and
+that is the ratio argument doing visible work: anisotropy raises its lead field
+by ~5 dB at *both* the jaw and the ear sites, so the effect cancels almost
+exactly in the site-to-site comparison the paper actually reports. A term that
+scales a compartment roughly uniformly does not reach a ratio.
+
+### Three things verified rather than assumed
+
+1. **Units.** `NodeData.gradient()` returns V/mm on a millimetre mesh. With the
+   ×1000 factor the eight NON-tensor compartments return at ratio
+   **1.036 ± 0.016** of isotropic (0.996–1.050, within 0.4 dB) while the two
+   tensor compartments move **+3.92** and **+5.02 dB**. Without it every value
+   was ~600–1000x too small. The non-tensor compartments are the control: if
+   the constant were wrong they would not sit at 1.
+2. **The tensor that reaches the elements.** Eigenvalues read back from the
+   `ElementData`: 0.4000 / 0.1000 / 0.1000, principal eigenvector aligned with
+   the intended per-side axis at |dot| = 1.0000, and zero other compartments
+   anisotropic. `correct_FSL`, `correct_intensity`, `max_ratio` and `max_cond`
+   are pinned explicitly — SimNIBS's own `dir` branch hardcodes
+   `correct_intensity=True`, which rescales the entire tensor field by a fitted
+   scalar and would have made Fig 4 a comparison against an unknown
+   conductivity.
+3. **Same discretisation.** Re-solving on the iso mesh rather than through a
+   fresh SESSION, because SimNIBS re-meshes electrodes per run and two runs of
+   the same montage can differ (2,140,980 vs 2,140,979 nodes on
+   `submental_mid`). Electrode realisation is ~0.27 dB per site; the SCM effect
+   is 0.64 dB. A fresh SESSION would have buried the measurement in noise of
+   the same order.
+
+### The per-side PCA bug, and why the verification did not catch it
+
+The first tensor build ran PCA on each compartment's **pooled** voxel cloud and
+returned an axis of **[−0.999, 0.00, 0.05] for all three muscles** — every
+muscle in the head apparently running left-to-right. MIDA gives each muscle one
+label covering both sides, so the pooled scatter is dominated by the
+**separation between the bilateral pair**, not the fibre direction along
+either. SCM spans x = −63.4 to +62.0 mm: that is two necks, not one strap.
+
+`orientation.split_sides()` already existed and says so in its own docstring —
+*"it reported sternocleidomastoid, the textbook strap muscle, as a plate"*. The
+new builder did not call it. Seventh instance of the "the helper existed and
+the new code did not use it" family.
+
+**The eigenvalue verification passed on the wrong axes**, and that is the
+lesson worth keeping: it checked that the tensor SimNIBS received matched the
+axis I computed. It could not check that the axis I computed was anatomically
+meaningful. **A verification of pipeline fidelity cannot detect a wrong
+specification.** What caught it was reading the numbers and knowing that SCM
+does not run ear-to-ear.
+
+The fix added a **bilateral mirror-symmetry test**, which is measured rather
+than tuned: a paired muscle's two axes must be mirror images in x. SCM passes
+at |dot| 0.98, medial pterygoid at 1.000, and **mentalis fails at 0.215** —
+its "sides" are [+0.097 −0.147 +0.984] and [−0.976 −0.195 +0.093], nothing like
+mirror images, because splitting a small midline muscle on x does not separate
+a pair, it slices one blob (right-side elongation 1.07, i.e. no long axis
+exists). Mentalis is therefore **NOT APPLIED**, on measurement rather than on
+the FIBRE_MODEL table's assertion.
+
