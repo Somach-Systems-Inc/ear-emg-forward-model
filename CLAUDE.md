@@ -65,16 +65,45 @@ which searched for a string the program never prints, returned zero hits, and
 was reported as "run is clean". Zero hits and working-correctly are
 indistinguishable without a positive control.
 
+**A guard is not validated until a SYNTHETIC input has made it fire in
+isolation, with every other guard in the chain passing.** A real known-bad case
+is not sufficient and this was proved the expensive way: invariant 2 had one —
+the extended mesh leaking 1.07 mA of a 1 mA injection — and was still never
+demonstrated, because that mesh also destroys the radius plateau, so invariant
+1 raised first and invariant 2 never executed. An end-to-end case that trips
+several guards lets the first mask the rest, and no amount of running it
+reveals which ones work. `src/test_guards_fire.py` holds one synthetic case per
+guard, each failing that guard and nothing else, plus a clean control that must
+trip none. It runs in seconds in the plain venv, with no solve and no MIDA
+geometry. Run it before any production run.
+
+This property is also the only automatic detector of an *unreachable* guard.
+`test_guard_coverage.py` resolves whether a guard is CALLED; it cannot see that
+a called guard sits after another guard's raise. A synthetic case that must
+make one guard fire alone does see it.
+
+**Evaluate every guard, then raise once with all failures.** Fail-fast is right
+for a cheap precondition (the conductivity-span gate, which runs before a
+4-minute solve) and wrong for a diagnostic. `solve_invariants.GuardChain` is
+the shape: collect verdicts, record a guard that could not be evaluated as
+ERROR rather than skipping it, raise once. A skipped guard reads exactly like a
+passing one.
+
 Record the known-bad case beside each guard:
 
 | guard | known-bad case it was shown to fire on |
 |---|---|
 | `.githooks/pre-commit` | staged 500-byte `.geo` (extension), staged 4.6 MB `.csv` (size) |
-| `preflight.check_conductivity_range` | σ span 1.879e15, the air-at-1e-15 failure |
-| `preflight.read_calibration` | `air__cg10`, returns 11.90 not the 10 threshold |
-| `solve_invariants` invariant 1 | known-bad 1e-15 solve, diverges to −8.94, no plateau |
-| `solve_invariants` invariant 2 | **NOT YET DEMONSTRATED — owed a known-bad case** |
-| `test_guard_coverage` | found `03b` missing all three guards, `03d` missing two |
+| `preflight.check_conductivity_range` | σ span 1.879e15, the air-at-1e-15 failure; synthetic, and passes on the 1.879e6 span that worked |
+| `preflight.read_calibration` | synthetic `fields_summary.txt`, returns 11.90 not the 10 threshold, and `None` (not 0.0) when clean |
+| invariant 1 plateau | synthetic dipole scaled by radius: flux rises instead of holding |
+| invariant 1 magnitude | synthetic dipole at 0.2x: plateau exact, delivered current a fifth of requested |
+| invariant 2 outer net | **DEMONSTRATED SYNTHETICALLY 2026-08-03** — monopole: radius-stationary flux *and* nonzero net outer-boundary current, no solve. **A REAL known-bad case is still owed:** with the correct conductivity map it does NOT fire on the extended mesh (−0.0038 × injected). An earlier claim that it fired there at −0.310 came from the neck slab being read as electrode rubber; retracted |
+| invariant 2 coverage | shell pushed to 1.6 × p99 on a clean solve: 0% support, net exactly 0.0, which the net test alone reads as "charge conserved" |
+| invariant 2 unknown tags | synthetic tag with no conductivity outside every patch radius |
+| invariant 3 linearity | synthetic 2.5x pair |
+| invariant 4 reciprocity | synthetic −1.01x pair |
+| `test_guard_coverage` | found `03b` missing all three guards, `03d` missing two, and invariants 3/4 called by nothing |
 | `render_common.anonymise_head` | first crop left the profile legible; caught by rendering and looking |
 
 **Never publish a recognisable face.** MIDA licence clause 2.3.3: *"Any images
@@ -131,6 +160,24 @@ Apply this yourself. Do not escalate anything it already covers.
   Never defend the value by argument alone.
 - An annotation that enters no calculation may cite a literature mean. An
   operand may not.
+
+### Interim statistics
+- **Any statistic quoted before its data set is complete must carry its `n` and
+  an explicit `INTERIM` label.** Not "the correlation is −0.322, n.s." but
+  "INTERIM, n=18 of 22: −0.322, p = 0.193". A statistic without its n reads as
+  final, and a reader cannot tell that it is still moving.
+- Worked example, and it moved in the direction that mattered. The correlation
+  between SimNIBS's calibration warning and true delivered-current error was
+  quoted as **−0.322, p = 0.193, not significant** on the 18 solves then
+  complete. On the full 22 it is **−0.425, p = 0.048** — significant, and more
+  damning: the check is not merely uncorrelated with the error it claims to
+  measure, it is significantly *anti*-correlated. Quoting the interim figure as
+  final would have understated the case against it.
+- A statistic with a free parameter must state the parameter, not just the
+  number. "The two agree on 4 of 22 solves" reproduces only at an unstated ±5
+  percentage-point tolerance, and becomes 9 of 22 at ±6 pp. Numbers that sit on
+  a cliff of an undeclared choice do not go in front of a reviewer without the
+  choice attached.
 
 ### Claims
 - Tag every claim `measured` | `derived` | `asserted`. Attack `asserted` first.

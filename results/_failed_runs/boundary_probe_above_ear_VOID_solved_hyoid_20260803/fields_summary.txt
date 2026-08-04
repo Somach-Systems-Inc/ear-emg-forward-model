@@ -1,6 +1,6 @@
 Cannot locate subjects m2m folder
 some postprocessing options might fail
-The current calibration error exceeded 10%! Estimated error value: 15.75%
+The current calibration error exceeded 10%! Estimated error value: 100.49%
 
 mida_neckext_TDCS_1
 ===================
@@ -11,12 +11,12 @@ Field Percentiles
 Top percentiles of the field (or field magnitude for vector fields)
 |Field |99.9%        |99.0%        |95.0%        |
 |------|-------------|-------------|-------------|
-|E     |2.45e-01 V/m |1.81e-01 V/m |1.46e-01 V/m |
+|E     |3.47e-01 V/m |2.47e-01 V/m |1.72e-01 V/m |
 
 Field Focality
 ---------------
 Mesh volume or area with a field >= X% of the 99.9th percentile
 |Field |75.0%        |50.0%        |
 |------|-------------|-------------|
-|E     |7.93e+02 mm³ |1.56e+04 mm³ |
+|E     |6.57e+02 mm³ |4.31e+03 mm³ |
 

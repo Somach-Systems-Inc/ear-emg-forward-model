@@ -1,0 +1,18 @@
+VOID. This directory is labelled "above_ear" and holds a solve of HYOID.
+
+03a2_boundary_probe.py called 03a_boundary_run.solve() without passing the
+montage. solve() read 03a's module-level INJECT_FROM = "hyoid"; the probe's own
+INJECT_FROM = "above_ear" was used only in print statements and never reached
+the solver.
+
+Proof, from this directory's own log:
+    Placing Electrode: centre: [-9.33, 42.74, -108.23]   <- hyoid
+    above_ear is at                [78.76,  7.24,   13.61]
+
+The result mesh is byte-identical to results/boundary/muscle_iso/
+(md5 b110d2ced3a7b2e10377dcaca1dad04d), which is the boundary run's hyoid
+solve. The "identical 100.49% at 130 mm and at 8 mm" that falsified
+hypothesis 1 is ONE measurement at 8 mm, reported twice.
+
+Hypothesis 1 (coarse elements at the slab interface) is therefore UNTESTED,
+not falsified. Kept as evidence, not deleted.

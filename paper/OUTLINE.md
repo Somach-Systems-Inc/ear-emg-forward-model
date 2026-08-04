@@ -214,16 +214,45 @@ cancel.
 > Both electrodes sit above the truncation plane, so net vertical current
 > through any plane below both of them must be exactly zero; it is measured at
 > **1.07–1.64 mA against a 1 mA injection**, and planes *between* the
-> electrodes carry 1.59–1.61 mA where they must carry exactly 1.00. Every
-> extended-mesh solve reported a current-calibration error near 100%, at both
-> a near electrode (`hyoid`, 8 mm from the cut) and a far one (`above_ear`,
-> 130 mm), while the truncated mesh solved cleanly throughout.
+> electrodes carry 1.59–1.61 mA where they must carry exactly 1.00. The
+> discriminating measurement is decay toward the domain floor, where there is
+> nowhere left for current to circulate: the truncated control falls from
+> 0.951 mA at S = −112 mm to 0.107 mA at S = −119 mm (floor −122), while the
+> extended mesh holds 1.594 mA at S = −112 mm and is still at 1.070 mA at
+> S = −182 mm (floor −192). Flux that fails to decay approaching an insulating
+> floor means current is leaving the domain there.
 >
-> Two hypotheses were tested against a pre-committed budget of two and both are
-> spent: a coarse-element jump at the slab interface (**falsified** — the
-> failure is identical 130 mm away) and a non-insulating inferior boundary
-> (**confirmed as a conservation violation**, though not cleanly separated
-> from simple non-convergence). Detail in `METHODS_LOG.md`.
+> *(A claim that the whole-domain charge check corroborates this, at −0.310 and
+> −0.566 × injected, was added and **withdrawn the same day**. Those readings
+> came from an analysis map in which the neck slab — tagged 200, inside
+> SimNIBS's reserved electrode-rubber range — was silently read as 29.4 S/m
+> rubber instead of 0.355 S/m muscle. With the correct map the check reads
+> −0.0038 and passes. **The leak rests on the flux-decay measurement alone**,
+> which is unaffected. See METHODS_LOG.)*
+>
+> *(An earlier version of this paragraph also cited a current-calibration error
+> near 100% reported by the solver on every extended-mesh solve. **That
+> corroboration is withdrawn.** SimNIBS's calibration check is measured
+> anti-correlated with true delivered current on this mesh and is no longer
+> evidence of anything. The finding itself is unaffected: it rests on the
+> flux-decay measurement above, which is independent of the solver's own
+> diagnostics and was the discriminating test all along.)*
+>
+> Of the two pre-committed hypotheses, **one was tested**: a non-insulating
+> inferior boundary, **confirmed as a conservation violation**, though not
+> cleanly separated from simple non-convergence. The other — a coarse-element
+> jump at the slab interface — is **untested**.
+>
+> *(Corrected 2026-08-03. This paragraph previously recorded that hypothesis as
+> **falsified**, on the grounds that the failure was identical 130 mm from the
+> cut face. The probe that produced that comparison solved the near montage
+> both times: it called the boundary run's `solve()` without passing the
+> montage, so the function fell back to that module's `INJECT_FROM = "hyoid"`,
+> and the result mesh is byte-identical to the run it was meant to differ from.
+> The "identical 100.49% at 130 mm and at 8 mm" is one measurement at 8 mm,
+> reported twice. **This does not change the disposition** — the extended mesh
+> is unusable either way, because it does not conserve charge — it changes only
+> whether the cause is known. Detail in `METHODS_LOG.md`.)*
 >
 > **The 1.0 dB threshold is neither applied nor revised.** It required a
 > trustworthy shift measured on both meshes and no trustworthy extended-mesh

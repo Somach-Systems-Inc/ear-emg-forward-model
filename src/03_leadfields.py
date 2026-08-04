@@ -196,7 +196,7 @@ def main(argv=None) -> int:
     muscles = [n for n, _, lab, _ in config.MUSCLES if lab is not None]
     fields = (["electrode", "condition", "montage", "side", "depth_mm",
                "clearance_to_cut_mm", "calibration_pct", "inv1_mean",
-               "inv1_cv", "inv2_net_frac"] + muscles)
+               "inv1_cv", "inv2_net_frac", "inv2_coverage"] + muscles)
 
     plan = [(e, c) for c in a.conditions for e in sorted(targets)]
     done = [(e, c) for e, c in plan if is_complete(WORKDIR / c / e)]
@@ -275,7 +275,12 @@ def main(argv=None) -> int:
                    calibration_pct=("" if cal is None else round(cal, 2)),
                    inv1_mean=round(inv["mean_ratio"], 5),
                    inv1_cv=round(inv["cv"], 5),
-                   inv2_net_frac=round(inv.get("outer_net_frac", float("nan")), 6))
+                   inv2_net_frac=round(inv.get("outer_net_frac", float("nan")), 6),
+                   # Recorded, not discarded. Invariant 2 integrates over
+                   # whatever share of its shell lies inside the conductor, and
+                   # at zero coverage it returns exactly 0.0 and passes. Without
+                   # this column a vacuous pass and a real one look identical.
+                   inv2_coverage=round(inv.get("outer_coverage", float("nan")), 4))
         for mname in muscles:
             row[mname] = med.get(mname, "")
         append_row(OUT_CSV, row, fields)          # incremental, per solve

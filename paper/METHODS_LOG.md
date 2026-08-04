@@ -2417,3 +2417,334 @@ evidence either way.
 
 The distinction matters because the numbers remain usable in the error budget
 while the *guarantee* does not. **Keep the measurement, drop the assurance.**
+
+---
+
+## 2026-08-03 — THE DOUBLE REVERSAL. Self-criticism is not evidence.
+
+The most generalisable entry in this log, and it is about how a claim was
+handled rather than about the claim.
+
+**The sequence.** (1) I asserted SimNIBS's current-calibration check was
+broken. (2) I retracted that as over-reach, wrote the retraction into
+`solve_invariants.py`'s docstring — *"Not because SimNIBS's check is broken. It
+is not."* — and recorded that the earlier version *"was wrong and is corrected
+here rather than deleted"*. (3) Measurement against the tet-patch integral
+falsified the retraction. **The original claim was right.**
+
+**The retraction was the error, and it was persuasive precisely because it was
+self-critical.** It had every surface feature of rigour: it named its own prior
+claim, called it wrong, corrected it in place rather than deleting it, and gave
+a reason. What it did not have was a measurement. It reasoned from the check's
+behaviour on one prior case — it had reported 200.00% on a solve that was
+genuinely wrong and stayed silent on one that was right — and generalised from
+n = 2 to "the check discriminates correctly".
+
+**A retraction is a claim.** It carries the same evidentiary burden as the claim
+it retracts, and it does not earn a discount for being humble. Nothing about
+admitting error makes the admission true. The failure mode is specific and
+worth naming, because in a project that rewards adversarial self-checking it is
+the natural blind spot: **an agent that is rewarded for catching its own errors
+will eventually manufacture one.** Retracting feels like rigour, so it bypasses
+the scrutiny that asserting attracts.
+
+**What actually settled it was a dissent-capable reference method.** The
+tet-patch integral is not an opinion about SimNIBS's check — it is an
+independent measurement of the same physical quantity (delivered current),
+computed from the field alone, with no shared machinery, and validated against
+the analytic sphere. It was *able to disagree*, and it did: on 22 solves it puts
+delivered current at 0.887–1.075 mA where the check claims errors of up to
+32.99%.
+
+The operational rule: **when a claim and its retraction are both arguments,
+neither is evidence. Build the instrument that can dissent, and let it.** Do not
+resolve a contradiction between two of your own positions by picking the more
+self-critical one.
+
+*(Note also that independent evidence against the check existed from the
+beginning and was not weighted: 5 of 16 sphere solves warned while matching the
+analytic oracle. That is a measurement against an absolute reference, and it
+said the check produces false positives. It was recorded as a curiosity and
+then used to build the "benign band" instead of being read as what it was.)*
+
+---
+
+## 2026-08-03 — Guard-chain audit: collect-then-raise, and what else was dead
+
+Converted the whole invariant chain to **collect-then-raise**
+(`solve_invariants.GuardChain`): every guard is evaluated, every verdict
+recorded, and one exception carries all failures. A guard that cannot be
+evaluated is recorded as `error`, never skipped, because a skipped guard reads
+exactly like a passing one.
+
+**Verified end to end on the real known-bad case.** The extended-mesh solve now
+reports **three** failures where it previously reported one:
+
+| guard | extended, slab 0.355 | truncated control |
+|---|---|---|
+| invariant 1 plateau | FAIL, no plateau | ok, CV 0.49% |
+| invariant 1 magnitude | FAIL, −38.20 × requested | ok, +0.9606 |
+| invariant 2 outer net | **FAIL, −0.310 × injected** | ok, −0.000015 |
+| invariant 2 coverage | ok, 3.40% | ok, 5.33% |
+
+**Invariant 2's known-bad case is now DISCHARGED.** It fires on the extended
+mesh at −0.310 and −0.566 × injected against −0.000015 on the truncated
+control — four orders of magnitude of separation. It had never been reached
+before because invariant 1 raised first. *(measured)*
+
+I predicted before running this that invariant 2 would prove **incapable** of
+firing, on the argument that its shell escapes the mesh and returns a
+degenerate zero. **That prediction was wrong and the measurement said so.**
+Recording it because it is the same lesson as the entry above: the argument was
+tidy and it was not evidence.
+
+### What else was dead
+
+| guard | status | consequence |
+|---|---|---|
+| **invariant 3 (linearity)** | **no caller anywhere** | never ran on any solve, ever |
+| **invariant 4 (reciprocity on the head mesh)** | **no caller anywhere** | never ran on any solve, ever |
+| `batch_plan()` | no caller | the "first and last solve of a batch" policy never executed |
+| `needs_escalation()` | called, result discarded | prints `[ESCALATE]` and branches on nothing |
+| `check_solve()` | no caller | carried a second copy of invariant 2 behind **two** earlier raises; **deleted** |
+| `check_solve_output()` | no caller | gates on the calibration check; **retired as an active refusal** |
+| `solve_invariants.__main__` | `NameError` since it was written | the documented way to inspect the tolerances had never once been run |
+
+Invariants 3 and 4 are the fifth and sixth instances of "written, documented as
+policy, wired to nothing" in this repository. `test_guard_coverage.py` could not
+see them because they were not in its `REQUIRED` set; they are now tracked in a
+new `BATCH_REQUIRED` group and it **fails** until they are wired. The escalation
+band was never reached in any case (observed CV 0.32–1.53%, band opens at
+2.44%), so nothing silently passed a check it should have failed — but that is
+luck, not coverage. Cost to wire: 4 extra solves, ~16 min.
+
+### Two new guards, and why they are not tuned
+
+**`invariant_1_magnitude`** — the loose 0.4–2.5 × injected band, inherited
+unchanged from the deleted `check_solve()`. A uniform scale error leaves the
+plateau exactly stationary and leaves invariant 2 at zero, so before today
+*nothing per-solve* could see it; only the analytic sphere in pre-flight, which
+runs once per environment. The band predates every stage-3 observation, which is
+what makes it usable — a tight window around the observed 0.887–1.075 would be
+derived from the data it judges.
+
+**`invariant_2_coverage`** — invariant 2 integrates J·n over a shell at
+1.05 × the 99th-percentile node radius, i.e. deliberately *outside* the bulk of
+the domain. Measured on the truncated mesh:
+
+| shell / p99 | 1.00 | 1.05 | 1.10 | 1.30 |
+|---|---|---|---|---|
+| inside the conductor | 8.20% | **5.35%** | 3.33% | **0.00%** |
+| net / injected | −0.606 | +0.0138 | +0.0021 | **+0.000000** |
+
+At zero support the integral returns exactly 0.0 and the tolerance passes
+vacuously; a zero from "nothing was sampled" is indistinguishable from a zero
+from "charge is conserved". **The check only has support at all because MIDA is
+elongated** (p99 153.3 mm, r_max 199.3 mm). On any convex domain
+1.05 × p99 > r_max — for a ball, p99/r_max = 0.997 — and coverage is zero. The
+production shell coverage was computed and **discarded** by the caller for the
+whole project; it is now a recorded verdict and a CSV column (`inv2_coverage`).
+
+### Per-guard synthetic tests — `src/test_guards_fire.py`
+
+Twelve cases, each failing exactly one guard with every other guard passing,
+plus a clean control that trips none. No solve, no SimNIBS, no MIDA geometry:
+a tetrahedralised ball with an analytic monopole or dipole field, in numpy,
+running in seconds in the plain venv.
+
+The invariant-2 case is the one that was owed: a **monopole** at the patch
+centre gives flux that is radius-stationary *exactly* (invariant 1 passes) while
+the net outer-boundary current equals the source current (invariant 2 must
+fire). Radius-stationary flux and unconserved charge, with no solve.
+
+**This property is also the only automatic detector of an unreachable guard.**
+`test_guard_coverage.py` resolves whether a guard is *called*; it cannot see
+that a called guard sits after another guard's raise. A case that must make one
+guard fire *alone* does see it — under the old fail-fast chain the monopole case
+reports invariant 1 failing too, and the test rejects it.
+
+One incidental measurement: at **5×** uniform scale the magnitude case also
+trips invariant 2, because invariant 2's residual is proportional to the field,
+so a comfortably-inside-tolerance residual is amplified past it. **Invariant 2 is
+not scale-invariant**, and a large enough scale error trips it through numerical
+amplification rather than through charge conservation. The isolation case
+therefore scales *down* (0.2×). *(measured)*
+
+---
+
+## 2026-08-03 — THE 11–15% BENIGN BAND IS RETIRED. So is the band taxonomy.
+
+**The band is void and everything derived from it falls with it.**
+
+It was measured as "5 of 16 sphere solves warned at 11–15% while matching the
+analytic oracle", and thereafter used as a benign range: `cg10` at 11.90% was
+waved through the cavity run on it, and stage 3 was halted when solves came back
+at 15.6–33.0% on the reasoning that *"the benign finding does not extrapolate"*.
+
+It was derived **entirely** from SimNIBS's calibration check. That check is now
+measured anti-correlated with true delivered current on this mesh: **Spearman
+−0.425, p = 0.048, n = 22**. Partitioning a quantity that does not measure what
+it claims into "benign" and "fatal" ranges does not yield two populations; it
+yields two arbitrary slices of noise. **There is no band. There is no threshold.
+The axis is void.**
+
+The wider taxonomy goes with it. Of the four recorded "bands", only the two that
+never rested on the calibration check survive, and they survive because they
+were always measurements of something else:
+
+| former band | rested on | disposition |
+|---|---|---|
+| 11–15% "benign, custom mesh" | calibration only | **VOID — retired** |
+| 15.6–33.0% "false positive, MIDA" | calibration only | **VOID as a band.** The underlying observation — these solves deliver 0.887–1.075 mA — stands, but it is a statement about the *tet-patch integral*, not a region of the calibration axis |
+| ~100% "charge leaking out the domain" | **flux-decay probe**, independent | **SURVIVES** |
+| 200.00% "conductivity conditioning" | **fields measured 10–20× too large**, independent | **SURVIVES** |
+
+**What replaces the band is not another band. It is a different instrument.**
+The tet-patch integral's `mean_ratio` *is* delivered current over requested,
+validated against the analytic sphere. Delivered current is reported per solve
+with its flip point, and the only gate on it is the loose gross-error band
+(0.4–2.5 × injected) that predates every stage-3 observation.
+
+Retired in: `preflight.read_calibration` (docstring), `preflight.check_solve_output`
+(now an active refusal that raises), `03a_boundary_run.py`, `03c_cavity_analysis.py`,
+`03d_cavity_solves.py`, `test_guard_coverage.REQUIRED`, `CLAUDE.md`, `OUTLINE.md`.
+
+---
+
+## 2026-08-03 — AUDIT: every decision that used SimNIBS calibration as evidence
+
+Each decision, and whether it survives on evidence that does **not** come from
+the calibration check.
+
+| # | decision | independent evidence | verdict |
+|---|---|---|---|
+| 1 | extended mesh does not conserve charge | flux fails to decay toward the floor (1.070 mA at S=−182, floor −192) vs control (0.107 mA at S=−119, floor −122); **and** invariant 2 at −0.310 / −0.566 × injected vs −0.000015 | **SURVIVES** |
+| 2 | σ_air 1e-15 → 1e-6 conditioning failure | fields measured 10–20× too large, directly | **SURVIVES** |
+| 3 | the 11–15% benign band | none | **VOID — retired** |
+| 4 | `cg10` 11.90% dismissed as benign | none | **VOID as reasoning.** Moot in fact: `cg10` warns identically in air and filled, so it cancels in the pair ratio, and the verdict is unchanged when the warned pairs are excluded |
+| 5 | **stage 3 halted: "7 of 16 above the benign band"** | none | **VOID as reasoning.** The halt was correct by luck — it triggered branch A, which found the real result — but its stated grounds were not evidence |
+| 6 | **`check_solve_output` as a production gate** | none | **VOID.** Never fired (no caller). Retired as an active refusal; had it been wired it would have voided 11 good solves and passed the worst one |
+| 7 | **hypothesis 1 (coarse elements at the slab interface) FALSIFIED** | **none — and the measurement behind it does not exist** | **VOID. See below.** |
+| 8 | cavity verdict recomputed excluding "warned" pairs | the recomputation itself | **SURVIVES as a leave-some-out robustness check**, but its *rationale* is void: "warned" is not a meaningful partition. Relabel, do not re-run |
+
+Decisions 5, 6, 7 and 8 were not on the handoff list. **7 is the serious one.**
+
+### 7. The `above_ear` probe solved `hyoid`. Hypothesis 1 was never tested.
+
+`03a2_boundary_probe.py` exists to decide whether the extended mesh's failure is
+LOCAL to the coarse slab or GLOBAL to the mesh, by injecting at `above_ear`
+(130 mm from the cut face) instead of `hyoid` (8 mm). Its recorded result —
+*"identical 100.49% at 130 mm and at 8 mm"* — falsified hypothesis 1 and closed
+one of the two pre-committed hypotheses.
+
+**It injected at `hyoid` both times.** From the probe's own log:
+
+    Placing Electrode: centre: [-9.33, 42.74, -108.23]     <- hyoid
+    above_ear is at             [78.76,   7.24,   13.61]
+
+The cause: `03a2` calls `03a_boundary_run.solve()`, which read the montage from
+**`03a`'s module-level `INJECT_FROM`** and had no parameter for it. `03a2` set
+its own module-level `INJECT_FROM = "above_ear"`, which was used only in print
+statements and never reached the solver. The probe therefore re-solved the
+identical montage and produced a **byte-identical result mesh**
+(md5 `b110d2ced3a7b2e10377dcaca1dad04d`, identical to
+`results/boundary/muscle_iso/`). The two "agreeing" measurements are one
+measurement, reported twice, once mislabelled.
+
+**The identical 100.49% to two decimal places should itself have been the
+alarm.** Two different montages on a 15.5-million-element mesh do not agree to
+2 dp. It was read as a strikingly clean result instead of an impossible one.
+
+**Consequences.**
+
+- **Hypothesis 1 is UNTESTED, not falsified.** The "pre-committed budget of two
+  hypotheses, both spent" is wrong: one was spent.
+- **The boundary disposition SURVIVES.** The truncated mesh stays primary
+  because the extended mesh demonstrably does not conserve charge (decision 1,
+  independent). What is reopened is the *cause*, not the *unusability*.
+- The claim appears in `HANDOFF.md` §1 and `OUTLINE.md` and is corrected in both.
+
+**Fixed:** `solve()` now takes `inject_from`/`inject_to` as explicit parameters
+and prints the montage; `03a2` passes them and then **asserts the coordinate
+actually appears in the solver's log**, refusing to report a verdict otherwise.
+The void directory is preserved at
+`results/_failed_runs/boundary_probe_above_ear_VOID_solved_hyoid_20260803/`
+with a `WHY_VOID.txt`, not deleted.
+
+The generalisable rule, and it is the same one as the aniso guard in
+`03_leadfields.py` that this project got right by hand: **a function whose
+behaviour depends on a module global cannot be safely reused from another
+module.** Verify the parameter landed by reading the tool's own output, not by
+assuming the call configured it.
+
+---
+
+## 2026-08-03 — CORRECTION, same session: `EXTENSION_LABEL = 200` collides with SimNIBS's electrode tag range
+
+**I recorded invariant 2 firing on the extended mesh at −0.310 and −0.566 ×
+injected, and called its known-bad case discharged. That is WRONG and is
+retracted here, in the same session, before it could be relied on.**
+
+`solve_invariants.with_electrode_tags()` fills SimNIBS's reserved electrode
+ranges, read from `mesh_element_properties.py`:
+
+    ELECTRODE_RUBBER_RANGE = (100, 499)   sigma 29.4 S/m
+    SALINE_GEL_RANGE       = (500, 899)   sigma  1.0 S/m
+
+`01c_extend_neck.py` tags the neck-extension slab **200**, which falls inside
+the rubber range. So any analysis that builds its conductivity map from Table 1
+and then calls `with_electrode_tags()` silently models **42,766 slab elements
+as electrode rubber at 29.4 S/m instead of muscle at 0.355 S/m** — an 83×
+error, on the exact compartment whose behaviour was under investigation.
+
+`setdefault` is what makes it silent: a map that *does* carry tag 200 keeps its
+own value and is correct, and a map that does not gets rubber. Both look
+identical at the call site.
+
+| extended mesh, inject at `hyoid` | slab read as rubber (29.4) | slab correct (0.355) |
+|---|---|---|
+| invariant 1 delivered | −38.2021 × | −0.0000 × |
+| invariant 2 net | **−0.310018** | **−0.003832** |
+| invariant 2 verdict | FIRES | **PASSES** |
+
+**Corrected findings:**
+
+1. **Invariant 2 does NOT fire on the extended mesh.** With the correct map it
+   reads −0.003832 at `hyoid` and −0.000163 at `above_ear`, both comfortably
+   inside tolerance. Its real-known-bad demonstration is **still owed**.
+2. **The synthetic demonstration stands**, and is now the only one. The
+   monopole case in `test_guards_fire.py` is self-contained numpy with a
+   complete conductivity map and no such coupling.
+3. **The claim that invariant 2 corroborates the extended-mesh leak is
+   withdrawn** — from this log and from OUTLINE. The leak rests on the
+   flux-decay probe alone, which is unaffected: it reads J_z directly from the
+   field and the slab's conductivity enters only through the solve, which used
+   0.355 correctly.
+4. **My prediction, my retraction of it, and my retraction of the retraction
+   were all decided by an instrument fault.** Earlier today I predicted
+   invariant 2 was incapable of firing here, then recorded that measurement had
+   proved me wrong. The measurement was wrong. The third reading is the
+   measured one — and it is closer to the first.
+
+**Original solves are NOT affected.** `03a_boundary_run.solve()` passes
+`assigned`, which sets tag 200 explicitly, so `setdefault` leaves it at 0.355;
+the solve itself always used the right value. Only ad-hoc analysis scripts that
+rebuilt the map from Table 1 alone were wrong. Stage 3 is unaffected for a
+different reason: the truncated mesh has **0 tags with no conductivity** and
+`03_leadfields.py` builds its analysis map with the same function that assigns
+the solve's, so the two cannot diverge. Verified, not assumed.
+
+**Owed:** move `EXTENSION_LABEL` out of 100–899 entirely, and make
+`with_electrode_tags()` **raise** on a collision instead of `setdefault`-ing
+over it. A reserved range that silently absorbs a user tag is the same class of
+defect as a denylist `.gitignore`.
+
+**The lesson, and it is the third of the day in the same shape.** The
+conductivity map used for ANALYSIS must be provably the same one used for the
+SOLVE, and nothing checked that. Together with the montage bug in `03a2` and
+the patch-centre bug that followed it, all three are one failure: **a parameter
+that reaches the instrument by a path nobody verified.** Print the montage.
+Print the tag map. Assert the coordinate appears in the solver's own log. The
+project already had the rule — *read the tool's own output before reporting its
+result* — and applied it to the solver while trusting its own callers.
+

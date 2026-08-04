@@ -106,7 +106,19 @@ def load_table1():
     return sig
 
 
-def solve(mesh: Path, out: Path, pos, base_sigma, slab_sigma=None, label=""):
+def solve(mesh: Path, out: Path, pos, base_sigma, slab_sigma=None, label="",
+          inject_from=None, inject_to=None):
+    """Solve one montage.
+
+    `inject_from` / `inject_to` are EXPLICIT PARAMETERS, and that is a bug fix,
+    not a tidy-up. They used to be read from this module's globals, so
+    `03a2_boundary_probe.py` -- which imports this function and sets its OWN
+    module-level INJECT_FROM = "above_ear" -- silently solved hyoid instead.
+    It reported a probe 130 mm from the cut face and ran the identical montage
+    8 mm from it, producing a bit-identical result mesh (md5 b110d2ce...) and
+    the identical 100.49% calibration, which was then read as two independent
+    measurements agreeing. See METHODS_LOG 2026-08-03.
+    """
     from simnibs import sim_struct, run_simnibs, mesh_io
     import preflight
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -134,7 +146,9 @@ def solve(mesh: Path, out: Path, pos, base_sigma, slab_sigma=None, label=""):
             t.cond[lab - 1].name = mname
     if slab_sigma is not None:
         t.cond[EXTENSION_LABEL - 1].name = "neck_extension"
-    for j, nm in enumerate((INJECT_FROM, INJECT_TO)):
+    pair = (inject_from or INJECT_FROM, inject_to or INJECT_TO)
+    print(f"  montage: {pair[0]} -> {pair[1]}", flush=True)
+    for j, nm in enumerate(pair):
         el = t.add_electrode()
         el.channelnr = j + 1
         el.centre = list(pos[nm])
@@ -155,8 +169,13 @@ def solve(mesh: Path, out: Path, pos, base_sigma, slab_sigma=None, label=""):
     # mesh that leaks 1.6 mA of a 1 mA injection got as far as printing
     # "extended mesh becomes PRIMARY for all published results". Invariant 2
     # is exactly the unconserved-current test that would have caught it.
+    # Centre the patch on the electrode THIS SOLVE actually injected at, not on
+    # the module default. Same defect as the montage bug above and it survived
+    # the first fix: a patch centred 130 mm from the injection contains no
+    # source, so the cut flux is ~0 at every radius and invariant 1 fails for a
+    # reason that has nothing to do with the solve.
     import solve_invariants as SI
-    inv = SI.check_solve_plateau(hits[0], pos[INJECT_FROM],
+    inv = SI.check_solve_plateau(hits[0], pos[pair[0]],
                                  SI.with_electrode_tags(assigned),
                                  verbose=False)
     print(f"    invariant 1: mean {inv['mean_ratio']:.4f} "
@@ -268,14 +287,17 @@ def main(argv=None) -> int:
     print(f"measured electrode-meshing noise floor: {floor:.3f} dB")
     print(f"pre-committed decision threshold       : 1.00 dB  (NOT movable)")
 
-    print("\ncalibration reported by the solver, per solve:")
+    print("\ncalibration reported by the solver, per solve "
+          "(RECORDED, gates nothing):")
     for k, v in calib.items():
-        print(f"  {k:<20} {'clean' if v is None else f'WARNED {v:.2f}%'}")
+        print(f"  {k:<20} {'clean' if v is None else f'warned {v:.2f}%'}")
     if any(v is not None for v in calib.values()):
-        print("  At least one solve warned. The 200% conditioning failure is")
-        print("  fatal; 11-15% on a well-conditioned custom mesh has been")
-        print("  measured as a false positive. Judge by the value, and state")
-        print("  it alongside the result rather than dropping it silently.")
+        print("  No verdict rests on these. SimNIBS's calibration check is")
+        print("  measured anti-correlated with true delivered current on this")
+        print("  mesh (Spearman -0.425, p = 0.048, n = 22), and the former")
+        print("  11-15% 'benign band' is RETIRED: it partitioned a quantity")
+        print("  that does not measure what it claims. Delivered current comes")
+        print("  from the tet-patch integral in solve_invariants; judge by it.")
 
     # Report where the verdict sits on the axis, not just which side it landed.
     print(f"\nFLIP POINT: the mesh decision changes at 1.00 dB; this run "

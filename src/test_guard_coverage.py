@@ -53,12 +53,41 @@ SOLVE_CALLS = {"run_simnibs", "tdcs"}
 # Guards a solving script must invoke. Any one name in a group satisfies it,
 # because the codebase has more than one legitimate entry point per guard.
 REQUIRED = {
-    "calibration (reads the solver's own fields_summary.txt)":
-        {"check_solve_output", "read_calibration"},
-    "invariants 1 and 2 (radius plateau, whole-domain charge conservation)":
-        {"check_solve_plateau", "check_solve"},
+    # `check_solve_output` was REMOVED from this group on 2026-08-03. It raises
+    # on any calibration line, i.e. it gates on SimNIBS's calibration check --
+    # now measured anti-correlated with true delivered current (Spearman
+    # -0.425, p = 0.048, n = 22). A script satisfying "calibration is wired" by
+    # calling it would be gating on evidence known to be worthless. Only
+    # `read_calibration`, which RECORDS rather than gates, counts.
+    "calibration (records the solver's own fields_summary.txt value)":
+        {"read_calibration"},
+    # `check_solve` was REMOVED from this group and then deleted: it had no
+    # caller, so a script could have satisfied this requirement by invoking a
+    # dead function.
+    "invariants 1 and 2 (radius plateau, magnitude, charge conservation)":
+        {"check_solve_plateau"},
     "conductivity span gate (sigma_max/sigma_min)":
         {"check_conductivity_range"},
+}
+
+# Invariants 3 and 4 are tracked SEPARATELY from REQUIRED because they are a
+# batch-level policy, not a per-solve call: they need paired solves, so they
+# run on the first and last solve of a batch rather than on every one.
+#
+# THEY HAVE NEVER RUN. `check_linearity`, `check_reciprocity_symmetry` and
+# `batch_plan` have no caller anywhere in this repository, and all 22 stage-3
+# solves completed without them. `needs_escalation` IS called, but its result
+# is printed and discarded, so the escalation branch is inert too.
+#
+# This is reported as a distinct, named gap rather than folded into the
+# per-script failures above, because the fix is not "add a call to one script"
+# -- it is extra solves, and the cost belongs in the open, not hidden inside a
+# generic FAILED line.
+BATCH_REQUIRED = {
+    "invariant 3 (linearity: 2I gives exactly 2E)": "check_linearity",
+    "invariant 4 (reciprocity: L(A->B) = -L(B->A))":
+        "check_reciprocity_symmetry",
+    "batch selection for invariants 3 and 4": "batch_plan",
 }
 
 # Scripts that solve deliberately WITHOUT the full guard set, each with a
@@ -148,6 +177,18 @@ def main(argv=None) -> int:
 
     pipeline_missing = pipeline_scripts_exist()
 
+    # Batch-level guards: is each one called by ANY script in src/?
+    all_calls = set()
+    for p in sorted(SRC.glob("*.py")):
+        if p.name.startswith("test_"):
+            continue
+        try:
+            all_calls |= calls_in(ast.parse(p.read_text()))
+        except SyntaxError:
+            pass
+    batch_missing = [(label, fn) for label, fn in BATCH_REQUIRED.items()
+                     if fn not in all_calls]
+
     print("GUARD COVERAGE")
     print("=" * 68)
     print(f"  solving scripts checked : {len(checked)}")
@@ -168,8 +209,21 @@ def main(argv=None) -> int:
         print("      same failure as a guard that is written but never")
         print("      called: it reads as done and is not.")
 
+    if batch_missing:
+        print()
+        print(f"  BATCH POLICY — {len(batch_missing)} guard(s) documented as "
+              f"policy and called by NOTHING:")
+        for label, fn in batch_missing:
+            print(f"      {fn}()  —  {label}")
+        print("      All 22 stage-3 solves ran without these. The batch policy")
+        print("      in solve_invariants.py describes them as running on the")
+        print("      first and last solve of every batch; that has never")
+        print("      executed. Wiring them costs 4 extra solves (~16 min), not")
+        print("      a line of glue, which is why it is named separately here")
+        print("      rather than buried in a generic failure.")
+
     print()
-    if failures or pipeline_missing:
+    if failures or pipeline_missing or batch_missing:
         print("  FAILED")
         if failures:
             print(f"    {len(failures)} script(s) solve without their guards:")
@@ -181,6 +235,9 @@ def main(argv=None) -> int:
             print("    A guard that is written but not invoked is not a guard.")
             print("    Wire it in, or add the script to EXEMPT with a reason")
             print("    that would survive a reviewer reading it.")
+        if batch_missing:
+            print(f"    {len(batch_missing)} batch-policy guard(s) have no "
+                  f"caller (listed above).")
         if pipeline_missing:
             print(f"    {len(pipeline_missing)} pipeline-table script(s) do "
                   f"not exist (listed above).")

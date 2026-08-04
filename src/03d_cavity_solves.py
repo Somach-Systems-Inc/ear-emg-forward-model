@@ -86,8 +86,11 @@ def solve(sig,e,tag):
         el=t.add_electrode(); el.channelnr=j+1; el.centre=list(pos[nm])
         el.shape="ellipse"; el.dimensions=[10,10]; el.thickness=2
     run_simnibs(S)
-    # Read the solver's own calibration line. Not doing this is how cg10's
-    # 11.90% warning went unremarked through the entire cavity run.
+    # Record the solver's own calibration line. RECORDED ONLY -- it gates
+    # nothing, and the 11-15% "benign band" that cg10's 11.90% was once waved
+    # through on is RETIRED (the check is anti-correlated with true delivered
+    # current: Spearman -0.425, p = 0.048, n = 22). Delivered current is the
+    # tet-patch integral from check_solve_plateau, below.
     import preflight
     cal=preflight.read_calibration(out)
     if cal is not None:

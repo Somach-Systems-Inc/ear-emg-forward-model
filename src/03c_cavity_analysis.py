@@ -182,15 +182,19 @@ def main() -> int:
         print(f"  {r['elec']:<16} air {ca:>8}   filled {cf:>8}")
     if warned:
         print(f"\n  {len(warned)} of {len(rows)} electrode pairs contain a "
-              f"warned solve.")
-        print("  Two populations have been measured: 200.00% is the")
-        print("  conductivity-conditioning failure and is fatal; 11-15% on a")
-        print("  well-conditioned custom mesh has been measured as a false")
-        print("  positive (5 of 16 sphere solves warned while matching the")
-        print("  analytic oracle, and were not less accurate).")
-        print("  No threshold separating them is invented here. Instead the")
-        print("  verdict is recomputed without the warned pairs, below, so")
-        print("  their influence is visible rather than assumed away.")
+              f"warned solve. RECORDED, not judged.")
+        print("  The 11-15% 'benign band' that used to appear here is RETIRED.")
+        print("  It was derived entirely from SimNIBS's calibration check,")
+        print("  which is measured anti-correlated with true delivered current")
+        print("  on this mesh (Spearman -0.425, p = 0.048, n = 22). Slicing a")
+        print("  quantity that does not measure what it claims into 'benign'")
+        print("  and 'fatal' ranges produces two slices of noise, not two")
+        print("  populations, so `cg10` at 11.90% was never DISMISSED on")
+        print("  evidence -- the dismissal is void, and it is also moot,")
+        print("  because it warns identically in air and filled and therefore")
+        print("  cancels in the pair ratio.")
+        print("  The verdict is still recomputed without the warned pairs")
+        print("  below, so their influence stays visible rather than argued.")
 
     print(f"\n(a) Spearman rho(distance, median|dB|) = {rho:+.3f}  p = {p:.3f}"
           f"   -> {'PASS' if a_ok else 'FAIL'}")

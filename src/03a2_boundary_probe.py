@@ -62,8 +62,21 @@ def main() -> int:
     print(f"       against {INJECT_TO}, on {mesh.name}")
     print(f"       hyoid, which FAILED, sits 8 mm from that plane\n")
 
+    # The montage MUST be passed explicitly. The first run of this probe did
+    # not pass it, so b.solve() fell back to 03a's module-level INJECT_FROM
+    # ("hyoid") and re-solved the very montage this probe exists to differ
+    # from. Assert it landed rather than trusting the call.
     msh, cal = b.solve(mesh, out, pos, sig, SLAB_SIGMA,
-                       f"probe {INJECT_FROM}, slab {SLAB_SIGMA} S/m")
+                       f"probe {INJECT_FROM}, slab {SLAB_SIGMA} S/m",
+                       inject_from=INJECT_FROM, inject_to=INJECT_TO)
+    _log = sorted(out.glob("simnibs_simulation*.log"))
+    if _log:
+        want = f"{pos[INJECT_FROM][0]:.2f}"
+        if want not in _log[-1].read_text(errors="replace"):
+            raise RuntimeError(
+                f"the solve did not use {INJECT_FROM}: its R coordinate "
+                f"{want} does not appear in {_log[-1].name}. Refusing to "
+                f"report a verdict from a montage that is not the one named.")
 
     print("\n" + "=" * 62)
     print("RESULT")

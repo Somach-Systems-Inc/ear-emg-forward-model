@@ -62,50 +62,71 @@ def check_conductivity_range(sigmas, label=""):
 
 
 def check_solve_output(pathfem):
-    """Read the solver's own summary and fail on a calibration error.
+    """RETIRED GATE. Do not call this. It raises to say so.
 
-    SimNIBS writes 'The current calibration error exceeded 10%!' into
-    fields_summary.txt when the solve did not deliver the requested current.
-    It is not an exception and the result file is written regardless, so it
-    must be read explicitly. Not reading it cost this project a full 20-solve
-    run whose numbers were 10-20x wrong.
+    It used to raise whenever SimNIBS wrote 'The current calibration error
+    exceeded 10%!' into fields_summary.txt, on the reasoning that the solve had
+    not delivered the requested current.
+
+    **That reasoning is void on this mesh.** Measured on all 22 stage-3 solves
+    against the tet-patch integral, SimNIBS's calibration error is
+    ANTI-correlated with true delivered-current error: Spearman -0.425,
+    p = 0.048, n = 22. The largest true deviation in the set, `buccal` at
+    0.8870 mA of a requested 1 mA, is reported CLEAN, while `mental` at
+    1.0746 mA -- closer to correct -- is flagged at 32.99%. Gating on it would
+    void 11 good solves and pass the worst one.
+
+    It is left in place as an ACTIVE REFUSAL rather than deleted, because
+    deleting it invites someone to rewrite it from the docstring six months
+    from now. `read_calibration()` records the value; nothing gates on it.
     """
-    from pathlib import Path as _P
-    f = _P(pathfem) / "fields_summary.txt"
-    if not f.exists():
-        raise FileNotFoundError(f"no fields_summary.txt in {pathfem}; "
-                                f"cannot confirm the solve succeeded")
-    for line in f.read_text(errors="replace").splitlines():
-        if "calibration error" in line:
-            raise RuntimeError(
-                f"solve in {pathfem} FAILED current calibration: "
-                f"{line.strip()} -- result withheld")
-    return True
+    raise NotImplementedError(
+        "check_solve_output() is a retired gate. SimNIBS's current-calibration "
+        "check is measured anti-correlated with true delivered current on this "
+        "mesh (Spearman -0.425, p = 0.048, n = 22), so raising on it withholds "
+        "good solves and passes bad ones. Use read_calibration() to RECORD the "
+        "value and solve_invariants.check_solve_plateau() to gate on the "
+        "tet-patch integral, which is the authority. See METHODS_LOG, "
+        "'the double reversal'.")
 
 
 def read_calibration(pathfem):
     """Return the reported current-calibration error in percent, or None if the
     solver printed no calibration warning at all.
 
-    WHY THIS EXISTS ALONGSIDE check_solve_output()
+    THIS VALUE GATES NOTHING. It is recorded and carried alongside the result
+    so that the disagreement between it and the tet-patch integral stays
+    visible, and for the upstream bug report. Nothing may branch on it.
 
-    check_solve_output() raises on any calibration line. That is the right
-    behaviour for a gate, but it is the wrong behaviour for a RECORD, and this
-    project needs both. Two distinct populations have been measured:
+    THE 11-15% "BENIGN BAND" IS RETIRED -- 2026-08-03
 
-      - 200.00%  the conductivity-conditioning failure. Fields came back
-                 10-20x too large. Real, and fatal.
-      - 11-15%   seen on well-conditioned custom meshes. On the sphere, 5 of
-                 16 solves warned while matching the analytic oracle, and the
-                 warned electrodes were NOT less accurate (median
-                 |L_num|/|L_ana| 0.9814 warned vs 1.0345 un-warned, a
-                 difference inside the scatter of either group).
+    An earlier version of this docstring described two measured populations: a
+    fatal 200.00% (the conductivity-conditioning failure, fields 10-20x too
+    large) and a benign 11-15% (5 of 16 sphere solves warned while matching the
+    analytic oracle). The band was then used to wave through `cg10` at 11.90%,
+    and its non-extrapolation was used to stop stage 3 when solves came back at
+    15.6-33.0%.
 
-    A single threshold separating those two populations is NOT invented here.
-    Inventing one after a solve tripped the gate is exactly the prohibited
-    move. Instead the value is recorded, carried alongside the result, and any
-    downstream verdict states how many of its inputs warned and whether
-    excluding them changes the answer.
+    **The band is void, and so is everything downstream of it.** It was derived
+    entirely from SimNIBS's calibration check, and that check is now measured
+    ANTI-correlated with true delivered current on this mesh: Spearman -0.425,
+    p = 0.048, n = 22, with the largest true deviation (`buccal`, 0.8870 mA of
+    1 mA) reported CLEAN and `mental` at 1.0746 mA flagged 32.99%. Partitioning
+    a quantity that does not measure what it claims into "benign" and "fatal"
+    ranges does not produce two populations; it produces two arbitrary slices
+    of noise. There is no band. There is no threshold. The whole axis is void.
+
+    What replaces it is not another band but a different instrument: the
+    tet-patch integral in `solve_invariants.check_solve_plateau`, whose
+    `mean_ratio` IS delivered current over requested, validated against the
+    analytic sphere. Delivered current is reported per solve, and the only gate
+    on it is a loose gross-error band (0.4-2.5 x injected) that predates every
+    stage-3 observation.
+
+    The 200.00% population is NOT retired with the rest. It survives on
+    independent evidence -- the fields really were 10-20x too large, measured
+    directly, and raising sigma_air from 1e-15 to 1e-6 fixed them -- so it was
+    never resting on the calibration check in the first place.
     """
     from pathlib import Path as _P
     import re as _re
