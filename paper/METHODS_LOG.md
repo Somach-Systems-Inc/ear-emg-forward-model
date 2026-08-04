@@ -3388,3 +3388,65 @@ a pair, it slices one blob (right-side elongation 1.07, i.e. no long axis
 exists). Mentalis is therefore **NOT APPLIED**, on measurement rather than on
 the FIBRE_MODEL table's assertion.
 
+---
+
+## 2026-08-04 — FAT SWAP: the jaw-versus-ear difference is GEOMETRIC, not material
+
+Identical geometry, identical electrodes, identical mesh. Only the material
+changed: both MIDA adipose labels (43, 62) reassigned from **0.025 to 0.355
+S/m**, a 14x increase making fat electrically indistinguishable from muscle.
+22 solves, 27 min. *(measured)*
+
+This is the separation the limb sEMG literature cannot make cleanly. In a limb,
+adding subcutaneous fat also moves the electrode further from the muscle, so
+thickness and distance covary by construction. Holding the geometry fixed and
+changing only σ removes distance from the comparison entirely.
+
+### The absolute effect is large and very nearly common-mode
+
+Every site loses signal when fat is made conductive — median **−2.36 to
+−3.91 dB** across all 22. The direction is physically sensible: a conductive
+layer near the surface shunts current laterally instead of letting it pass
+through the deeper compartments.
+
+| montage | n | median shift | range |
+|---|---|---|---|
+| jaw | 7 | **−3.17 dB** | −3.91 .. −2.86 |
+| ear | 4 | **−2.67 dB** | −2.90 .. −2.52 |
+| cEEGrid | 10 | **−2.88 dB** | −3.01 .. −2.36 |
+
+### The part that reaches a published number is small
+
+**Every published quantity in this paper is a ratio**, so a shift common to all
+sites cancels exactly and cannot reach a conclusion. The only component that
+survives is the **differential**:
+
+    jaw sites   median  -3.172 dB
+    ear sites   median  -2.840 dB
+    DIFFERENTIAL        -0.332 dB
+
+**0.332 dB** is what fat conductivity contributes to the jaw-versus-ear gap. It
+is 1.2x the measured per-site floor (0.27 dB) — resolvable, but only just.
+
+### What this licenses
+
+Against jaw-versus-ear gaps that run to **22.78 dB**, a 0.33 dB material
+contribution is **1.5% of the effect for the labial group**. For those muscles
+the attenuation at the ear is **geometric — distance and intervening path
+length — not a property of the tissue in between**, and the Discussion may say
+so.
+
+Two qualifications that must travel with it:
+
+1. **`medial_pterygoid` is the exception and it is not a small one.** Its
+   jaw-versus-ear gap is **+0.62 dB**, and the material contribution is
+   **0.33 dB** — over half of it. That site's already-borderline verdict is
+   materially confounded and must not be given a mechanistic reading.
+2. The swap makes fat electrically *muscle*, which is not the same experiment
+   as removing fat. It bounds the contribution of the fat/muscle conductivity
+   contrast; it does not simulate a thinner subject.
+
+The direction is worth stating too: fat conductivity currently **favours the
+jaw** by 0.33 dB. Erasing the contrast would shrink the jaw's advantage
+slightly, not the ear's.
+

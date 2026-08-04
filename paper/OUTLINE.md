@@ -356,6 +356,30 @@ muscles that attach at or near the temporal bone.
 It clears the floor's 0.27 dB point estimate but falls below the 95% CI upper
 bound of 0.65 dB, so it must not be counted as a clean jaw advantage.
 
+### Material versus distance: the fat-conductivity swap
+
+**The jaw-versus-ear difference is geometric, not material.** Holding the mesh,
+the electrodes and the source compartments fixed and changing only the
+conductivity of both adipose labels from 0.025 to 0.355 S/m — making fat
+electrically indistinguishable from muscle — every site loses signal, by a
+median of **−2.36 to −3.91 dB**. That shift is very nearly common to all sites
+and therefore cancels in every ratio the paper reports.
+
+What survives is the differential: jaw sites shift by a median **−3.17 dB** and
+retroauricular sites by **−2.84 dB**, so the fat/muscle conductivity contrast
+contributes **0.33 dB** to the jaw-versus-ear gap — 1.2× the measured 0.27 dB
+floor. Against gaps reaching 22.78 dB, that is **1.5% of the effect** for the
+labial group.
+
+This separation is available here and not in the limb sEMG literature, where
+adding subcutaneous fat necessarily also increases source-electrode distance;
+holding geometry fixed removes distance from the comparison entirely.
+
+**`medial_pterygoid` is the exception.** Its gap is +0.62 dB and the material
+contribution is 0.33 dB, over half of it, so that borderline site must not be
+given a mechanistic reading. Note also that the swap bounds the effect of the
+fat/muscle *conductivity contrast*; it does not simulate a thinner subject.
+
 ### Anisotropy robustness
 
 **The complementarity result does not depend on the isotropy assumption.**
