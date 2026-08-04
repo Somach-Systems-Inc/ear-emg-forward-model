@@ -356,6 +356,49 @@ muscles that attach at or near the temporal bone.
 It clears the floor's 0.27 dB point estimate but falls below the 95% CI upper
 bound of 0.65 dB, so it must not be counted as a clean jaw advantage.
 
+### Anisotropy robustness
+
+**The complementarity result does not depend on the isotropy assumption.**
+Sternocleidomastoid carries a fibre tensor (σ = 0.4 S/m along fibre, 0.1 across,
+per-side principal axis from MIDA's label volume), and its jaw-versus-ear gap
+moves from **−3.41 dB to −2.77 dB** — still an ear advantage, and roughly ten
+times the 0.27 dB measured floor. The other two ear-favouring muscles move by
+**+0.11 dB** (temporalis) and **−0.06 dB** (lateral pterygoid); neither carries
+a tensor, so those shifts are the small global redistribution caused by
+changing conductivity elsewhere.
+
+**`medial_pterygoid` carries a tensor and its gap moves by only −0.03 dB.**
+Anisotropy raises its lead field by about 5 dB at the jaw and the ear sites
+alike, so the effect cancels in the site-to-site ratio. This is a direct
+demonstration of the argument Table 3 is organised around: a term that scales a
+compartment roughly uniformly does not reach a published number.
+
+**Scope, stated rather than implied.** A fibre tensor is applied to **2 of the
+10** segmented muscles. Six of the nine PCA-defensible muscles are pooled inside
+MIDA's `Muscle (General)` and `Tongue` labels and cannot carry a per-compartment
+axis; `mentalis` is excluded by a bilateral mirror-symmetry test on its two
+principal axes (|dot| = 0.215, right-side elongation 1.07, i.e. no long axis
+exists). Those eight rows are reported **NOT APPLIED**, never as zero.
+
+### Pre-registration of the anatomical prediction
+
+**The prediction that the ear would favour temporal-bone muscles was recorded
+before the model was solved, and the repository is the evidence.** The
+`expected_at_ear` column of `src/config.MUSCLES` — carrying *"STRONG - directly
+above ear"* for temporalis and *"STRONG - mastoid attachment"* for
+sternocleidomastoid — entered the repository in commit **`fa583f6`
+(2026-08-02)**. The lead-field results it predicts were committed the following
+day, **2026-08-03**, in the commit that adds `results/03_leadfields.csv`. The
+prediction therefore precedes the measurement by a day and by the entire solve
+pipeline.
+
+Cite both hashes in Methods. **The repository must be made public at
+submission** for that citation to be checkable by a reader; it is currently
+private. That is now safe: the `.geo` history was purged with `git filter-repo`,
+the remote was deleted and recreated, and an allowlist pre-commit hook refuses
+any file type not explicitly permitted (it fired during this session on a
+stray `.bak`).
+
 ### Truncation sensitivity — the direct answer to the boundary limitation
 
 **The jaw-versus-ear result does not depend on the truncation.** MIDA is cut at
