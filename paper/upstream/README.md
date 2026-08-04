@@ -68,7 +68,7 @@ hit:
 | # | file | status |
 |---|---|---|
 | a | `interface_fluxes_derived.csv` | **DERIVED, not raw.** `fields_summary.txt` prints only the percentage, so `a` and `b` are reconstructed as `1 ± e/2` under the stated model. Raw values would need the solver to emit them — a small feature request worth making in the thread. |
-| b | `both_electrode_flux.py` | **script written, NOT yet run on all 22.** Measures the tet-patch cut flux at BOTH electrodes, not just the active one, which is the like-for-like comparison against `a` and `b`. ~22 mesh reads. |
+| b | `both_electrode_flux.py` + `both_electrode_flux.csv` | **RUNNING — see the interim result below.** Measures the tet-patch cut flux at BOTH electrodes, the like-for-like comparison against `a` and `b`. ~10 min per electrode on a 15.4M-element mesh, so ~3.5 h for all 22, longer than first estimated. |
 | c | `tet_patch_standalone.py` | standalone, runnable, no project imports |
 | d | **the four-layer analytic sphere** | **highest value and fully shareable** — not MIDA-derived, so no licence constraint. `data/val_sphere.nii.gz`, `src/val_rdm_mag.py`, and `sphere_calibration_per_solve.csv`. **5 of 16 solves emit the warning while the lead fields match the closed form at RDM median 4.36%.** That is the case he can actually debug: a geometry with an exact answer, where the check fires and the solution is nonetheless right. |
 
@@ -79,3 +79,49 @@ with identical electrodes, why do the two interface fluxes disagree by 11–15%
 solution to 4.36% RDM? Either the interface-flux estimator is noisier than the
 field it is computed from, or the two electrodes genuinely see different fluxes
 for a reason worth knowing. The sphere is the right place to find out.
+
+
+---
+
+## INTERIM result from artifact (b) — n = 4 of 22, DO NOT POST YET
+
+Labelled INTERIM with its `n` under this project's own rule, because the
+statistic that matters is not complete and the completed part contains exactly
+**one** warned solve.
+
+| electrode | SimNIBS reports | tet-patch active | tet-patch reference | recomputed 2\|a−b\|/(a+b) |
+|---|---|---|---|---|
+| `above_ear` | clean | +0.9463 | −0.9458 | **0.06%** |
+| `buccal` | clean | +0.8870 | −0.9038 | **1.87%** |
+| `cg02` | clean | +0.9579 | −0.9566 | **0.13%** |
+| **`cg01`** | **19.67%** | **+1.0055** | **−1.0069** | **0.14%** |
+
+**Two things are visible already and both are worth the maintainer's time.**
+
+**1. The tet-patch's own level bias cancels exactly, as the model predicts.**
+The `mean` column sits at 0.946–1.006 rather than 1.000, which is the ~5%
+low bias we have documented and cannot currently remove. It affects `a` and `b`
+identically, so it vanishes from the relative difference — which is why the
+recomputed percentages are meaningful even though the absolute level is not.
+
+**2. On the one warned solve so far, the two measures disagree sharply, and
+the direction is informative.** `cg01` is reported at 19.67%, i.e. the two
+interface fluxes differ by ~20% of their mean. The tet-patch says the current
+crossing a closed surface around each electrode is **+1.0055 and −1.0069**,
+agreeing to **0.14%**.
+
+That near-equality is not a coincidence to be explained away: charge
+conservation *requires* the current through any closed surface enclosing one
+electrode to equal the current injected there, so `a = −b` is a physical
+constraint on a converged solve, and it holds here to 1 part in 700.
+
+So on this solve the inconsistency appears to be **local to the interface-flux
+computation** rather than present in the delivered current. An integral taken
+over a surface 25–75 mm from the electrode sees a conserved solve; the estimator
+evaluated at the interface itself sees a 20% disagreement. **That is a
+statement about where to look, not a claim that the check is wrong** — and it
+is the kind of thing the analytic sphere in artifact (d) could settle, since
+there the true interface current is known in closed form.
+
+**n = 1 warned solve is not a pattern.** The remaining 18 will say whether this
+holds. Do not post this table on its own.
