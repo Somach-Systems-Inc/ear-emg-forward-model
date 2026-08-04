@@ -245,6 +245,30 @@ def main(argv=None) -> int:
                              mesh="truncated",
                              lead_field=float(lf.loc[elec, m]),
                              db_rel_best_jaw=round(float(dbi.loc[elec, m]), 4)))
+    # Merge the anisotropic condition if it exists. Fig 4 needs both
+    # conditions in one long file; it is absent until 03f_aniso_solve.py runs,
+    # and its absence is reported rather than silently producing an iso-only
+    # figure that looks complete.
+    ani_path = config.RESULTS / "03_leadfields_aniso.csv"
+    if ani_path.exists():
+        ad = pd.read_csv(ani_path)
+        alf = ad.set_index("electrode")
+        n_add = 0
+        for elec in ad["electrode"]:
+            for m in MUSCLE_NAMES:
+                val = alf.loc[elec, m]
+                if pd.isna(val):
+                    continue
+                long.append(dict(electrode=elec, muscle=m, condition="aniso",
+                                 mesh="truncated", lead_field=float(val),
+                                 db_rel_best_jaw=round(
+                                     20 * np.log10(float(val) / ref[m]), 4)))
+                n_add += 1
+        print(f"  merged {n_add} anisotropic rows from {ani_path.name}")
+    else:
+        print(f"  NOTE: {ani_path.name} absent — the contract file carries the "
+              f"isotropic condition only, so Fig 4 cannot be rendered yet.")
+
     contract = config.RESULTS / "04_sensitivity.csv"
     pd.DataFrame(long).to_csv(contract, index=False)
     print(f"\nwrote {contract}  ({len(long)} rows, long format, "

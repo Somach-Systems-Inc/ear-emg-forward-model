@@ -292,6 +292,70 @@ Either way the comparison is a supplementary figure.
 
 ## Results (planned figures)
 
+### FIGURE CAPTIONS (drafted 2026-08-04 — Results only, no Discussion)
+
+**Fig 2. Articulator sensitivity matrix.** Median lead field in each segmented
+muscle compartment for each electrode site, in dB relative to that muscle's
+best jaw site (0 dB, ringed). Isotropic condition, truncated MIDA mesh, 22
+electrodes × 10 muscles. The colour scale is **diverging about 0 dB**: red is
+attenuation relative to the best jaw site, blue is a site that exceeds it, and
+boxed cells mark every (site, muscle) pair where a retroauricular electrode
+beats every jaw electrode. **The two arms are not equally scaled** (−28 to 0 dB
+against 0 to +4 dB), so colour saturation is not comparable across the
+midpoint; the boxes carry the sign independently of colour. Values in
+`results/04_sensitivity_matrix_dB.csv`.
+
+**Fig 4. Anisotropy robustness check.** Change in lead field between the
+isotropic and anisotropic conditions, 20·log₁₀(aniso/iso), per cell. The
+anisotropic condition is solved **on the isotropic run's own mesh**, so the two
+conditions differ in conductivity alone and carry no electrode-realisation
+noise. A fibre tensor (σ = 0.4 S/m along fibre, 0.1 S/m across, per-side
+principal axis from the MIDA label volume) is applied to **2 of 10** muscles —
+`sternocleidomastoid` and `medial_pterygoid`. **Rows without a tensor are
+labelled NOT APPLIED, not zero**: they were never varied, so no null result was
+measured for them. Six of the nine PCA-defensible muscles are pooled inside
+MIDA's `Muscle (General)` and `Tongue` labels; `mentalis` is excluded by a
+bilateral mirror-symmetry test on its principal axes.
+
+**Fig 5. Which montage sees which muscle.** For each articulator, the
+difference between the best jaw site and the best retroauricular site, in dB.
+Negative bars are muscles the ear sees more strongly. Jaw sites within 10 mm of
+the truncation face are excluded. The shaded band is the measured
+electrode-meshing floor (0.27 dB, with the lighter band extending to its 95% CI
+upper bound of 0.65 dB). **The axis is linear in dB rather than a rank**,
+because the asymmetry between the arms is itself a result: the jaw's advantages
+reach **+22.78 dB** while the ear's reach only **−3.92 dB**. Fig 2's diverging
+scale equalises those arms visually; this figure is where their true relative
+size is readable.
+
+---
+
+### The complementarity result
+
+**Jaw and retroauricular montages are complementary rather than ranked.** Of
+the ten segmented articulators, seven are seen more strongly from the jaw and
+**three from the ear**: temporalis (**−3.92 dB**, best site `cg01`),
+sternocleidomastoid (**−3.41 dB**, `cg08`) and lateral pterygoid
+(**−1.69 dB**, `pre_tragus`), where a negative gap denotes an ear advantage.
+All three exceed the 0.27 dB measured floor.
+
+**The two montages' advantages are asymmetric in size, and the asymmetry is a
+result rather than an artefact of scaling.** The jaw's advantages are large and
+broad — mentalis **+22.78 dB**, depressor anguli oris **+15.55**, buccinator
+**+10.57**, orbicularis oris **+10.37**, platysma **+9.29** — and concentrate
+on a single site, `mental`, which is the best jaw electrode for six of the
+seven jaw-favouring muscles. The ear's advantages are **modest and specific**,
+spanning only **1.69 to 3.92 dB**, and they distribute across three different
+sites (`cg01`, `cg08`, `pre_tragus`). Stated as a ratio, the largest jaw
+advantage is **5.8×** the largest ear advantage in dB terms. An ear montage
+therefore does not trade signal evenly against a jaw montage: it gives up a
+great deal on the labial group and gains a little, at specific sites, on three
+muscles that attach at or near the temporal bone.
+
+`medial_pterygoid` at **+0.62 dB** is **borderline** and is reported as such.
+It clears the floor's 0.27 dB point estimate but falls below the 95% CI upper
+bound of 0.65 dB, so it must not be counted as a clean jaw advantage.
+
 ### Truncation sensitivity — the direct answer to the boundary limitation
 
 **The jaw-versus-ear result does not depend on the truncation.** MIDA is cut at
