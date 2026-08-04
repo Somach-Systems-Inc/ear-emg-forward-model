@@ -61,72 +61,122 @@ def check_conductivity_range(sigmas, label=""):
     return ratio
 
 
-def check_solve_output(pathfem):
-    """RETIRED GATE. Do not call this. It raises to say so.
+# Reported calibration is a RELATIVE DIFFERENCE between the two electrode
+# interface fluxes, confirmed by the SimNIBS maintainer (discussions/666):
+#
+#     e = 2 |a - b| / (a + b)
+#
+# and the solution is then scaled so mean(a, b) equals the requested current.
+# So each interface sits e/2 from the requested current. It is an
+# INTERFACE-CONSISTENCY diagnostic, not a delivered-current error.
+#
+# THE BAND, RE-DERIVED UNDER THE CORRECT INTERPRETATION. The old "11-15% benign"
+# band was retired as meaningless; it is reinstated with a meaning:
+#
+#     reported 10%  ->  each interface  5% from the requested current
+#     reported 12%  ->  each interface  6%
+#     reported 20%  ->  each interface 10%
+#     reported 33%  ->  each interface 16.5%
+#
+# and two exact algebraic landmarks, both verified:
+#
+#     e = 200.00%  <=>  one interface flux is EXACTLY ZERO
+#     e = 100.00%  <=>  a/b = 3.000000 exactly
+#
+# INTERFACE_TOL is the per-interface deviation this project accepts. 10% is
+# SimNIBS's own gate expressed in the same units (its 10% report = 5% per
+# interface) doubled, i.e. deliberately looser than the solver's own warning
+# so that this raises only on solves the solver already flagged AND that are
+# twice as inconsistent as its threshold. It is not tuned to this data: at 20%
+# reported it admits every stage-3 solve except cg01, cg04, cg08, cg09 and
+# mental, which is a statement about the run, not a threshold chosen to fit it.
+INTERFACE_TOL = 0.10        # per-interface fraction of the requested current
+DEGENERATE_REPORTED = 2.00  # one interface carrying nothing
+LEAK_REPORTED = 1.00        # a/b = 3
 
-    It used to raise whenever SimNIBS wrote 'The current calibration error
-    exceeded 10%!' into fields_summary.txt, on the reasoning that the solve had
-    not delivered the requested current.
 
-    **That reasoning is void on this mesh.** Measured on all 22 stage-3 solves
-    against the tet-patch integral, SimNIBS's calibration error is
-    ANTI-correlated with true delivered-current error: Spearman -0.425,
-    p = 0.048, n = 22. The largest true deviation in the set, `buccal` at
-    0.8870 mA of a requested 1 mA, is reported CLEAN, while `mental` at
-    1.0746 mA -- closer to correct -- is flagged at 32.99%. Gating on it would
-    void 11 good solves and pass the worst one.
+def interface_deviation(reported_pct):
+    """Per-interface deviation from the requested current, as a fraction.
 
-    It is left in place as an ACTIVE REFUSAL rather than deleted, because
-    deleting it invites someone to rewrite it from the docstring six months
-    from now. `read_calibration()` records the value; nothing gates on it.
+    reported_pct is what SimNIBS prints. Returns e/2, because the solution is
+    scaled so the two interface fluxes straddle the requested current.
     """
-    raise NotImplementedError(
-        "check_solve_output() is a retired gate. SimNIBS's current-calibration "
-        "check is measured anti-correlated with true delivered current on this "
-        "mesh (Spearman -0.425, p = 0.048, n = 22), so raising on it withholds "
-        "good solves and passes bad ones. Use read_calibration() to RECORD the "
-        "value and solve_invariants.check_solve_plateau() to gate on the "
-        "tet-patch integral, which is the authority. See METHODS_LOG, "
-        "'the double reversal'.")
+    return None if reported_pct is None else float(reported_pct) / 200.0
+
+
+def interface_ratio(reported_pct):
+    """Back-solve a/b from the reported percentage. Diagnostic, not a gate.
+
+    e = 2(r-1)/(r+1) for r = a/b >= 1, so r = (2+e)/(2-e). Undefined at
+    e = 200%, which is the degenerate one-interface-zero case.
+    """
+    if reported_pct is None:
+        return 1.0
+    e = float(reported_pct) / 100.0
+    if e >= 2.0:
+        return float("inf")
+    return (2.0 + e) / (2.0 - e)
+
+
+def check_solve_output(pathfem, tol=INTERFACE_TOL):
+    """Gate on the solver's interface-consistency check, correctly read.
+
+    UN-RETIRED 2026-08-04. This function previously raised on ANY calibration
+    line, was then retired entirely as an "active refusal" on the belief that
+    the check was anti-correlated with delivered current, and is now restored
+    with the right interpretation. Full sequence in METHODS_LOG under "the
+    third reversal".
+
+    What changed: the reported value is not a delivered-current error, so a
+    bare "any warning is fatal" gate was wrong, and so was "it measures
+    nothing". It measures how far the two electrode interfaces disagree, which
+    is a real and useful diagnostic, and it correctly DETECTED both of this
+    project's real solver failures:
+
+        200.00%  the sigma_air 1e-15 conditioning failure -- requires one
+                 interface flux to be exactly zero, which is what a
+                 non-conducting return path gives
+        ~100%    the neck-extended mesh leaking through its inferior face --
+                 requires a/b = 3, and the measured values back-solve to
+                 3.020 and 2.840
+    """
+    from pathlib import Path as _P
+    f = _P(pathfem) / "fields_summary.txt"
+    if not f.exists():
+        raise FileNotFoundError(f"no fields_summary.txt in {pathfem}; "
+                                f"cannot confirm the solve succeeded")
+    pct = read_calibration(pathfem)
+    if pct is None:
+        return True
+    dev = interface_deviation(pct)
+    if dev > tol:
+        raise RuntimeError(
+            f"solve in {pathfem} FAILED interface consistency: SimNIBS "
+            f"reports {pct:.2f}%, i.e. the two electrode-interface fluxes "
+            f"differ by that fraction of their mean, so EACH interface sits "
+            f"~{dev*100:.2f}% from the requested current (ratio a/b = "
+            f"{interface_ratio(pct):.3f}). Tolerance is {tol*100:.0f}% per "
+            f"interface. NOTE the two exact landmarks: 200% means one "
+            f"interface carries nothing, ~100% means a/b = 3.")
+    return True
 
 
 def read_calibration(pathfem):
     """Return the reported current-calibration error in percent, or None if the
     solver printed no calibration warning at all.
 
-    THIS VALUE GATES NOTHING. It is recorded and carried alongside the result
-    so that the disagreement between it and the tet-patch integral stays
-    visible, and for the upstream bug report. Nothing may branch on it.
+    WHAT IT MEASURES -- corrected 2026-08-04 by the SimNIBS maintainer.
 
-    THE 11-15% "BENIGN BAND" IS RETIRED -- 2026-08-03
+    e = 2|a - b| / (a + b) over the two electrode-interface flux estimates,
+    after which the solution is scaled so mean(a, b) is the requested current.
+    It is an INTERFACE-CONSISTENCY measure; each interface sits e/2 from the
+    requested current. See `interface_deviation()` and `interface_ratio()`.
 
-    An earlier version of this docstring described two measured populations: a
-    fatal 200.00% (the conductivity-conditioning failure, fields 10-20x too
-    large) and a benign 11-15% (5 of 16 sphere solves warned while matching the
-    analytic oracle). The band was then used to wave through `cg10` at 11.90%,
-    and its non-extrapolation was used to stop stage 3 when solves came back at
-    15.6-33.0%.
-
-    **The band is void, and so is everything downstream of it.** It was derived
-    entirely from SimNIBS's calibration check, and that check is now measured
-    ANTI-correlated with true delivered current on this mesh: Spearman -0.425,
-    p = 0.048, n = 22, with the largest true deviation (`buccal`, 0.8870 mA of
-    1 mA) reported CLEAN and `mental` at 1.0746 mA flagged 32.99%. Partitioning
-    a quantity that does not measure what it claims into "benign" and "fatal"
-    ranges does not produce two populations; it produces two arbitrary slices
-    of noise. There is no band. There is no threshold. The whole axis is void.
-
-    What replaces it is not another band but a different instrument: the
-    tet-patch integral in `solve_invariants.check_solve_plateau`, whose
-    `mean_ratio` IS delivered current over requested, validated against the
-    analytic sphere. Delivered current is reported per solve, and the only gate
-    on it is a loose gross-error band (0.4-2.5 x injected) that predates every
-    stage-3 observation.
-
-    The 200.00% population is NOT retired with the rest. It survives on
-    independent evidence -- the fields really were 10-20x too large, measured
-    directly, and raising sigma_air from 1e-15 to 1e-6 fixed them -- so it was
-    never resting on the calibration check in the first place.
+    The "11-15% benign band" was retired on 2026-08-03 as meaningless and is
+    REINSTATED with a meaning: 12% reported means each interface is ~6% off,
+    which is a real threshold. What is discarded is only the reading
+    "N% means delivered current is N% wrong" -- that was a category error on
+    our side, not a defect in the check. METHODS_LOG, "the third reversal".
     """
     from pathlib import Path as _P
     import re as _re

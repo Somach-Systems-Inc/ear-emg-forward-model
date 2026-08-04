@@ -3183,3 +3183,127 @@ construction. A reader seeing seven zero-difference rows would reasonably infer
 "anisotropy does not matter", when the correct statement is "anisotropy was
 not applied there."
 
+---
+
+## 2026-08-04 — THE THIRD REVERSAL. The calibration check works; I never read what it measures.
+
+**The SimNIBS maintainer replied (discussions/666) and corrected the framing.
+He is right and our comparison was category-mismatched.**
+
+### What the check actually computes
+
+    reported error  e = 2 |a - b| / (a + b)
+
+over the **two electrode-interface flux estimates** `a` and `b`. The solution is
+then scaled so that **their mean equals the requested current**. So with
+mean = 1 mA, `|a - b| = e`, and each interface sits **e/2** from the requested
+current:
+
+    reported 11.90%  ->  each interface ~5.95% from 1 mA
+    reported 32.99%  ->  each interface ~16.50% from 1 mA
+
+**It is an interface-flux CONSISTENCY measure. It was never a delivered-current
+error.** We compared it against a delivered-current estimate, which is a
+different physical quantity, and then concluded the instrument was broken.
+
+### Our own data confirms his model, and the confirmation is emphatic
+
+If `a = 1 + e/2`, then the tet-patch integral around the ACTIVE electrode
+should track the reported error with a positive slope near 0.5. Tested on all
+22 solves:
+
+| comparison | result |
+|---|---|
+| reported `e` vs **\|tet-patch − 1\|** (what I did) | Spearman **−0.425**, p = 0.048 |
+| reported `e` vs **signed** (tet-patch − 1) | Spearman **+0.932**, p < 1e-5 |
+| linear fit | slope **+0.359** (model predicts +0.5), R² = **0.860** |
+| residual against `a = 1 + e/2` | sd 0.0235 vs 0.0449 against a flat 1.0 — the model removes **73%** of the variance |
+
+*(measured)*
+
+**The entire "anti-correlation" was `abs()`.** Taking the absolute deviation
+destroyed the sign and inverted the ranking. `buccal` at 0.8870 has the largest
+*absolute* deviation, which made it look like the worst case SimNIBS had missed;
+in fact 0.887 < 1 is what a clean solve looks like given the tet-patch's own
+downward bias (residual mean −0.0745, i.e. it reads ~7% low, consistent with the
+level uncertainty already documented). `mental` at 1.0746 > 1 is exactly the
+high side the model predicts for a 32.99% reading.
+
+The slope of 0.359 rather than 0.5 is expected: the tet-patch measures cut flux
+over r = 25–75 mm, not the flux at the electrode interface, and it carries its
+own realisation scatter. It is the right shape and 72% of the predicted
+magnitude.
+
+### The arithmetic behind the two real detections, verified
+
+Both of the failure modes we attributed to *other* evidence are exactly what
+this formula produces:
+
+| case | requires | verified |
+|---|---|---|
+| **200.00%** | one interface flux **exactly zero** | `e(a=1, b=0) = 200.000%` |
+| **~100%** | `a ≈ 3b` | `e(3b, b) = 100.000%` exactly; solving `e = 1` gives `a/b = 3.000000` |
+
+The measured extended-mesh values back-solve to **a/b = 3.020** (100.49%) and
+**2.840** (95.84%) — a mesh whose reference interface sees roughly a third of
+the active one, which is what leaking through the inferior face looks like. The
+`sigma_air` 1e-15 case at 200.00% requires one interface carrying nothing, which
+is what a non-conducting return path is.
+
+**So the calibration check DETECTED both failures. It did not merely corroborate
+them.** The decisions audit is corrected accordingly below.
+
+### The m2m hypothesis is dead
+
+The maintainer confirms the calibration path uses only the mesh, conductivities,
+electrode tags, scalp tags and potentials. `Cannot locate subjects m2m folder`
+is unrelated. Our issue #665 offered it as the likely cause; it is wrong.
+
+### The sequence, and the lesson
+
+This is the **third** reversal on this one check:
+
+1. I claimed it was broken.
+2. I retracted that on evidence it discriminated correctly (200% on the bad
+   solve, silent on the good one).
+3. I re-claimed it was broken on an anti-correlation, and filed #665.
+4. **Now corrected: the anti-correlation compared two different physical
+   quantities, and one of them had been through `abs()`.**
+
+**The generalisable lesson, and it is the cheapest one in this entire log:
+before concluding that an instrument disagrees with the truth, establish what
+the instrument measures.** Nobody read the source. Three sessions of increasingly
+sophisticated statistics were run against a quantity whose definition was one
+function away, and the definition — not the statistics — settled it. Sophistication
+downstream of an unexamined premise compounds the error instead of catching it.
+
+**A second-order note worth keeping.** This is the *second* finding in two days
+destroyed by discarding a sign: `gap > floor` could not express "the ear wins",
+and `abs(tet-patch − 1)` could not express "the interface reads high". Both
+times the sign carried the result and an absolute value threw it away. When a
+statistic is about *direction*, taking a magnitude first is not a neutral
+simplification.
+
+### The decisions audit, CORRECTED
+
+The 2026-08-03 audit asked which decisions survive without the calibration
+check. That framing is void: the check is sound, so the question is instead
+what it *detected*. Corrected dispositions:
+
+| decision | 2026-08-03 verdict | CORRECTED 2026-08-04 |
+|---|---|---|
+| extended mesh does not conserve charge | survives on flux-decay alone; calibration "withdrawn as corroboration" | **calibration DETECTED it.** 100.49% and 95.84% back-solve to a/b = 3.020 and 2.840 — the reference interface seeing a third of the active is exactly a leak through the inferior face. Flux-decay independently agrees. Two instruments, not one. |
+| sigma_air 1e-15 conditioning failure | survives on field magnitudes alone | **calibration DETECTED it.** 200.00% requires one interface flux exactly zero, which is what a non-conducting return path produces. |
+| the 11–15% benign band | VOID, retired | **REINSTATED with a meaning.** 12% reported = each interface ~6% from the requested current. A real threshold, not a slice of noise. |
+| `cg10` 11.90% dismissal | void as reasoning | **partially rehabilitated.** 11.90% = each interface ~5.95% off, and it warns identically in air and filled so it still cancels in the pair ratio. The dismissal now has a quantitative basis it lacked. |
+| stage-3 halt, "7 of 16 above the band" | void as reasoning | **the halt was CORRECT.** Those solves have interfaces 7.8–16.5% from the requested current. Worth stopping for. |
+| `check_solve_output` as a gate | void, retired as an active refusal | **UN-RETIRED**, now gating on per-interface deviation with `INTERFACE_TOL = 10%`. |
+| hypothesis 1 (coarse elements) falsified | VOID — the probe solved `hyoid` | **still void.** Unaffected by this correction; that was a montage bug, not an interpretation error. |
+| the m2m hypothesis | offered in #665 as the likely cause | **DEAD.** The maintainer confirms the path uses only mesh, conductivities, electrode tags, scalp tags and potentials. |
+
+**Upstream issue #665 is wrong and needs correcting**, not defending. Its
+headline ("ranks solves in the opposite order to an independent measurement of
+delivered current") compares an interface-consistency measure against a
+delivered-current measure. Artifacts for the follow-up are prepared under
+`paper/upstream/`; **Carl posts, not an agent.**
+
