@@ -1,46 +1,203 @@
 # HANDOFF — Paper 1, ear-emg-forward-model
 
-Rewritten 2026-08-03. Read `CLAUDE.md` (standing decision policy), then
-`paper/METHODS_LOG.md` (what went wrong and why), then `paper/OUTLINE.md`.
+Rewritten 2026-08-03 (evening). Read `CLAUDE.md` (standing decision policy),
+then `paper/METHODS_LOG.md` from "the double reversal" down, then
+`paper/OUTLINE.md`.
 
-Repo clean, all work committed, `main` at the Sculptor-review commit.
+Repo clean, all work committed.
 
 ---
 
-## 0-NEXT. QUEUE, in order. Amended 2026-08-03.
+## 0-NEXT. QUEUE, in order
 
-1. **GUARD ORDERING IS A CLASS, NOT AN INSTANCE.** Do not just move invariant
-   2. Audit the whole chain — sigma-span gate, `check_solve_output`,
-   invariants 1–4 — and convert to **COLLECT-THEN-RAISE**: evaluate every
-   guard, accumulate failures, raise once with all of them. Fail-fast is right
-   for cheap preconditions and wrong for diagnostics, because the first
-   failure hides the rest. **Report which other guards were unreachable** —
-   invariant 2 is confirmed unreachable, the others are unaudited.
-2. **PER-GUARD SYNTHETIC UNIT TESTS.** An end-to-end known-bad case that trips
-   two guards lets the first mask the second; a synthetic input can fail
-   exactly one. For invariant 2: build a numpy field with radius-stationary
-   flux **and** nonzero net outer-boundary current — no solve needed. One such
-   case per guard, each failing that guard and nothing else. Then re-run the
-   real known-bad extended-mesh solve as an integration check.
-   **Add to CLAUDE.md: a guard is not validated until a synthetic input has
-   made it fire in isolation.**
-3. **Mesh-quality regression** (still owed): calibration error against local
-   element count and quality per electrode patch.
-4. **Anisotropy tensor** in `03_leadfields.py`. Raises `NotImplementedError`
+1. **Wire invariants 3 and 4.** They have NO CALLER anywhere and have never run
+   on any solve. `test_guard_coverage.py` now FAILS on this by design. Cost is
+   4 extra solves (~16 min), not glue: linearity needs the same montage at 2I,
+   reciprocity needs the montage swapped. `batch_plan()` already picks the
+   first and last solve of a batch and is itself uncalled.
+2. **A REAL known-bad case for invariant 2 is still owed.** The synthetic
+   monopole demonstrates it fires; the extended mesh does NOT trip it once the
+   conductivity map is correct (−0.0038 × injected). Either find a real solve
+   that violates whole-domain charge conservation, or record that none exists
+   in this project and the synthetic case is the demonstration.
+3. **Retag the neck extension out of 100–899.** `EXTENSION_LABEL = 200` sits
+   inside SimNIBS's reserved electrode-rubber range. `with_electrode_tags()`
+   now raises on the collision when given `mesh_tags=`, but no caller passes it
+   yet — pass it everywhere.
+4. **Mesh-quality regression** (still owed, untouched this session):
+   calibration error against local element count and quality per electrode
+   patch. Note this is now a regression against a quantity known to be
+   anti-correlated with truth, so the interesting form is delivered current
+   (tet-patch) vs element quality, with calibration alongside.
+5. **Anisotropy tensor** in `03_leadfields.py`. Raises `NotImplementedError`
    **by design**. Per-element tensor (0.4 along fibre, 0.1 across) from
    `orientation.principal_axis()`, `config.FIBRE_MODEL` "pca" compartments
-   **only**. **Never fall through to the isotropic map — that fabricates
-   Fig 4 by comparing a condition against itself.**
-5. **`src/04_analyze.py`** with the truncation sensitivity: jaw-versus-ear gap
+   **only**. **Never fall through to the isotropic map — that fabricates Fig 4
+   by comparing a condition against itself.**
+6. **`src/04_analyze.py`** with the truncation sensitivity: jaw-versus-ear gap
    twice, all jaw sites and excluding `hyoid`/`submental_lat`/`submental_mid`,
    from `clearance_to_cut_mm`. If the gap does not survive, report before any
    Discussion.
-6. Figure captions and Results only.
+7. **Re-render `02_electrode_qa` with `anonymise_head()`**, figure captions,
+   Results only.
 
-**Settled, do not re-litigate:** Branch A fired (full 22-solve table in
-METHODS_LOG; correlation **−0.425, p = 0.048**, significant and
-anti-correlated). Stage 3's 22 solves stand. Invariant 2's *measurements*
-stand (13.8 µA max); its *assurance* does not.
+---
+
+## 0. WHAT CHANGED THIS SESSION — three bugs, one shape
+
+All three are **a parameter reaching the instrument by a path nobody
+verified**, and each turned a self-comparison or a wrong constant into a
+"measurement" that was then written down.
+
+### 1. The `above_ear` probe solved `hyoid`. Hypothesis 1 is UNTESTED.
+
+`03a2_boundary_probe.py` called `03a_boundary_run.solve()` without passing the
+montage, so `solve()` used **03a's** module-level `INJECT_FROM = "hyoid"`. The
+probe's own `INJECT_FROM = "above_ear"` only ever reached print statements. It
+re-solved the identical montage and produced a **byte-identical result mesh**
+(md5 `b110d2ce…`).
+
+So *"hypothesis 1 FALSIFIED — identical 100.49% at 130 mm and at 8 mm"* is one
+measurement at 8 mm, reported twice. **The identical 100.49% to two decimals
+was the tell and it was read as a clean result instead of an impossible one.**
+
+- **Hypothesis 1 (coarse elements at the slab interface) is untested, not
+  falsified.** "Both hypotheses spent" was wrong; one was spent.
+- **The boundary disposition SURVIVES.** The truncated mesh stays primary
+  because the extended mesh does not conserve charge, on the flux-decay probe,
+  which is independent. What reopens is the *cause*, not the *unusability*.
+- Fixed: montage is now an explicit parameter, printed, and `03a2` asserts the
+  coordinate appears in the solver's own log before reporting a verdict.
+- Re-run with the fix: `above_ear` on the extended mesh reports calibration
+  **15.75%**, not 100.49%. Void run preserved under
+  `results/_failed_runs/boundary_probe_above_ear_VOID_solved_hyoid_20260803/`.
+
+### 2. Tag 200 collides with SimNIBS's electrode-rubber range
+
+`with_electrode_tags()` fills tags 100–499 with 29.4 S/m rubber by
+`setdefault`. The neck slab is tagged **200**, so any analysis map built from
+Table 1 alone read 42,766 slab elements as rubber — an **83× error** on the
+compartment under investigation.
+
+**This produced a false measurement that I recorded and have retracted:**
+invariant 2 reading −0.310 / −0.566 × injected on the extended mesh. With the
+correct map it reads **−0.0038 and passes**. Corrected in METHODS_LOG, OUTLINE
+and CLAUDE.md the same session.
+
+Stage 3 is unaffected and this was **verified, not assumed**: the truncated
+mesh has **0 tags with no conductivity**, and `03_leadfields.py` builds its
+analysis map with the same function that assigns the solve's.
+
+### 3. The invariant patch was centred on the module default too
+
+Same defect, survived the first fix: `03a.solve()` called
+`check_solve_plateau(..., pos[INJECT_FROM], ...)`. A patch centred 130 mm from
+the injection contains no source, so the cut flux is ~0 at every radius and
+invariant 1 fails for a reason unrelated to the solve.
+
+---
+
+## 0. GUARD CHAIN — collect-then-raise, and what else was dead
+
+`solve_invariants.GuardChain`: every guard evaluated, every verdict recorded,
+one raise carrying all failures. A guard that cannot be evaluated is recorded
+as ERROR, never skipped.
+
+| guard | status found |
+|---|---|
+| **invariant 3 (linearity)** | **no caller anywhere — never ran, ever** |
+| **invariant 4 (reciprocity)** | **no caller anywhere — never ran, ever** |
+| `batch_plan()` | no caller; the first-and-last-solve policy never executed |
+| `needs_escalation()` | called, result printed and discarded |
+| `check_solve()` | no caller, second copy of invariant 2 behind two raises — **deleted** |
+| `check_solve_output()` | no caller, gates on the calibration check — **retired, now raises** |
+| `solve_invariants.__main__` | `NameError` since written — never once run |
+
+Two guards added, neither tuned to this data:
+
+- **`invariant_1_magnitude`** (0.4–2.5 × injected), inherited unchanged from the
+  deleted `check_solve()`. A uniform scale error leaves the plateau stationary
+  and invariant 2 at zero, so nothing per-solve could see it before.
+- **`invariant_2_coverage`** (≥2% shell support). Invariant 2's shell sits at
+  1.05 × p99 node radius; on MIDA only **5.35%** of it is inside the conductor,
+  and on any convex domain it is **0%** — at which point the integral returns
+  exactly 0.0 and passes vacuously. Coverage was computed and discarded for the
+  whole project; it is now a verdict and a CSV column.
+
+**`src/test_guards_fire.py`** — 12 synthetic cases, each failing exactly one
+guard with the rest passing, plus a clean control. Seconds, plain venv, no
+solve. Invariant 2's is a monopole: radius-stationary flux **and** nonzero net
+outer-boundary current. **This is also the only automatic detector of an
+unreachable guard** — `test_guard_coverage.py` sees whether a guard is called,
+not whether it is reachable.
+
+---
+
+## 0. THE 11–15% BAND IS RETIRED — and so is the band taxonomy
+
+Void: it was derived entirely from SimNIBS's calibration check, which is
+measured anti-correlated with true delivered current (Spearman **−0.425,
+p = 0.048, n = 22**). Slicing a quantity that does not measure what it claims
+into "benign" and "fatal" ranges gives two slices of noise.
+
+Of the four recorded bands, only those never resting on the check survive:
+**~100%** (charge leak — flux-decay probe) and **200.00%** (conditioning —
+fields measured 10–20× too large). **11–15%** and **15.6–33.0%** are void.
+
+Replaced not by another band but by a different instrument: the tet-patch
+integral, whose `mean_ratio` *is* delivered current over requested. Gated only
+by the loose 0.4–2.5 gross-error band that predates every stage-3 observation.
+
+Retired in `preflight.py`, `03a`, `03c`, `03d`, `test_guard_coverage.py`,
+`CLAUDE.md`, `OUTLINE.md`.
+
+---
+
+## 0. DECISION AUDIT — what survived on independent evidence
+
+| decision | verdict |
+|---|---|
+| extended mesh does not conserve charge | **SURVIVES** — flux-decay probe |
+| σ_air conditioning failure | **SURVIVES** — fields 10–20× too large, measured |
+| 11–15% benign band | **VOID — retired** |
+| `cg10` 11.90% dismissal | **VOID as reasoning**; moot (cancels in the pair ratio) |
+| stage-3 halt, "7 of 16 above the band" | **VOID as reasoning** — correct by luck; it triggered branch A |
+| `check_solve_output` as a gate | **VOID** — would have voided 11 good solves and passed the worst |
+| **hypothesis 1 falsified** | **VOID — the measurement does not exist** (see above) |
+| cavity verdict excluding warned pairs | **SURVIVES as a leave-some-out check**; rationale void, relabel |
+
+---
+
+## 0. UPSTREAM: FILED — simnibs/simnibs#665
+
+https://github.com/simnibs/simnibs/issues/665
+
+Leads with the disagreement pattern: `buccal` at 0.8870 mA is the largest true
+deviation and is reported **clean**; `mental` at 1.0746 mA is flagged
+**32.99%**; warned solves average 1.0113 mA against un-warned 0.9428 mA.
+
+**One claim was deliberately weakened before filing.** The sphere validates the
+tet-patch integral's *radius-consistency* (plateau CV < 0.7%) and the forward
+setup (RDM 4.36%, MAG +4.40%, n = 120) — it does **not** validate its absolute
+level, which reads 0.9406 / 1.2481 / 1.1134 across three sphere densities,
+non-monotone and sign-changing. So the issue claims **ordering**, not
+magnitude: a common scale factor cannot invert a ranking.
+
+"4 of 22 agreement" went in **with its ±5 pp tolerance and the full sensitivity
+curve** (0 / 2 / 4 / 9 at ±3 / 4 / 5 / 6 pp), per the new interim-statistic
+rule.
+
+---
+
+## 0. SETTLED, do not re-litigate
+
+Branch A fired. Stage 3's 22 solves stand — 0 unmapped tags, analysis map
+provably identical to the solve map, invariant 1 CV 0.32–1.53%, delivered
+0.887–1.075 mA. Invariant 2's *measurements* stand (max 13.8 µA of 1000 µA);
+its *assurance* does not, because it has no real known-bad demonstration.
+
+Nothing in Discussion / Introduction / Abstract may be written. Those framing
+decisions are Carl's.
 
 ---
 
