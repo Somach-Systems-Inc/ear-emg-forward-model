@@ -135,7 +135,16 @@ def compartment_medians(res_msh: Path):
     return out
 
 
-def solve_one(elec, pos, sigma, condition, out: Path):
+def solve_one(elec, pos, sigma, condition, out: Path,
+              current_scale=1.0, swap=False):
+    """One solve.
+
+    `current_scale` and `swap` exist for the paired invariants: 2x the current
+    for linearity, source and sink exchanged for reciprocity. They are EXPLICIT
+    PARAMETERS and the montage is printed, because the same function reading a
+    montage from a module global is how `03a2_boundary_probe.py` solved `hyoid`
+    while reporting `above_ear`.
+    """
     from simnibs import sim_struct, run_simnibs
     out.parent.mkdir(parents=True, exist_ok=True)
     preflight.check_conductivity_range(sigma.values(),
@@ -147,11 +156,14 @@ def solve_one(elec, pos, sigma, condition, out: Path):
     S.open_in_gmsh = False
     S.map_to_surf = False
     t = S.add_tdcslist()
-    t.currents = [config.INJECTION_CURRENT_A, -config.INJECTION_CURRENT_A]
+    I = config.INJECTION_CURRENT_A * current_scale
+    t.currents = [I, -I]
     for lab, v in sigma.items():
         t.cond[lab - 1].value = v
         t.cond[lab - 1].name = f"tag{lab}"
-    for j, nm in enumerate((elec, config.REFERENCE)):
+    pair = (config.REFERENCE, elec) if swap else (elec, config.REFERENCE)
+    print(f"    montage: {pair[0]} (+{I*1e3:.1f} mA) -> {pair[1]}", flush=True)
+    for j, nm in enumerate(pair):
         el = t.add_electrode()
         el.channelnr = j + 1
         el.centre = list(pos[nm]["xyz"])
@@ -163,6 +175,109 @@ def solve_one(elec, pos, sigma, condition, out: Path):
     if not hits:
         raise RuntimeError(f"no result mesh in {out}")
     return hits[0]
+
+
+def sample_points(res_msh: Path, n=2000, seed=0):
+    """Points inside segmented muscle, for the paired invariants.
+
+    Muscle compartments rather than the whole head because those are where the
+    lead field is actually read, so this tests the identity where the paper
+    uses it.
+    """
+    from simnibs import mesh_io
+    m = mesh_io.read_msh(str(res_msh))
+    nodes = m.nodes.node_coord
+    tets = m.elm.elm_type == 4
+    tags = m.elm.tag1[tets]
+    nl = m.elm.node_number_list[tets][:, :4] - 1
+    labs = {lab for _, _, lab, _ in config.MUSCLES if lab is not None}
+    k = np.isin(tags, list(labs))
+    if not k.any():
+        raise RuntimeError("no muscle-tagged tetrahedra to sample")
+    cent = nodes[nl[k]].mean(axis=1)
+    rng = np.random.default_rng(seed)
+    idx = rng.choice(len(cent), size=min(n, len(cent)), replace=False)
+    return cent[idx]
+
+
+def paired_invariants(pos, sigma, targets, condition="iso"):
+    """INVARIANTS 3 AND 4 — the batch policy that had never executed.
+
+    `check_linearity` and `check_reciprocity_symmetry` had no caller anywhere
+    in the repository; all 22 stage-3 solves ran without them. `batch_plan()`
+    picks the first and last solve of the batch, which is the documented
+    policy, so drift appearing partway through a run is caught rather than only
+    a bad first solve.
+
+    Invariant 4 is the one that matters most here: reciprocity is the identity
+    the entire paper rests on, and until now it had only ever been checked on
+    the analytic sphere, never on the real head geometry.
+    """
+    order = sorted(targets)
+    picks = sorted(SI.batch_plan(len(order)))
+    print(f"\nPAIRED INVARIANTS (3 and 4) on solve indices {picks} of "
+          f"{len(order)}: {[order[i] for i in picks]}")
+    rows = []
+    for i in picks:
+        elec = order[i]
+        base = WORKDIR / condition / elec
+        if not is_complete(base):
+            raise RuntimeError(f"{elec}: no completed 1x solve to pair against")
+        base_msh = (sorted(base.glob("*_scalar.msh"))
+                    or sorted(base.glob("*.msh")))[0]
+        pts = sample_points(base_msh)
+
+        out2 = WORKDIR / condition / "_paired" / f"{elec}__2x"
+        outs = WORKDIR / condition / "_paired" / f"{elec}__swap"
+        for d, scale, swap, what in ((out2, 2.0, False, "2x current"),
+                                     (outs, 1.0, True, "swapped montage")):
+            if is_complete(d):
+                print(f"  {elec}: {what} already complete, skipping")
+                continue
+            if d.is_dir():
+                shutil.rmtree(d)
+            print(f"  {elec}: solving {what} ...", flush=True)
+            solve_one(elec, pos, sigma, condition, d, current_scale=scale,
+                      swap=swap)
+
+        m2 = (sorted(out2.glob("*_scalar.msh")) or sorted(out2.glob("*.msh")))[0]
+        ms = (sorted(outs.glob("*_scalar.msh")) or sorted(outs.glob("*.msh")))[0]
+
+        row = {"electrode": elec, "condition": condition,
+               "n_points": len(pts)}
+
+        # Called by name, not through a table of function objects. The AST
+        # coverage test resolves Call nodes, so a guard invoked via a variable
+        # is invisible to it -- which would reintroduce exactly the "written
+        # but never wired" blindness this whole exercise exists to remove.
+        def _record(name, fn):
+            # REPORTED, not gated. The 1e-6 tolerances were never measured and
+            # are withdrawn (see solve_invariants). What decides whether a
+            # number here is interpretable at all is `same_mesh`: SimNIBS
+            # re-meshes the electrodes every run, and a comparison across two
+            # different discretisations measures electrode realisation, not the
+            # identity under test.
+            worst, same, note = fn()
+            row[name] = worst
+            row[name + "_same_mesh"] = bool(same)
+            row[name + "_geometry"] = note
+            print(f"    {name}: worst {worst:.3e}   "
+                  f"[{'same discretisation' if same else 'DIFFERENT geometry'}"
+                  f" — {note}]")
+
+        _record("invariant_3_linearity",
+                lambda: SI.check_linearity(base_msh, m2, pts))
+        _record("invariant_4_reciprocity",
+                lambda: SI.check_reciprocity_symmetry(base_msh, ms, pts))
+        rows.append(row)
+
+    out_csv = config.RESULTS / "03_paired_invariants.csv"
+    with out_csv.open("w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        w.writerows(rows)
+    print(f"\nwrote {out_csv}")
+    return rows
 
 
 def append_row(path: Path, row: dict, fieldnames):
@@ -179,6 +294,9 @@ def main(argv=None) -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--conditions", nargs="+", default=["iso"],
                     choices=CONDITIONS)
+    ap.add_argument("--paired-only", action="store_true",
+                    help="skip the main batch and run invariants 3 and 4 "
+                         "against the solves already on disk")
     a = ap.parse_args(argv)
 
     if not MESH.exists():
@@ -197,6 +315,10 @@ def main(argv=None) -> int:
     fields = (["electrode", "condition", "montage", "side", "depth_mm",
                "clearance_to_cut_mm", "calibration_pct", "inv1_mean",
                "inv1_cv", "inv2_net_frac", "inv2_coverage"] + muscles)
+
+    if a.paired_only:
+        paired_invariants(pos, sigma_iso, targets, a.conditions[0])
+        return 0
 
     plan = [(e, c) for c in a.conditions for e in sorted(targets)]
     done = [(e, c) for e, c in plan if is_complete(WORKDIR / c / e)]
@@ -291,6 +413,10 @@ def main(argv=None) -> int:
               f"{'  [ESCALATE]' if esc else ''}  "
               f"inv2 net {inv.get('outer_net_frac', float('nan')):+.4f}",
               flush=True)
+
+    # The batch policy, executed rather than described. It ran on nothing for
+    # the whole project because nothing called it.
+    paired_invariants(pos, sigma_iso, targets, a.conditions[0])
 
     dt = (time.time() - t0) / 60.0
     print(f"\nwrote {OUT_CSV}  ({dt:.1f} min this run)")

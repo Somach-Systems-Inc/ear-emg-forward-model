@@ -39,7 +39,18 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import config  # noqa: E402
 
-EXTENSION_LABEL = 200
+# 200 IS INSIDE SIMNIBS'S ELECTRODE-RUBBER RANGE (100-499) AND IS A DEFECT.
+# Any conductivity map built from Table 1 alone has this compartment filled in
+# at 29.4 S/m electrode rubber by solve_invariants.with_electrode_tags(), an
+# 83x error applied silently by setdefault. It produced a fabricated
+# invariant-2 reading (-0.310 x injected, against -0.0038 with the correct
+# map). See METHODS_LOG 2026-08-03.
+#
+# NOT renumbered here, deliberately: the extended mesh is unused, its
+# disposition is settled on the flux-decay probe, and rebuilding it to change a
+# label would reopen a closed question for no gain. The guard below makes the
+# collision impossible to repeat in anything new.
+EXTENSION_LABEL = 200   # DEFECT: see above
 MIDA_BACKGROUND = 50
 
 

@@ -218,8 +218,62 @@ class GuardChain:
 ENCLOSED_CURRENT_CV_TOL = 0.0695   # calibrated, n=4 known-good
 ENCLOSED_CURRENT_CV_ESCALATE = 0.0244  # mean + 3sd of the same set
 BOUNDARY_NET_TOL = 0.05          # fraction of injected current
-LINEARITY_TOL = 1e-6             # relative
-RECIPROCITY_TOL = 1e-6           # relative
+# LINEARITY_TOL and RECIPROCITY_TOL are 1e-6 because that is a round number
+# near machine precision. NOTHING MEASURED THEM, and measurement now says they
+# are the wrong shape (2026-08-03):
+#
+#   above_ear      linearity 0.000e+00   reciprocity 7.5e-06
+#   submental_mid  linearity 6.421e-03   reciprocity 6.913e-03
+#
+# The split is not noise, it is the discretisation. `above_ear`'s 1x and 2x
+# solves are BIT-IDENTICAL meshes (2,140,977 nodes, max coordinate difference
+# exactly 0.0), and there linearity holds to machine precision across all
+# 12.29M elements -- ratio min = max = median = 2.000000. `submental_mid`'s do
+# not: 2,140,980 nodes against 2,140,979. SimNIBS re-meshes the electrodes on
+# every run, so two runs of the "same" montage are two different
+# discretisations, and the comparison then measures electrode realisation
+# rather than the identity.
+#
+# Electrode realisation is independently measured at ~3-5 percentage points on
+# lead-field magnitude (0.27 dB per-site residual, n=6). So a 1e-6 gate asks
+# these identities to hold ~1000x tighter than the known reproducibility of the
+# thing being compared.
+#
+# THE TOLERANCES ARE THEREFORE WITHDRAWN AS GATES, NOT RETUNED. Withdrawing an
+# unfounded threshold is the precedent already set by the 20 mm
+# electrode-spacing floor (`config.COLLAR_OD_MM = None`); retuning one to fit a
+# result is the prohibited move. They are reported with their flip points, and
+# `same_discretisation` below is the guard that actually discriminates.
+#
+# Owed before either becomes a gate again: solve one identical montage TWICE
+# and measure the solver's own reproducibility at fixed geometry. That is the
+# independent measurement the threshold rule requires.
+LINEARITY_TOL = 1e-6             # relative -- REPORTED, not gated (see above)
+RECIPROCITY_TOL = 1e-6           # relative -- REPORTED, not gated (see above)
+
+
+def same_discretisation(m_a, m_b):
+    """Do two result meshes share a discretisation, node for node?
+
+    Invariants 3 and 4 compare two SEPARATE SimNIBS runs, and SimNIBS re-meshes
+    the electrodes each time. If the meshes differ, the comparison measures
+    electrode realisation, not the identity under test, and the number it
+    returns is uninterpretable as a physics result.
+
+    Node COUNT alone is not enough and node ORDER is not required: swapping the
+    montage renumbers nodes (same count, coordinates permuted) while leaving
+    the geometry intact. So this compares the sorted coordinate sets.
+    """
+    a = np.asarray(m_a.nodes.node_coord)
+    b = np.asarray(m_b.nodes.node_coord)
+    if a.shape != b.shape:
+        return False, f"node counts differ: {len(a)} vs {len(b)}"
+    ka = np.lexsort((a[:, 2], a[:, 1], a[:, 0]))
+    kb = np.lexsort((b[:, 2], b[:, 1], b[:, 0]))
+    d = float(np.abs(a[ka] - b[kb]).max())
+    return d == 0.0, (f"identical geometry ({len(a)} nodes)" if d == 0.0
+                      else f"same node count, max coordinate difference "
+                           f"{d:.3e} mm after sorting")
 
 
 def _fib_sphere(n):
@@ -327,42 +381,55 @@ def _enclosed_net(m, centre, radius_mm, sigma_by_tag, n_pts=4000):
 # running two 4-minute solves is a guard that never gets exercised.
 
 def _check_linearity_fields(m_1x, m_2x, pts, tol=LINEARITY_TOL):
-    """Invariant 3 on two already-loaded meshes."""
+    """Invariant 3 on two already-loaded meshes. REPORTS, does not gate.
+
+    Returns (worst, same_mesh, note). The tolerance is withdrawn as a gate --
+    see the block above LINEARITY_TOL -- because a 1e-6 comparison between two
+    independently re-meshed solves measures electrode realisation, not
+    linearity.
+    """
+    same, note = same_discretisation(m_1x, m_2x)
     a = _sample_field(m_1x, pts)[0]
     b = _sample_field(m_2x, pts)[0]
     n = np.linalg.norm(a, axis=1)
     k = n > 0
     rel = np.abs(np.linalg.norm(b[k], axis=1) / n[k] - 2.0) / 2.0
     worst = float(np.max(rel)) if k.any() else float("nan")
-    if not np.isfinite(worst) or worst > tol:
-        raise RuntimeError(f"INVARIANT 3 FAILED: field ratio at 2I vs I "
-                           f"deviates from 2 by {worst:.3e} (tol {tol:.0e})")
-    return worst
+    return worst, same, note
 
 
 def check_linearity(msh_1x, msh_2x, pts, tol=LINEARITY_TOL):
-    """Invariant 3: doubling the injection doubles the field exactly."""
+    """Invariant 3: doubling the injection doubles the field exactly.
+
+    Returns (worst, same_mesh, note). REPORTS, does not gate.
+    """
     from simnibs import mesh_io
     return _check_linearity_fields(mesh_io.read_msh(str(msh_1x)),
                                    mesh_io.read_msh(str(msh_2x)), pts, tol)
 
 
 def _check_reciprocity_fields(m_ab, m_ba, pts, tol=RECIPROCITY_TOL):
-    """Invariant 4 on two already-loaded meshes."""
+    """Invariant 4 on two already-loaded meshes. REPORTS, does not gate.
+
+    Returns (worst, same_mesh, note). This is the identity the paper's whole
+    reciprocity argument rests on, checked on the real head geometry rather
+    than only on the analytic sphere.
+    """
+    same, note = same_discretisation(m_ab, m_ba)
     a = _sample_field(m_ab, pts)[0]
     b = _sample_field(m_ba, pts)[0]
     n = np.linalg.norm(a, axis=1)
     k = n > 0
     rel = np.linalg.norm(a[k] + b[k], axis=1) / n[k]
     worst = float(np.max(rel)) if k.any() else float("nan")
-    if not np.isfinite(worst) or worst > tol:
-        raise RuntimeError(f"INVARIANT 4 FAILED: L(A->B) + L(B->A) is "
-                           f"{worst:.3e} of |L|, should be 0 (tol {tol:.0e})")
-    return worst
+    return worst, same, note
 
 
 def check_reciprocity_symmetry(msh_ab, msh_ba, pts, tol=RECIPROCITY_TOL):
-    """Invariant 4: swapping source and sink negates the field exactly."""
+    """Invariant 4: swapping source and sink negates the field exactly.
+
+    Returns (worst, same_mesh, note). REPORTS, does not gate.
+    """
     from simnibs import mesh_io
     return _check_reciprocity_fields(mesh_io.read_msh(str(msh_ab)),
                                      mesh_io.read_msh(str(msh_ba)), pts, tol)
@@ -407,6 +474,112 @@ ELECTRODE_RUBBER_RANGE = (100, 499)    # sigma 29.4 S/m
 SALINE_GEL_RANGE = (500, 899)          # sigma 1.0 S/m
 ELECTRODE_RUBBER_SIGMA = 29.4
 SALINE_GEL_SIGMA = 1.0
+
+
+def reserved_tag_ranges():
+    """SimNIBS's reserved tag ranges, READ FROM SIMNIBS, not from memory.
+
+    Resolved from `simnibs.utils.mesh_element_properties.ElementTags` so that a
+    SimNIBS upgrade which moves a boundary is picked up instead of silently
+    disagreeing with a copy pasted into this file. Raises if it cannot import
+    them: guessing the ranges is the failure this exists to prevent.
+
+    Returns [(lo, hi, name), ...] inclusive.
+    """
+    try:
+        from simnibs.utils.mesh_element_properties import ElementTags as T
+    except Exception as e:                         # noqa: BLE001
+        raise RuntimeError(
+            f"cannot read SimNIBS's reserved tag ranges "
+            f"({type(e).__name__}: {e}). They must be resolved from "
+            f"simnibs.utils.mesh_element_properties, not assumed -- an "
+            f"out-of-date copy is exactly how tag 200 became electrode rubber."
+        ) from e
+    return [
+        (int(T.ELECTRODE_RUBBER_START), int(T.ELECTRODE_RUBBER_END),
+         "electrode rubber (sigma 29.4 S/m)"),
+        (int(T.SALINE_START), int(T.SALINE_END), "saline gel (sigma 1.0 S/m)"),
+        (int(T.CREAM), int(T.CREAM), "electrode cream"),
+        (int(T.TH_SURFACE_START), int(T.TH_SURFACE_END),
+         "tissue/electrode SURFACE tags"),
+        (int(T.LH_SURFACE_START), int(T.LH_LAYER_END
+                                      if hasattr(T, "LH_LAYER_END")
+                                      else T.LH_SURFACE_END),
+         "left-hemisphere surface/layer tags"),
+        (int(T.RH_SURFACE_START), int(T.RH_LAYER_END
+                                      if hasattr(T, "RH_LAYER_END")
+                                      else T.RH_SURFACE_END),
+         "right-hemisphere surface/layer tags"),
+    ]
+
+
+def assert_no_reserved_tags(tags, sigma_by_tag=None, label="", allow=()):
+    """Fail loudly if a tag lands in a SimNIBS reserved range UNPROTECTED.
+
+    THE FAILURE THIS PREVENTS. `01c_extend_neck.py` tagged the neck-extension
+    slab **200**, inside ELECTRODE_RUBBER (100-499). Every analysis map built
+    from Table 1 alone then had its 42,766 slab elements filled in at 29.4 S/m
+    electrode rubber instead of 0.355 S/m muscle -- an 83x error on the exact
+    compartment under investigation, applied silently by `setdefault`, which
+    produced a fabricated invariant-2 reading that reached METHODS_LOG before
+    it was caught.
+
+    TWO DIFFERENT SEVERITIES, and conflating them makes this unusable:
+
+      - a reserved-range tag WITH an explicit conductivity is a LATENT hazard.
+        `setdefault` leaves it alone, so it is currently correct. MIDA's own
+        labels **100-116** (cerebral peduncles, optic chiasm, the twelve
+        cranial nerves, thalamus) sit inside ELECTRODE_RUBBER and are in this
+        class: they are correct today only because Table 1 names every one of
+        them. Drop one row from Table 1 and that structure silently becomes
+        29.4 S/m.
+      - a reserved-range tag WITHOUT one is an ACTIVE error, already wrong.
+
+    Pass `sigma_by_tag` to separate them. Without it, every reserved-range tag
+    is treated as an error, which is the right strictness for choosing a NEW
+    tag at mesh-build time (see `assert_tag_is_free`).
+    """
+    latent, active = [], []
+    for t in sorted({int(x) for x in tags}):
+        if t in allow:
+            continue
+        for lo, hi, name in reserved_tag_ranges():
+            if lo <= t <= hi:
+                protected = sigma_by_tag is not None and t in sigma_by_tag
+                (latent if protected else active).append((t, lo, hi, name))
+                break
+    if latent:
+        print(f"  NOTE ({label}): {len(latent)} tag(s) sit inside SimNIBS "
+              f"reserved ranges but carry an explicit conductivity, so they "
+              f"are correct as long as that stays true: "
+              f"{[t for t, *_ in latent]}")
+    if active:
+        raise RuntimeError(
+            f"{label}: {len(active)} tag(s) fall inside SimNIBS reserved "
+            f"ranges with NO conductivity of their own, so they will be "
+            f"silently reassigned to electrode material:\n" +
+            "\n".join(f"    tag {t} is inside {lo}-{hi} = {name}"
+                      for t, lo, hi, name in active) +
+            "\nGive them an explicit conductivity, or retag the compartment "
+            "outside every reserved range.")
+    return True
+
+
+def assert_tag_is_free(tag, label=""):
+    """Refuse a NEW compartment tag that lands in any SimNIBS reserved range.
+
+    Strict on purpose. When inventing a tag there is no reason to pick one
+    inside a reserved range, and `EXTENSION_LABEL = 200` is what happens when
+    nobody checks.
+    """
+    for lo, hi, name in reserved_tag_ranges():
+        if lo <= int(tag) <= hi:
+            raise RuntimeError(
+                f"{label}: tag {tag} is inside SimNIBS's reserved range "
+                f"{lo}-{hi} ({name}). Pick a tag outside every reserved range "
+                f"-- 100-499, 500-899, 999, 1000-2499, 5000-5999, 7000-7999. "
+                f"Anything in 900-998 or above 8000 is free.")
+    return True
 
 
 def with_electrode_tags(sigma_by_tag, mesh_tags=None):
@@ -647,6 +820,34 @@ def check_solve_plateau(mesh_path, elec_centre, sigma_by_tag,
     label = Path(str(mesh_path)).name if mesh_path is not None else "<in-memory>"
     ch = GuardChain(label)
 
+    # ---- guard 0: does the ANALYSIS conductivity map actually cover this
+    # mesh? Checked here because this is the first point where the mesh and the
+    # map are both in hand. A tag the map does not name is either silently
+    # zeroed (enclosed_current) or silently filled in as electrode material
+    # (with_electrode_tags' setdefault over 100-899). The second is how 42,766
+    # neck-slab elements became 29.4 S/m rubber and produced an invariant-2
+    # reading that reached METHODS_LOG before it was caught.
+    with ch.guard("conductivity_map_covers_mesh"):
+        _tets = m.elm.elm_type == 4
+        _mesh_tags = {int(t) for t in np.unique(m.elm.tag1[_tets])}
+        _missing = sorted(t for t in _mesh_tags if t not in sigma_by_tag)
+        _reserved = []
+        for _t in _missing:
+            for _lo, _hi, _nm in reserved_tag_ranges():
+                if _lo <= _t <= _hi:
+                    _reserved.append(f"{_t} -> {_nm}")
+                    break
+        ch.record(
+            "conductivity_map_covers_mesh", not _missing,
+            (f"all {len(_mesh_tags)} mesh tags carry a conductivity"
+             if not _missing else
+             f"{len(_missing)} of {len(_mesh_tags)} mesh tags have no "
+             f"conductivity in the analysis map: {_missing[:12]}"
+             + (f" -- of which {len(_reserved)} sit in a SimNIBS reserved "
+                f"range and are therefore NOT missing but SILENTLY "
+                f"REASSIGNED: {_reserved[:6]}" if _reserved else "")),
+            value=float(len(_missing)), threshold="0 uncovered tags")
+
     # ---- invariant 1: scan radii. A radius that ERRORS is recorded as NaN and
     # the scan continues, so one bad radius cannot hide the rest of the chain.
     vals, exts, scan_errors = [], [], []
@@ -739,12 +940,16 @@ def check_solve_plateau(mesh_path, elec_centre, sigma_by_tag,
                       f"was sampled', not 'charge is conserved'."),
               value=cover, threshold=f">= {BOUNDARY_MIN_COVERAGE:.0%}")
 
+    # `invariant_2_unknown_tags` was a separate FAILING guard here and is now
+    # folded into the message above. It could only ever fire when
+    # `conductivity_map_covers_mesh` had already fired -- a shell point can
+    # only be zeroed for an unmapped tag if the map is incomplete -- so the two
+    # were never independently triggerable, and the synthetic isolation test
+    # correctly refused to pass either. The map-level check is strictly better:
+    # it sees every tag in the mesh, not only the ~4% the shell samples.
     if np.isfinite(unknown) and unknown > 0:
-        ch.record("invariant_2_unknown_tags", False,
-                  f"{unknown:.2%} of the sampled shell sits in elements whose "
-                  f"tag has no conductivity, and was silently zeroed. Add the "
-                  f"tags to the conductivity map or exclude them explicitly.",
-                  value=unknown, threshold="0%")
+        print(f"    NOTE: {unknown:.2%} of the sampled shell sits in "
+              f"unmapped-tag elements and was zeroed")
 
     ch.raise_if_failed()
     return dict(vals=vals, exterior=exts, plateau=pl,

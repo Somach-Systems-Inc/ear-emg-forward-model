@@ -373,6 +373,14 @@ One row per term. Each is filled in only when its run completes, and any row sti
 | 5 | **Fibre orientation** | n̂ unknown in MIDA | yes | **yes** | *partially measured, per-muscle envelope* |
 | 6 | **Electrode meshing** | contact area realised from incidental surface triangulation | yes | **yes — per-site, does not cancel** | **~0.27 dB, 95% CI [0.17, 0.65] (n=6, per-site, common mode removed)** |
 | 7 | **Single anatomy** | MIDA is one subject | yes | unknown | **not quantifiable from one head** |
+| 8 | **Delivered current** | current actually injected per solve vs the 1 mA requested | yes | **bounded by row 6, not additive to it** | **0.887–1.075 × requested across 22 solves (mean 0.9770, sd 0.0449), no outlier** |
+
+**Row 8 is a bound, not a new term, and that distinction is the point.** Measured per solve by the tet-patch integral (flux through the interior cut of a patch around the electrode, using the mesh's own faces as the quadrature). It splits the same way row 6 does:
+
+- the **common** part — the integral's own absolute level, identical across solves — cancels exactly in every ratio. This matters because that level is *not* independently established: on the analytic sphere the same integral reads 0.9406 / 1.2481 / 1.1134 across three mesh densities, non-monotone and changing sign. None of that reaches a published number.
+- the **per-site** part shares its physical cause with row 6 — contact area realised from whatever surface triangles fall under each electrode. Entering it separately would double-count. It is reported here as a **ceiling** on row 6's per-site term: whatever the per-electrode delivery variation is, it is under 11.3%, with no site detached from the distribution.
+
+**What this row replaces.** SimNIBS's own current-calibration line reports 0% or 11.90–32.99% on these same solves. Taken at face value that would be a large per-site term. It is not usable: on this mesh it is measured **anti-correlated** with the tet-patch deviation (Spearman −0.425, p = 0.048, n = 22), the largest true deviation (`buccal`, 0.8870) is reported clean, and `mental` at 1.0746 — closer to correct — is flagged 32.99%. Filed upstream as [simnibs/simnibs#665](https://github.com/simnibs/simnibs/issues/665). The claim there is about **ordering**, not magnitude, precisely because a common scale factor cannot invert a ranking but can move a level.
 
 **Row 6 was nearly mis-filed as a cancelling term and is the clearest case for the two-column split.** It would be natural to treat electrode modelling as a global scale factor that divides out. It does not: each electrode's contact area is realised independently from whatever surface triangles happen to fall under it, so it is per-site noise, not global scale.
 

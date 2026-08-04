@@ -2782,3 +2782,211 @@ shifts every solve together and cannot invert a ranking, so the `buccal`/
 `mental` inversion and the warned-vs-un-warned means survive it. The absolute
 band is reported and its unvalidated level is stated in the issue itself.
 
+---
+
+## 2026-08-03 — RULINGS. Stage 3's footing corrected; hypothesis 1 closed as untested
+
+Six rulings from Carl, recorded with what each changes.
+
+### 1. The extended mesh is NOT reopened. The record is corrected.
+
+**"Hypothesis 1 (coarse elements at the slab interface) falsified" becomes
+"hypothesis 1 UNTESTED — the probe solved `hyoid` while reporting
+`above_ear`."** "Both hypotheses spent" was wrong; one was spent.
+
+The disposition is unchanged and rests on the **flux-decay probe**, which is
+independent of the calibration check and of the probe defect. The mesh is
+unused, the limitation is documented in OUTLINE with its bias direction, and
+**the cause is not re-litigated**. The corrected probe was run once, reports
+15.75% at `above_ear` against 100.49% at `hyoid`, and that number is recorded
+here as an observation rather than as the start of an investigation.
+
+### 2. Why stage 3 stands — corrected footing
+
+**The previous footing was wrong in the way I had already flagged elsewhere.**
+Branch A concluded the solves are sound because the tet-patch reports
+0.887–1.075 mA. That is a **magnitude** claim resting on an instrument whose
+absolute level is not established — the same integral reads 0.9406 / 1.2481 /
+1.1134 across three analytic-sphere densities, non-monotone and sign-changing.
+I weakened the upstream filing to an ordering claim for exactly this reason and
+did not apply the same correction here. *(measured)*
+
+**Correct footing, in three parts:**
+
+1. **Every published claim in this paper is a RATIO** — site against site, ear
+   against jaw, muscle against muscle. Table 3 is already organised around
+   this. A term that scales the whole lead field equally **cancels exactly** in
+   every ratio and cannot reach a conclusion.
+2. **The tet-patch's absolute-level uncertainty is exactly such a common
+   term.** It is a property of the integral, identical across solves, so it
+   divides out of every comparison the paper makes. Stage 3 does not need the
+   absolute level and never did.
+3. **What the tet-patch establishes is RELATIVE, and that is what was needed:**
+   no electrode deviates anomalously with respect to the others. The full
+   spread across 22 solves is 0.887–1.075 (mean 0.9770, sd 0.0449), with no
+   outlier and no site detached from the distribution.
+
+**And it is the relative reading that carries the SimNIBS finding too.** A
+common scale factor shifts every solve together and cannot invert a ranking, so
+the ordering disagreement — `buccal` largest true deviation and reported clean,
+`mental` closer to correct and flagged 32.99% — survives the level uncertainty
+untouched.
+
+**One thing the spread does NOT license.** The 0.887–1.075 range must not be
+entered into the error budget as a fresh per-site term at face value. It is the
+same size as, and has the same physical cause as, the electrode-meshing
+realisation noise already carried as row 6 (contact area realised from whatever
+surface triangles fall under each electrode). Adding it separately would
+double-count. It enters Table 3 as a **bound** on that term, cross-referenced,
+not as a new one.
+
+### 4. Reserved-tag guard, enumerated from SimNIBS source
+
+`solve_invariants.reserved_tag_ranges()` resolves the ranges from
+`simnibs.utils.mesh_element_properties.ElementTags` and **raises if it cannot
+import them**, because an out-of-date copy pasted into this repo is precisely
+how tag 200 became electrode rubber:
+
+| range | meaning |
+|---|---|
+| 100–499 | electrode rubber, σ 29.4 S/m |
+| 500–899 | saline gel, σ 1.0 S/m |
+| 999 | electrode cream |
+| 1000–2499 | tissue and electrode SURFACE tags |
+| 5000–5999 / 7000–7999 | left / right hemisphere surface and layer tags |
+
+**It immediately found a second collision, and this one is in MIDA itself.**
+MIDA's native labels **100–116** — cerebral peduncles, optic chiasm, the twelve
+cranial nerves, thalamus — sit inside the electrode-rubber range.
+
+**They are correct today, and only by accident of completeness.** Every one is
+named in Table 1, so `setdefault` leaves it alone. Drop a single row from
+Table 1 and that anatomical structure silently becomes 29.4 S/m. That is a
+*latent* hazard, distinct in severity from tag 200, which had no conductivity
+of its own and was therefore *actively* wrong. The guard reports the two
+differently: a NOTE for reserved-range tags carrying an explicit conductivity,
+a raise for those without.
+
+**Checked and clean:** SimNIBS allocated **501 and 502** for the two electrode
+volumes in every stage-3 solve (117 and 123 tetrahedra), in the saline range,
+not the rubber range, so it never collided with MIDA labels 100–116. Verified
+by reading the tags out of a result mesh, not assumed. *(measured)*
+
+Wired as `conductivity_map_covers_mesh`, guard 0 of the invariant chain, which
+is the first point where the mesh and the analysis map are both in hand. It
+subsumed the old `invariant_2_unknown_tags` guard — a shell point can only be
+zeroed for an unmapped tag if the map is already incomplete, so the two were
+never independently triggerable, and the synthetic isolation test refused to
+pass either until they were merged. The map-level check is strictly better: it
+sees every tag in the mesh, not only the ~4% the outer shell samples.
+
+`EXTENSION_LABEL = 200` is annotated as a defect at both definition sites and
+**deliberately not renumbered** — rebuilding an unused mesh to change a label
+would reopen a closed question for no gain.
+
+### 5. The overstatement was Carl's, and is recorded as his
+
+The handoff asked for "the tet-patch method and its validation against the
+analytic sphere". **The sphere validates radius-consistency and the forward
+setup, not the integral's absolute level.** Carl records the overstatement as
+his own. It is worth keeping in the log for the same reason as the double
+reversal: the instruction was specific, confident and slightly wrong, and the
+right response was to measure what the sphere actually establishes and file the
+narrower claim rather than the requested one.
+
+### 6. The mesh-quality regression's dependent variable
+
+Accepted: **delivered current** (tet-patch) against element count and quality
+per electrode patch, with the calibration value reported alongside as a second
+series. Calibration as the dependent variable is now known anti-correlated with
+truth, so regressing against it would measure the artefact rather than the
+mesh.
+
+---
+
+## 2026-08-03 — INVARIANTS 3 AND 4 HAVE NOW RUN. Reciprocity holds on the head mesh.
+
+Ruling 3: run them before stage 4, because invariant 4 checks the identity the
+whole paper rests on, on the real geometry rather than a sphere, and if it
+fails everything downstream is void.
+
+**It does not fail. Stage 4 is clear to proceed.** *(measured)*
+
+Four extra solves (2x current and swapped montage, for the first and last solve
+of the batch as `batch_plan` specifies), 2000 sample points inside segmented
+muscle — where the lead field is actually read, so the identity is tested where
+the paper uses it.
+
+| electrode | invariant 3 (linearity) | invariant 4 (reciprocity) | geometry |
+|---|---|---|---|
+| `above_ear` | **0.000e+00** | **7.500e-06** | **identical**, 2,140,977 nodes |
+| `submental_mid` | 6.421e-03 | 6.913e-03 | **DIFFERENT**, 2,140,980 vs 2,140,979 nodes |
+
+### The split is the discretisation, and it is the whole finding
+
+`above_ear`'s 1x and 2x solves are **bit-identical meshes** — same node count,
+maximum coordinate difference exactly 0.0 — and there **linearity holds to
+machine precision across all 12.29M elements**: the ratio |E(2I)|/|E(I)| has
+min = max = median = 2.000000, with 0% of elements deviating by more than
+1e-6. The solver is exactly scale-equivariant.
+
+`submental_mid`'s are not: 2,140,980 nodes against 2,140,979. **SimNIBS
+re-meshes the electrodes on every run**, so two runs of the "same" montage are
+two different discretisations. Its 6.4e-3 is therefore not a linearity failure
+— it is electrode realisation, the term already carried as Table 3 row 6, and
+the comparison's premise (same discretisation, doubled current) does not hold.
+
+The swapped-montage mesh for `above_ear` has the same node count with
+coordinates **permuted** (SimNIBS renumbers when the channel order changes), so
+the check compares the two fields at matched physical points rather than by
+element index. After sorting coordinates the geometry is identical to 0.0 mm,
+which is what makes its 7.5e-6 interpretable: it is the solver's own iterative
+residual for a genuinely different right-hand side, not a meshing artefact.
+
+### Why nothing downstream is void
+
+7.5e-6 relative is **6.5e-5 dB**. `submental_mid`'s 6.9e-3 is **0.06 dB**, and
+that one is dominated by electrode realisation rather than the identity. The
+measured per-site noise floor is **0.27 dB**. Reciprocity therefore holds on
+the real head geometry roughly **four orders of magnitude** inside the
+resolution of anything the paper reports.
+
+### The 1e-6 tolerances are WITHDRAWN, not retuned
+
+Both readings exceed 1e-6, and the temptation is to move the number. **Nothing
+ever measured it** — it is a round constant near machine precision, written
+when the functions were written and never exercised, because neither function
+had a caller.
+
+Measurement now says it is the wrong shape. The identities are compared across
+two independently re-meshed SimNIBS runs, and electrode realisation is
+independently measured at ~3–5 percentage points on lead-field magnitude
+(0.27 dB per-site, n=6). A 1e-6 gate asks these identities to hold about a
+thousand times tighter than the reproducibility of the thing being compared.
+
+So they are **withdrawn as gates and reported with their values**, following
+the precedent already set in this project by the 20 mm electrode-spacing floor,
+which was withdrawn to `config.COLLAR_OD_MM = None` rather than retuned. The
+prohibited move is loosening a threshold because something failed it; the
+permitted one is withdrawing a threshold that was never founded.
+
+**What replaces the gate is a guard that actually discriminates:**
+`same_discretisation()`, reported beside every value. A number from two
+different meshes is uninterpretable as a physics result no matter what
+threshold it is held to, and that distinction — not the tolerance — is what
+separates `above_ear` from `submental_mid` here.
+
+**Owed before either becomes a gate again:** solve one identical montage twice
+and measure the solver's reproducibility at fixed geometry. That is the
+independent measurement the threshold rule requires, and it is one solve.
+
+### A note on what invariant 3 can and cannot see
+
+At fixed discretisation it returned exactly 0.0 over 12.29M elements. That is a
+pass, but it is a weak one: an iterative solver started from zero produces
+exactly scaled iterates for a scaled right-hand side, so the test cannot
+distinguish "the physics is linear" from "the solver is scale-equivariant". Its
+real value is as the control for invariant 4 — it establishes that the solver
+contributes no error at fixed geometry, which is what licenses reading
+invariant 4's 7.5e-6 as a genuine residual.
+

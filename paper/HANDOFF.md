@@ -63,9 +63,11 @@ was the tell and it was read as a clean result instead of an impossible one.**
 
 - **Hypothesis 1 (coarse elements at the slab interface) is untested, not
   falsified.** "Both hypotheses spent" was wrong; one was spent.
-- **The boundary disposition SURVIVES.** The truncated mesh stays primary
-  because the extended mesh does not conserve charge, on the flux-decay probe,
-  which is independent. What reopens is the *cause*, not the *unusability*.
+- **The boundary disposition SURVIVES and the extended mesh is NOT reopened**
+  (ruling, 2026-08-03). The truncated mesh stays primary because the extended
+  mesh does not conserve charge, on the flux-decay probe, which is
+  independent. The mesh is unused, the limitation is documented in OUTLINE
+  with its bias direction, and **the cause is not re-litigated.**
 - Fixed: montage is now an explicit parameter, printed, and `03a2` asserts the
   coordinate appears in the solver's own log before reporting a verdict.
 - Re-run with the fix: `above_ear` on the extended mesh reports calibration
@@ -191,9 +193,16 @@ rule.
 
 ## 0. SETTLED, do not re-litigate
 
-Branch A fired. Stage 3's 22 solves stand — 0 unmapped tags, analysis map
-provably identical to the solve map, invariant 1 CV 0.32–1.53%, delivered
-0.887–1.075 mA. Invariant 2's *measurements* stand (max 13.8 µA of 1000 µA);
+Branch A fired. **Stage 3 stands because the paper reports RATIOS** — a common
+scale error in delivered current cancels exactly in every site-to-site
+comparison, and the tet-patch's absolute-level uncertainty is exactly such a
+common term. What the tet-patch establishes is *relative*: no electrode
+deviates anomalously with respect to the others (0.887–1.075, sd 0.0449, no
+outlier). It is **not** a magnitude claim; the earlier "the solves are sound
+because delivered current is within 11.3%" footing was wrong for the same
+reason the upstream filing was narrowed to ordering. Also verified: 0 unmapped
+tags, analysis map provably identical to the solve map, invariant 1 CV
+0.32–1.53%. Invariant 2's *measurements* stand (max 13.8 µA of 1000 µA);
 its *assurance* does not, because it has no real known-bad demonstration.
 
 Nothing in Discussion / Introduction / Abstract may be written. Those framing

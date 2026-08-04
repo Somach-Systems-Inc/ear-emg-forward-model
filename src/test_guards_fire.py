@@ -254,14 +254,18 @@ def case_invariant_2_coverage():
 
 
 def case_unknown_tag():
-    """A tag with no conductivity, outside every patch radius.
+    """A mesh tag with no conductivity in the analysis map.
 
-    The old code silently zeroed those sample points, which is the project's
-    own prohibited failure mode: a shell that is half unmapped reads as a shell
-    through which little current flows.
+    Two ways this goes wrong silently, and the project hit both: points are
+    zeroed (a shell that is half unmapped reads as one through which little
+    current flows), or -- if the tag lands in 100-899 -- `with_electrode_tags`
+    fills it in as electrode material. Tag 200 became 29.4 S/m rubber that way.
+
+    The tag is placed OUTSIDE every patch radius in the scan so that
+    `patch_flux` never touches it and only the map-coverage guard fires.
     """
     return _run_chain(make_mesh("dipole", tag_hole=True)), \
-        "invariant_2_unknown_tags"
+        "conductivity_map_covers_mesh"
 
 
 def case_all_clean():
@@ -323,11 +327,10 @@ def case_linearity():
     pts = cent[:500]
     a = SyntheticMesh(P, tets, np.full(len(tets), TAG, int), E)
     b = SyntheticMesh(P, tets, np.full(len(tets), TAG, int), E * 2.5)
-    try:
-        SI._check_linearity_fields(a, b, pts)
-        return False, "no raise on a 2.5x pair"
-    except RuntimeError as e:
-        return ("INVARIANT 3" in str(e)), str(e)[:90]
+    worst, same, note = SI._check_linearity_fields(a, b, pts)
+    # 2.5x instead of 2x is a 25% deviation. Reported, not gated.
+    return (abs(worst - 0.25) < 1e-9 and same), \
+        f"worst {worst:.3e} (expect 2.5e-01), same_mesh={same} — {note}"
 
 
 def case_reciprocity():
@@ -338,11 +341,10 @@ def case_reciprocity():
     pts = cent[:500]
     a = SyntheticMesh(P, tets, np.full(len(tets), TAG, int), E)
     b = SyntheticMesh(P, tets, np.full(len(tets), TAG, int), -E * 1.01)
-    try:
-        SI._check_reciprocity_fields(a, b, pts)
-        return False, "no raise on a pair that is -1.01x"
-    except RuntimeError as e:
-        return ("INVARIANT 4" in str(e)), str(e)[:90]
+    worst, same, note = SI._check_reciprocity_fields(a, b, pts)
+    # -1.01x leaves a 1% residual. Reported, not gated.
+    return (abs(worst - 0.01) < 1e-9 and same), \
+        f"worst {worst:.3e} (expect 1.0e-02), same_mesh={same} — {note}"
 
 
 CHAIN_CASES = [
@@ -354,7 +356,7 @@ CHAIN_CASES = [
      case_invariant_1_magnitude),
     ("invariant 2 coverage fires alone (shell escapes the mesh)",
      case_invariant_2_coverage),
-    ("unknown-tag guard fires alone (tag with no conductivity)",
+    ("map-coverage guard fires alone (mesh tag with no conductivity)",
      case_unknown_tag),
     ("control: every guard passes on a clean dipole", case_all_clean),
 ]
@@ -366,8 +368,8 @@ DIRECT_CASES = [
      case_read_calibration_parse),
     ("read_calibration returns None on a clean solve",
      case_read_calibration_clean),
-    ("invariant 3 fires on a 2.5x pair", case_linearity),
-    ("invariant 4 fires on a -1.01x pair", case_reciprocity),
+    ("invariant 3 measures 0.25 on a 2.5x pair", case_linearity),
+    ("invariant 4 measures 0.01 on a -1.01x pair", case_reciprocity),
 ]
 
 
