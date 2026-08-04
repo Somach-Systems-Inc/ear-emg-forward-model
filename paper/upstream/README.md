@@ -1,8 +1,7 @@
 # Follow-up for simnibs/simnibs discussions/666
 
 **NOTHING HERE HAS BEEN POSTED. Carl posts, not an agent.**
-**Post after `both_electrode_flux.py` completes all 22 solves** — the table
-below is the confirmation leg and should go up complete, not at n = 4.
+**Ready to post.** All 22 solves are in; the confirmation table is complete.
 
 The maintainer's correction is accepted in full. Reported calibration is
 `e = 2|a−b|/(a+b)` over the two electrode-interface flux estimates, after which
@@ -65,20 +64,51 @@ We integrate `J·n = σE·n̂` over a closed surface around **each** electrode,
 using the mesh's own tetrahedron faces as the quadrature (method below), at
 radii 25–75 mm. If the premise holds, the two must come out equal and opposite.
 
-| electrode | SimNIBS reports | flux around active | flux around reference | recomputed `2\|a−b\|/(a+b)` |
+| electrode | SimNIBS reports | flux around active | flux around reference | measured asymmetry `2\|a−b\|/(a+b)` |
 |---|---|---|---|---|
-| `above_ear` | clean | +0.9463 | −0.9458 | **0.06%** |
-| `buccal` | clean | +0.8870 | −0.9038 | **1.87%** |
-| `cg02` | clean | +0.9579 | −0.9566 | **0.13%** |
-| **`cg01`** | **19.67%** | **+1.0055** | **−1.0069** | **0.14%** |
+| `mental` | **32.99%** | +1.0746 | -1.0684 | **0.58%** |
+| `cg08` | **28.82%** | +1.0508 | -1.0488 | **0.19%** |
+| `cg04` | **26.83%** | +1.0431 | -1.0397 | **0.33%** |
+| `cg09` | **25.27%** | +1.0296 | -1.0325 | **0.29%** |
+| `post_lobule` | **21.24%** | +1.0134 | -1.0140 | **0.06%** |
+| `cg01` | **19.67%** | +1.0055 | -1.0069 | **0.14%** |
+| `earlobe_ipsi` | **17.03%** | +0.9887 | -0.9948 | **0.61%** |
+| `cg06` | **15.57%** | +0.9841 | -0.9880 | **0.39%** |
+| `cg03` | **13.99%** | +0.9812 | -0.9808 | **0.04%** |
+| `submental_mid` | **13.65%** | +0.9864 | -0.9820 | **0.45%** |
+| `cg10` | **11.90%** | +0.9671 | -0.9712 | **0.43%** |
+| `buccal` | clean | +0.8870 | -0.9038 | **1.87%** |
+| `cg07` | clean | +0.9619 | -0.9575 | **0.46%** |
+| `hyoid` | clean | +0.9606 | -0.9569 | **0.38%** |
+| `mastoid` | clean | +0.9420 | -0.9363 | **0.60%** |
+| `cg05` | clean | +0.9452 | -0.9448 | **0.04%** |
+| `midjaw` | clean | +0.9461 | -0.9455 | **0.07%** |
+| `cg02` | clean | +0.9579 | -0.9566 | **0.13%** |
+| `pre_tragus` | clean | +0.9210 | -0.9227 | **0.19%** |
+| `submaxillary` | clean | +0.9431 | -0.9332 | **1.06%** |
+| `submental_lat` | clean | +0.9593 | -0.9527 | **0.68%** |
+| `above_ear` | clean | +0.9463 | -0.9458 | **0.06%** |
 
-*(n = 4 of 22 at the time of writing — **complete this table before posting.**)*
+**All 22 solves. The measured interface asymmetry is 0.04–1.87% on every one of
+them**, while SimNIBS reports 11.90–32.99% on eleven. The premise is satisfied
+throughout: the domain conserves charge, the boundary is insulating, there is
+no third current path, and the true asymmetry the calibration number purports
+to measure is — as the argument requires — zero to within our quadrature noise.
 
-The two fluxes agree to **0.14%** on `cg01`, the solve SimNIBS reports at
-19.67%. So the premise is satisfied: the domain conserves charge, the boundary
-is insulating, and there is no third path. The reported 19.67% is therefore an
-estimator artefact by the argument above, and the table confirms rather than
-establishes that.
+The two quantities are **completely decoupled**:
+
+| | |
+|---|---|
+| Spearman(reported, measured) | **−0.086, p = 0.703, n = 22** |
+| reported ÷ measured, on warned solves | **28× to 384×** (median 81×) |
+| mean measured asymmetry, warned solves | **0.32%** |
+| mean measured asymmetry, clean solves | **0.50%** |
+
+The warned solves are, if anything, *more* internally consistent than the clean
+ones. And the extremes invert cleanly: **`buccal` has the largest measured
+asymmetry in the set at 1.87% and is reported clean**, while **`mental` is
+reported at 32.99% and measures 0.58%** — a factor of 57 apart in the opposite
+direction.
 
 Note also that our integral's absolute level sits at 0.946–1.006 rather than
 1.000. That is our own ~5% low bias; it affects both electrodes identically and
@@ -157,7 +187,7 @@ above rests on it.
 | # | file | status |
 |---|---|---|
 | a | `interface_fluxes_derived.csv` | **DERIVED, not raw.** `fields_summary.txt` prints only the percentage, so `a` and `b` are reconstructed as `1 ± e/2`. Emitting the raw pair would be a small, useful feature request. |
-| b | `both_electrode_flux.py`, `both_electrode_flux.csv` | the confirmation table above. ~10 min/electrode on a 15.4M-element mesh. |
+| b | `both_electrode_flux.py`, `both_electrode_flux.csv` | **complete, 22/22.** The confirmation table above. ~10 min/electrode on a 15.4M-element mesh. |
 | c | `tet_patch_standalone.py` | standalone, runnable, no project imports |
 | d | **four-layer analytic sphere** | **highest value, fully shareable** — not MIDA-derived, no licence constraint. `data/val_sphere.nii.gz`, `src/val_rdm_mag.py`, `sphere_calibration_per_solve.csv`. **5 of 16 solves emit the warning while the lead fields match the closed form at RDM 4.36%.** |
 
