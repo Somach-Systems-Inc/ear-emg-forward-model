@@ -8,56 +8,34 @@ Repo clean, all work committed.
 
 ---
 
-## 0-NEXT. QUEUE, in order (reprioritised 2026-08-03 per ruling 3)
+## 0-NEXT. QUEUE — updated 2026-08-04
 
-1. **ANISOTROPY TENSOR + Fig 4 — the designed contribution, next.**
-   `03_leadfields.py` still raises `NotImplementedError` **by design**.
-   **Never fall through to the isotropic map — that fabricates Fig 4 by
-   comparing a condition against itself.**
+**Done since the last handoff:** the calibration reversal (see below), figures
+wired to real stage-4 output, Fig 5 rebuilt as the complementarity map, Fig 2
+diverging about 0 dB, **anisotropy tensor + Fig 4 complete (22/22 solves)**, QA
+re-render with `anonymise_head()`, captions and Results.
 
-   **Scope is THREE compartments, not nine — established before any code was
-   written.** Only `sternocleidomastoid` (68), `medial_pterygoid` (81) and
-   `mentalis` (71) are both PCA-defensible and individually segmented; the
-   other six PCA muscles are pooled into `Muscle (General)` (38) and `Tongue`
-   (42). Fig 4 must state this, or seven zero-difference rows will read as
-   "anisotropy does not matter" instead of "anisotropy was not applied here".
-   SCM is one of the three ear-winning muscles, so the figure still bears on
-   the principal finding.
+1. **RUN `paper/upstream/both_electrode_flux.py`** — artifact (b) for the
+   SimNIBS thread. It was launched and **killed part-way** because it and the
+   anisotropy run together drove the machine into 6.5 GB of swap. Run it alone;
+   ~30-45 min, reads only, no solves. It measures the tet-patch cut flux at
+   BOTH electrodes, which is the like-for-like comparison against SimNIBS's
+   `a` and `b` and the thing that closes out #665's premise.
+2. **Post the upstream follow-up.** Everything is prepared in
+   `paper/upstream/`. **CARL POSTS, NOT AN AGENT.** #665 needs correcting, not
+   defending.
+3. **Mesh-quality regression** — still owed, still demoted, may be
+   supplementary. Dependent variable is **delivered current**, not calibration.
+4. **The two owed measurements.** (a) Solver reproducibility at fixed geometry
+   — one identical montage solved twice; needed before the withdrawn 1e-6
+   tolerances on invariants 3 and 4 could be gates again. (b) A real known-bad
+   case for invariant 2.
+5. **Make the repo PUBLIC at submission** so the pre-registration citation
+   (`fa583f6`, 2026-08-02 vs the 2026-08-03 leadfield commit) is checkable.
+   Safe now: history purged, allowlist hook active.
 
-   **Route, researched but NOT implemented:** SimNIBS takes anisotropy as a
-   NIfTI tensor volume, not a per-element tensor. Set
-   `anisotropy_type="dir"`, `fn_tensor_nifti=<path>`,
-   `anisotropic_tissues=[68, 81, 71]`. Build the volume from MIDA's label
-   volume: per compartment, principal axis via `orientation.principal_axis()`,
-   then `D = 0.4 * a(x)a + 0.1 * (I - a(x)a)`.
-   **Watch three defaults in `simnibs.utils.cond_utils.cond2elmdata`:**
-   `correct_FSL=True` permutes tensor components, `correct_intensity=True`
-   rescales the whole field to match the scalar values, and `max_ratio=10` /
-   `max_cond=2` clamp eigenvalues. Our ratio is 4 and max eigenvalue 0.4, so
-   the clamps do not bite, but the first two will silently change the tensor.
-   **VERIFY BY READING BACK the ElementData and asserting the eigenvalues are
-   0.4/0.1/0.1 along the intended axis for the intended tags before solving.**
-   Do not trust the pipeline; that is the whole lesson of this repo.
-   Cost: builder + verification, then 22 solves (~90 min).
-
-2. **Mesh-quality regression** — DEMOTED, may end up supplementary. Its purpose
-   was explaining calibration variation; calibration is retired and stage 3
-   stands on the ratio argument. If run: dependent variable is **delivered
-   current** (tet-patch `inv1_mean`) against element count and quality per
-   electrode patch, calibration alongside as a second series.
-3. **Re-render `02_electrode_qa` with `anonymise_head()`.**
-4. **Two owed measurements.** (a) Solver reproducibility at fixed geometry —
-   one identical montage solved twice; this is what the withdrawn 1e-6
-   tolerances on invariants 3 and 4 need before they could be gates again.
-   (b) A real known-bad case for invariant 2 — the synthetic monopole
-   demonstrates it fires, the extended mesh does not trip it once the
-   conductivity map is correct (−0.0038 × injected).
-5. **Figure captions and Results.** No Discussion, Introduction or Abstract.
-
-**Settled, do not reopen:** the extended mesh (ruling 1). Hypothesis 1 is
-UNTESTED, not falsified; "both hypotheses spent" was wrong; the disposition
-stands on the flux-decay probe; the mesh is unused and the limitation is
-documented with its bias direction.
+**Settled, do not reopen:** the extended mesh. Hypothesis 1 is UNTESTED, not
+falsified; the disposition stands on the flux-decay probe; the mesh is unused.
 
 ---
 
@@ -206,6 +184,34 @@ magnitude: a common scale factor cannot invert a ranking.
 "4 of 22 agreement" went in **with its ±5 pp tolerance and the full sensitivity
 curve** (0 / 2 / 4 / 9 at ±3 / 4 / 5 / 6 pp), per the new interim-statistic
 rule.
+
+---
+
+## 0. THE CALIBRATION CHECK WORKS — third reversal, and the last one
+
+The SimNIBS maintainer (discussions/666) corrected the framing. Reported
+calibration is `e = 2|a-b|/(a+b)` over the two electrode-interface fluxes,
+after which the solution is scaled so `mean(a,b)` equals the requested current.
+Each interface sits `e/2` from 1 mA. **It is an interface-consistency
+diagnostic, not a delivered-current error**, and #665 compared two different
+physical quantities.
+
+**Our own data confirms his model, not ours:** reported `e` vs SIGNED
+(tet-patch − 1) is **Spearman +0.932, p < 1e-5**, slope +0.359 against a
+predicted +0.5, R² 0.860. The −0.425 "anti-correlation" was entirely `abs()`
+destroying the sign.
+
+Arithmetic verified: **200.00% requires one interface flux exactly zero** (the
+sigma_air case); **100.00% requires a/b = 3.000000** exactly, and the
+extended-mesh readings back-solve to 3.020 and 2.840. So calibration
+**detected** both real failures rather than corroborating them.
+
+`check_solve_output` is UN-RETIRED and gates per-interface deviation at 10%.
+The 11–15% band is reinstated **with a meaning**. The m2m hypothesis is dead.
+
+**The lesson: before concluding an instrument disagrees with the truth,
+establish what the instrument measures.** Nobody read the source until the
+maintainer quoted it.
 
 ---
 
