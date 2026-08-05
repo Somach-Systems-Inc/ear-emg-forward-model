@@ -4139,3 +4139,61 @@ Results with the numbers attached.
 **Either outcome publishes.** The analysis will not be tuned toward the second,
 and the reading above is recorded before the data exists so that it cannot be.
 
+---
+
+## 2026-08-05 — MATCHED SITE COUNTS: the ear advantage was inflated by sample size
+
+Review item 6 is correct and the defect has been in every version of this
+result: best-ear was an argmax over **14** sites against best-jaw over **4**.
+Two matched-count analyses, both statistic A on renormalised lead fields.
+
+| muscle | argmax 14 | designed cluster 4 | random 4, median [95%] | cluster % ear |
+|---|---|---|---|---|
+| temporalis | −3.315 | **−2.571** | −2.264 [−3.31, **−0.03**] | **92.0%** |
+| sternocleidomastoid | −1.402 | **−0.973** | −0.979 [−1.40, **+1.27**] | **60.5%** |
+| lateral_pterygoid | −1.679 | **−1.564** | −0.534 [−1.59, **+1.33**] | 65.5% |
+| medial_pterygoid | +1.141 | +1.254 | +1.758 [+1.14, +3.34] | 34.5% |
+| masseter | +1.572 | +2.218 | +3.498 [+1.65, +5.79] | 31.5% |
+
+The random subsample draws 4 of 14 without replacement, takes the best, and
+repeats 10,000 times. It removes the count bias exactly and involves no choice
+made after seeing the data. The designed cluster is `above_ear`, `mastoid`,
+`post_lobule`, `pre_tragus` — defined in OUTLINE by anatomical target before any
+solve. **`cg01` and `cg08` are not in it**, and those were the argmax sites for
+temporalis and SCM respectively.
+
+### Against the pre-committed rule
+
+The rule was: gap below the 0.27 dB floor **or** orientation fraction below 60%
+→ report as no resolvable montage preference.
+
+- **temporalis** — cluster −2.571 dB, 92.0%. Survives comfortably. Its random-4
+  interval is the only one that **excludes zero** (upper bound −0.03).
+- **sternocleidomastoid** — cluster −0.973 dB (above the floor) and **60.5%**
+  (above 60 by half a point). **It survives the letter of the rule and only
+  just.** Both criteria are within rounding of triggering.
+- **lateral_pterygoid** — cluster −1.564 dB, 65.5%. Survives both.
+
+**But the pre-committed criteria missed something they were not designed to
+catch.** For SCM and lateral pterygoid the random-4 95% intervals are
+**[−1.40, +1.27]** and **[−1.59, +1.33]** — both **cross zero**. With an
+arbitrary 4-site retroauricular montage, neither advantage is reliably present;
+the sign depends on which four sites you happen to have. Only temporalis holds
+across essentially any 4-site draw.
+
+That is a sharper statement than either criterion produces, and it is the one
+that should govern the wording. **Carl's call**, since the rule as written
+technically passes all three.
+
+### A result about montage design, not a defect
+
+For lateral pterygoid the **designed cluster beats the random draw by 1.03 dB**
+(−1.564 against −0.534), and for SCM it matches it. The pre-registered
+anatomical montage is therefore a *good* choice of four sites rather than an
+average one — placement by anatomical target outperforms placing four
+electrodes arbitrarily around the ear. That belongs in the design table as a
+finding.
+
+The argmax-14 figures overstate every ear advantage by **0.1 to 1.1 dB** and
+should not appear in the Abstract.
+
