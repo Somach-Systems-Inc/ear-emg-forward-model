@@ -325,7 +325,7 @@ An unconstrained orientation fraction is conservative to the point of being
 misleading, because orientation space is not uniformly reachable. Two muscles
 demonstrate this in opposite directions. For temporalis, the directions that
 reverse the montage preference lie outside the anatomical fan entirely, so an
-unconstrained 96 % understates a result that is effectively unconditional. For
+unconstrained 96 % understates a result that is conditional on fibre direction in 8.5 % of the derived fan. For
 sternocleidomastoid, the jaw-favouring directions are not ones the muscle
 occupies, so an unconstrained 72.5 % understates a gap that is −5.06 dB at the
 estimated axis. We therefore sweep the hemisphere first and intersect with the

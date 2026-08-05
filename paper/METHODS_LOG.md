@@ -4353,3 +4353,56 @@ counts and delivered-current renormalisation. That is a much smaller result
 than the version this session started with, and every step of the reduction is
 in this log with the measurement that forced it.
 
+---
+
+## 2026-08-05 — THE TEMPORALIS FAN, DERIVED. "Effectively unconditional" is WITHDRAWN.
+
+Item 13. The fan was asserted from textbook anatomy; it is now derived from
+MIDA, and **the derivation contradicts the assertion.**
+
+**Insertion, reproducible from a clean checkout:** mandible voxels (label 36,
+right) within 3 mm of the temporalis compartment (label 63) — the coronoid
+process and anterior ramus. 15,557 voxels, centroid **[40.22, 51.50, −32.65]**,
+inferior-anterior to the compartment as the anatomy requires. Fibre direction
+per voxel is then `normalise(insertion − voxel)`.
+
+**The fan spans the range claimed** — elevation runs 0.0° (near-horizontal,
+posterior) to 89.2° (near-vertical, anterior), so the fan model is right about
+the muscle's shape.
+
+**But it is NOT confined to the sagittal plane, and that is where the earlier
+claim fails.** Median |R| over the derived field is **0.331**, p95 **0.568**.
+On 2026-08-04 I measured the flip cone as requiring **|R| ≥ 0.324** and
+concluded it was "anatomically unreachable" because temporalis fibres "run in
+the sagittal plane with negligible medio-lateral component". **The derived
+median |R| is 0.331 — above that threshold.** The muscle wraps a curved lateral
+skull, so fibres converging on a single insertion necessarily carry a lateral
+component. The flip cone is reachable, and 8.5% of the derived fan reverses.
+
+| evaluation | pre-registered cluster | all 14 ear sites |
+|---|---|---|
+| per-voxel fan gap (each tet its own fibre) | **−1.147 dB** | −1.453 dB |
+| per-direction, median | −1.230 | −3.283 |
+| per-direction, range | −12.500 .. **+1.118** | −12.926 .. **+0.728** |
+| directions favouring the ear | **91.5% (183/200)** | 99.5% |
+| **all favour the ear** | **NO** | **NO** |
+
+### The pre-committed reading, applied
+
+It said: if every direction favours the ear, "independent of fibre direction" is
+earned; **if any do not, withdraw the phrase and report the percentage with the
+reversal region described.** They do not. **The phrase is withdrawn** from the
+manuscript.
+
+**Two things get worse, not one.** The claim loses its universal form *and* its
+magnitude: the physically correct per-voxel gap — every tetrahedron carrying its
+own fibre direction, which is what a fanned muscle actually is — is **−1.147 dB
+at the cluster**, against the −2.571 dB the uniform-orientation sweep reported.
+Still 4.2x the 0.27 dB floor, but less than half the previously quoted margin.
+
+This is the second time an assertion about temporalis geometry has been
+overturned by deriving it, and both times the assertion was mine and flattered
+the result. The standard §2.3 applied to electrode placement — a coordinate that
+cannot be regenerated from a clean checkout cannot be defended in Methods — was
+not applied to a fibre direction until the reviewer asked for it.
+
