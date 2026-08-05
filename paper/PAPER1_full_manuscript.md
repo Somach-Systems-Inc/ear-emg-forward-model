@@ -526,12 +526,6 @@ all.
 > muscle-fibre tensor is not worth the modelling effort in a head model of this
 > resolution. Absolute lead-field values are a different matter and are affected.
 
-**Fig 4's title and caption should follow.** The figure asks "is the ear
-advantage robust to the isotropy assumption"; the answer is that the assumption
-does not resolve at all. Retitle to state the null, and note in the caption that
-the per-cell deltas shown are large while the *gap* deltas are below the floor —
-that contrast is the point of the figure.
-
 ### 3.3 The gap is geometric, not a property of intervening tissue
 
 Solving the full montage twice on identical geometry — once with adipose at
@@ -925,7 +919,7 @@ survives into all of them.
 | 5 | Fibre orientation | n̂ unknown in MIDA | yes | yes | per-muscle min–max envelope |
 | 6 | Electrode meshing | contact area from incidental surface triangulation | yes | **yes — per-site** | **0.27 dB, 95 % CI [0.17, 0.65], n = 6** |
 | 7 | Single anatomy | MIDA is one subject | yes | unknown | not quantifiable from one head |
-| 8 | Delivered current | injected vs requested per solve | yes | bounded by row 6 | 0.887–1.075 × requested across 22 solves |
+| 8 | Delivered current | injected vs requested per solve | yes | **no — corrected, not bounded** | 0.887–1.075 × requested across 22 solves, measured per solve by the tet-patch integral. Each site's lead field is divided by its own delivered current (§2.4), so the term does not enter any reported ratio. It is listed here because it was measured and corrected, not because it remains an uncertainty: the 1.67 dB spread it would otherwise contribute is six times the row-6 floor and could not have been bounded by it |
 | 9 | Adipose conductivity | fat at 0.025 vs muscle 0.355 S/m | yes | **yes — and the SIGN differs by muscle** | Reported **per muscle only** — a population differential across sites has no clean definition under statistic A (the median change over muscles is +0.01 dB and conceals a sign that spans −2.86 to +1.09). Statistic A: temporalis **−1.12 dB** (the contrast SUPPRESSES its ear advantage); sternocleidomastoid **+0.41 dB** (21% of its advantage); lateral pterygoid **+0.32 dB** (17%); labial group 0.06–2.86 dB, 0.6–13.3% of gaps reaching 21.9 dB. A single percentage is not admissible here — it hides a sign that differs by muscle. |
 
 Row 6 is measured by rotating the electrode array and the source points together

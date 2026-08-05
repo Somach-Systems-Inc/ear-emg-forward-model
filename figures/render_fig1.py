@@ -106,10 +106,22 @@ def main(argv=None) -> int:
     for i, g in enumerate(groups):
         GROUP_COLOUR[g] = cmap(SAFE[i % len(SAFE)])
 
+    SOLVED = {r["electrode"] for r in csv.DictReader(
+        (config.RESULTS / "03_leadfields.csv").open())}
+
     pos, montage = {}, {}
     for r in csv.DictReader(
             (config.RESULTS / "02_electrode_positions.csv").open()):
-        if r.get("verified") == "held" or not r["R"]:
+        # Plot exactly the electrodes that were SOLVED, read from the solve
+        # table rather than inferred from a placement flag. Filtering on
+        # `verified != "held"` let `earlobe_contra` through -- it has
+        # coordinates but no solve -- so the figure showed 23 electrodes under a
+        # caption claiming 22. The caption was right and the figure was wrong.
+        #
+        # `verified` is NOT a rejection flag: its values are no/accepted/held
+        # and 16 of the 22 solved sites carry "no". An earlier version of this
+        # fix filtered on it and would have plotted zero electrodes.
+        if r["name"] not in SOLVED or not r["R"]:
             continue
         pos[r["name"]] = np.array([float(r["R"]), float(r["A"]),
                                    float(r["S"])])
