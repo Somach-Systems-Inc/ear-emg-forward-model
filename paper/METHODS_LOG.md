@@ -3850,3 +3850,60 @@ mechanism attribution does predict transferability, and the population median
 does not decompose per muscle — but its worked numbers were B and are replaced
 by the table above.
 
+---
+
+## 2026-08-05 — §3.3 / §4.3 / Limitations applied; the population differential is DROPPED
+
+Both flagged recomputations landed, and both moved.
+
+**1. The across-sites differential has no clean definition under A, and is
+dropped.** Statistic A is defined on a gap between two sites; it never forms
+per-site summaries, so there is no per-site quantity to aggregate. The nearest
+analogue — the median change in gap across muscles — is **+0.01 dB**, because
+the per-muscle changes span **−2.86 to +1.09 and change sign**. It is not a
+small effect, it is a cancellation, and reporting it would conceal exactly the
+sign spread Table 3 row 9 exists to expose. Row 9 now reports **per muscle
+only**, and says why.
+
+**2. The labial share is 0.6–13.3%, not 3–7%.**
+
+| muscle | gap | change | share |
+|---|---|---|---|
+| orbicularis_oris | +8.192 | +1.093 | **13.3%** |
+| mentalis | +21.945 | −2.863 | **13.0%** |
+| depressor_anguli_oris | +14.607 | −0.606 | 4.1% |
+| buccinator | +10.033 | −0.185 | 1.8% |
+| platysma | +8.844 | +0.057 | **0.6%** |
+
+**The two-regime split survives but is much narrower than B suggested.** Labial
+0.6–13.3% against ear-favouring 17–21%: the bands still do not overlap, but
+13.3 and 17 are adjacent, where B gave a clean 3–7 against 18–37. The claim
+"the labial deficit is geometric" is still supportable, but it must not be
+written as though the material term were negligible for that group — for
+orbicularis oris and mentalis it is a seventh of the gap.
+
+### Four superseded values found in the manuscript and corrected
+
+The re-verification sweep caught values that survived earlier edits:
+
+| location | was | now |
+|---|---|---|
+| §3.2 prose | SCM anisotropy −3.41 → −2.77 dB | **−3.21 → −1.77 dB** (projected) |
+| Table 3 row 4 | same, unlabelled | same, **labelled statistic B** |
+| Table 3 row 9 | −0.690 dB across sites | **dropped**, per muscle only |
+| Fig 5 caption | +22.78 / −3.92 dB | **+21.9 / −3.80 dB** (statistic A) |
+
+**Anisotropy is stuck on statistic B for the same reason the fat swap was:**
+`03f_aniso_solve.py` stores one orientation median per compartment, not the
+per-direction array, so A cannot be formed. Table 3 row 4 is labelled
+accordingly. Given that B misled by 2–4x on the fat contrast, **the anisotropy
+gap change (+1.45 dB on SCM) should be treated as indicative**, and closing it
+costs one more ~35-minute solve with the per-direction save that 03g now has.
+
+### Figure re-verification
+
+All six re-render from current sources without error. Fig 2/3/4 read
+`04_sensitivity.csv`, which is now built from `04b_orientation.csv` (projected)
+plus `03_leadfields_aniso_projected.csv`; Fig 5 reads `04d` (statistic A);
+Fig 1 and Fig 6 read the label volume and a result mesh directly.
+

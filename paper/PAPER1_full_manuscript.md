@@ -453,7 +453,7 @@ no directional claim.
 ### 3.2 The result does not depend on the isotropy assumption
 
 Sternocleidomastoid carries a fibre tensor, and its jaw-versus-ear gap moves
-from −3.41 dB to −2.77 dB — still an ear advantage, and roughly ten times the
+from −3.21 dB to −1.77 dB — still an ear advantage, and roughly six times the
 measured floor. The other two ear-favouring muscles move by +0.11 dB
 (temporalis) and −0.06 dB (lateral pterygoid); neither carries a tensor, so
 those shifts are the small global redistribution caused by changing conductivity
@@ -466,26 +466,31 @@ of the argument Table 3 is organised around.
 
 ### 3.3 The gap is geometric, not a property of intervening tissue
 
-Each canonical site is separated from its named target by 1.5–14.0 mm of
-subcutaneous adipose tissue (Table 2), which sits at 0.025 S/m against muscle at
-0.355 S/m. Solving the full montage twice on identical geometry — once with
-adipose at 0.025 S/m and once with both adipose compartments set to muscle
-conductivity — attributes any difference to material properties alone, since
-source-to-electrode distance is unchanged by construction.
+Solving the full montage twice on identical geometry — once with adipose at
+0.025 S/m and once with both adipose compartments set to muscle conductivity —
+attributes any difference to material properties alone, since source-to-electrode
+distance is unchanged by construction. The second condition is a counterfactual
+used to decompose mechanism; the gaps reported throughout this paper are the
+first, because real anatomy contains adipose tissue.
 
-Every site loses signal when fat is made conductive, by a median of 2.36 to
-3.91 dB, but that shift is very nearly common across sites and cancels in every
-ratio reported here. What survives is the differential: jaw sites shift by a
-median of −3.172 dB and retroauricular sites by −2.840 dB, so the differential
-is **−0.332 dB**. The sign matters and is stated rather than absorbed: jaw sites
-lose *more* when the contrast is erased, so the fat/muscle conductivity contrast
-currently **favours the jaw**, and removing it would shrink the jaw's advantage
-by 0.332 dB rather than the ear's. That magnitude is 1.2× the measured floor and
-1.5 % of an effect reaching 22.78 dB.
+The contribution is not uniform in sign across muscles, because which electrode
+is best differs by muscle and the shift is not uniform within a montage:
 
-`medial_pterygoid` is the exception: its gap is +0.62 dB and the material
-contribution is 0.33 dB of it, over half, so this already-borderline value
-receives no mechanistic reading.
+| Muscle | As modelled | Without contrast | Change | Share of gap |
+|---|---|---|---|---|
+| temporalis | −3.801 | −4.923 | **−1.121** | contrast *suppresses* the advantage |
+| sternocleidomastoid | −1.958 | −1.547 | +0.411 | 21 % |
+| lateral pterygoid | −1.855 | −1.532 | +0.323 | 17 % |
+
+For the labial group, where the jaw wins by 8.2 to 21.9 dB, the contrast accounts
+for 0.6 to 13.3 per cent of the gap. For the three muscles the ear wins it accounts for
+17 to 21 per cent, and in opposite directions: it **suppresses** the temporalis
+advantage by 1.12 dB, so that result is conservative as reported, and it
+**contributes** 0.41 dB to sternocleidomastoid and 0.32 dB to lateral pterygoid.
+
+Each ear advantage survives removal of the contrast — temporalis at −4.92 dB,
+sternocleidomastoid at −1.55, lateral pterygoid at −1.53 — all clear of the
+electrode-meshing floor and of its 95 % confidence upper bound of 0.65 dB.
 
 ### 3.4 Truncation sensitivity
 
@@ -545,20 +550,31 @@ than tuned.
 
 ### 4.3 The mechanism is distance, not intervening tissue
 
-It is tempting to attribute the ear's deficit to the adipose layer between each
-electrode and its target, and the limb literature cannot settle the question,
-since adding a fat layer to a model changes source-to-electrode distance and
-material properties together [Kuiken et al. 2003]. A labelled head model can
-separate them, because conductivity can be changed with geometry held exactly
-fixed.
+The ear's deficit against the labial group is geometric. The adipose–muscle
+conductivity contrast accounts for 0.6 to 13.3 per cent of a gap reaching 21.9 dB; the
+remainder is source-to-electrode distance. Limb studies cannot separate the two,
+because adding a fat layer changes material properties and distance together
+(Kuiken et al. 2003). A labelled head model can, because conductivity is changed
+with geometry held exactly fixed. This is a comparison the limb geometry
+structurally cannot support, and it is available here for the cost of one extra
+solve.
 
-The measurement (§3.3) says the conductivity contrast contributes 0.33 dB to a
-gap reaching 22.78 dB. **The labial group's attenuation at the ear is distance,
-not intervening tissue.** The contrast is measurable and is not the mechanism.
+The same decomposition applied to the ear's own advantages returns a modest and
+sign-varying term. For temporalis the contrast works against the reported result,
+suppressing an advantage that would otherwise be 4.92 dB rather than 3.80; the
+figure in this paper is therefore conservative. For sternocleidomastoid and
+lateral pterygoid it contributes 21 and 17 per cent of their advantage, so those
+two are partly carried by tissue properties rather than by geometry alone. All
+three survive its removal.
 
-The swap bounds the conductivity contrast, not subject adiposity — it does not
-simulate a leaner subject. The contrast as it stands favours the jaw by 0.33 dB,
-so erasing it would shrink the jaw's advantage rather than the ear's.
+That distinction predicts which results should transfer between subjects. A
+margin carried by skeletal attachment geometry inherits only anatomical variance;
+a margin carried by a tissue-conductivity contrast also inherits variance in
+adipose distribution, which is the larger and more variable of the two between
+individuals. Temporalis and the labial group should therefore be expected to
+transfer more readily than sternocleidomastoid and lateral pterygoid. The
+prediction is a consequence of the decomposition rather than a separate claim,
+and it is testable in any second anatomy.
 
 ### 4.4 What this licenses for device design
 
@@ -614,16 +630,16 @@ silent exactly where the a-priori argument was strongest, and the spatial
 sensitivity field reported over the pooled compartments is a partial substitute
 rather than an equivalent one.
 
-**One anatomy, with one component of that limitation bounded.** MIDA is a single
-subject, and between-subject variance in muscle geometry, adipose thickness and
-pinna position cannot be estimated from one head. The fat swap narrows what that
-means in practice: the conductivity contrast contributes 0.33 dB to a gap
-reaching 22.78 dB, so the result is driven by the geometric relationship between
-muscle attachments and electrode positions rather than by tissue composition.
-Skeletal attachment geometry is more conserved between individuals than adipose
-distribution is, which is a reason to expect the complementarity pattern to hold
-more widely than a single-subject model would otherwise support. It is a reason,
-not a demonstration; only a second anatomy demonstrates it.
+MIDA is a single subject, and between-subject variance in muscle geometry,
+adipose thickness and pinna position cannot be estimated from one head. The
+adipose decomposition narrows what that means, but unevenly, and the unevenness
+is itself informative. The labial group and temporalis are carried by geometry,
+which is comparatively conserved between individuals; sternocleidomastoid and
+lateral pterygoid draw 21 and 17 per cent of their advantage from the
+conductivity contrast, so they should be expected to track subject adiposity and
+are the results least likely to transfer unchanged. This is a reason to expect
+differential generalisation, not a demonstration of any of it. Only a second
+anatomy demonstrates that.
 
 **The inferior boundary is an unquantified limitation whose bias runs against
 the ear.** A neck-extended mesh was built specifically to measure it and did not
@@ -687,12 +703,12 @@ survives into all of them.
 | 1 | Discretisation | finite element size | yes | partly | not separable from term 6 at current precision |
 | 2 | Interface proximity | source near a conductivity boundary | yes | yes | requires a geometry decoupling eccentricity from interface distance; not measured |
 | 3 | Inferior boundary | MIDA's cut face | yes | yes — jaw sites, not ear | unquantified; bounded by §3.4 |
-| 4 | Muscle anisotropy | σ tensor vs scalar | yes | yes | SCM gap −3.41 → −2.77 dB; medial pterygoid −0.03 dB |
+| 4 | Muscle anisotropy | σ tensor vs scalar | yes | yes | **statistic B** (per-direction aniso data not stored, so A is unavailable): SCM gap −3.21 → −1.77 dB, change **+1.45**; medial pterygoid +0.32 → +0.52, change +0.20. Tensor applied to 2 of 10 compartments; all others NOT APPLIED |
 | 5 | Fibre orientation | n̂ unknown in MIDA | yes | yes | per-muscle min–max envelope |
 | 6 | Electrode meshing | contact area from incidental surface triangulation | yes | **yes — per-site** | **0.27 dB, 95 % CI [0.17, 0.65], n = 6** |
 | 7 | Single anatomy | MIDA is one subject | yes | unknown | not quantifiable from one head |
 | 8 | Delivered current | injected vs requested per solve | yes | bounded by row 6 | 0.887–1.075 × requested across 22 solves |
-| 9 | Adipose conductivity | fat at 0.025 vs muscle 0.355 S/m | yes | **yes — and the SIGN differs by muscle** | **−0.690 dB across sites** (median over 22, jaw −2.873 vs ear −2.183). Per muscle, statistic A: temporalis **−1.12 dB** (the contrast SUPPRESSES its ear advantage); sternocleidomastoid **+0.41 dB** (21% of its advantage); lateral pterygoid **+0.32 dB** (17%); labial group 0.2–2.9 dB, 2–13% of gaps reaching 21.9 dB. A single percentage is not admissible here — it hides a sign that differs by muscle. |
+| 9 | Adipose conductivity | fat at 0.025 vs muscle 0.355 S/m | yes | **yes — and the SIGN differs by muscle** | Reported **per muscle only** — a population differential across sites has no clean definition under statistic A (the median change over muscles is +0.01 dB and conceals a sign that spans −2.86 to +1.09). Statistic A: temporalis **−1.12 dB** (the contrast SUPPRESSES its ear advantage); sternocleidomastoid **+0.41 dB** (21% of its advantage); lateral pterygoid **+0.32 dB** (17%); labial group 0.06–2.86 dB, 0.6–13.3% of gaps reaching 21.9 dB. A single percentage is not admissible here — it hides a sign that differs by muscle. |
 
 Row 6 is measured by rotating the electrode array and the source points together
 on a fixed mesh, which preserves every source-to-electrode vector (verified to
@@ -764,7 +780,7 @@ the truncation face are excluded. The shaded band is the measured
 electrode-meshing floor (0.27 dB, with the lighter band extending to its 95 % CI
 upper bound of 0.65 dB). The axis is linear in dB rather than a rank, because
 the asymmetry between the arms is itself a result: the jaw's advantages reach
-+22.78 dB while the ear's reach only −3.92 dB.
++21.9 dB while the ear's reach only −3.80 dB.
 
 **Figure 6. Suprahyoid sensitivity field.** Sagittal and coronal slices of |E|
 through the pooled `Muscle (General)` compartment for the retroauricular
