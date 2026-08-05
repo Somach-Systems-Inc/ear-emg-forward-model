@@ -526,7 +526,7 @@ all.
 > muscle-fibre tensor is not worth the modelling effort in a head model of this
 > resolution. Absolute lead-field values are a different matter and are affected.
 
-### 3.3 The gap is geometric, not a property of intervening tissue
+### 3.3 The tissue-conductivity contrast is a small term with a muscle-dependent sign
 
 Solving the full montage twice on identical geometry — once with adipose at
 0.025 S/m and once with both adipose compartments set to muscle conductivity —
@@ -535,28 +535,45 @@ distance is unchanged by construction. The second condition is a counterfactual
 used to decompose mechanism; the gaps reported throughout this paper are the
 first, because real anatomy contains adipose tissue.
 
+This section decomposes the **jaw montage's advantage**. An earlier version
+decomposed a retroauricular deficit, which no longer exists as a result: no
+articulator resolves in the ear's favour (§3.1), so there is no ear advantage
+whose mechanism needs explaining. What remains to be explained is why the jaw
+montage wins, and by how much of that the tissue contrast is responsible.
+
 The contribution is not uniform in sign across muscles, because which electrode
 is best differs by muscle and the shift is not uniform within a montage:
 
-| Muscle | As modelled | Without contrast | Change | Share of gap |
+| Muscle | As modelled | Without contrast | Change | Contrast's role |
 |---|---|---|---|---|
-| temporalis | −2.57 | yes, [−3.31, −0.03] | 92.0 % | **ear, robust on both axes** |
+| temporalis | −3.801 | −4.923 | −1.121 | suppresses 29.5 % |
+| sternocleidomastoid | −1.958 | −1.547 | 0.411 | contributes 21.0 % |
+| lateral pterygoid | −1.855 | −1.532 | 0.323 | contributes 17.4 % |
+| medial pterygoid | 1.147 | 1.245 | 0.098 | suppresses 8.6 % |
+| masseter | 1.700 | 1.668 | −0.032 | contributes 1.9 % |
+| orbicularis oris | 8.192 | 9.286 | 1.093 | suppresses 13.3 % |
+| platysma | 8.844 | 8.901 | 0.057 | suppresses 0.6 % |
+| buccinator | 10.033 | 9.848 | −0.185 | contributes 1.8 % |
+| depressor anguli oris | 14.607 | 14.001 | −0.606 | contributes 4.1 % |
+| mentalis | 21.945 | 19.082 | −2.863 | contributes 13.0 % |
 
-Temporalis is reported here under the uniform orientation sweep for comparability
-with the other nine muscles. Under its derived fibre field (§2.5.1) it reads
-−1.15 dB with an interval of [−1.45, +5.46]; the verdict is unchanged.
-| sternocleidomastoid | −0.97 | **no**, [−1.40, +1.27] | 60.5 % | **no resolvable preference** |
-| lateral pterygoid | −1.56 | **no**, [−1.59, +1.09] | 65.5 % | **no resolvable preference** |
+Reported per muscle only. A population differential has no clean definition
+under statistic A: the median change is +0.01 dB and conceals a sign spanning
+−2.86 to +1.09 dB, so a single percentage would hide the finding rather than
+summarise it.
 
-For the labial group, where the jaw wins by 8.2 to 21.9 dB, the contrast accounts
-for 0.6 to 13.3 per cent of the gap. For the three muscles the ear wins it accounts for
-17 to 21 per cent, and in opposite directions: it **suppresses** the temporalis
-advantage by 1.12 dB, so that result is conservative as reported, and it
-**contributes** 0.41 dB to sternocleidomastoid and 0.32 dB to lateral pterygoid.
+For the labial group, where the jaw's advantage is largest, the contrast
+accounts for a small and inconsistent fraction of it, and not in one direction:
+the contrast *builds* 2.86 dB of the mentalis gap while *suppressing* 1.09 dB of
+the orbicularis oris gap. For the four muscles
+whose gaps sit closest to zero, the contrast is of the same order as the gap
+itself, which is part of why those gaps do not resolve.
 
-Each ear advantage survives removal of the contrast — temporalis at −4.92 dB,
-sternocleidomastoid at −1.55, lateral pterygoid at −1.53 — all clear of the
-electrode-meshing floor and of its 95 % confidence upper bound of 0.65 dB.
+**The mechanism is therefore geometric rather than material.** Removing the
+single largest conductivity contrast in the intervening tissue leaves every
+montage assignment unchanged and moves no gap across zero. This is consistent
+with §3.5, where collapsing all non-muscle soft tissue to one conductivity also
+preserves every assignment while moving magnitudes.
 
 ### 3.4 Truncation sensitivity
 
@@ -948,6 +965,14 @@ its own between-subject variance.
 | sternocleidomastoid | -0.97 | **no**, [-1.40, +1.27] | 60.5 % | **no resolvable preference** |
 | lateral pterygoid | -1.56 | **no**, [-1.59, +1.09] | 65.5 % | **no resolvable preference** |
 | temporalis | -2.57 | yes, [-3.31, -0.03] | 92.0 % | **ear, robust on both axes** |
+
+**Temporalis is reported here under the uniform orientation sweep, for
+comparability with the other nine muscles.** Under the fibre field derived from
+the label volume (§2.5.1) it reads −1.15 dB with a random-4 interval of
+[−1.45, +5.46], which crosses zero, and that is the value the paper's conclusions
+use (§3.1, §4.1). The two treatments disagree; the derived one governs because it
+removes an assumption rather than adding one. This row shows what the
+assumption-free treatment gives, so the dependence is visible rather than buried.
 
 ---
 
