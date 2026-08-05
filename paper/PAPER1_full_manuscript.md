@@ -436,9 +436,12 @@ source-to-electrode distance is unchanged by construction.
 Every site loses signal when fat is made conductive, by a median of 2.36 to
 3.91 dB, but that shift is very nearly common across sites and cancels in every
 ratio reported here. What survives is the differential: jaw sites shift by a
-median of −3.172 dB and retroauricular sites by −2.840 dB, so the conductivity
-contrast contributes **0.33 dB** to the jaw-versus-ear gap. That is 1.2× the
-measured floor and 1.5 % of an effect reaching 22.78 dB.
+median of −3.172 dB and retroauricular sites by −2.840 dB, so the differential
+is **−0.332 dB**. The sign matters and is stated rather than absorbed: jaw sites
+lose *more* when the contrast is erased, so the fat/muscle conductivity contrast
+currently **favours the jaw**, and removing it would shrink the jaw's advantage
+by 0.332 dB rather than the ear's. That magnitude is 1.2× the measured floor and
+1.5 % of an effect reaching 22.78 dB.
 
 `medial_pterygoid` is the exception: its gap is +0.62 dB and the material
 contribution is 0.33 dB of it, over half, so this already-borderline value
@@ -616,19 +619,23 @@ distance to the nearest electrode. Sorted by volume fraction × proximity.
 
 **Table 2 — Tissue layer stack beneath each canonical site.** Millimetres per
 MIDA tissue along the ray from each electrode through the full thickness of its
-target.
+target. *Target thickness traversed* is summed from `results/02_layer_profile.csv`
+over the target label. *Fat before target* is derived from
+`results/02_path_composition.csv` as the adipose percentage of the
+electrode-to-target path multiplied by that path length, i.e. adipose
+encountered **before** reaching the target, not over the whole ray.
 
 | Site | Target | Target thickness traversed | Fat before target |
 |---|---|---|---|
-| `submaxillary` | Mandible | 27.25 mm | 2.75 mm |
-| `pre_tragus` | Masseter | 17.25 mm | 5.50 mm |
-| `midjaw` | Masseter | 16.50 mm | 9.00 mm |
+| `submaxillary` | Mandible | 27.25 mm | 2.85 mm |
+| `pre_tragus` | Masseter | 17.25 mm | 5.68 mm |
+| `midjaw` | Masseter | 16.50 mm | 9.05 mm |
 | `submental_lat` | Mandible | 11.00 mm | 1.50 mm |
-| `buccal` | Buccinator | 8.00 mm | 8.75 mm |
-| `submental_mid` | Mandible | 7.25 mm | 7.25 mm |
-| `hyoid` | Hyoid Bone | 6.25 mm | 14.00 mm |
-| `above_ear` | Temporalis | 6.00 mm | 1.75 mm |
-| `mental` | Mentalis | 2.75 mm | 5.00 mm |
+| `buccal` | Buccinator | 8.00 mm | 8.62 mm |
+| `submental_mid` | Mandible | 7.25 mm | 7.04 mm |
+| `hyoid` | Hyoid Bone | 6.25 mm | 14.01 mm |
+| `above_ear` | Temporalis | 6.00 mm | 2.00 mm |
+| `mental` | Mentalis | 2.75 mm | 4.87 mm |
 
 **Table 3 — Error budget.** Read the last two columns first: every published
 claim here is a ratio, so a term that scales the whole lead field equally
