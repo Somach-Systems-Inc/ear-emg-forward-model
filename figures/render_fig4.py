@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 r"""
-Fig 4 — ROBUSTNESS CHECK on the complementarity finding, not a general claim.
+Fig 4 — A NULL WITH A BOUND, not a robustness check that survives.
 
-Reframed 2026-08-04. This is not "isotropic head models are wrong": only 2 of 10
-segmented muscles can carry a fibre tensor at all. It asks one question --
-sternocleidomastoid is one of the three muscles the ear wins on (+2.53 dB at
-cg08 under isotropy), and that result assumed isotropic muscle. Does the SCM
-retroauricular advantage survive relaxing it? Measured: yes. The gap moves from
--3.41 to -2.77 dB, still an ear win by 10x the measured floor. Each cell is the change in that (electrode, muscle) lead field
+Reframed 2026-08-05 on the statistic-A result. Anisotropy changes the FIELD
+substantially -- around 5 dB in medial pterygoid and 4.5 dB in SCM -- and
+changes the jaw-versus-ear COMPARISON not at all: the largest movement in any
+gap is -0.085 dB, against a 0.27 dB measured floor.
+
+That contrast is what the figure exists to show. A reader seeing per-cell
+deltas of several dB would reasonably expect the conclusion to move; it does
+not, because a term that shifts a compartment roughly uniformly cancels in the
+site-to-site ratio the paper reports. Only 2 of 10 segmented muscles can carry
+a tensor at all, and the other eight are NOT APPLIED rather than zero.
+
+An earlier version framed this as "does the SCM advantage survive?" and
+answered it with statistic B, which gave -3.41 -> -2.77 dB. That was wrong by
+17x and in the opposite direction; see METHODS_LOG. Each cell is the change in that (electrode, muscle) lead field
 between the two runs, 20*log10(lead_field_aniso / lead_field_iso), in dB. Rows for
 muscles modelled isotropically in BOTH runs (sphincters, fans, sheets — see
 src/config.py FIBRE_MODEL) are 0 by construction and read as neutral grey; the
@@ -113,11 +121,15 @@ def main(argv=None) -> int:
     cbar.ax.tick_params(labelsize=6, length=0)
     cbar.outline.set_visible(False)
 
-    rc.matrix_titles(ax, "Fig 4 · Is the ear advantage robust to the isotropy assumption?",
+    rc.matrix_titles(ax, "Fig 4 · Anisotropy changes the field, not the comparison",
                      f"20·log10(aniso / iso) per cell   ·   mesh = {a.mesh}   ·   "
                      f"† fibre tensor applied ({sum(applied)} of {len(rows)} "
                      f"muscles)   ·   unmarked rows are NOT APPLIED, not "
-                     f"measured-as-zero")
+                     f"measured-as-zero\n"
+                     f"THIS IS A NULL WITH A BOUND: per-cell changes reach "
+                     f"~5 dB, but every jaw-vs-ear GAP moves less than "
+                     f"0.09 dB, under the 0.27 dB floor. The contrast between "
+                     f"those two magnitudes is the figure's point")
 
     rc.save(fig, "fig4_anisotropy_delta", df, a.outdir)
     return 0

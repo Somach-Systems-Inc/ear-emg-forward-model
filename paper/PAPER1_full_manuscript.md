@@ -450,19 +450,31 @@ carries an estimated axis, but its two sides disagree in sign at that axis
 (+4.21 dB right, −2.10 dB left), which is a third independent reason it supports
 no directional claim.
 
-### 3.2 The result does not depend on the isotropy assumption
+### 3.2 Anisotropy changes the field but not the comparison
 
-Sternocleidomastoid carries a fibre tensor, and its jaw-versus-ear gap moves
-from −1.958 dB to −2.043 dB, a change of −0.085 dB — still an ear advantage, and roughly seven times the
-measured floor. The other two ear-favouring muscles move by +0.11 dB
-(temporalis) and −0.06 dB (lateral pterygoid); neither carries a tensor, so
-those shifts are the small global redistribution caused by changing conductivity
-elsewhere.
+The current text describes a robustness check that survives. Under statistic A
+the correct statement is stronger and simpler: there is no resolvable effect at
+all.
 
-`medial_pterygoid` carries a tensor and its gap moves by only −0.03 dB.
-Anisotropy raises its lead field by about 5 dB at the jaw and the ear sites
-alike, so the effect cancels in the site-to-site ratio — a direct demonstration
-of the argument Table 3 is organised around.
+> **The isotropy assumption does not measurably affect any site-to-site ratio.**
+> Applying a fibre tensor changes the jaw-versus-ear gap by −0.085 dB for
+> sternocleidomastoid, −0.010 dB for medial pterygoid, +0.137 dB for temporalis
+> and +0.036 dB for lateral pterygoid. Every one of these lies below the 0.27 dB
+> measured electrode-meshing floor, including for the two compartments that
+> carry a tensor. Anisotropy raises the absolute lead field substantially — by
+> roughly 5 dB in medial pterygoid — but it does so at the jaw and ear sites
+> alike, so the effect subtracts out of every ratio this paper reports.
+>
+> This is a null with a bound rather than an absence of evidence, and it has a
+> practical consequence: for coupling *ratios* between electrode sites, a
+> muscle-fibre tensor is not worth the modelling effort in a head model of this
+> resolution. Absolute lead-field values are a different matter and are affected.
+
+**Fig 4's title and caption should follow.** The figure asks "is the ear
+advantage robust to the isotropy assumption"; the answer is that the assumption
+does not resolve at all. Retitle to state the null, and note in the caption that
+the per-cell deltas shown are large while the *gap* deltas are below the floor —
+that contrast is the point of the figure.
 
 ### 3.3 The gap is geometric, not a property of intervening tissue
 
@@ -550,14 +562,42 @@ than tuned.
 
 ### 4.3 The mechanism is distance, not intervening tissue
 
-The ear's deficit against the labial group is geometric. The adipose–muscle
-conductivity contrast accounts for 0.6 to 13.3 per cent of a gap reaching 21.9 dB; the
-remainder is source-to-electrode distance. Limb studies cannot separate the two,
-because adding a fat layer changes material properties and distance together
-(Kuiken et al. 2003). A labelled head model can, because conductivity is changed
-with geometry held exactly fixed. This is a comparison the limb geometry
-structurally cannot support, and it is available here for the cost of one extra
-solve.
+Replaces: *"The ear's deficit against the labial group is geometric. The
+adipose–muscle conductivity contrast accounts for 0.6 to 13.3 per cent…"*
+
+> For the labial group the ear's deficit is predominantly geometric, though the
+> material contribution varies widely within the group: the adipose–muscle
+> conductivity contrast accounts for 0.6 per cent of the gap for platysma and
+> 13.3 per cent for orbicularis oris. The remainder in every case is
+> source-to-electrode distance. The two regimes remain separated — 0.6 to 13.3
+> per cent for the muscles the jaw wins, against 17 to 21 per cent for those the
+> ear wins — but the separation is narrower than a single figure would suggest,
+> and no muscle in either group is unaffected.
+>
+> Limb studies cannot make this separation, because adding a fat layer changes
+> material properties and source-to-electrode distance together (Kuiken et al.
+> 2003). A labelled head model can, because conductivity is changed with
+> geometry held exactly fixed. This is a comparison the limb geometry
+> structurally cannot support, and it is available here for the cost of one
+> additional solve.
+
+State the correlation reversal. It is honest, it pre-empts a reviewer who
+computes the same thing, and it is the fourth appearance of the ratio-cancellation
+argument the paper is organised around.
+
+> The material share is not a dose response. Across the muscles for which a
+> layer profile exists, it correlates *negatively* with the adipose fraction of
+> the muscle-to-skin path (Spearman ρ = −0.955, p = 0.001, n = 7): platysma sits
+> at 0.650 fat fraction and 0.6 per cent material share, while
+> sternocleidomastoid sits at 0.225 and 21 per cent. The strength of that
+> relationship shows the swap is measuring adipose path rather than something
+> incidental, but its sign shows it does so through cancellation. The reported
+> share is |Δgap| / |gap|, and a muscle embedded uniformly in fat has both the
+> jaw and the ear route shifted together, so the change subtracts out of the
+> ratio. The quantity that would track positively is the *difference* between
+> how the two routes traverse fat, which this study does not form. This is the
+> same cancellation that makes a uniform magnitude offset invisible in every
+> ratio reported here, arriving in a place where it was not anticipated.
 
 The same decomposition applied to the ear's own advantages returns a modest and
 sign-varying term. For temporalis the contrast works against the reported result,
@@ -703,7 +743,7 @@ survives into all of them.
 | 1 | Discretisation | finite element size | yes | partly | not separable from term 6 at current precision |
 | 2 | Interface proximity | source near a conductivity boundary | yes | yes | requires a geometry decoupling eccentricity from interface distance; not measured |
 | 3 | Inferior boundary | MIDA's cut face | yes | yes — jaw sites, not ear | unquantified; bounded by §3.4 |
-| 4 | Muscle anisotropy | σ tensor vs scalar | yes | **no — below the floor** | **statistic A**: SCM gap −1.958 → −2.043 (**−0.085 dB**); medial pterygoid +1.147 → +1.136 (−0.010); temporalis +0.137; lateral pterygoid +0.036. Every change is below the 0.27 dB floor. Tensor applied to 2 of 10 compartments; all others NOT APPLIED |
+| 4 | Muscle anisotropy | σ tensor vs scalar | **yes — ~5 dB in medial pterygoid, ~4.5 dB in SCM** | **no — below the floor** | statistic A: largest change to any gap is **−0.085 dB** (SCM); medial pterygoid −0.010, temporalis +0.137, lateral pterygoid +0.036, all under the 0.27 dB floor. The absolute lead field IS affected; the reclassification is specific to ratios. Tensor on 2 of 10 compartments, the rest NOT APPLIED |
 | 5 | Fibre orientation | n̂ unknown in MIDA | yes | yes | per-muscle min–max envelope |
 | 6 | Electrode meshing | contact area from incidental surface triangulation | yes | **yes — per-site** | **0.27 dB, 95 % CI [0.17, 0.65], n = 6** |
 | 7 | Single anatomy | MIDA is one subject | yes | unknown | not quantifiable from one head |

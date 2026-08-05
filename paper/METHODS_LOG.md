@@ -4015,3 +4015,44 @@ the anisotropy term as **not affecting site-to-site ratios** — a change of
 classification in the error budget's second column, not merely a change of
 number.
 
+---
+
+## 2026-08-05 — THE TWO STATISTIC-B SIGN FLIPS HAVE ONE CAUSE
+
+Recorded as a single entry, because they are one failure mode with two
+instances rather than two coincidences. Both occurred on comparisons where a
+**conductivity** differed between conditions.
+
+| comparison | B | A | error |
+|---|---|---|---|
+| adipose contrast, SCM | +1.361 | **+0.411** | 3.3x |
+| adipose contrast, lateral pterygoid | +0.815 | **+0.323** | 2.5x |
+| **anisotropy, SCM** | **+1.448** | **−0.085** | **17x and sign-flipped** |
+
+**The shared cause.** Statistic B differences two per-site orientation medians.
+Changing a conductivity does not scale the field — it **reshapes the current
+path**, so the orientation at which each site's field peaks moves, and it moves
+differently at the two sites. The difference of the two medians therefore
+measures that drift, not the physical change. The larger the geometric
+reshaping, the larger the artefact — which is why anisotropy, a tensor change
+that redirects current within compartments, was the worst of the three.
+
+**What follows, and it is a rule not an observation:** statistic B may not be
+used for any comparison in which a conductivity differs between conditions. It
+survives only where no per-orientation form exists — Figure 2's per-site
+matrix, where a cell is one site's summary and there is no gap to form.
+Recorded in `paper/METHODS.md` §6.6 so it reaches the paper and not just this
+log.
+
+**Two claims were retracted because of this**, both already recorded above:
+that lateral pterygoid falls inside the floor's CI without the adipose contrast
+(it sits at −1.532 dB), and that anisotropy shrinks the SCM advantage by
+1.45 dB (it moves it by −0.085 dB, in the other direction).
+
+**The near-miss is worth stating.** Both retractions were caught by re-running
+under A, and A was only available because the per-direction arrays were saved.
+The fat solve stored them only because Carl called the re-solve; the anisotropy
+solve stored them only because that precedent existed. Had either been left on
+B, the paper would have shipped a robustness check that contradicted its own
+result, computed with a statistic measured to mislead by up to 17x.
+

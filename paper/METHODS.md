@@ -318,6 +318,41 @@ unreachable by an earlier guard's raise, which a coverage test cannot see.
 
 ---
 
+## 6.6 Two gap statistics, and why one is retired for conductivity comparisons
+
+A "gap" between two montages can be formed two ways, and they are not
+interchangeable.
+
+- **Statistic A — gap per orientation, then median over orientations.** For each
+  sampled source orientation the same direction is applied at both electrodes,
+  the gap is formed there, and the median is taken over the resulting
+  distribution. **This is what the paper reports.**
+- **Statistic B — orientation-median lead field per site, then differenced.**
+  Two per-site medians are subtracted.
+
+B is defective in principle because the two medians it differences need not
+occur at the same orientation, and a physical source has a single orientation.
+It was measured to be defective in practice, twice, on comparisons where a
+**conductivity** was changed:
+
+| comparison | statistic B | statistic A |
+|---|---|---|
+| adipose contrast, SCM | +1.361 dB | **+0.411 dB** |
+| adipose contrast, lateral pterygoid | +0.815 dB | **+0.323 dB** |
+| anisotropy, SCM | +1.448 dB | **−0.085 dB** |
+
+The anisotropy case is wrong by a factor of 17 **and in the opposite
+direction**. The shared cause is specific and predictable: changing a
+conductivity **reshapes the current path** rather than scaling it, so the field
+at each site peaks at a different orientation under the two conditions, and
+differencing per-site medians measures that drift rather than the physics.
+
+**Statistic B is therefore not used for any comparison in which a conductivity
+differs between conditions.** It is retained in exactly one place — the
+per-site sensitivity matrix (Figure 2) — because a matrix cell is a single
+site's summary and a gap statistic has no per-cell form. That figure is
+labelled accordingly.
+
 ## 7. Error budget
 
 **Every published quantity in this paper is a ratio** — one site against
