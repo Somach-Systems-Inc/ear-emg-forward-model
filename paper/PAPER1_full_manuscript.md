@@ -994,7 +994,9 @@ the truncation face are excluded. The shaded band is the measured
 electrode-meshing floor (0.27 dB, with the lighter band extending to its 95 % CI
 upper bound of 0.65 dB). The axis is linear in dB rather than a rank, because
 the asymmetry between the arms is itself a result: the jaw's advantages reach
-+21.9 dB while the ear's reach only −3.80 dB.
++20.90 dB while the ear's reach only −3.31 dB. Both numbers are emitted
+from the figure's own source file by `src/04m_caption_numbers.py`, which fails
+the build if a caption and its figure disagree.
 
 **Figure 6. Suprahyoid sensitivity field.** Sagittal and coronal slices of |E|
 through the pooled `Muscle (General)` compartment for the retroauricular

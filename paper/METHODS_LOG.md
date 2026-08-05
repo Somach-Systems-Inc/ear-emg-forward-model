@@ -4569,3 +4569,57 @@ applies it at the point it builds the per-direction arrays. The monotone drift
 is real and survives the retraction -- but the step that crosses zero is the
 fibre derivation alone, not an accumulation of independent controls.
 
+---
+
+## 2026-08-06 — figure captions are now generated from source
+
+Figure 5's caption claimed the jaw's advantages "reach +21.9 dB while the ear's
+reach only -3.80 dB". Its own source file, the one `render_fig5.py` reads, gives
+**+20.90 and -3.31**. Both numbers had been typed from a report rather than read
+from the file, and they had been wrong since before 2026-08-05, surviving every
+pass that regenerated the figure itself.
+
+A caption is prose making numerical claims about a figure, and nothing
+regenerates it when the figure is rebuilt. `src/04m_caption_numbers.py` now
+emits every caption-cited quantity from the file the corresponding figure reads,
+and `--check` exits non-zero if the manuscript disagrees.
+
+### The sweep, all captions
+
+| caption | claim | source | verdict |
+|---|---|---|---|
+| Fig 2 | 22 electrodes | 22 | ok |
+| Fig 2 | 10 muscles | 10 | ok |
+| Fig 4 | tensor on 2 of 10 | **no source on disk** | **unverifiable** |
+| Fig 5 | jaw reaches +21.9 dB | **+20.90** | **STALE, fixed** |
+| Fig 5 | ear reaches -3.80 dB | **-3.31** | **STALE, fixed** |
+| Fig 5 | floor 0.27 dB | 0.27 | ok |
+| Fig 5 | CI upper 0.65 dB | 0.65 | ok |
+| S1 | nine air compartments | 9 | ok |
+
+**Two stale, both in Fig 5, both now regenerated from source.**
+
+### The checker's own first run was wrong, and that is the point
+
+Its first version reported three failures. Only one was real. It called
+Fig 2's "10 muscles" wrong because `select_dtypes("number")` also caught
+`clearance_to_cut_mm` (and gave a +133 dB maximum from the same bug), and it
+called S1's "nine" wrong because it counted rows in an electrode file, then
+because it counted `Background` as a head compartment.
+
+**Two correct captions were one commit away from being "corrected" into
+wrongness by a checker written to prevent exactly that** -- the same failure as
+the 04h retraction earlier the same day, inside the tool built in response to
+it. Both were caught by reading the source CSV's columns before trusting the
+script that read them. That check is the load-bearing habit, not the script.
+
+### One claim has no source
+
+Figure 4's "a fibre tensor is applied to 2 of 10 muscles" cannot be verified
+from disk. `03e_build_tensor.py` decides per compartment at run time and reports
+only to stdout, so its accept/refuse decisions are not written anywhere. The
+claim is believed correct (sternocleidomastoid and medial pterygoid accepted,
+mentalis refused at |dot| 0.215) but it is **unverifiable from a clean
+checkout**, which is the §2.8 standard it fails. Fixing it means having 03e emit
+its decision per compartment. Logged, not fixed.
+

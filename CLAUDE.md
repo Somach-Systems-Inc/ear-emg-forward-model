@@ -82,6 +82,34 @@ This property is also the only automatic detector of an *unreachable* guard.
 a called guard sits after another guard's raise. A synthetic case that must
 make one guard fire alone does see it.
 
+**Verifying that a step is absent HERE does not verify that it is absent.**
+Check upstream before concluding a specification was not applied. A pipeline
+stage is a property of the pipeline, not of the file you happen to be reading.
+
+This is the mirror of the rule above and it cost a full retraction on
+2026-08-06. I checked whether `04h_matched_counts.py` divided by measured
+delivered current, found it did not, and reported that the renormalisation had
+been skipped. `04d_orientation_sign.py` had already applied it at line 123 and
+stored the divided arrays under the keys 04h reads. The "fix" double-applied it,
+moved ten muscle gaps by up to 1.04 dB and the placement advantage by 0.67 dB,
+flipped a montage verdict, and reached the Abstract, four Results and Discussion
+sections, both copies of Table 4 and the README before it was caught.
+
+**Carl instructed the fix, and that is not what made it wrong.** He approved a
+diagnosis I supplied, from a summary, without either of us asking where else the
+step could have run. An instruction that inherits a bad diagnosis carries the
+bad diagnosis. Approval settles what to do; it does not certify the finding that
+motivated it, and "you told me to" is not a defence for a check I did not run.
+
+Two things should have raised suspicion and did not. The errors were ~1 dB,
+exactly the size the renormalisation genuinely is, so they looked plausible. And
+the result was tidier than the truth — a headline failing on two independent
+axes that agreed. **A correction that makes the story neater is the one to check
+hardest, not the one to ship fastest.**
+
+Before reporting that a specification was not applied, name the file where it
+WOULD have been applied and show it is not there either.
+
 **A verification check confirms a specification was APPLIED. It cannot confirm
 the specification was CORRECT.** Fidelity and correctness are separate channels
 and need separate tests. Passing one says nothing about the other.

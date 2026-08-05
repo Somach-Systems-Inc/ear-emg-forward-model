@@ -1,0 +1,52 @@
+{
+  "fig2_n_electrodes": {
+    "value": 22,
+    "source": "04_sensitivity_matrix_dB.csv",
+    "figure": "2"
+  },
+  "fig2_n_muscles": {
+    "value": 10,
+    "source": "04_sensitivity_matrix_dB.csv",
+    "figure": "2"
+  },
+  "fig2_min_dB": {
+    "value": -25.53,
+    "source": "04_sensitivity_matrix_dB.csv",
+    "figure": "2"
+  },
+  "fig2_max_dB": {
+    "value": 2.78,
+    "source": "04_sensitivity_matrix_dB.csv",
+    "figure": "2"
+  },
+  "fig4_n_tensor": {
+    "value": null,
+    "source": "NOT EMITTED BY 03e_build_tensor.py",
+    "figure": "4"
+  },
+  "fig5_jaw_max_dB": {
+    "value": 20.9,
+    "source": "04d_orientation_sign.csv",
+    "figure": "5"
+  },
+  "fig5_ear_max_dB": {
+    "value": -3.31,
+    "source": "04d_orientation_sign.csv",
+    "figure": "5"
+  },
+  "fig5_n_muscles": {
+    "value": 10,
+    "source": "04d_orientation_sign.csv",
+    "figure": "5"
+  },
+  "floor_dB": {
+    "value": 0.27,
+    "source": "electrode_meshing_floor.txt",
+    "figure": "5"
+  },
+  "s1_n_air": {
+    "value": 9,
+    "source": "01_table1_conductivities.csv",
+    "figure": "S1"
+  }
+}
