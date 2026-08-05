@@ -4459,3 +4459,20 @@ homogeneous control stands. The paper is a negative result about retroauricular
 montages with a quantified positive result about jaw montages, which is
 publishable and honest.
 
+### Two follow-ons
+
+**Held for Carl, not rewritten.** §4.4 (device recommendation) and §4.6 (the
+falsifiable prediction) both still rest on temporalis. §4.4 says "for
+clench-based input, driven by temporalis, the ear is not a compromise position";
+§4.6 predicts temporalis-driven gestures "should be retained at a retroauricular
+montage". Neither survives the interval. They are Discussion prose and are left
+untouched for Carl to word.
+
+**Noted for Discussion, not implemented.** The voxel-to-insertion construction
+generalises: any muscle with an identifiable bony insertion has a derivable
+fibre field, which is a strictly larger set than the PCA-defensible one this
+paper used (§2.3, `config.FIBRE_MODEL`). This study derives it for temporalis
+only, because that is where a reviewer pressed. Saying so points at the obvious
+next study rather than leaving a gap — and given what deriving it did to
+temporalis, the other nine are not safe to assume.
+

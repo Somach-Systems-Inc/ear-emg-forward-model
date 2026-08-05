@@ -36,9 +36,11 @@ sources) and by four physical invariants computed on the head mesh.
 narrower than an unmatched comparison suggests. Five articulators —
 orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma —
 favour the jaw montage at every sampled orientation and at every electrode
-subsample. One, temporalis, favours the retroauricular montage on both axes,
-by 2.57 dB at a pre-registered four-site cluster, with 92 % of orientations
-agreeing and a subsample interval excluding zero. Masseter and medial pterygoid
+subsample. **No muscle robustly favours the retroauricular montage.** The
+strongest ear-leaning candidate, temporalis, reaches only −1.15 dB once its
+fibre field is derived from the anatomy rather than assumed uniform, and its
+matched-count interval is [−1.45, +5.46]: half of four-site retroauricular
+subsets favour the jaw instead. Masseter and medial pterygoid
 favour the jaw robustly across electrode selection but reverse in roughly a
 third of orientations. Sternocleidomastoid and lateral pterygoid show no
 preference that survives electrode subsampling: their intervals cross zero, so
@@ -49,8 +51,8 @@ set to a single conductivity reproduces every montage assignment unchanged
 while misstating gap magnitudes by up to 3.27 dB.
 
 **Significance.** For device design the result is a per-muscle map rather than a
-ranking: a retroauricular montage reads temporalis well, loses lip and chin
-activity entirely, and offers no reliable advantage elsewhere. The
+ranking: a retroauricular montage loses lip and chin activity entirely and
+buys no muscle back reliably in exchange. The
 homogeneous-conductor control locates what anatomical detail is needed for —
 montage assignment is recoverable without it, magnitudes are not.
 
@@ -441,11 +443,21 @@ acquired.
 > subsample. No fibre direction and no four-site selection exists at which a
 > retroauricular electrode competes for these muscles.
 >
-> **One articulator favours the ear on both axes.** Temporalis reaches −2.571 dB
-> at the pre-registered four-site retroauricular cluster, with 92.0 per cent of
-> orientations agreeing and a matched-count interval of [−3.31, −0.03] that
-> excludes zero. It is the only muscle in the study for which a retroauricular
-> montage is preferable independent of both fibre direction and site selection.
+> **No articulator favours the ear on both axes.** Temporalis is the closest,
+> and it does not clear the bar. Over the fibre field derived from the anatomy
+> (§2.3.1) it reaches −1.147 dB at the pre-registered four-site cluster, with
+> 91.5 per cent of fibre directions agreeing — but its matched-count interval is
+> **[−1.453, +5.458]** and only **50.2 per cent** of random four-site
+> retroauricular subsets favour the ear at all. Whether the ear wins for
+> temporalis is decided by which four electrodes a device happens to carry, not
+> by the anatomy.
+>
+> The larger figures this section previously reported (−2.571 dB, 92.0 per cent,
+> an interval of [−3.31, −0.03]) came from sweeping source orientation uniformly
+> over the sphere. That is the right treatment for a muscle whose fibre direction
+> is unknown and the wrong one for temporalis, whose fibres fan onto a single
+> identifiable insertion; the derived field is both more specific and less
+> favourable.
 >
 > **Two show no preference that survives electrode subsampling.**
 > Sternocleidomastoid (−0.973 dB at the cluster, 60.5 per cent of orientations,
@@ -829,7 +841,7 @@ its own between-subject variance.
 | medial pterygoid | +1.25 | yes, [+1.14, +3.34] | 65.5 % | **jaw, site-robust but orientation-dependent** |
 | sternocleidomastoid | -0.97 | **no**, [-1.40, +1.27] | 60.5 % | **no resolvable preference** |
 | lateral pterygoid | -1.56 | **no**, [-1.59, +1.33] | 65.5 % | **no resolvable preference** |
-| temporalis | -2.57 | yes, [-3.31, -0.03] | 92.0 % | **ear, robust on both axes** |
+| temporalis | -1.15 (per-voxel fan) | **no**, [-1.45, +5.46] | 91.5 % over the derived fan | **no resolvable preference** |
 
 ---
 
