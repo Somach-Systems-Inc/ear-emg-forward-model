@@ -58,98 +58,81 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--csv", type=Path, default=rc.DEFAULT_CSV)
-    ap.add_argument("--condition", default="iso", choices=["iso", "aniso"])
-    ap.add_argument("--mesh", default="truncated",
-                    choices=["truncated", "extended"])
-    ap.add_argument("--include-near-cut", action="store_true")
+    ap.add_argument("--sign", type=Path,
+                    default=Path("results/04d_orientation_sign.csv"))
+    ap.add_argument("--npz", type=Path,
+                    default=Path("results/04d_orientation_sign.npz"))
     ap.add_argument("--outdir", type=Path, default=rc.FIGDIR)
     a = ap.parse_args(argv)
 
     rc.use_print_style()
     import matplotlib.pyplot as plt
+    import pandas as pd
 
-    df = rc.load_sensitivity(a.csv)
-    sl = rc.slice_condition_mesh(df, a.condition, a.mesh)
-    sl = sl[sl["montage"] != "reference"]
+    d = pd.read_csv(a.sign)
+    z = np.load(a.npz)
     floor = _floor()
+    d["pct_ear"] = (1 - d.frac_favouring_jaw) * 100
+    d = d.sort_values("gap_median_dB")            # ear wins at the top
 
-    jaw = sl[sl.montage == "jaw"]
-    if not a.include_near_cut:
-        jaw = jaw[~jaw.electrode.isin(NEAR_CUT)]
-    ear = sl[sl.montage.isin(("ear", "ceegrid"))]
+    n = len(d)
+    fig, ax = plt.subplots(figsize=(7.4, 0.52 * n + 2.2))
 
-    rows = []
-    for m in rc.MUSCLE_ORDER:
-        j, e = jaw[jaw.muscle == m], ear[ear.muscle == m]
-        if j.empty or e.empty:
-            continue
-        bj = j.loc[j.db_rel_best_jaw.idxmax()]
-        be = e.loc[e.db_rel_best_jaw.idxmax()]
-        rows.append(dict(muscle=m,
-                         gap=float(bj.db_rel_best_jaw - be.db_rel_best_jaw),
-                         jaw_site=bj.electrode, ear_site=be.electrode))
-    if not rows:
-        raise SystemExit("no muscle had both a jaw and an ear site")
-    rows.sort(key=lambda r: r["gap"])            # ear wins at the top
+    for i, (_, r) in enumerate(d.iterrows()):
+        g = z[f"gap_{r.muscle}"]
+        stable = bool(r.sign_stable)
+        col = rc.EAR_ADVANTAGE if r.gap_median_dB < 0 else rc.JAW_ADVANTAGE
+        # full min-max range as a thin rule
+        ax.plot([g.min(), g.max()], [i, i], color=col,
+                lw=1.2, alpha=0.45, zorder=2, solid_capstyle="round")
+        # interquartile body, thicker
+        q1, q3 = np.percentile(g, [25, 75])
+        ax.plot([q1, q3], [i, i], color=col, lw=6.5, alpha=0.85,
+                zorder=3, solid_capstyle="butt")
+        # median marker: filled circle if sign-stable, open if graded
+        ax.plot(r.gap_median_dB, i, marker="o", ms=7,
+                mfc=(col if stable else rc.SURFACE), mec=col, mew=1.6,
+                zorder=5)
+        lbl = ("sign stable" if stable
+               else f"{r.pct_ear:.0f}% of orientations favour ear")
+        ax.text(g.max() + 0.03 * (z["gap_mentalis"].max()), i, lbl,
+                va="center", ha="left", fontsize=6.0,
+                color=(rc.INK_SECONDARY if stable else rc.INK_MUTED), zorder=5)
 
-    n = len(rows)
-    y = np.arange(n)
-    gaps = np.array([r["gap"] for r in rows])
-
-    fig, ax = plt.subplots(figsize=(7.1, 0.44 * n + 2.0))
-    # Colours come from the SEMANTIC constants, not from picking positions on
-    # a ramp. Reading poles off a colormap by index is what inverted this
-    # figure the first time; rc.EAR_ADVANTAGE cannot be got backwards.
-    EAR, JAW = rc.EAR_ADVANTAGE, rc.JAW_ADVANTAGE
-    colours = [EAR if g < 0 else JAW for g in gaps]
-
-    # resolution floor as a band, drawn under the bars
-    ax.axvspan(-FLOOR_CI_HI, FLOOR_CI_HI, color=rc.INK_MUTED, alpha=0.13,
-               zorder=1, lw=0)
-    ax.axvspan(-floor, floor, color=rc.INK_MUTED, alpha=0.17, zorder=2, lw=0)
-    ax.barh(y, gaps, height=0.62, color=colours,
-            edgecolor=rc.SURFACE, linewidth=0.8, zorder=3)
+    ax.axvspan(-floor, floor, color=rc.INK_MUTED, alpha=0.15, zorder=1, lw=0)
     ax.axvline(0, color=rc.INK_PRIMARY, lw=1.0, zorder=4)
-
-    span = gaps.max() - gaps.min()
-    for i, r in enumerate(rows):
-        g = r["gap"]
-        site = r["ear_site"] if g < 0 else r["jaw_site"]
-        off = -0.012 * span if g < 0 else 0.012 * span
-        ax.text(g + off, i, f"{g:+.2f} dB · {rc.pretty(site)}",
-                va="center", ha="right" if g < 0 else "left",
-                fontsize=6.3, color=rc.INK_SECONDARY, zorder=5)
-
-    ax.set_yticks(y)
-    ax.set_yticklabels([rc.pretty(r["muscle"]) for r in rows], fontsize=7)
-    ax.set_xlabel("best jaw site  −  best ear site   (dB, linear)", fontsize=7.5)
-    ax.set_xlim(gaps.min() - 0.30 * span, gaps.max() + 0.30 * span)
-    ax.set_ylim(-0.7, n - 0.3)
-    for s in ("top", "right", "left"):
-        ax.spines[s].set_visible(False)
+    ax.set_yticks(range(n))
+    ax.set_yticklabels([rc.pretty(m) for m in d.muscle], fontsize=7)
+    ax.set_xlabel("best jaw site  −  best ear site   (dB, linear)  ·  swept "
+                  "over 200 source orientations", fontsize=7.5)
+    ax.set_ylim(-0.8, n - 0.2)
+    for sp in ("top", "right", "left"):
+        ax.spines[sp].set_visible(False)
     ax.grid(axis="x", color=rc.INK_MUTED, alpha=0.16, lw=0.6, zorder=0)
     ax.set_axisbelow(True)
 
-    # ASCII arrows: the Helvetica/Arial print face has no glyph for U+2190/2192
-    # and matplotlib renders them as tofu boxes. Caught by looking at the PNG.
-    ax.text(0.0, 1.015, "<-- ear wins", transform=ax.transAxes, ha="left",
-            va="bottom", fontsize=6.8, color=EAR)
-    ax.text(1.0, 1.015, "jaw wins -->", transform=ax.transAxes, ha="right",
-            va="bottom", fontsize=6.8, color=JAW)
+    ax.text(0.0, 1.012, "<-- ear wins", transform=ax.transAxes, ha="left",
+            va="bottom", fontsize=6.8, color=rc.EAR_ADVANTAGE)
+    ax.text(1.0, 1.012, "jaw wins -->", transform=ax.transAxes, ha="right",
+            va="bottom", fontsize=6.8, color=rc.JAW_ADVANTAGE)
 
-    n_ear = int((gaps < 0).sum())
-    sub = (f"best site per montage, per muscle   ·   {a.condition}, {a.mesh}   "
-           f"·   {n_ear} of {n} muscles favour the ear   ·   band = measured "
-           f"floor {floor:.2f} dB (95% CI to {FLOOR_CI_HI:.2f})")
-    if not a.include_near_cut:
-        sub += "   ·   jaw sites <10 mm from the cut face excluded"
-    ax.set_title("Fig 5 · Which montage sees which muscle", loc="left",
-                 fontsize=9.5, fontweight="bold", pad=30)
-    ax.text(0, 1.055, sub, transform=ax.transAxes, va="bottom", ha="left",
+    n_stable = int(d.sign_stable.sum())
+    ax.set_title("Fig 5 · Which montage sees which muscle, over all source "
+                 "orientations", loc="left", fontsize=9.5,
+                 fontweight="bold", pad=52)
+    ax.text(0, 1.028,
+            f"thin rule = full min-max over 200 orientations   ·   thick bar = "
+            f"interquartile   ·   marker = median\n"
+            f"FILLED marker = sign stable at every orientation "
+            f"({n_stable} of {n} muscles)   ·   open marker = verdict depends "
+            f"on fibre direction   ·   band = {floor:.2f} dB floor",
+            transform=ax.transAxes, va="bottom", ha="left",
             fontsize=6.2, color=rc.INK_SECONDARY)
 
-    rc.save(fig, "fig5_complementarity_map", df, a.outdir)
+    prov = pd.DataFrame({"x": [0]})
+    prov.attrs["source"] = str(a.sign)
+    prov.attrs["is_mock"] = False
+    rc.save(fig, "fig5_complementarity_map", prov, a.outdir)
     return 0
 
 
