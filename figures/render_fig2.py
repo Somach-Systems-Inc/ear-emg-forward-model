@@ -110,7 +110,8 @@ def main(argv=None) -> int:
                      f"median lead field per compartment, dB re each muscle's "
                      f"best jaw site   ·   {a.condition}, {a.mesh}   ·   "
                      f"ring = each row's 0 dB jaw reference   ·   "
-                     f"box = ear beats jaw   ·   arms NOT equally scaled "
+                     f"box = ear beats jaw   ·   STATISTIC B (per-site orientation "
+                     f"median, then ratio)   ·   arms NOT equally scaled "
                      f"({vmin:+.0f}..0 vs 0..{vmax:+.0f} dB)")
 
     rc.save(fig, "fig2_sensitivity_matrix", df, a.outdir)

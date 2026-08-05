@@ -3598,3 +3598,52 @@ them, and every artifact built downstream inherited the mismatch silently for
 the whole project. A stated definition and an implemented one are two channels,
 and no test in this repo was watching the gap between them.
 
+---
+
+## 2026-08-05 — Statistic A vs B, and the projected anisotropy
+
+**Two gap statistics existed and were being conflated.**
+
+- **A — gap per orientation, then median over orientations.** temporalis −3.80,
+  SCM −1.96, lateral pterygoid −1.85. **This is what the paper reports.**
+- **B — orientation-median lead field per site, then differenced.** temporalis
+  −3.31, SCM −3.21, lateral pterygoid −1.26.
+
+B differences two medians that need not occur at the same orientation. It is the
+same defect identified for min/max in 04b — weaker for a median, not eliminated.
+A physical source has one orientation, so the gap must be evaluated at that
+orientation and its distribution taken over the sweep.
+
+**Where B appeared, and what was done:**
+
+| artifact | disposition |
+|---|---|
+| `04_jaw_vs_ear_gap.csv` | **deleted**; regenerated as `04_jaw_vs_ear_gap_STATISTIC_B.csv` |
+| `04_sensitivity_matrix_dB.csv`, `04_sensitivity.csv` | **retained and labelled** — a per-site dB matrix is inherently a ratio of two per-site summaries and has no per-orientation form |
+| Fig 2 | **retained, caption now names it STATISTIC B** with its construction |
+| Fig 5, `04d_orientation_sign.csv` | statistic A, already correct |
+| Table 4, §3.1, Abstract | statistic A throughout |
+
+`04_analyze.gap()`'s docstring now opens by stating it is B, why B is not the
+reported quantity, and where A lives. The two value sets are written into it so
+a future reader cannot mistake one for the other.
+
+### Anisotropy, recomputed under projection
+
+The `|E|` anisotropy numbers are void; the aniso solve saved no mesh, so it was
+re-run with the orientation sweep applied (22 solves).
+
+| compartment | Δ under projection |
+|---|---|
+| sternocleidomastoid † | **+4.54 dB** (range +3.13 to +5.71) |
+| medial_pterygoid † | **+5.36 dB** (range +4.50 to +6.10) |
+| non-tensor control | **+0.27 dB** |
+
+† carries a fibre tensor. The non-tensor control at +0.27 dB confirms the
+projection is not introducing a global shift; under `|E|` that control sat at
++0.36 dB, so both readings are consistent and small.
+
+**Still pending and NOT quotable:** the fat swap. `03_fat_swap.csv` carries
+`|E|`, its −0.332 dB differential is a norm-based number, and Table 3 row 9 and
+§3.3 stay blocked until that re-solve lands.
+

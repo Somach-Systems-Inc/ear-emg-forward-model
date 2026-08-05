@@ -115,7 +115,27 @@ def db_matrix(d):
 
 
 def gap(db, jaw_subset=None):
-    """Jaw-versus-ear gap in dB: best jaw minus best ear, per muscle.
+    """STATISTIC B. Not the reported gap. See the warning below.
+
+    Jaw-versus-ear gap in dB: best jaw minus best ear, per muscle.
+
+    ** THIS IS STATISTIC B AND IT IS NOT WHAT THE PAPER REPORTS. **
+
+    It differences two orientation-MEDIAN lead fields, and those two medians
+    need not occur at the same source orientation. That is the same defect
+    already identified for min/max in 04b -- weaker for a median, but not
+    eliminated. A physical source has ONE orientation, so the meaningful
+    quantity is the gap evaluated AT that orientation, with its distribution
+    taken over the sweep.
+
+    STATISTIC A -- gap per orientation, then median over orientations -- is
+    what the paper reports, and it lives in `src/04d_orientation_sign.py` /
+    `results/04d_orientation_sign.csv`. B is retained here only because the
+    per-site dB matrix (Fig 2) is inherently a ratio of two per-site summaries
+    and has no per-orientation form; it is labelled wherever it appears.
+
+        A: temporalis -3.80, SCM -1.96, lateral pterygoid -1.85
+        B: temporalis -3.31, SCM -3.21, lateral pterygoid -1.26
 
     'Best' is the maximum over sites in each group, because the design question
     is what the best available electrode achieves, not what the average does.
@@ -304,7 +324,7 @@ def main(argv=None) -> int:
     print(f"\nwrote {contract}  ({len(long)} rows, long format, "
           f"the figure contract)")
 
-    out = config.RESULTS / "04_jaw_vs_ear_gap.csv"
+    out = config.RESULTS / "04_jaw_vs_ear_gap_STATISTIC_B.csv"
     pd.DataFrame(rows).to_csv(out, index=False)
     db.round(3).to_csv(config.RESULTS / "04_sensitivity_matrix_dB.csv",
                        index=False)
