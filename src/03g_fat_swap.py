@@ -81,6 +81,41 @@ def load_sigma_and_fat():
     return sig, fat
 
 
+# ONE fixed direction set, identical to 04d's, so column j means the same
+# physical orientation in both files and statistic A can be computed across
+# conditions. Without this the two sweeps would not be comparable.
+N_DIRS = 200
+
+
+def per_direction(m, E, dirs):
+    """(n_dirs,) volume-weighted median of |E.n_hat| per compartment.
+
+    This is what statistic A needs: the lead field at EACH orientation, kept
+    separately, so the gap can be formed per orientation and the median taken
+    over gaps rather than over sites.
+    """
+    tets = m.elm.elm_type == 4
+    tags = m.elm.tag1[tets]
+    vols = m.elements_volumes_and_areas()[tets]
+    Et = E[tets]
+    rng = np.random.default_rng(0)
+    out = {}
+    for name in MUSCLE_NAMES:
+        k = np.flatnonzero(tags == _LAB[name])
+        if k.size == 0:
+            continue
+        if k.size > 200_000:
+            k = rng.choice(k, 200_000, replace=False)
+        P = np.abs(Et[k] @ dirs.T)
+        w = vols[k]
+        o = np.argsort(P, axis=0)
+        cw = np.cumsum(w[o], axis=0)
+        half = 0.5 * cw[-1, :]
+        idx = (cw < half).sum(axis=0)
+        out[name] = np.array([P[o[idx[j], j], j] for j in range(P.shape[1])])
+    return out
+
+
 def compartment_medians(m, E):
     tets = m.elm.elm_type == 4
     tags = m.elm.tag1[tets]
@@ -129,6 +164,8 @@ def main(argv=None) -> int:
         d.name for d in iso_dir.iterdir()
         if d.is_dir() and not d.name.startswith("_"))
 
+    dirs = orientation.fibonacci_hemisphere(N_DIRS)
+    perdir = {}
     fields = ["electrode", "condition"] + MUSCLE_NAMES
     rows, t0 = [], time.time()
     for i, name in enumerate(names, 1):
@@ -145,6 +182,8 @@ def main(argv=None) -> int:
         v = fem.tdcs(m, cond, [I, -I], ELECTRODE_SURFACE_TAGS)
         E = np.asarray(v.gradient().value) * -1000.0      # V/mm -> V/m
         med = compartment_medians(m, E)
+        for mus, arr in per_direction(m, E, dirs).items():
+            perdir[f"{name}|{mus}"] = arr
         row = dict(electrode=name, condition="fat_as_muscle")
         for mn in MUSCLE_NAMES:
             row[mn] = med.get(mn, "")
@@ -156,6 +195,9 @@ def main(argv=None) -> int:
         w = csv.DictWriter(fh, fieldnames=fields)
         w.writeheader()
         w.writerows(rows)
+    npz = a.out.with_name("03_fat_swap_per_direction.npz")
+    np.savez(npz, dirs=dirs, **perdir)
+    print(f"wrote {npz}  ({len(perdir)} arrays)")
     print(f"\nwrote {a.out}  ({(time.time()-t0)/60:.1f} min)")
     return 0
 

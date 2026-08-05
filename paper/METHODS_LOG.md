@@ -3743,3 +3743,62 @@ in that solve — one more 40-minute run. The B/A discrepancy on the baseline wa
 0.3–1.9 dB, which is the same order as the effects above, so **these numbers
 should be regarded as indicative until A is available.**
 
+---
+
+## 2026-08-05 — CORRECTION: the single-anatomy generalisation argument was built on a population median
+
+**Carl's correction, recorded as his.** The generalisation argument in the
+single-anatomy limitation was written on the **population-median** adipose
+differential (−0.690 dB across sites) and treated it as if it decomposed
+uniformly to each muscle. **It does not survive per-muscle decomposition**, and
+the argument is now split rather than stated once.
+
+The measured per-muscle effect of removing the adipose contrast:
+
+| muscle | change in gap | direction |
+|---|---|---|
+| temporalis | −1.172 dB | ear advantage **enlarged** |
+| sternocleidomastoid | +1.361 dB | ear advantage **shrunk 42%** |
+| lateral_pterygoid | +0.815 dB | ear advantage **shrunk 65%** |
+
+The population median is jaw-favouring; two of the three per-muscle effects are
+ear-favouring in the sense of *producing* the advantage rather than suppressing
+it. A median across sites and a decomposition across muscles are different
+objects, and one does not license the other.
+
+### Why the correction is itself a finding
+
+**Mechanism attribution predicts which results should transfer between
+subjects.** That is the useful consequence and it was not visible while the
+differential was a single number.
+
+A result whose margin is carried by **geometry** — source-to-electrode distance
+and path length — should transfer to another head to the extent that the
+anatomy is similar, and its between-subject variance is the variance of that
+geometry. A result whose margin is carried substantially by the **fat/muscle
+conductivity contrast** additionally inherits the between-subject variance of
+adiposity, which is large, individually variable, and not predictable from a
+single model.
+
+So the three ear results are not equally transferable, and they can now be
+ranked by how much of each rests on material properties:
+
+- **temporalis** — the contrast *suppresses* the advantage, so the finding is
+  conservative and should transfer at least as strongly to a leaner or fatter
+  subject. Most transferable.
+- **sternocleidomastoid** — 42% of the advantage rests on the contrast.
+  Partially transferable; its margin depends on subject adiposity.
+- **lateral pterygoid** — 65% rests on the contrast, and without it the gap
+  (−0.442 dB) sits inside the noise floor's confidence interval. **Least
+  transferable, and it should not be presented as an anatomy-independent
+  result.**
+
+This is a sharper limitation than "n = 1, between-subject variance is not
+quantifiable". It says *which* results are at risk from that limitation and
+why, which is a statement a single-subject model can support and a bare
+sample-size caveat cannot.
+
+**Caveat, still live:** the per-muscle numbers above are statistic B. The
+statistic-A re-solve is running; the percentages will move and this entry must
+be re-checked against them before the Limitations text ships.
+
