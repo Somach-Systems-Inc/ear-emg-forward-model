@@ -192,9 +192,25 @@ injecting a current *I* between A and B. The lead field for a source at **r**
 with unit orientation **n̂** is therefore `E_recip(r) · n̂`.
 
 **SimNIBS's tDCS solver computes exactly E_recip**, so it is repurposed here:
-1 mA is injected between each electrode and a common reference
+1 mA is requested between each electrode and a common reference
 (`earlobe_contra`), and the resulting field is read inside every segmented
 muscle compartment.
+
+**The delivered current is measured per solve and every lead field is
+renormalised by it.** The requested and delivered currents are not the same:
+measured by the tet-patch integral (§6.3), delivery spans **0.887 to 1.075x of
+the 1 mA requested** across the 22 solves. That is **1.67 dB** of site-to-site
+spread against a 0.27 dB electrode-meshing floor — six times the floor — so it
+cannot be treated as a bounded nuisance term. It is instead **corrected**: each
+site's lead field is divided by that site's own measured delivered current
+before any ratio is formed.
+
+The correction removes the per-site component by construction. What remains is
+the tet-patch integral's own absolute-level uncertainty, which is a property of
+the estimator rather than of the site, is therefore common to all 22 solves,
+and cancels exactly in every ratio the paper reports — the same argument the
+error budget applies to other common-mode terms. All gaps, matrices and figures
+in this paper are computed from renormalised lead fields.
 
 **The consequence is one solve per electrode instead of one per source.** A
 forward formulation would require a separate solve for every dipole location

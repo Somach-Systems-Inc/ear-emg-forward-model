@@ -896,7 +896,7 @@ in a paper.
 
 ## What is still missing before submission
 
-1. **Figures 1, 3 and 6** do not exist yet. Fig 1 needs `anonymise_head()`.
+1. ~~Figures 1, 3 and 6 do not exist yet.~~ **DONE 2026-08-05.** All six figures are built and rendered: `fig1_head_model`, `fig2_sensitivity_matrix`, `fig3_attenuation_vs_distance`, `fig4_anisotropy_delta`, `fig5_complementarity_map`, `fig6_suprahyoid_field`, plus `02_electrode_qa`. Fig 1 and Fig 6 both pass `anonymise_head()` and are gated by `assert_anonymised()`.
 2. **Table 1 CSV** needs exporting to a publication-ready form.
 3. **SimNIBS citation** is incomplete (ref 16).
 4. **`throat_scm`** is withheld; if you measure it on the rig before submission,

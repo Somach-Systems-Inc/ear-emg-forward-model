@@ -71,6 +71,14 @@ def load_projected():
     w = o.pivot_table(index="electrode", columns="muscle", values="lf_median")
     base = pd.read_csv(config.RESULTS / "03_leadfields.csv").set_index(
         "electrode")
+    # RENORMALISE BY MEASURED DELIVERED CURRENT. Each solve requests 1 mA and
+    # delivers 0.887-1.075x of it, measured per solve. That is 1.67 dB of
+    # spread against a 0.27 dB floor -- six times larger, so it cannot be
+    # bounded by the electrode-meshing term. It was measured, so it is
+    # corrected: divide each site by its own delivered current. What remains,
+    # the integral's absolute level, is common to all sites and cancels in
+    # every ratio.
+    w = w.div(base.loc[w.index, "inv1_mean"], axis=0)
     meta = base[["condition", "montage", "side", "depth_mm",
                  "clearance_to_cut_mm", "calibration_pct"]]
     d = meta.join(w, how="inner").reset_index()
@@ -303,6 +311,9 @@ def main(argv=None) -> int:
     if ani_path.exists():
         ad = pd.read_csv(ani_path)
         alf = ad.set_index("electrode")
+        alf = alf[MUSCLE_NAMES].div(
+            pd.read_csv(config.RESULTS / "03_leadfields.csv")
+            .set_index("electrode").loc[alf.index, "inv1_mean"], axis=0)
         n_add = 0
         for elec in ad["electrode"]:
             for m in MUSCLE_NAMES:

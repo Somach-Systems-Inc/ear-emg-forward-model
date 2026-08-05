@@ -4056,3 +4056,49 @@ solve stored them only because that precedent existed. Had either been left on
 B, the paper would have shipped a robustness check that contradicted its own
 result, computed with a statistic measured to mislead by up to 17x.
 
+---
+
+## 2026-08-05 — DELIVERED CURRENT: corrected, not bounded. Every gap moved.
+
+Review item 8 is right that "bounded by row 6" was incoherent: delivery spans
+**0.887–1.075x** of the requested 1 mA, which is **1.67 dB** against a 0.27 dB
+floor — six times larger, not bounded by it.
+
+But it was **measured** per solve, so it is corrected rather than bounded. Each
+site's lead field is divided by its own tet-patch delivered current before any
+ratio is formed. The per-site component vanishes by construction; the
+integral's absolute-level uncertainty is a property of the estimator, common to
+all 22 solves, and cancels in every ratio.
+
+**Every statistic-A gap moved. No sign changed.** *(measured)*
+
+| muscle | before | after | change | % ear |
+|---|---|---|---|---|
+| temporalis | −3.801 | **−3.314** | +0.487 | 96.0 → **94.0** |
+| sternocleidomastoid | −1.958 | **−1.402** | +0.556 | 72.5 → **66.0** |
+| lateral_pterygoid | −1.855 | **−1.679** | +0.176 | 69.0 → **68.0** |
+| medial_pterygoid | +1.147 | +1.141 | −0.006 | 37.5 |
+| masseter | +1.700 | +1.572 | −0.128 | 36.0 |
+| orbicularis_oris | +8.192 | +7.977 | −0.215 | 0.0 |
+| platysma | +8.844 | +8.874 | +0.030 | 0.0 |
+| buccinator | +10.033 | +9.240 | −0.793 | 0.0 |
+| depressor_anguli_oris | +14.607 | +13.780 | −0.827 | 0.0 |
+| mentalis | +21.945 | **+20.898** | −1.047 | 0.0 |
+
+Largest movement **1.047 dB**; median |movement| **0.351 dB**, above the floor,
+so the correction is material rather than cosmetic.
+
+**All three ear advantages SHRANK.** The correction runs against the paper's
+result — every ear gap lost margin and SCM lost the most, falling to −1.402 dB
+with only 66% of orientations favouring the ear. SCM is now the weakest of the
+three by a clear margin and is approaching the zone where medial pterygoid was
+called unresolvable.
+
+Median all-jaw gap **+5.22 → +4.68 dB**. Methods §2.4 now states the
+renormalisation explicitly; it previously said only that 1 mA "is injected",
+which the reviewer correctly flagged.
+
+Regenerated: `04d_orientation_sign.csv`/`.npz` (now also storing per-electrode
+per-direction arrays, which is what made the renormalisation checkable),
+`04_sensitivity.csv`, `04_sensitivity_matrix_dB.csv`, and Figs 2, 3, 4, 5.
+

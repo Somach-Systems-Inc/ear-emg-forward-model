@@ -35,6 +35,7 @@ import time
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -66,6 +67,23 @@ def main(argv=None) -> int:
     # that column j always means the same physical orientation everywhere.
     N = orientation.fibonacci_hemisphere(a.n_dirs)
     print(f"common hemisphere sweep: {len(N)} directions\n")
+
+    # RENORMALISE BY MEASURED DELIVERED CURRENT.
+    # Each solve requests 1 mA and delivers 0.887-1.075x of it, measured per
+    # solve by the tet-patch integral. That is 1.67 dB of spread against a
+    # 0.27 dB floor, so it cannot be waved through as "bounded by the
+    # electrode-meshing term" -- it is six times larger. But it was MEASURED,
+    # so it is corrected rather than bounded: each site's lead field is divided
+    # by its own delivered current. The per-site variation is then removed by
+    # construction, and what remains -- the tet-patch's own absolute-level
+    # uncertainty -- is common to every site and cancels in every ratio, which
+    # is the same argument the error budget already makes for common terms.
+    lfmeta = pd.read_csv(config.RESULTS / "03_leadfields.csv").set_index(
+        "electrode")
+    delivered = lfmeta["inv1_mean"].to_dict()
+    print("renormalising by measured delivered current "
+          f"({min(delivered.values()):.4f}-{max(delivered.values()):.4f} x "
+          f"requested)\n")
 
     mont = {}
     for r in csv.DictReader(
@@ -101,7 +119,8 @@ def main(argv=None) -> int:
             # (n_elem, n_dirs) projection, then a volume-weighted median per dir
             P = np.abs(Ek @ N.T)
             L[mus][name] = np.array(
-                [wmedian(P[:, j], wk) for j in range(P.shape[1])])
+                [wmedian(P[:, j], wk) for j in range(P.shape[1])]
+            ) / delivered[name]
             del P
         del m, E
         gc.collect()
@@ -136,6 +155,9 @@ def main(argv=None) -> int:
     # region can be characterised geometrically rather than only counted.
     npz = a.out.with_suffix(".npz")
     save = {"dirs": N}
+    for mus, dd in L.items():
+        for e, arr in dd.items():
+            save[f"lf_{e}|{mus}"] = arr
     for mus, _ in MUSCLES:
         d = L[mus]
         jaw = [e for e in d if mont.get(e) == "jaw" and e not in NEAR_CUT]
