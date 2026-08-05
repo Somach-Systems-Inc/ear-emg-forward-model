@@ -4478,63 +4478,94 @@ temporalis, the other nine are not safe to assume.
 
 ---
 
-## 2026-08-06 — 04h regenerated through the renormalised path
+## 2026-08-06 — 04h: a correction I made that was wrong, and the retraction
 
-`04h_matched_counts.csv` and `04j_two_axis_verdict.csv` had **no generating
-script**. They were produced interactively, could not be regenerated from a
-clean checkout, and had silently diverged from Methods §2.4, which states that
-every lead field is renormalised by its own measured delivered current.
-`04_analyze.py:load_projected` renormalises; `04k` renormalises at line 94; the
-ad hoc tables did not. Now `src/04h_matched_counts.py`.
+**RETRACTED IN FULL. The original `04h_matched_counts.csv` was correct.**
 
-### Before / after, all ten muscles
+I reported that 04h had skipped the delivered-current renormalisation and
+regenerated it with the division applied. That was wrong.
+`04d_orientation_sign.py` **already** divides each site by its own measured
+delivered current at line 123, and stores the result under the `lf_<e>|<m>` keys
+that 04h reads. Adding a division in 04h double-applied it.
 
-| muscle | before | after | delta |
+Proof, machine precision: 04d's own `gap_temporalis` array and the same gap
+recomputed from its stored `lf_` arrays **with no division** agree to 0.00e+00.
+
+### What the bad correction moved, all now reverted
+
+| quantity | original (correct) | my version | error |
 |---|---|---|---|
-| mentalis | +21.236 | **+20.201** | -1.035 |
-| depressor anguli oris | +14.698 | **+13.968** | -0.730 |
+| mentalis | +21.236 | +20.201 | −1.035 |
+| depressor anguli oris | +14.698 | +13.968 | −0.730 |
+| buccinator | +10.236 | +9.371 | −0.865 |
+| orbicularis oris | +8.995 | +8.590 | −0.405 |
 | platysma | +10.008 | +10.133 | +0.126 |
-| buccinator | +10.236 | **+9.371** | -0.865 |
-| orbicularis oris | +8.995 | **+8.590** | -0.405 |
 | masseter | +2.218 | +2.328 | +0.110 |
 | medial pterygoid | +1.254 | +1.376 | +0.122 |
-| sternocleidomastoid | -0.973 | -0.411 | +0.562 |
-| lateral pterygoid | -1.564 | -1.717 | -0.153 |
-| temporalis | -2.571 | -2.624 | -0.053 |
+| sternocleidomastoid | −0.973 | −0.411 | +0.562 |
+| lateral pterygoid | −1.564 | −1.717 | −0.153 |
+| temporalis | −2.571 | −2.624 | −0.053 |
+| placement advantage | 1.03 dB | 1.70 dB | +0.67 |
+| **temporalis verdict** | **ear, robust** | no resolvable pref. | **flipped** |
 
-**One verdict changes: temporalis, `ear, robust on both axes` -> `no resolvable
-preference`.** Its interval moves from [-3.308, -0.035] to **[-2.855, +0.170]**.
+It reached the Abstract, §3.1, §3.6, §4.1, §4.4, §4.8, both copies of Table 4
+and the README before the retraction.
 
-That is the significant part. **Temporalis was already unresolvable under a
-uniform orientation sweep, before the derived fibre field was computed at all.**
-The fan analysis and the renormalisation are independent corrections that reach
-the same verdict from different directions -- one anatomy-specific, one
-assumption-free -- and they disagree about the magnitude by a factor of two
-(-1.147 vs -2.624) while agreeing it does not resolve. §3.1 now reports both.
+### How it happened
 
-The old interval excluded zero by 0.035 dB. It was never a result; it was a
-rounding margin on a table that had skipped a pipeline stage.
+I checked whether 04h divided by delivered current, found it did not, and
+concluded the renormalisation was missing. **I verified the absence of a step at
+one stage without checking whether it had been applied at an earlier one.** The
+check confirmed a fact and the fact did not support the conclusion.
 
-### Also corrected
+This is the fidelity/correctness distinction in CLAUDE.md pointed the other way.
+The recorded form is "a verification confirms a specification was APPLIED, never
+that it was CORRECT". The mirror image is what bit here: **confirming a step is
+absent HERE does not confirm it never ran.** A pipeline stage is a property of
+the pipeline, not of the file you are reading.
 
-- **Labial range 8.99-21.24 -> 8.59-20.20 dB** (Abstract, §4.4, README).
-- **Placement advantage 1.03 -> 1.70 dB** (§3.6, Abstract). Lateral pterygoid is
-  -1.717 at the anatomical cluster against -0.015 at the random-draw median;
-  sternocleidomastoid stays equivalent (-0.411 vs -0.426). **The placement
-  finding strengthens under the correction**, which is worth stating plainly
-  given that every other correction this week went the other way.
-- Orientation-agreement percentages: SCM 60.5->54.5, temporalis 92.0->93.5,
-  masseter 68.5->69.5, medial pterygoid 65.5->65.0, lateral pterygoid 65.5->66.0.
-- Both copies of Table 4 rebuilt directly from the regenerated CSV rather than
-  edited by hand.
+Two things made it convincing rather than obviously wrong. The magnitudes were
+plausible — around 1 dB, the size the renormalisation genuinely is. And it
+produced a tidy story: temporalis failing on two independent axes that agreed.
+**The result was more satisfying than the truth, which is the condition under
+which I should have checked harder rather than less.**
 
-### The cascade, final
+### What survives, and what it now rests on
+
+The headline is unchanged: **no muscle robustly favours the retroauricular
+montage**. But it no longer has two independent supports. It has one.
+
+- Uniform orientation sweep, matched counts: temporalis **−2.571 dB, interval
+  [−3.308, −0.035], excludes zero** → favours the ear.
+- Derived per-voxel fibre field (`04k`, which renormalises correctly at line 94
+  because it computes from meshes): **−1.147 dB, interval [−1.453, +5.458]**
+  → does not resolve.
+
+They disagree. The derived field governs, because it removes an assumption
+rather than adding one and because §2.8 pre-committed to that reading. §3.1 and
+§4.1 now state the dependence explicitly and name it as the paper's most
+attackable point, rather than presenting two agreeing treatments that do not
+agree.
+
+### What was real about the original complaint
+
+04h and 04j genuinely had **no generating script**, could not be regenerated
+from a clean checkout, and could not be audited by inspection. That defect was
+real; the numbers were not. Both are now written by `src/04h_matched_counts.py`,
+which reproduces the ad hoc tables exactly, and the script carries a comment at
+the renormalisation site recording why it must NOT divide.
+
+### The cascade, final and correct
 
 | stage | temporalis |
 |---|---|
-| field magnitude, best of 14 | -3.92 |
-| projected onto source orientation | -3.31 |
-| renormalised by delivered current | -2.93 |
-| matched electrode counts | -2.62, **interval [-2.85, +0.17] spans zero** |
-| derived per-voxel fibre field | -1.15, interval [-1.45, +5.46] |
+| field magnitude, best of 14 ear sites | -3.92 |
+| projected onto source orientation, renormalised | -3.31 |
+| matched electrode counts, four each | -2.57, interval [-3.31, -0.03] |
+| derived per-voxel fibre field | **-1.15, interval [-1.45, +5.46] spans zero** |
+
+Four rows, not five: "renormalised" is not a separate stage, because 04d
+applies it at the point it builds the per-direction arrays. The monotone drift
+is real and survives the retraction -- but the step that crosses zero is the
+fibre derivation alone, not an accumulation of independent controls.
 

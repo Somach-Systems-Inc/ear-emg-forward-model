@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 r"""
-Stage 4h. MATCHED ELECTRODE COUNTS — statistic A, renormalised.
+Stage 4h. MATCHED ELECTRODE COUNTS — statistic A.
 
 WHY THIS EXISTS AS A SCRIPT
 ---------------------------
@@ -11,12 +11,13 @@ that, both bad:
   1. They could not be regenerated from a clean checkout, which is the standard
      §2.3 applies to electrode coordinates and §2.5 now applies to fibre
      directions. A published table is a geometric-quantity-shaped object too.
-  2. They silently diverged from the pipeline. Methods §2.4 states that every
-     lead field is renormalised by its own measured delivered current, and
-     `04_analyze.py:load_projected` does exactly that. The ad hoc tables did
-     not. The divergence reached three published labial numbers.
+  2. Nothing verified that they agreed with the pipeline. They did, as it turns
+     out -- an attempt to "correct" them by renormalising here produced a
+     DOUBLE renormalisation and moved published numbers by up to 1.04 dB before
+     it was caught. See the note in `main()`.
 
-This script is the corrected, reproducible replacement. **It renormalises.**
+This script is the reproducible replacement, and it reproduces the ad hoc
+tables exactly.
 
 WHAT IT COMPUTES
 ----------------
@@ -69,12 +70,18 @@ def main() -> int:
     lf = pd.read_csv(config.RESULTS / "03_leadfields.csv").set_index("electrode")
     d = np.load(PERDIR)
 
-    # THE CORRECTION. Each solve requests 1 mA and delivers 0.887-1.075x of it,
-    # measured per solve via the tet-patch integral. That is 1.67 dB of spread
-    # against a 0.27 dB floor, so it cannot be bounded by the meshing term -- it
-    # was measured, so it is corrected. The integral's absolute level is common
-    # to all sites and cancels in every ratio.
-    deliv = lf["inv1_mean"]
+    # DO NOT RENORMALISE HERE. `04d_orientation_sign.py` already divides each
+    # site by its own measured delivered current at the point it builds these
+    # arrays (line 123), and stores the RESULT under the `lf_<e>|<m>` keys. The
+    # renormalisation specified in Methods 2.4 is therefore already applied to
+    # everything this script reads. Dividing again double-applies it and shifts
+    # published numbers by up to 1.04 dB.
+    #
+    # This was got wrong once, in the direction that looks careful: the absence
+    # of a division was verified HERE without checking whether it had been
+    # applied UPSTREAM. Confirming that a step is missing at one stage is not
+    # the same as confirming it never ran.
+    deliv = None
 
     present = {e for e in lf.index if f"lf_{e}|temporalis" in d}
     jaw = sorted(e for e in present
@@ -90,25 +97,25 @@ def main() -> int:
             f"vs a {len(CLUSTER)}-site ear cluster. Refusing to report a gap "
             f"that rewards electrode density.")
 
-    print("MATCHED ELECTRODE COUNTS — statistic A, renormalised")
+    print("MATCHED ELECTRODE COUNTS — statistic A")
     print("=" * 68)
     print(f"  jaw sites   : {len(jaw)}  {jaw}")
     print(f"  ear cluster : {len(CLUSTER)}  {CLUSTER}")
     print(f"  ear pool    : {len(ear)} candidates for the random draw")
-    print(f"  renormalised by measured delivered current "
-          f"({deliv.min():.3f}-{deliv.max():.3f}x requested)\n")
+    print("  delivered-current renormalisation: ALREADY APPLIED upstream in "
+          "04d (line 123)\n")
 
     muscles = [n for n, _g, lab, _e in config.MUSCLES if lab is not None]
     rows = []
     for m in muscles:
         def best(sites):
-            return np.max([d[f"lf_{e}|{m}"] / deliv[e] for e in sites], axis=0)
+            return np.max([d[f"lf_{e}|{m}"] for e in sites], axis=0)
 
         J = best(jaw)
         cluster = float(np.median(20 * np.log10(J / best(CLUSTER))))
 
         rng = np.random.default_rng(SEED)
-        per_dir = np.stack([d[f"lf_{e}|{m}"] / deliv[e] for e in ear])
+        per_dir = np.stack([d[f"lf_{e}|{m}"] for e in ear])
         draws = np.array([
             np.median(20 * np.log10(
                 J / per_dir[rng.choice(len(ear), len(CLUSTER),

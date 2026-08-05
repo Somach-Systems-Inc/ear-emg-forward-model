@@ -1,11 +1,11 @@
 muscle,cluster4_dB,rand4_lo,rand4_hi,crosses_zero,verdict
-mentalis,20.2011,19.7578,23.069,False,"jaw, robust on both axes"
-depressor_anguli_oris,13.9676,13.2915,16.824,False,"jaw, robust on both axes"
-platysma,10.1335,9.171,12.4995,False,"jaw, robust on both axes"
-buccinator,9.3708,8.6678,12.1443,False,"jaw, robust on both axes"
-orbicularis_oris,8.5904,8.5685,11.8524,False,"jaw, robust on both axes"
-masseter,2.3279,1.8374,6.2987,False,"jaw, site-robust but orientation-dependent"
-medial_pterygoid,1.3756,1.1804,3.6544,False,"jaw, site-robust but orientation-dependent"
-sternocleidomastoid,-0.411,-1.0291,1.1907,True,no resolvable preference
-lateral_pterygoid,-1.7166,-1.7166,1.6915,True,no resolvable preference
-temporalis,-2.6237,-2.8547,0.1695,True,no resolvable preference
+mentalis,21.2357,20.8976,23.994,False,"jaw, robust on both axes"
+depressor_anguli_oris,14.6985,13.7803,17.1462,False,"jaw, robust on both axes"
+buccinator,10.2362,9.2402,12.4314,False,"jaw, robust on both axes"
+platysma,10.0076,8.8823,12.4638,False,"jaw, robust on both axes"
+orbicularis_oris,8.9951,7.9771,11.4248,False,"jaw, robust on both axes"
+masseter,2.2181,1.6465,5.7929,False,"jaw, site-robust but orientation-dependent"
+medial_pterygoid,1.2542,1.1412,3.3531,False,"jaw, site-robust but orientation-dependent"
+sternocleidomastoid,-0.9735,-1.4023,1.2671,True,no resolvable preference
+lateral_pterygoid,-1.5642,-1.5905,1.0909,True,no resolvable preference
+temporalis,-2.571,-3.3082,-0.0348,False,"ear, robust on both axes"
