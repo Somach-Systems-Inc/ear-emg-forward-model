@@ -3907,3 +3907,69 @@ All six re-render from current sources without error. Fig 2/3/4 read
 plus `03_leadfields_aniso_projected.csv`; Fig 5 reads `04d` (statistic A);
 Fig 1 and Fig 6 read the label volume and a result mesh directly.
 
+---
+
+## 2026-08-05 — The adipose decomposition IS measuring adipose path, but with the SIGN REVERSED
+
+Carl's proposed free validation: correlate adipose path length against the
+per-muscle material share. The mechanistic expectation was **positive** — a
+muscle under more fat should draw more of its gap from the conductivity
+contrast.
+
+**The correlation is enormous and NEGATIVE.** *(measured, n = 7)*
+
+| predictor | Spearman | p |
+|---|---|---|
+| **adipose fraction of the muscle→skin path** | **−0.955** | **0.001** |
+| adipose millimetres on that path | −0.357 | 0.432 |
+| depth to skin | +0.214 | 0.645 |
+
+| muscle | fat fraction of path | material share |
+|---|---|---|
+| platysma | **0.650** | **0.6%** |
+| buccinator | 0.575 | 1.8% |
+| depressor_anguli_oris | 0.575 | 4.1% |
+| mentalis | 0.425 | 13.0% |
+| orbicularis_oris | 0.300 | 13.3% |
+| sternocleidomastoid | **0.225** | **21.0%** |
+| lateral_pterygoid | 0.200 | 17.0% |
+
+*(Table 2's own column could not be used directly: it is indexed by SITE and
+the share is per MUSCLE, and only three sites have a target in the share list.
+This computes the mechanistic quantity per muscle instead — median adipose
+fraction along rays from muscle voxels to the nearest skin point.)*
+
+### What the reversal means
+
+**The swap is unambiguously measuring adipose path** — |ρ| = 0.955 at p = 0.001
+is not incidental. But it is measuring it through **cancellation, not dose.**
+
+The share is |Δgap| / |gap|, and a gap is a *difference between two electrodes*.
+A muscle uniformly embedded in fat — platysma, 65% of its path — has its jaw
+path and its ear path affected almost equally, so the change **cancels in the
+ratio** and the share is near zero. A muscle with little fat on its shortest
+path — SCM at 22.5%, lateral pterygoid at 20% — sits where the jaw and ear
+routes differ sharply in adipose content, so the change does not cancel.
+
+So the predictor that would track positively is not "how much fat is over this
+muscle" but "**how differently the jaw and ear routes traverse fat**", which is
+a per-pair quantity this analysis does not form. The mechanistic intuition was
+right about the physics and wrong about which quantity the share measures.
+
+**This is the ratio-cancellation argument appearing for the third time**, now
+as a validation rather than a caveat: uniform terms cancel, differential terms
+survive. It is the same reason the population differential had to be dropped
+and the same reason a common scale error never reaches a published number.
+
+### Reporting
+
+**Not fit for §4.3 as a one-sentence confirmation**, because as written that
+sentence would claim the correlation runs the intuitive way and it does not.
+Either state the reversal and its cancellation explanation in full, or leave it
+out. **Carl's call**; the numbers and the explanation are here.
+
+**Caveats:** n = 7; temporalis is excluded because its share is a suppression
+rather than a fraction; platysma's 0.6% is close enough to zero that its share
+is poorly determined and it is also the most influential point in the
+correlation.
+
