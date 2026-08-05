@@ -31,16 +31,20 @@ conductivity. The pipeline is validated against an analytic four-layer sphere
 the head mesh itself. Every reported quantity is a ratio, and the uncertainty
 budget is assembled from measured terms.
 
-**Main results.** The two montages are complementary rather than ranked. Seven
-of ten articulators couple more strongly to the best jaw electrode; three couple
-more strongly to the best retroauricular electrode — temporalis by 3.92 dB,
-sternocleidomastoid by 3.41 dB and lateral pterygoid by 1.69 dB — and all three
-attach at or near the temporal bone. The advantages are asymmetric: the jaw's
-reach 22.78 dB while the ear's do not exceed 3.92 dB. Setting adipose tissue to
-muscle conductivity on identical geometry changes the jaw-versus-ear gap by only
-0.33 dB, so the difference is geometric rather than a property of intervening
-tissue. The anatomical prediction was recorded in the public repository one day
-before the model was solved.
+The two montages are complementary rather than ranked, and the complementarity
+is orientation-dependent in a way a point estimate conceals. Sweeping source
+orientation over the hemisphere with the same orientation applied at both
+electrodes, five articulators — orbicularis oris, buccinator, mentalis,
+depressor anguli oris and platysma — favour the jaw montage at every orientation
+tested, by medians of 8.2 to 21.9 dB; no fibre direction exists at which a
+retroauricular electrode competes for them. Temporalis favours the
+retroauricular montage at every anatomically reachable orientation: the 4 % of
+directions that reverse it lie at least 19° out of the sagittal plane, outside
+the fan temporalis occupies, and the gap across that fan runs −2.70 dB at the
+anterior fibres to −4.60 dB at the posterior. Sternocleidomastoid favours the
+ear at its own estimated fibre axis, by −5.06 dB on the right and −2.52 dB on
+the left. Lateral pterygoid, which has no estimable axis, favours the ear in
+69 % of directions and is reported as conditional.
 
 **Significance.** The result gives ear-worn device designers a per-muscle map
 rather than a ranking: a retroauricular montage reads jaw-closing and
@@ -298,6 +302,20 @@ and two sessions of the same montage can differ, so solving on the identical
 mesh removes electrode realisation — comparable in size to the effect being
 measured — from the comparison.
 
+#### 2.5.1 The anatomically-constrained sweep
+
+An unconstrained orientation fraction is conservative to the point of being
+misleading, because orientation space is not uniformly reachable. Two muscles
+demonstrate this in opposite directions. For temporalis, the directions that
+reverse the montage preference lie outside the anatomical fan entirely, so an
+unconstrained 96 % understates a result that is effectively unconditional. For
+sternocleidomastoid, the jaw-favouring directions are not ones the muscle
+occupies, so an unconstrained 72.5 % understates a gap that is −5.06 dB at the
+estimated axis. We therefore sweep the hemisphere first and intersect with the
+anatomically permitted set wherever one can be established, reporting the
+unconstrained fraction alongside so the constraint is visible rather than
+implicit.
+
 ### 2.6 Validation
 
 Validation is layered, and each layer tests something the others cannot.
@@ -390,25 +408,47 @@ acquired.
 
 ### 3.1 Jaw and retroauricular montages are complementary rather than ranked
 
-Of the ten segmented articulators, seven are seen more strongly from the jaw and
-three from the ear: temporalis (−3.92 dB, best site `cg01`), sternocleidomastoid
-(−3.41 dB, `cg08`) and lateral pterygoid (−1.69 dB, `pre_tragus`), where a
-negative gap denotes an ear advantage. All three exceed the 0.27 dB measured
-electrode-meshing floor by roughly an order of magnitude. The full map is Table
-4 and Figure 5; the site-by-muscle matrix is Figure 2.
+Reporting one gap per muscle presumes a fibre direction the model does not
+contain. We therefore sweep source orientation over the hemisphere at 200
+directions, applying the same orientation at both electrodes, since only a
+common orientation corresponds to a physical source. Where anatomy constrains
+the fibre direction, we then evaluate the gap over that constrained set rather
+than over the full hemisphere.
 
-The two montages' advantages are asymmetric in size, and the asymmetry is a
-result rather than an artefact of scaling. The jaw's advantages are large and
-broad — mentalis +22.78 dB, depressor anguli oris +15.55, buccinator +10.57,
-orbicularis oris +10.37, platysma +9.29 — and concentrate on a single site,
-`mental`, which is the best jaw electrode for six of the seven jaw-favouring
-muscles. The ear's advantages are modest and specific, spanning 1.69 to 3.92 dB,
-and distribute across three different sites. The largest jaw advantage is 5.8×
-the largest ear advantage in dB.
+**The jaw's dominance over the labial group is orientation-independent.**
+Orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma
+favour the jaw montage at all 200 sampled orientations, with median gaps of 8.2
+to 21.9 dB. No fibre direction exists at which a retroauricular electrode
+competes for these muscles, which is a stronger statement than any point
+estimate.
 
-`medial_pterygoid` at +0.62 dB is borderline and is reported as such: it clears
-the floor's 0.27 dB point estimate but falls below the 95 % confidence upper
-bound of 0.65 dB, so it is not counted as a clean jaw advantage.
+**Temporalis favours the retroauricular montage at every orientation it can
+physically take.** Over the full hemisphere the ear wins in 96.0 % of directions
+(median −3.80 dB, range −10.99 to +1.93). The eight reversing directions form a
+cone of median half-width 12.1° about [−0.504, −0.555, +0.661], with a minimum
+|R| of 0.324, so every one lies at least 19° out of the sagittal plane.
+Temporalis is a flat fan running from the temporal fossa to the coronoid process
+with negligible medio-lateral component, and that cone is therefore unreachable.
+Evaluated across the fan itself the gap is −2.70 dB at the anterior,
+near-vertical fibres, −3.54 dB at mid-fan, and −4.60 dB at the posterior,
+near-horizontal fibres. The advantage is effectively unconditional.
+
+**Sternocleidomastoid favours the ear at its estimated fibre axis, more strongly
+than the unconstrained sweep suggests.** Its principal axis passes the bilateral
+mirror-symmetry test at |dot| = 0.98, and the gap evaluated there is −5.06 dB on
+the right and −2.52 dB on the left, against a sweep median of −1.96 dB. The
+72.5 % hemisphere fraction understates the case, because the jaw-favouring
+directions are not ones this muscle occupies.
+
+**Lateral pterygoid is genuinely conditional.** It has no estimable principal
+axis, favours the ear in 69.0 % of directions (median −1.85 dB, range −7.70 to
++6.78), and is reported as depending on fibre direction.
+
+**Masseter and medial pterygoid show no resolvable montage preference**, at
+35.5 % and 37.0 % of directions favouring the ear respectively. Medial pterygoid
+carries an estimated axis, but its two sides disagree in sign at that axis
+(+4.21 dB right, −2.10 dB left), which is a third independent reason it supports
+no directional claim.
 
 ### 3.2 The result does not depend on the isotropy assumption
 
@@ -666,20 +706,24 @@ df = 5.
 Row 7 is deliberately left unquantified. A single-subject model cannot estimate
 its own between-subject variance.
 
-**Table 4 — Which montage sees which muscle** (near-cut jaw sites excluded).
+**Table 4 — Which montage sees which muscle, with orientation dependence
+stated.** Gap is computed per orientation and the median taken over 200
+hemisphere directions; positive favours the jaw. "% ear" is the fraction of
+sampled directions favouring the retroauricular montage. Jaw sites within
+10 mm of the truncation face are excluded.
 
-| Muscle | Best jaw | Best ear | Gap (dB) | Wins |
-|---|---|---|---|---|
-| mentalis | `mental` | `cg10` | +22.78 | jaw |
-| depressor anguli oris | `mental` | `cg10` | +15.55 | jaw |
-| buccinator | `mental` | `cg10` | +10.57 | jaw |
-| orbicularis oris | `mental` | `cg10` | +10.37 | jaw |
-| platysma | `mental` | `cg10` | +9.29 | jaw |
-| masseter | `mental` | `cg10` | +2.53 | jaw |
-| medial pterygoid | `submaxillary` | `cg09` | +0.62 | jaw, **borderline** |
-| lateral pterygoid | `midjaw` | `pre_tragus` | **−1.69** | **ear** |
-| sternocleidomastoid | `midjaw` | `cg08` | **−3.41** | **ear** |
-| temporalis | `midjaw` | `cg01` | **−3.92** | **ear** |
+| Muscle | Median gap (dB) | % ear | Status |
+|---|---|---|---|
+| mentalis | +21.95 | 0.0 | jaw, orientation-independent |
+| depressor anguli oris | +14.61 | 0.0 | jaw, orientation-independent |
+| buccinator | +10.03 | 0.0 | jaw, orientation-independent |
+| orbicularis oris | +8.19 | 0.0 | jaw, orientation-independent |
+| platysma | +8.84 | 0.0 | jaw, orientation-independent |
+| masseter | +1.70 | 35.5 | no resolvable preference |
+| medial pterygoid | +1.15 | 37.0 | no resolvable preference; sides disagree at axis |
+| lateral pterygoid | -1.85 | 69.0 | ear, conditional on fibre direction |
+| sternocleidomastoid | -1.96 | 72.5 | ear at estimated axis (−5.06 R, −2.52 L) |
+| temporalis | -3.80 | 96.0 | ear, effectively unconditional (flip cone unreachable) |
 
 ---
 
