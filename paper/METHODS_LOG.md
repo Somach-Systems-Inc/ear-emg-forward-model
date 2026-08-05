@@ -3802,3 +3802,51 @@ sample-size caveat cannot.
 statistic-A re-solve is running; the percentages will move and this entry must
 be re-checked against them before the Limitations text ships.
 
+---
+
+## 2026-08-05 — STATISTIC A ON THE FAT CONTRAST: I overstated the erosion by 2–4x
+
+The statistic-A re-solve landed (32.7 min, per-direction arrays saved). **It
+retracts the most alarming claim in my previous entry.**
+
+| muscle | gap WITH contrast | WITHOUT | change (A) | change (B, superseded) |
+|---|---|---|---|---|
+| temporalis | −3.801 | **−4.923** | **−1.121** | −1.172 |
+| sternocleidomastoid | −1.958 | **−1.547** | **+0.411 (21%)** | +1.361 (42%) |
+| lateral_pterygoid | −1.855 | **−1.532** | **+0.323 (17%)** | +0.815 (65%) |
+| medial_pterygoid | +1.147 | +1.245 | +0.098 | +0.179 |
+| mentalis | +21.945 | +19.083 | −2.863 | −1.697 |
+
+**RETRACTED: "lateral pterygoid falls below the floor's CI upper bound without
+the contrast."** That was statistic B, which put it at −0.442 dB. Under
+statistic A it is **−1.532 dB**, comfortably clear of the 0.65 dB CI upper
+bound. The claim that its ear advantage is materially dependent on the fat
+contrast **does not survive the correct statistic** and must not ship.
+
+**The direction survives; the magnitude does not.** Both statistics agree on
+sign for all three — the contrast suppresses temporalis and inflates SCM and
+lateral pterygoid — but B overstated the erosion by roughly **two to four
+times**. The honest range is **17–21%**, not 42–65%.
+
+**Why B was so wrong here.** B differences two per-site medians that need not
+occur at the same orientation, and the fat swap changes the field's *direction*
+as well as its magnitude, so the two conditions' medians drift to different
+orientations. That is exactly the failure mode the A/B distinction exists to
+prevent, and it happened to be large in this comparison because a conductivity
+change reshapes the current path rather than merely scaling it.
+
+**Corrected consequence for transferability**, superseding the ranking in the
+previous entry:
+
+- **temporalis** — the contrast suppresses its advantage by 1.12 dB. Reported
+  conservatively; most transferable. *(unchanged)*
+- **sternocleidomastoid** — 21% of the advantage rests on the contrast, not
+  42%. Partially transferable, and the caveat is milder than stated.
+- **lateral pterygoid** — 17%, not 65%, and it stays clear of the floor without
+  the contrast. **It is not the fragile result I reported it to be.**
+
+The generalisation correction in the previous entry stands in its structure —
+mechanism attribution does predict transferability, and the population median
+does not decompose per muscle — but its worked numbers were B and are replaced
+by the table above.
+

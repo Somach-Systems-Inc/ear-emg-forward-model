@@ -692,7 +692,7 @@ survives into all of them.
 | 6 | Electrode meshing | contact area from incidental surface triangulation | yes | **yes — per-site** | **0.27 dB, 95 % CI [0.17, 0.65], n = 6** |
 | 7 | Single anatomy | MIDA is one subject | yes | unknown | not quantifiable from one head |
 | 8 | Delivered current | injected vs requested per solve | yes | bounded by row 6 | 0.887–1.075 × requested across 22 solves |
-| 9 | Adipose conductivity | fat at 0.025 vs muscle S/m | yes | yes | **0.33 dB on the jaw-vs-ear gap** |
+| 9 | Adipose conductivity | fat at 0.025 vs muscle 0.355 S/m | yes | **yes — and the SIGN differs by muscle** | **−0.690 dB across sites** (median over 22, jaw −2.873 vs ear −2.183). Per muscle, statistic A: temporalis **−1.12 dB** (the contrast SUPPRESSES its ear advantage); sternocleidomastoid **+0.41 dB** (21% of its advantage); lateral pterygoid **+0.32 dB** (17%); labial group 0.2–2.9 dB, 2–13% of gaps reaching 21.9 dB. A single percentage is not admissible here — it hides a sign that differs by muscle. |
 
 Row 6 is measured by rotating the electrode array and the source points together
 on a fixed mesh, which preserves every source-to-electrode vector (verified to

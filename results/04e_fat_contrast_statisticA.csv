@@ -1,0 +1,11 @@
+muscle,gap_with_contrast_A,gap_without_contrast_A,change_dB
+temporalis,-3.8011,-4.9225,-1.1214
+sternocleidomastoid,-1.9582,-1.5471,0.4111
+lateral_pterygoid,-1.8548,-1.5321,0.3226
+medial_pterygoid,1.1468,1.245,0.0982
+masseter,1.6997,1.6676,-0.032
+mentalis,21.9455,19.0825,-2.8629
+buccinator,10.0328,9.8482,-0.1846
+orbicularis_oris,8.1924,9.2856,1.0932
+depressor_anguli_oris,14.6066,14.0006,-0.6061
+platysma,8.8443,8.9013,0.0569
