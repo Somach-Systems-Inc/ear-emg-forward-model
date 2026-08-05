@@ -3647,3 +3647,48 @@ projection is not introducing a global shift; under `|E|` that control sat at
 `|E|`, its −0.332 dB differential is a norm-based number, and Table 3 row 9 and
 §3.3 stay blocked until that re-solve lands.
 
+---
+
+## 2026-08-05 — Fat swap under projection: the differential DOUBLES
+
+Re-solved with the orientation projection (22 solves). The `|E|` numbers are
+void.
+
+| | \|E\| (void) | projected |
+|---|---|---|
+| per-site shift range | −3.91 .. −2.36 | **−3.66 .. −1.85 dB** |
+| jaw median | −3.172 | **−2.873 dB** |
+| ear median | −2.840 | **−2.183 dB** |
+| **differential** | −0.332 | **−0.690 dB** |
+| vs the 0.27 dB floor | 1.2× | **2.5×** |
+
+**The material contribution is twice what the norm-based number said**, and
+this is the largest correction the projection has produced anywhere. The
+direction is unchanged — the fat/muscle contrast still favours the jaw, so
+erasing it would shrink the jaw's advantage — but the magnitude is no longer
+negligible against the smaller gaps.
+
+**What this does to the "geometric, not material" claim**, using statistic A
+medians:
+
+| muscle | gap (A) | material share |
+|---|---|---|
+| mentalis | +21.95 | **3.1%** |
+| depressor anguli oris | +14.61 | 4.7% |
+| buccinator | +10.03 | 6.9% |
+| temporalis | −3.80 | **18%** |
+| sternocleidomastoid | −1.96 | **35%** |
+| lateral pterygoid | −1.85 | **37%** |
+| medial pterygoid | +1.15 | **60%** |
+
+**The claim survives for the labial group and weakens sharply for the three
+ear-favouring muscles.** At 3–7% of the effect the mechanism for the jaw's
+dominance over the labial articulators is geometric and may be stated as such.
+At 18–37% the material term is a substantial minority of the ear advantages,
+and §3.3 must not generalise the geometric reading to them. For
+`medial_pterygoid` the material term is larger than the gap itself, which is a
+fourth independent reason it supports no claim.
+
+**§3.3 and Table 3 rows 4 and 9 are now unblocked but must be rewritten to the
+projected numbers, and the generalisation narrowed. That wording is Carl's.**
+
