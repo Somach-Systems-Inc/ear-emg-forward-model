@@ -47,9 +47,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 import config                      # noqa: E402
 import solve_invariants as SI      # noqa: E402
+import orientation                 # noqa: E402
 
 WORKDIR = config.RESULTS / "leadfields"
-OUT_CSV = config.RESULTS / "03_fat_swap.csv"
+OUT_CSV = config.RESULTS / "03_fat_swap_projected.csv"
 ELECTRODE_SURFACE_TAGS = [2101, 2102]
 
 # Both MIDA adipose labels, read from Table 1 rather than hardcoded by name.
@@ -84,16 +85,16 @@ def compartment_medians(m, E):
     tets = m.elm.elm_type == 4
     tags = m.elm.tag1[tets]
     vols = m.elements_volumes_and_areas()[tets]
-    mag = np.linalg.norm(E[tets], axis=1)
+    # PROJECTED, not the norm. |E| is the upper bound over source orientations
+    # and is not the lead field; anything downstream of a lead-field value must
+    # be the projected quantity.
+    Et = E[tets]
     out = {}
     for name in MUSCLE_NAMES:
         k = tags == _LAB[name]
         if not k.any():
             continue
-        v, w = mag[k], vols[k]
-        o = np.argsort(v)
-        c = np.cumsum(w[o])
-        out[name] = float(v[o][np.searchsorted(c, 0.5 * c[-1])])
+        out[name] = float(orientation.sweep(Et[k], weights=vols[k])["median"])
     return out
 
 

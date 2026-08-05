@@ -51,19 +51,33 @@ def main(argv=None) -> int:
     m["grp"] = np.where(m.montage == "jaw", "jaw", "retroauricular")
     fig, ax = plt.subplots(figsize=(6.4, 4.4))
 
+    # THE OVERLAPPING RANGE. Fitting each montage over its own distance span
+    # and then comparing slopes compares two different intervals: the jaw sites
+    # reach 87 mm, the retroauricular ones 156 mm, and a slope quoted over a
+    # longer lever arm is not comparable to one over a shorter. Both are
+    # therefore fitted over the INTERSECTION, and the own-range fits are
+    # reported alongside so the difference is visible rather than hidden.
+    lo = max(m[m.grp == g].dist_mm.min() for g in ("jaw", "retroauricular"))
+    hi = min(m[m.grp == g].dist_mm.max() for g in ("jaw", "retroauricular"))
+    print(f"  overlapping range: {lo:.0f}-{hi:.0f} mm")
+    fits = {}
     for grp, colour, mk in (("jaw", rc.JAW_ADVANTAGE, "o"),
                             ("retroauricular", rc.EAR_ADVANTAGE, "s")):
         g = m[m.grp == grp]
         ax.scatter(g.dist_mm, g.db_rel_best_jaw, s=14, marker=mk,
                    facecolor=colour, edgecolor=rc.SURFACE, linewidth=0.4,
                    alpha=0.85, label=f"{grp} (n={len(g)})", zorder=3)
-        # least-squares trend per group, reported with its slope
-        if len(g) > 2:
-            b, c = np.polyfit(g.dist_mm, g.db_rel_best_jaw, 1)
-            xs = np.linspace(g.dist_mm.min(), g.dist_mm.max(), 50)
-            ax.plot(xs, b * xs + c, color=colour, lw=1.4, alpha=0.65, zorder=2)
-            print(f"  {grp:<16} slope {b:+.3f} dB/mm  over "
-                  f"{g.dist_mm.min():.0f}-{g.dist_mm.max():.0f} mm")
+        own = np.polyfit(g.dist_mm, g.db_rel_best_jaw, 1)[0]
+        ov = g[(g.dist_mm >= lo) & (g.dist_mm <= hi)]
+        b, c = np.polyfit(ov.dist_mm, ov.db_rel_best_jaw, 1)
+        fits[grp] = b
+        xs = np.linspace(lo, hi, 50)
+        ax.plot(xs, b * xs + c, color=colour, lw=1.6, alpha=0.75, zorder=2)
+        print(f"  {grp:<16} overlap-fit {b:+.3f} dB/mm   "
+              f"own-range fit {own:+.3f} over "
+              f"{g.dist_mm.min():.0f}-{g.dist_mm.max():.0f} mm  (n={len(ov)})")
+    ratio = fits["retroauricular"] / fits["jaw"]
+    print(f"  slope ratio over the overlap: {ratio:.2f}x")
 
     ax.axhline(0, color=rc.INK_PRIMARY, lw=0.9, zorder=4)
     ax.set_xlabel("distance from electrode to nearest voxel of the muscle (mm)",
@@ -82,7 +96,8 @@ def main(argv=None) -> int:
     ax.text(0, 1.045,
             f"one point per (electrode, muscle) pair   ·   {a.condition}, "
             f"{a.mesh}   ·   0 dB = each muscle's best jaw site   ·   "
-            f"lines are least-squares fits per montage",
+            f"lines are least-squares fits over the OVERLAPPING "
+            f"{lo:.0f}-{hi:.0f} mm range",
             transform=ax.transAxes, va="bottom", ha="left",
             fontsize=6.3, color=rc.INK_SECONDARY)
 
