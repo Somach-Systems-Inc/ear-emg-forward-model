@@ -453,7 +453,7 @@ no directional claim.
 ### 3.2 The result does not depend on the isotropy assumption
 
 Sternocleidomastoid carries a fibre tensor, and its jaw-versus-ear gap moves
-from −3.21 dB to −1.77 dB — still an ear advantage, and roughly six times the
+from −1.958 dB to −2.043 dB, a change of −0.085 dB — still an ear advantage, and roughly seven times the
 measured floor. The other two ear-favouring muscles move by +0.11 dB
 (temporalis) and −0.06 dB (lateral pterygoid); neither carries a tensor, so
 those shifts are the small global redistribution caused by changing conductivity
@@ -703,7 +703,7 @@ survives into all of them.
 | 1 | Discretisation | finite element size | yes | partly | not separable from term 6 at current precision |
 | 2 | Interface proximity | source near a conductivity boundary | yes | yes | requires a geometry decoupling eccentricity from interface distance; not measured |
 | 3 | Inferior boundary | MIDA's cut face | yes | yes — jaw sites, not ear | unquantified; bounded by §3.4 |
-| 4 | Muscle anisotropy | σ tensor vs scalar | yes | yes | **statistic B** (per-direction aniso data not stored, so A is unavailable): SCM gap −3.21 → −1.77 dB, change **+1.45**; medial pterygoid +0.32 → +0.52, change +0.20. Tensor applied to 2 of 10 compartments; all others NOT APPLIED |
+| 4 | Muscle anisotropy | σ tensor vs scalar | yes | **no — below the floor** | **statistic A**: SCM gap −1.958 → −2.043 (**−0.085 dB**); medial pterygoid +1.147 → +1.136 (−0.010); temporalis +0.137; lateral pterygoid +0.036. Every change is below the 0.27 dB floor. Tensor applied to 2 of 10 compartments; all others NOT APPLIED |
 | 5 | Fibre orientation | n̂ unknown in MIDA | yes | yes | per-muscle min–max envelope |
 | 6 | Electrode meshing | contact area from incidental surface triangulation | yes | **yes — per-site** | **0.27 dB, 95 % CI [0.17, 0.65], n = 6** |
 | 7 | Single anatomy | MIDA is one subject | yes | unknown | not quantifiable from one head |

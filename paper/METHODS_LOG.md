@@ -3973,3 +3973,45 @@ rather than a fraction; platysma's 0.6% is close enough to zero that its share
 is poorly determined and it is also the most influential point in the
 correlation.
 
+---
+
+## 2026-08-05 — ANISOTROPY UNDER STATISTIC A: no effect on any gap. B was wrong by 17x AND flipped the sign.
+
+Carl's concern was that a proportional shrink under A would put SCM near
+−0.5 dB, inside the floor's 0.65 dB CI upper bound, invalidating the paper's own
+result. **It does not. The concern is resolved, and in the paper's favour.**
+
+| muscle | iso (A) | aniso (A) | change (A) | change (B, superseded) |
+|---|---|---|---|---|
+| **sternocleidomastoid** | −1.958 | **−2.043** | **−0.085** | **+1.448** |
+| medial_pterygoid | +1.147 | +1.136 | −0.010 | +0.199 |
+| temporalis | −3.801 | −3.664 | +0.137 | — |
+| lateral_pterygoid | −1.855 | −1.819 | +0.036 | — |
+
+**Every change is below the 0.27 dB floor point estimate.** Anisotropy has no
+resolvable effect on any jaw-versus-ear gap. SCM stays at −2.043 dB, clear of
+the floor and of its CI upper bound, and anisotropy makes it very slightly
+**more** ear-favouring rather than less.
+
+**Statistic B was wrong by a factor of 17 and in the opposite direction**
+(+1.448 against −0.085). This is the second time B has misled on a
+conductivity-change comparison, and the second time with a sign flip. The cause
+is the same: changing a conductivity reshapes the current path, so the two
+conditions' per-site medians drift to different orientations and differencing
+them measures that drift rather than the physics. **B should not be used for
+any conductivity-change comparison in this project again.** It survives only
+where no per-orientation form exists — Fig 2's per-site matrix.
+
+**Because this result flatters the paper, it deserves the extra scrutiny that
+implies.** Three checks: the direction of the SCM change is *toward* the
+paper's claim yet its magnitude is negligible either way, so nothing turns on
+the sign; the non-tensor compartments act as a control and returned +0.27 dB
+under projection; and the same pipeline produced the *unfavourable* fat-swap
+result an hour earlier, so it is not systematically biased toward agreeable
+answers.
+
+**Updated in the manuscript:** §3.2 prose and Table 3 row 4, which now records
+the anisotropy term as **not affecting site-to-site ratios** — a change of
+classification in the error budget's second column, not merely a change of
+number.
+
