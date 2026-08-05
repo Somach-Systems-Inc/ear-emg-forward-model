@@ -3555,3 +3555,46 @@ angles, isotropic in FIBRE_MODEL), so its 69% sweep fraction stands as the
 honest statistic, and its advantage remains genuinely conditioned on fibre
 direction.
 
+---
+
+## 2026-08-04 — |E| CONTAMINATION AUDIT: what was downstream of the norm
+
+Asked which artifacts carried the orientation-free norm rather than the
+projected lead field. **Almost all of them.** All three solve scripts compute
+`np.linalg.norm(E)`, and everything derived from them inherited it.
+
+| artifact | carried | status |
+|---|---|---|
+| `03_leadfields.csv` (iso) | **\|E\|** | kept as the raw record; superseded downstream |
+| `04_sensitivity.csv`, `04_sensitivity_matrix_dB.csv`, `04_jaw_vs_ear_gap.csv` | **\|E\|** | **REGENERATED** from `04b_orientation.csv`'s `lf_median` |
+| Fig 2, Fig 3 | **\|E\|** | **RE-RENDERED** |
+| `03_leadfields_aniso.csv`, Fig 4, Table 3 row 4 | **\|E\|** | **cannot be recomputed** — `03f` saved only medians, no mesh, so the field is gone. Re-solving with projection, 22 solves. |
+| `03_fat_swap.csv` | **\|E\|** | same problem, same fix, still owed |
+| `04b`, `04d`, Fig 5 | projected | already correct |
+
+**Projected gaps replace the norm-based ones.** The three ear advantages
+survive and the picture sharpens:
+
+| muscle | \|E\| gap | projected gap |
+|---|---|---|
+| temporalis | −3.92 | **−3.31** |
+| sternocleidomastoid | −3.41 | **−3.21** |
+| lateral_pterygoid | −1.69 | **−1.26** |
+| medial_pterygoid | +0.62 | **+0.32** |
+| mentalis | +22.78 | +21.90 |
+
+Median gap over all jaw sites moves **+6.45 → +5.22 dB**.
+
+**A guard was added rather than a note.** `04_analyze.py` now REFUSES to merge
+`03_leadfields_aniso.csv` and says why: putting a norm and a projection in one
+column would make Fig 4 a comparison between two different physical
+quantities, which is the same class of error as comparing a condition against
+itself. It reads `03_leadfields_aniso_projected.csv` or reports the absence.
+
+**The lesson is the one already in CLAUDE.md, arriving from a new direction.**
+Methods stated the lead field as `E·n̂` from the first draft. The code computed
+`|E|` from the first solve. Neither was wrong in isolation; nothing compared
+them, and every artifact built downstream inherited the mismatch silently for
+the whole project. A stated definition and an implemented one are two channels,
+and no test in this repo was watching the gap between them.
+

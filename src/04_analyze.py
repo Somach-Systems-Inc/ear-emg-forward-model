@@ -57,6 +57,26 @@ def read_floor():
     raise RuntimeError(f"no numeric floor value in {f}")
 
 
+def load_projected():
+    """Lead field = orientation median of |E.n_hat|, from 04b_orientation.csv.
+
+    THE NORM IS NOT THE LEAD FIELD. Stage 3 wrote the volume-weighted median of
+    |E|, which is the upper bound over source orientations; Methods defines the
+    lead field as E.n_hat. Everything downstream of a lead-field value -- the
+    dB matrix, the gaps, Figs 2/3/4, Table 3 row 4 -- must use the projected
+    quantity. This pivots 04b's long form into the wide layout the rest of the
+    stage expects, so there is exactly one place where the choice is made.
+    """
+    o = pd.read_csv(config.RESULTS / "04b_orientation.csv")
+    w = o.pivot_table(index="electrode", columns="muscle", values="lf_median")
+    base = pd.read_csv(config.RESULTS / "03_leadfields.csv").set_index(
+        "electrode")
+    meta = base[["condition", "montage", "side", "depth_mm",
+                 "clearance_to_cut_mm", "calibration_pct"]]
+    d = meta.join(w, how="inner").reset_index()
+    return d
+
+
 def load(csv_path: Path):
     d = pd.read_csv(csv_path)
     missing = [m for m in MUSCLE_NAMES if m not in d.columns]
@@ -116,13 +136,15 @@ def main(argv=None) -> int:
                     default=config.RESULTS / "03_leadfields.csv")
     a = ap.parse_args(argv)
 
-    d = load(a.csv)
+    d = load_projected()
     floor = read_floor()
     db, ref = db_matrix(d)
 
     print("STAGE 4 — sensitivity matrix and the jaw-versus-ear budget")
     print("=" * 74)
     print(f"  solves            : {len(d)}")
+    print(f"  lead field        : ORIENTATION MEDIAN of |E.n_hat| "
+          f"(04b_orientation.csv), not |E|")
     print(f"  muscles           : {len(MUSCLE_NAMES)}")
     print(f"  measured per-site floor : {floor:.3f} dB "
           f"(95% CI [0.17, 0.65]; every claim below is read against it)")
@@ -249,7 +271,15 @@ def main(argv=None) -> int:
     # conditions in one long file; it is absent until 03f_aniso_solve.py runs,
     # and its absence is reported rather than silently producing an iso-only
     # figure that looks complete.
-    ani_path = config.RESULTS / "03_leadfields_aniso.csv"
+    # The PROJECTED aniso file only. 03_leadfields_aniso.csv carries |E| and
+    # must not be merged into a contract file whose iso half is projected --
+    # that would put two different physical quantities in one column and make
+    # Fig 4 a comparison between a norm and a projection.
+    ani_path = config.RESULTS / "03_leadfields_aniso_projected.csv"
+    stale = config.RESULTS / "03_leadfields_aniso.csv"
+    if stale.exists() and not ani_path.exists():
+        print(f"  NOTE: {stale.name} exists but carries |E|, not the projected "
+              f"quantity, and is REFUSED. Re-run src/03f_aniso_solve.py.")
     if ani_path.exists():
         ad = pd.read_csv(ani_path)
         alf = ad.set_index("electrode")

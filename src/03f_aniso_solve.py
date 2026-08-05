@@ -47,10 +47,11 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 import config                      # noqa: E402
+import orientation                 # noqa: E402
 import solve_invariants as SI      # noqa: E402
 
 WORKDIR = config.RESULTS / "leadfields"
-OUT_CSV = config.RESULTS / "03_leadfields_aniso.csv"
+OUT_CSV = config.RESULTS / "03_leadfields_aniso_projected.csv"
 ELECTRODE_SURFACE_TAGS = [2101, 2102]
 
 MUSCLE_NAMES = [n for n, _g, lab, _e in config.MUSCLES if lab is not None]
@@ -66,21 +67,32 @@ def _load_builder():
     return mod
 
 
-def compartment_medians(m, E):
-    """Volume-weighted median |E| per segmented muscle compartment."""
+def compartment_medians(m, E, projected=True):
+    """Per-compartment lead field.
+
+    projected=True returns the ORIENTATION MEDIAN of |E.n_hat| over a uniform
+    hemisphere sweep -- the quantity Methods defines. projected=False returns
+    the volume-weighted median of |E|, the orientation-free norm, which is the
+    upper bound over orientations and is NOT the lead field. Everything
+    downstream of a lead-field value must use the projected quantity.
+    """
     tets = m.elm.elm_type == 4
     tags = m.elm.tag1[tets]
     vols = m.elements_volumes_and_areas()[tets]
-    mag = np.linalg.norm(E[tets], axis=1)
+    Et = E[tets]
     out = {}
     for name in MUSCLE_NAMES:
         k = tags == _LAB[name]
         if not k.any():
             continue
-        v, w = mag[k], vols[k]
-        o = np.argsort(v)
-        c = np.cumsum(w[o])
-        out[name] = float(v[o][np.searchsorted(c, 0.5 * c[-1])])
+        w = vols[k]
+        if projected:
+            out[name] = float(orientation.sweep(Et[k], weights=w)["median"])
+        else:
+            v = np.linalg.norm(Et[k], axis=1)
+            o = np.argsort(v)
+            c = np.cumsum(w[o])
+            out[name] = float(v[o][np.searchsorted(c, 0.5 * c[-1])])
     return out
 
 
