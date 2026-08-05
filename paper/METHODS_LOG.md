@@ -4102,3 +4102,40 @@ Regenerated: `04d_orientation_sign.csv`/`.npz` (now also storing per-electrode
 per-direction arrays, which is what made the renormalisation checkable),
 `04_sensitivity.csv`, `04_sensitivity_matrix_dB.csv`, and Figs 2, 3, 4, 5.
 
+---
+
+## 2026-08-05 — PRE-COMMITTED READING: the homogeneous-scalp control
+
+**Written before the solve finished. No numbers exist yet.**
+
+Every non-muscle extracerebral soft tissue — skin, fat, cartilage,
+tendon/ligament, mucosa, salivary gland, dura, intervertebral disc — is
+collapsed to a single conductivity (0.465 S/m, the conventional scalp value)
+with **geometry held exactly fixed**. Muscle keeps its own value, because
+muscle is the source compartment; collapsing it would remove the thing being
+measured rather than the thing being tested. Bone, brain, CSF, eye, blood and
+air are untouched. The question is whether the **detailed soft-tissue stack**
+is what produces complementarity.
+
+This is the HArtMuT-class idealisation: those models radiate muscle sources
+through homogeneous scalp, and their authors say so in print.
+
+### The two readings, fixed now
+
+**If complementarity SURVIVES** — the same muscles favour the same montages,
+with gaps within the floor of the detailed model — then **the detailed volume
+conductor is not what produces the result.** A homogeneous-scalp model would
+have reached the same conclusion, HArtMuT-class models suffice for this
+question, and the paper's contribution is the electrode-coupling analysis, not
+the tissue detail. **The paper reframes as an application study and says so
+plainly in the Introduction.** That is a real reduction in the novelty claim
+and it will be stated, not buried in a limitation.
+
+**If complementarity DOES NOT survive** — muscles change montage, or gaps move
+by more than the floor — then the detailed conductor is load-bearing, the
+novelty claim becomes **measured rather than argued**, and it moves into
+Results with the numbers attached.
+
+**Either outcome publishes.** The analysis will not be tuned toward the second,
+and the reading above is recorded before the data exists so that it cannot be.
+
