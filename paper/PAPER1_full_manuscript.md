@@ -37,16 +37,17 @@ narrower than an unmatched comparison suggests. Five articulators —
 orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma —
 favour the jaw montage at every sampled orientation and at every electrode
 subsample. **No muscle robustly favours the retroauricular montage.** The
-strongest ear-leaning candidate, temporalis, reaches only −1.15 dB once its
-fibre field is derived from the anatomy rather than assumed uniform, and its
-matched-count interval is [−1.45, +5.46]: half of four-site retroauricular
-subsets favour the jaw instead. Masseter and medial pterygoid
+strongest ear-leaning candidate, temporalis, reaches −2.62 dB under a uniform
+orientation sweep and −1.15 dB once its fibre field is derived from the anatomy
+rather than assumed; both intervals cross zero ([−2.85, +0.17] and
+[−1.45, +5.46]), so the result depends on which four retroauricular sites a
+device carries. Masseter and medial pterygoid
 favour the jaw robustly across electrode selection but reverse in roughly a
 third of orientations. Sternocleidomastoid and lateral pterygoid show no
 preference that survives electrode subsampling: their intervals cross zero, so
 the apparent advantage depends on which four sites are available. Electrode
 placement chosen by anatomical target outperforms arbitrary placement around
-the ear by up to 1.03 dB. A control in which every non-muscle soft tissue is
+the ear by up to 1.70 dB. A control in which every non-muscle soft tissue is
 set to a single conductivity reproduces every montage assignment unchanged
 while misstating gap magnitudes by up to 3.27 dB.
 
@@ -463,17 +464,19 @@ acquired.
 > temporalis is decided by which four electrodes a device happens to carry, not
 > by the anatomy.
 >
-> The larger figures this section previously reported (−2.571 dB, 92.0 per cent,
-> an interval of [−3.31, −0.03]) came from sweeping source orientation uniformly
-> over the sphere. That is the right treatment for a muscle whose fibre direction
-> is unknown and the wrong one for temporalis, whose fibres fan onto a single
-> identifiable insertion; the derived field is both more specific and less
-> favourable.
+> **Two independent treatments reach the same verdict.** Under a uniform
+> orientation sweep, which makes no assumption about fibre direction, temporalis
+> reaches −2.624 dB with 93.5 per cent of orientations agreeing and an interval
+> of **[−2.855, +0.170]** — larger in magnitude, and still crossing zero. Under
+> the derived fibre field, which is specific to this muscle's anatomy, it reaches
+> −1.147 dB with an interval of [−1.453, +5.458]. The assumption-free treatment
+> and the anatomy-specific one disagree about the magnitude by a factor of two
+> and agree that it is not resolvable.
 >
 > **Two show no preference that survives electrode subsampling.**
-> Sternocleidomastoid (−0.973 dB at the cluster, 60.5 per cent of orientations,
-> interval [−1.40, +1.27]) and lateral pterygoid (−1.564 dB, 65.5 per cent,
-> [−1.59, +1.33]) both have intervals crossing zero. Their apparent advantage
+> Sternocleidomastoid (−0.411 dB at the cluster, 54.5 per cent of orientations,
+> interval [−1.03, +1.19]) and lateral pterygoid (−1.717 dB, 66.0 per cent,
+> [−1.72, +1.69]) both have intervals crossing zero. Their apparent advantage
 > depends on which four sites are available and is not a property of the
 > montage. Reported at the unmatched argmax over fourteen sites they would read
 > −1.402 and −1.679 dB, which is why the matched comparison is the one reported.
@@ -523,9 +526,13 @@ is best differs by muscle and the shift is not uniform within a montage:
 
 | Muscle | As modelled | Without contrast | Change | Share of gap |
 |---|---|---|---|---|
-| temporalis | −1.15 (per-voxel fan) | **no**, [−1.45, +5.46] | 91.5 % over the derived fan | **no resolvable preference** |
-| sternocleidomastoid | −1.958 | −1.547 | +0.411 | 21 % |
-| lateral pterygoid | −1.855 | −1.532 | +0.323 | 17 % |
+| temporalis | −2.62 | **no**, [−2.85, +0.17] | 93.5 % | **no resolvable preference** |
+
+Temporalis is reported here under the uniform orientation sweep for comparability
+with the other nine muscles. Under its derived fibre field (§2.5.1) it reads
+−1.15 dB with an interval of [−1.45, +5.46]; the verdict is unchanged.
+| sternocleidomastoid | −0.41 | **no**, [−1.03, +1.19] | 54.5 % | **no resolvable preference** |
+| lateral pterygoid | −1.72 | **no**, [−1.72, +1.69] | 66.0 % | **no resolvable preference** |
 
 For the labial group, where the jaw wins by 8.2 to 21.9 dB, the contrast accounts
 for 0.6 to 13.3 per cent of the gap. For the three muscles the ear wins it accounts for
@@ -581,8 +588,8 @@ construction rather than by luck.
 > below the lobule, and anterior to the tragus — was specified by anatomical
 > target in the project repository before any solve was run. Compared against
 > the median of random four-site draws from the same fourteen candidates, it is
-> 1.03 dB better for lateral pterygoid (−1.564 against −0.534) and equivalent
-> for sternocleidomastoid (−0.973 against −0.979).
+> 1.70 dB better for lateral pterygoid (−1.717 against −0.015) and equivalent
+> for sternocleidomastoid (−0.411 against −0.426).
 >
 > Neither of the two sites that won the unmatched argmax for temporalis and
 > sternocleidomastoid is in that cluster, which is the same point from the other
@@ -691,7 +698,7 @@ and it is testable in any second anatomy.
 ### 4.4 What this licenses for device design
 
 The design statement this supports is a negative one with a number attached. A
-retroauricular montage loses the labial group by 9.0 to 21.2 dB, and buys
+retroauricular montage loses the labial group by 8.6 to 20.2 dB, and buys
 nothing reliable in return. No articulator in this study favours the
 retroauricular montage once source orientation and electrode count are
 controlled.
@@ -762,9 +769,8 @@ control is individually standard and none was applied in response to the result.
 | field magnitude, best of 14 ear sites | −3.92 dB |
 | projected onto source orientation | −3.31 dB |
 | renormalised by measured delivered current | −2.93 dB |
-| matched electrode counts, four sites each | −2.62 dB |
-| derived per-voxel fibre field | −1.15 dB |
-| matched-count interval on the derived field | **[−1.45, +5.46], spans zero** |
+| matched electrode counts, four sites each | −2.62 dB, **interval [−2.85, +0.17] spans zero** |
+| derived per-voxel fibre field | −1.15 dB, interval [−1.45, +5.46] |
 
 Five corrections, each motivated by a different defect, each moving the estimate
 the same way. Reporting the field magnitude rather than the lead field projected
@@ -897,16 +903,16 @@ its own between-subject variance.
 
 | Muscle | Gap (dB) | Site-robust (random-4 95% CI) | Orientation agreement | Verdict |
 |---|---|---|---|---|
-| mentalis | +21.24 | yes, [+20.90, +24.03] | 100.0 % | **jaw, robust on both axes** |
-| depressor anguli oris | +14.70 | yes, [+13.78, +17.22] | 100.0 % | **jaw, robust on both axes** |
-| buccinator | +10.24 | yes, [+9.24, +12.85] | 100.0 % | **jaw, robust on both axes** |
-| orbicularis oris | +8.99 | yes, [+7.98, +11.42] | 100.0 % | **jaw, robust on both axes** |
-| platysma | +10.01 | yes, [+8.88, +12.72] | 100.0 % | **jaw, robust on both axes** |
-| masseter | +2.22 | yes, [+1.65, +5.79] | 68.5 % | **jaw, site-robust but orientation-dependent** |
-| medial pterygoid | +1.25 | yes, [+1.14, +3.34] | 65.5 % | **jaw, site-robust but orientation-dependent** |
-| sternocleidomastoid | -0.97 | **no**, [-1.40, +1.27] | 60.5 % | **no resolvable preference** |
-| lateral pterygoid | -1.56 | **no**, [-1.59, +1.33] | 65.5 % | **no resolvable preference** |
-| temporalis | -1.15 (per-voxel fan) | **no**, [-1.45, +5.46] | 91.5 % over the derived fan | **no resolvable preference** |
+| mentalis | +20.20 | yes, [+19.76, +23.07] | 100.0 % | **jaw, robust on both axes** |
+| depressor anguli oris | +13.97 | yes, [+13.29, +16.82] | 100.0 % | **jaw, robust on both axes** |
+| buccinator | +9.37 | yes, [+8.67, +12.14] | 100.0 % | **jaw, robust on both axes** |
+| orbicularis oris | +8.59 | yes, [+8.57, +11.85] | 100.0 % | **jaw, robust on both axes** |
+| platysma | +10.13 | yes, [+9.17, +12.50] | 100.0 % | **jaw, robust on both axes** |
+| masseter | +2.33 | yes, [+1.84, +6.30] | 69.5 % | **jaw, site-robust but orientation-dependent** |
+| medial pterygoid | +1.38 | yes, [+1.18, +3.65] | 65.0 % | **jaw, site-robust but orientation-dependent** |
+| sternocleidomastoid | -0.41 | **no**, [-1.03, +1.19] | 54.5 % | **no resolvable preference** |
+| lateral pterygoid | -1.72 | **no**, [-1.72, +1.69] | 66.0 % | **no resolvable preference** |
+| temporalis | -2.62 | **no**, [-2.85, +0.17] | 93.5 % | **no resolvable preference** |
 
 ---
 

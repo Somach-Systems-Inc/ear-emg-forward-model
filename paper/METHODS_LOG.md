@@ -4476,3 +4476,65 @@ only, because that is where a reviewer pressed. Saying so points at the obvious
 next study rather than leaving a gap — and given what deriving it did to
 temporalis, the other nine are not safe to assume.
 
+---
+
+## 2026-08-06 — 04h regenerated through the renormalised path
+
+`04h_matched_counts.csv` and `04j_two_axis_verdict.csv` had **no generating
+script**. They were produced interactively, could not be regenerated from a
+clean checkout, and had silently diverged from Methods §2.4, which states that
+every lead field is renormalised by its own measured delivered current.
+`04_analyze.py:load_projected` renormalises; `04k` renormalises at line 94; the
+ad hoc tables did not. Now `src/04h_matched_counts.py`.
+
+### Before / after, all ten muscles
+
+| muscle | before | after | delta |
+|---|---|---|---|
+| mentalis | +21.236 | **+20.201** | -1.035 |
+| depressor anguli oris | +14.698 | **+13.968** | -0.730 |
+| platysma | +10.008 | +10.133 | +0.126 |
+| buccinator | +10.236 | **+9.371** | -0.865 |
+| orbicularis oris | +8.995 | **+8.590** | -0.405 |
+| masseter | +2.218 | +2.328 | +0.110 |
+| medial pterygoid | +1.254 | +1.376 | +0.122 |
+| sternocleidomastoid | -0.973 | -0.411 | +0.562 |
+| lateral pterygoid | -1.564 | -1.717 | -0.153 |
+| temporalis | -2.571 | -2.624 | -0.053 |
+
+**One verdict changes: temporalis, `ear, robust on both axes` -> `no resolvable
+preference`.** Its interval moves from [-3.308, -0.035] to **[-2.855, +0.170]**.
+
+That is the significant part. **Temporalis was already unresolvable under a
+uniform orientation sweep, before the derived fibre field was computed at all.**
+The fan analysis and the renormalisation are independent corrections that reach
+the same verdict from different directions -- one anatomy-specific, one
+assumption-free -- and they disagree about the magnitude by a factor of two
+(-1.147 vs -2.624) while agreeing it does not resolve. §3.1 now reports both.
+
+The old interval excluded zero by 0.035 dB. It was never a result; it was a
+rounding margin on a table that had skipped a pipeline stage.
+
+### Also corrected
+
+- **Labial range 8.99-21.24 -> 8.59-20.20 dB** (Abstract, §4.4, README).
+- **Placement advantage 1.03 -> 1.70 dB** (§3.6, Abstract). Lateral pterygoid is
+  -1.717 at the anatomical cluster against -0.015 at the random-draw median;
+  sternocleidomastoid stays equivalent (-0.411 vs -0.426). **The placement
+  finding strengthens under the correction**, which is worth stating plainly
+  given that every other correction this week went the other way.
+- Orientation-agreement percentages: SCM 60.5->54.5, temporalis 92.0->93.5,
+  masseter 68.5->69.5, medial pterygoid 65.5->65.0, lateral pterygoid 65.5->66.0.
+- Both copies of Table 4 rebuilt directly from the regenerated CSV rather than
+  edited by hand.
+
+### The cascade, final
+
+| stage | temporalis |
+|---|---|
+| field magnitude, best of 14 | -3.92 |
+| projected onto source orientation | -3.31 |
+| renormalised by delivered current | -2.93 |
+| matched electrode counts | -2.62, **interval [-2.85, +0.17] spans zero** |
+| derived per-voxel fibre field | -1.15, interval [-1.45, +5.46] |
+

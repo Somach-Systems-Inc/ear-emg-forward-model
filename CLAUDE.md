@@ -208,6 +208,23 @@ downstream number, and left Table 3 row 8 still reading "bounded by row 6" —
 with every number in that row correct. The audit found it by grep, not by
 reading.
 
+**Wording supplied by Carl carries placeholders for every number, keyed to a
+source file. Do not transcribe numbers out of prose — fill them from source.**
+Where a supplied number and its source disagree, **source wins, and you report
+the discrepancy rather than applying the supplied value.** "Approved" means the
+wording is approved; it does not certify the arithmetic, because the prose was
+written from an agent's report and inherits whatever that report got wrong.
+
+Three errors in supplied wording have been caught this way — a mislabelled
+cascade row, a duplicated pipeline stage, and a labial range read off a table
+that had silently skipped renormalisation. Each was approved. Each was wrong.
+A fourth will not be caught if numbers are copied rather than derived.
+
+The same applies to any table with no generating script: `04h_matched_counts.csv`
+was produced interactively, could not be regenerated from a clean checkout, and
+drifted out of step with Methods until it reached three published numbers. **If a
+published table has no script, it is not a result yet.**
+
 **Never fabricate a number.** If a solve hasn't run, the result is unknown. Write `TODO` or `None`, not a plausible-looking value. This is a paper; an invented figure is misconduct, not a placeholder.
 
 **Flag uncertainty inline.** If a conductivity, label, or coordinate is assumed rather than verified, mark it `# UNVERIFIED:` in code and call it out in the commit message.
