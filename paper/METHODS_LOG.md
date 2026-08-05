@@ -3692,3 +3692,54 @@ fourth independent reason it supports no claim.
 **§3.3 and Table 3 rows 4 and 9 are now unblocked but must be rewritten to the
 projected numbers, and the generalisation narrowed. That wording is Carl's.**
 
+---
+
+## 2026-08-05 — THE ADIPOSE SIGN GOES BOTH WAYS, and against us for two of three
+
+Asked whether removing the adipose contrast enlarges or shrinks each ear
+advantage. **It does not go one way, and for two of the three ear-favouring
+muscles the contrast is INFLATING the finding, not suppressing it.**
+*(measured, statistic B — see the caveat below)*
+
+| muscle | gap WITH contrast | gap WITHOUT | change | effect on the ear advantage |
+|---|---|---|---|---|
+| temporalis | −3.308 | **−4.480** | −1.172 | **ENLARGED** — the contrast suppresses it |
+| sternocleidomastoid | −3.214 | **−1.852** | +1.361 | **SHRUNK by 42%** — the contrast inflates it |
+| lateral_pterygoid | −1.257 | **−0.442** | +0.815 | **SHRUNK by 65%** — the contrast inflates it |
+| medial_pterygoid | +0.322 | +0.501 | +0.179 | jaw advantage enlarged |
+| mentalis | +21.899 | +20.202 | −1.697 | jaw advantage shrunk |
+| buccinator | +9.971 | +8.805 | −1.166 | jaw advantage shrunk |
+
+**The blanket statement "the contrast favours the jaw" is wrong at the muscle
+level.** It holds for the *population median across sites* (jaw sites shift
+−2.873 dB against ear sites −2.183), which is what produced the −0.690 dB
+differential. But the per-muscle effect on the gap goes **both directions**,
+because which site is "best" differs per muscle and the shift is not uniform
+across sites within a montage.
+
+**Consequences, and they are unfavourable:**
+
+1. **Temporalis strengthens.** Without the adipose contrast its ear advantage
+   grows to −4.48 dB. The material term is suppressing the strongest ear
+   result, so that finding is conservative as reported.
+2. **SCM loses 42% of its advantage** (−3.21 → −1.85 dB) and **lateral
+   pterygoid loses 65%** (−1.26 → −0.44 dB). For these two the adipose
+   contrast is a substantial part of what produces the ear advantage.
+3. **Lateral pterygoid falls below the floor's CI upper bound** without the
+   contrast: −0.442 dB against a 95% CI reaching 0.65 dB. Its ear advantage is
+   materially dependent on the fat/muscle conductivity contrast and cannot be
+   presented as a tissue-independent geometric result.
+
+**"18–37% of the effect" must never be written without its direction.** It is
++1.36 dB *against* the SCM finding, +0.82 dB *against* lateral pterygoid, and
+−1.17 dB *for* temporalis. A single percentage conceals a sign that differs by
+muscle.
+
+**Caveat on the statistic.** These are statistic B (per-site orientation
+median, then ratio). Statistic A cannot be computed for the fat condition
+because `03g_fat_swap.py` stores one orientation median per compartment, not
+the per-direction array. Recomputing A would need the sweep saved per direction
+in that solve — one more 40-minute run. The B/A discrepancy on the baseline was
+0.3–1.9 dB, which is the same order as the effects above, so **these numbers
+should be regarded as indicative until A is available.**
+

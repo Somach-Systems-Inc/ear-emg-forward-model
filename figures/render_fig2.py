@@ -106,13 +106,23 @@ def main(argv=None) -> int:
     cbar.ax.tick_params(labelsize=6, length=0)
     cbar.outline.set_visible(False)
 
+    # WHY THIS FIGURE USES A DIFFERENT STATISTIC FROM FIG 5, and why both are
+    # right. Statistic A -- gap per orientation, then median -- is defined on a
+    # GAP between two sites, so it cannot be evaluated for a single cell; there
+    # is no "gap" at one electrode. A per-site matrix therefore necessarily
+    # uses B: the orientation median at each site, expressed as a ratio to the
+    # muscle's best jaw site. Fig 5, which plots gaps, uses A. Stated on the
+    # figure because two labelled statistics without a reason read as an
+    # inconsistency.
     rc.matrix_titles(ax, "Fig 2 · Articulator sensitivity matrix",
                      f"median lead field per compartment, dB re each muscle's "
                      f"best jaw site   ·   {a.condition}, {a.mesh}   ·   "
                      f"ring = each row's 0 dB jaw reference   ·   "
-                     f"box = ear beats jaw   ·   STATISTIC B (per-site orientation "
-                     f"median, then ratio)   ·   arms NOT equally scaled "
-                     f"({vmin:+.0f}..0 vs 0..{vmax:+.0f} dB)")
+                     f"box = ear beats jaw   ·   arms NOT equally scaled "
+                     f"({vmin:+.0f}..0 vs 0..{vmax:+.0f} dB)\n"
+                     f"cells are the per-site orientation median (statistic B); "
+                     f"a per-cell gap statistic does not exist, so Fig 5's "
+                     f"per-orientation gap (A) cannot be shown here")
 
     rc.save(fig, "fig2_sensitivity_matrix", df, a.outdir)
     return 0

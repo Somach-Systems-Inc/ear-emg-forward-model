@@ -162,8 +162,10 @@ def main(argv=None) -> int:
                  fontweight="bold")
     fig.text(0.012, 0.925,
              f"MIDA v1.0, {len(muscles)} segmented articulator compartments "
-             f"coloured by group   ·   {len(pos)} electrode positions   ·   "
-             f"face cropped per MIDA licence clause 2.3.3",
+             f"coloured by group   ·   {len(pos)} electrode positions\n"
+             f"face cropped per MIDA licence clause 2.3.3: the anterior skin "
+             f"is removed, so the jaw electrodes sit against empty space "
+             f"rather than the chin they are placed on",
              ha="left", fontsize=6.4, color=rc.INK_SECONDARY)
     fig.tight_layout(rect=[0, 0.04, 1, 0.90])
 

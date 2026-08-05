@@ -104,9 +104,19 @@ def main(argv=None) -> int:
         # filled its whole bounding rectangle that way and looked like a solid
         # block. This is the same defect audited in invariant 2's shell
         # sampling: a nearest-neighbour lookup is not an inside test.
-        outside = dist > 1.2 * GRID_MM
+        # Margin speckle: a grid point can sit just inside the distance
+        # threshold while grazing the mesh boundary, giving isolated pixels
+        # along the slice edge. Tighten the threshold and drop pixels whose
+        # neighbourhood is mostly empty, which removes the fringe without
+        # touching the interior.
+        outside = dist > 0.9 * GRID_MM
         img = np.where(outside, np.nan, mag[idx]).reshape(U.shape)
         tg = np.where(outside, -1, tags[idx]).reshape(U.shape)
+        from scipy import ndimage as _nd
+        solid = _nd.uniform_filter(
+            (~np.isnan(img)).astype(float), size=3) >= 0.55
+        img = np.where(solid, img, np.nan)
+        tg = np.where(solid, tg, -1)
         return gu, gv, img, tg
 
     # The sagittal slice goes through the SUPRAHYOID COMPARTMENT, not through
