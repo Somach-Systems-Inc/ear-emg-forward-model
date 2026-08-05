@@ -3490,3 +3490,68 @@ envelope; it now exists.
 0.27 dB floor point estimate and far below its 0.65 dB CI upper bound. It should
 be reported as no resolvable difference rather than as a jaw advantage.
 
+---
+
+## 2026-08-04 — The temporalis flip cone is ANATOMICALLY UNREACHABLE
+
+Characterising the 4% of orientations where temporalis's ear advantage
+reverses. *(measured, n_dirs = 200)*
+
+**The flip cone requires a large medio-lateral fibre component, and temporalis
+has none.**
+
+| | |
+|---|---|
+| flip directions | **8 of 200 (4.0%)** |
+| cone axis (RAS) | **[−0.504, −0.555, +0.661]** |
+| angular half-width | max **17.4°**, median 12.1° |
+| **minimum \|R\| over all flip directions** | **0.324**, i.e. every flip direction lies at least **~19° out of the sagittal plane** |
+
+**Temporalis's fibre fan lies in the sagittal plane.** It is a flat fan on the
+lateral skull running from the temporal fossa to the coronoid process: anterior
+fibres near-vertical, posterior fibres near-horizontal, everything between, and
+negligible medio-lateral component throughout. Evaluated at the anatomical
+extremes and the mid-fan:
+
+| fibre population | direction | gap |
+|---|---|---|
+| anterior (near-vertical) | [0, 0, 1] | **−2.70 dB, ear** |
+| mid-fan (45°) | [0, 0.707, 0.707] | **−3.54 dB, ear** |
+| posterior (near-horizontal) | [0, 1, 0] | **−4.60 dB, ear** |
+
+**Every anatomically reachable temporalis fibre orientation favours the ear.**
+The flip cone sits ~30° out of the sagittal plane, off the fan entirely, so the
+advantage is **effectively unconditional for this muscle** and should be stated
+that way with the geometry shown rather than as "96% of directions". A
+percentage is the right statistic only where the axis is unknown; here the
+anatomy constrains it.
+
+### Gap at the estimated fibre axis, where one exists
+
+SCM and medial pterygoid passed the bilateral mirror-symmetry test, so their
+fibre direction is **estimated rather than unknown**, and the sweep fraction is
+the wrong statistic for them.
+
+| muscle | side | axis (RAS) | gap at axis | sweep median |
+|---|---|---|---|---|
+| sternocleidomastoid | right | [−0.257, +0.227, −0.939] | **−5.06 dB, ear** | −1.96 |
+| sternocleidomastoid | left | [+0.120, +0.244, −0.962] | **−2.52 dB, ear** | −1.96 |
+| medial_pterygoid | right | [−0.478, +0.486, +0.731] | **+4.21 dB, jaw** | +1.15 |
+| medial_pterygoid | left | [−0.487, −0.476, −0.733] | **−2.10 dB, ear** | +1.15 |
+
+**SCM's ear advantage holds at its own fibre axis on both sides, and is
+stronger there than the sweep median** (−5.06 and −2.52 against −1.96). Its
+72.5% sweep fraction understates the case: the directions that favour the jaw
+are not the ones SCM's fibres occupy.
+
+**`medial_pterygoid` disagrees between its two sides** — +4.21 dB (jaw) on the
+right, −2.10 dB (ear) on the left — which is a further reason it must not carry
+a directional claim. The electrodes are right-sided, so the right-side axis is
+the relevant one, and it favours the jaw; but a muscle whose two halves give
+opposite verdicts is not a result.
+
+**Lateral pterygoid has no estimated axis** (two heads at markedly different
+angles, isotropic in FIBRE_MODEL), so its 69% sweep fraction stands as the
+honest statistic, and its advantage remains genuinely conditioned on fibre
+direction.
+

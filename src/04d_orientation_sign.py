@@ -132,6 +132,21 @@ def main(argv=None) -> int:
               f"{np.median(gap):>+10.2f}"
               f"{('  YES' if stable else '  ** FLIPS **'):>16}")
 
+    # Dump the per-direction gap arrays and the direction set, so the flip
+    # region can be characterised geometrically rather than only counted.
+    npz = a.out.with_suffix(".npz")
+    save = {"dirs": N}
+    for mus, _ in MUSCLES:
+        d = L[mus]
+        jaw = [e for e in d if mont.get(e) == "jaw" and e not in NEAR_CUT]
+        ear = [e for e in d if mont.get(e) in ("ear", "ceegrid")]
+        if jaw and ear:
+            J = np.max(np.stack([d[e] for e in jaw]), axis=0)
+            R = np.max(np.stack([d[e] for e in ear]), axis=0)
+            save[f"gap_{mus}"] = 20 * np.log10(J / R)
+    np.savez(npz, **save)
+    print(f"wrote {npz}")
+
     with a.out.open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
