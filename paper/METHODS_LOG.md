@@ -4197,3 +4197,60 @@ finding.
 The argmax-14 figures overstate every ear advantage by **0.1 to 1.1 dB** and
 should not appear in the Abstract.
 
+---
+
+## 2026-08-05 — The interval criterion supersedes the pre-committed rule, and it disagrees with the expected verdict for two muscles
+
+**Carl's pre-committed rule was too permissive and is superseded.** It read:
+gap below the 0.27 dB floor **or** orientation fraction below 60% → no
+resolvable preference. It **technically passed all three ear muscles**,
+including SCM at −0.973 dB and 60.5% — clearing one threshold by 0.7 dB and the
+other by half a percentage point.
+
+The sharper criterion: **draw 4 of the 14 ear sites at random 10,000 times,
+take the best, and ask whether the 95% interval of the resulting gap crosses
+zero.** If it does, the advantage depends on which sites you happen to have,
+which is not a montage advantage. That is a defect in the rule worth recording:
+a two-part threshold on point estimates cannot see sampling dependence, because
+both of its parts are computed from a single favourable draw.
+
+### Applied to all ten muscles
+
+| muscle | cluster 4 | random 4, 95% CI | crosses 0 | verdict |
+|---|---|---|---|---|
+| temporalis | −2.571 | [−3.308, **−0.035**] | no | **ear** |
+| sternocleidomastoid | −0.973 | [−1.402, **+1.267**] | **YES** | **no resolvable preference** |
+| lateral_pterygoid | −1.564 | [−1.591, **+1.329**] | **YES** | **no resolvable preference** |
+| medial_pterygoid | +1.254 | [+1.141, +3.339] | no | **jaw** |
+| masseter | +2.218 | [+1.647, +5.793] | no | **jaw** |
+| orbicularis_oris | +8.995 | [+7.977, +11.425] | no | jaw |
+| buccinator | +10.236 | [+9.240, +12.850] | no | jaw |
+| platysma | +10.008 | [+8.882, +12.718] | no | jaw |
+| depressor_anguli_oris | +14.698 | [+13.780, +17.222] | no | jaw |
+| mentalis | +21.236 | [+20.898, +24.028] | no | jaw |
+
+### The disagreement, flagged rather than absorbed
+
+Eight of ten match the expected verdicts. **Masseter and medial pterygoid do
+not.** They were expected to stay "no resolvable preference"; the interval
+criterion returns **jaw** for both, because their random-4 intervals are
+entirely positive.
+
+The two criteria measure **different axes of robustness**:
+
+- the **interval** criterion asks whether the verdict survives *which sites you
+  have* — masseter and medial pterygoid do, comfortably;
+- the **orientation fraction** asks whether it survives *which way the fibres
+  run* — masseter is 36.0% and medial pterygoid 37.5% ear-favouring, so better
+  than a third of orientations reverse them.
+
+Neither muscle is site-dependent; both are orientation-dependent. Calling them
+"jaw" on the interval criterion alone would discard the orientation caveat that
+originally earned them "no resolvable preference", and calling them "no
+resolvable preference" would discard a clean site-sampling result.
+
+**The honest verdict needs both axes named**, e.g. *jaw under site sampling,
+but reversed in ~36% of fibre orientations*. **Carl's call** — the criterion he
+adopted returns "jaw" and his expected list says otherwise, and I am not
+silently choosing between them.
+

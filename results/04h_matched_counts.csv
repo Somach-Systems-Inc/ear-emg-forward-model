@@ -1,0 +1,11 @@
+muscle,cluster4_dB,rand4_lo,rand4_hi,crosses_zero,verdict
+temporalis,-2.571,-3.3082,-0.0348,False,ear
+sternocleidomastoid,-0.9735,-1.4023,1.2671,True,NO RESOLVABLE PREFERENCE
+lateral_pterygoid,-1.5642,-1.5905,1.3291,True,NO RESOLVABLE PREFERENCE
+medial_pterygoid,1.2542,1.1412,3.339,False,jaw
+masseter,2.2181,1.6465,5.7929,False,jaw
+orbicularis_oris,8.9951,7.9771,11.4248,False,jaw
+buccinator,10.2362,9.2402,12.8498,False,jaw
+mentalis,21.2357,20.8976,24.0284,False,jaw
+depressor_anguli_oris,14.6985,13.7803,17.2217,False,jaw
+platysma,10.0076,8.8823,12.7179,False,jaw
