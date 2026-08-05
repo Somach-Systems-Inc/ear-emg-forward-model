@@ -129,6 +129,36 @@ every number in it was real; they were the wrong table's numbers in the right
 table's place. **Provenance checking cannot see this class of error, so it must
 be made structurally impossible instead.**
 
+**Orphan number.** A magnitude in prose or a caption that matches no cell in any
+results file. Checks that verify known claims against source cannot detect one,
+because the claim is not in the manifest. Detection requires the reverse sweep:
+enumerate every number in the prose and require each to name a source. Finding
+one invalidates the assumption that the surrounding paragraph was ever generated
+from data.
+
+**Section with no generating script.** §3.4 is the fourth artifact found this
+way. The first three were single artifacts; this is a whole section, and its
+numeric content was never retained. The stop-rule was written for artifacts and
+did not trigger on a section, because nothing checked whether Results *prose* had
+a source at all -- only whether named tables did. **The sweep is per-section, not
+per-table.**
+
+**Asserted constant governing selection.** Worse than a reported orphan. A
+constant that sets a filter or threshold, appears in prose or as a bare literal,
+and is not derived from the data silently determines which data enters every
+downstream result. All consumers agree with each other because all inherit the
+same value, so internal consistency is evidence of nothing. **Any scalar that
+governs inclusion, exclusion, or thresholding must be derived in code and emitted
+to a results file, or it is not admissible.**
+
+`CUT_FACE_S = -116.2` in `02c_placement_acceptance.py` is the worked example. It
+sets the near-cut exclusion set, which sets the jaw site list, which sets every
+matched-count gap in Table 4. It is a bare literal. The mesh has **no planar face
+at that coordinate or any other** -- node counts taper smoothly from ~4000/mm at
+S = -111 to 78 at the -122.17 minimum, with nothing distinguishing -116.2 from
+its neighbours. Being in code made it look derived, which is why the first grep
+for it (`config.py` only) reported it absent from the codebase entirely.
+
 **A verification check confirms a specification was APPLIED. It cannot confirm
 the specification was CORRECT.** Fidelity and correctness are separate channels
 and need separate tests. Passing one says nothing about the other.

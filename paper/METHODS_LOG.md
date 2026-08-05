@@ -4623,3 +4623,56 @@ mentalis refused at |dot| 0.215) but it is **unverifiable from a clean
 checkout**, which is the §2.8 standard it fails. Fixing it means having 03e emit
 its decision per compartment. Logged, not fixed.
 
+---
+
+## 2026-08-06 — the cut plane does not exist
+
+`-116.2` governs the near-cut exclusion set. It is a bare literal,
+`CUT_FACE_S = -116.2`, in `02c_placement_acceptance.py:45`.
+
+**The mesh has no planar face there, or anywhere.** Node counts in the inferior
+region taper smoothly and there is no spike of coplanar nodes:
+
+| S band | nodes |
+|---|---|
+| -122.17 .. -121.17 | 78 |
+| -119.17 .. -118.17 | 729 |
+| -117.17 .. -116.17 | 1402 |
+| -115.17 .. -114.17 | 3135 |
+| -112.17 .. -111.17 | 4020 |
+
+921 nodes lie within 0.25 mm of -116.2, unremarkable against its neighbours.
+4 lie within 0.25 mm of the -122.17 minimum, which is a wisp, not a face.
+
+`clearance_to_cut_mm` is internally consistent with the wrong constant: every
+value is exactly 5.97 mm below the S-difference to the mesh minimum. Consumers
+agreeing with each other is what kept it invisible.
+
+### A failed attempt, recorded because the failure is instructive
+
+I then computed "3D distance to the inferior-facing boundary", selecting surface
+triangles with outward normal `n_z < -0.5`. **That result is wrong and is not
+used.** It returned 0.43-1.43 mm for all seven jaw electrodes and would have put
+every one of them inside any threshold.
+
+The filter selects downward-facing skin *everywhere on the head* -- its S range
+came back -122.07 to +115.99, i.e. essentially the whole surface. Every electrode
+sits about a millimetre above some downward-facing patch of its own local skin.
+The quantity measured was "distance to the nearest skin below me", not "distance
+to the inferior termination".
+
+That is the same error as the constant it was meant to replace: **a geometric
+quantity replaced by a proxy that is easy to compute and does not mean what its
+name says.** Two attempts, two proxies, both self-consistent, both wrong.
+
+### What the correct computation needs
+
+The insulating Neumann condition applies to the *entire* outer surface, so
+"clearance to the cut" is only meaningful if there is a cut. Deciding that
+requires knowing whether the base mesh is MIDA's native anatomical extent or a
+truncation of it, which is the extended-mesh face check (still to run).
+
+**Not run, and not asserted.** The exclusion set stands as-is pending that check.
+Per Carl's ruling the fix is not a better threshold: report Table 4 with and
+without the three most inferior jaw sites, so the constant governs nothing.
+
