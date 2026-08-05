@@ -3450,3 +3450,43 @@ The direction is worth stating too: fat conductivity currently **favours the
 jaw** by 0.33 dB. Erasing the contrast would shrink the jaw's advantage
 slightly, not the ear's.
 
+---
+
+## 2026-08-04 — ORIENTATION: the headline survives projection onto n̂
+
+The stated-versus-done gap is closed. Stage 3 reported volume-weighted median
+**|E|**, the orientation-free magnitude; Methods defines the lead field as
+**E·n̂**. `src/04b_orientation.py` computes the missing projection from the
+solves already on disk (5.8 min, 220 rows, no new solving).
+
+**No sign flips. All three ear advantages survive.** *(measured)*
+
+| muscle | gap, \|E\| | gap, orientation median | change |
+|---|---|---|---|
+| temporalis | −3.92 | **−3.31** | +0.62 |
+| sternocleidomastoid | −3.41 | **−3.21** | +0.19 |
+| lateral_pterygoid | −1.69 | **−1.26** | +0.44 |
+| medial_pterygoid | +0.62 | **+0.32** | −0.30 |
+| mentalis | +22.78 | +21.90 | −0.88 |
+| orbicularis_oris | +10.37 | +8.86 | −1.51 |
+
+**Two things this measurement establishes that were previously assumed.**
+
+**1. |E| overstates the orientation median by 6.65 dB** (range 5.35–8.52 dB).
+That is a large absolute offset, and it is why the two must not be conflated in
+Methods. But its spread is only ~3.2 dB, so it is close to common-mode and
+largely cancels in the site-to-site ratios the paper reports — gap changes span
+−1.51 to +0.44 dB. This is the ratio argument surviving a test it could have
+failed.
+
+**2. The orientation envelope is 14.35 dB (median), up to 22.45 dB.** Source
+orientation matters *more* than the jaw-versus-ear difference for most muscles.
+That is a limitation the paper must state plainly: the reported values are
+orientation summaries, and a real fibre population at an unfavourable angle can
+sit an order of magnitude below the best case. Fig 2's spec already asks for the
+envelope; it now exists.
+
+**`medial_pterygoid` weakens further** — +0.62 → **+0.32 dB**, barely above the
+0.27 dB floor point estimate and far below its 0.65 dB CI upper bound. It should
+be reported as no resolvable difference rather than as a jaw advantage.
+
