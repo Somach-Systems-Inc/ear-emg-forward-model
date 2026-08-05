@@ -725,13 +725,17 @@ argument the paper is organised around.
 > same cancellation that makes a uniform magnitude offset invisible in every
 > ratio reported here, arriving in a place where it was not anticipated.
 
-The same decomposition applied to the ear's own advantages returns a modest and
-sign-varying term. For temporalis the contrast works against the reported result,
-suppressing an advantage that would otherwise be 4.92 dB rather than 3.80; the
-figure in this paper is therefore conservative. For sternocleidomastoid and
-lateral pterygoid it contributes 21 and 17 per cent of their advantage, so those
-two are partly carried by tissue properties rather than by geometry alone. All
-three survive its removal.
+Applied to the three muscles whose gaps come closest to zero — temporalis,
+sternocleidomastoid and lateral pterygoid — the same decomposition returns a
+modest term whose sign varies between them.
+
+For temporalis the contrast acts against the gap rather than for it: removing it
+would enlarge the gap from −3.801 to −4.923 dB. The direction is worth stating
+because it is the opposite of the intuitive reading — the tissue contrast is not
+what produces temporalis's proximity to zero, it is part of what holds it there.
+It does not change the verdict, which is set by the matched−count interval and
+not by this term. For sternocleidomastoid and lateral pterygoid the contrast acts
+with the gap, supplying 21.0 and 17.4 per cent of it respectively.
 
 That distinction predicts which results should transfer between subjects. A
 margin carried by skeletal attachment geometry inherits only anatomical variance;
@@ -866,9 +870,10 @@ adipose thickness and pinna position cannot be estimated from one head. The
 adipose decomposition narrows what that means, but unevenly, and the unevenness
 is itself informative. The labial group and temporalis are carried by geometry,
 which is comparatively conserved between individuals; sternocleidomastoid and
-lateral pterygoid draw 21 and 17 per cent of their advantage from the
-conductivity contrast, so they should be expected to track subject adiposity and
-are the results least likely to transfer unchanged. This is a reason to expect
+lateral pterygoid draw 21.0 and 17.4 per cent of their gap from the
+conductivity contrast, so of the three muscles nearest zero they are the two
+whose position is most dependent on tissue properties rather than on geometry,
+and the two whose gaps should be expected to move most with subject adiposity. This is a reason to expect
 differential generalisation, not a demonstration of any of it. Only a second
 anatomy demonstrates that.
 
@@ -939,7 +944,7 @@ survives into all of them.
 | 6 | Electrode meshing | contact area from incidental surface triangulation | yes | **yes — per-site** | **0.27 dB, 95 % CI [0.17, 0.65], n = 6** |
 | 7 | Single anatomy | MIDA is one subject | yes | unknown | not quantifiable from one head |
 | 8 | Delivered current | injected vs requested per solve | yes | **no — corrected, not bounded** | 0.887–1.075 × requested across 22 solves, measured per solve by the tet-patch integral. Each site's lead field is divided by its own delivered current (§2.4), so the term does not enter any reported ratio. It is listed here because it was measured and corrected, not because it remains an uncertainty: the 1.67 dB spread it would otherwise contribute is six times the row-6 floor and could not have been bounded by it |
-| 9 | Adipose conductivity | fat at 0.025 vs muscle 0.355 S/m | yes | **yes — and the SIGN differs by muscle** | Reported **per muscle only** — a population differential across sites has no clean definition under statistic A (the median change over muscles is +0.01 dB and conceals a sign that spans −2.86 to +1.09). Statistic A: temporalis **−1.12 dB** (the contrast SUPPRESSES its ear advantage); sternocleidomastoid **+0.41 dB** (21% of its advantage); lateral pterygoid **+0.32 dB** (17%); labial group 0.06–2.86 dB, 0.6–13.3% of gaps reaching 21.9 dB. A single percentage is not admissible here — it hides a sign that differs by muscle. |
+| 9 | Adipose conductivity | fat at 0.025 vs muscle 0.355 S/m | yes | **yes — and the SIGN differs by muscle** | Reported **per muscle only** — a population differential across sites has no clean definition under statistic A (the median change over muscles is +0.01 dB and conceals a sign that spans −2.86 to +1.09). Statistic A, per muscle, sign varies: **−1.121 dB** for temporalis (acts against the gap), **+0.411 dB** for sternocleidomastoid and **+0.323 dB** for lateral pterygoid (act with it), **−2.863 to +1.093 dB** across the labial group. No single figure is admissible — the sign differs by muscle. Shares are not quoted here because they are dominated by the denominator; see §4.3. |
 
 Row 6 is measured by rotating the electrode array and the source points together
 on a fixed mesh, which preserves every source-to-electrode vector (verified to

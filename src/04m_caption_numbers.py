@@ -102,6 +102,68 @@ def collect() -> dict:
     return v
 
 
+# --- AXIS (b): every anchored table IS the table it claims to be ------------
+# A corrupted table can trace perfectly to source. On 2026-08-06 §3.3's
+# fat-contrast table held Table 4's rows; every number in it was real and came
+# from a real CSV. Provenance checking passes that. Schema checking does not.
+TABLE_SCHEMA = {
+    "fat_contrast": {
+        "source": "04e_fat_contrast_statisticA.csv",
+        "header": ["Muscle", "As modelled", "Without contrast", "Change",
+                   "Contrast's role"],
+        "n_rows": 10,
+    },
+    "two_axis_verdict": {
+        "source": "04j_two_axis_verdict.csv",
+        "header": ["Muscle", "Gap (dB)", "Site-robust (random-4 95% CI)",
+                   "Orientation agreement", "Verdict"],
+        "n_rows": 10,
+    },
+}
+
+
+def check_tables(text):
+    """Schema + row-count + row-label-collision checks on anchored blocks."""
+    import manuscript_blocks as MB
+    bad, hazards = [], []
+    for prob in MB.audit():
+        bad.append(("anchors", prob, ""))
+    labelsets = {}
+    for name, spec in TABLE_SCHEMA.items():
+        try:
+            blk = MB.read_block(name)
+        except Exception as e:                       # noqa: BLE001
+            bad.append((name, "unreadable", str(e)[:70]))
+            continue
+        lines = [l for l in blk.splitlines() if l.strip().startswith("|")]
+        if not lines:
+            bad.append((name, "no table rows", ""))
+            continue
+        hdr = [c.strip() for c in lines[0].strip("|").split("|")]
+        if hdr != spec["header"]:
+            bad.append((name, "HEADER MISMATCH", f"{hdr} != {spec['header']}"))
+        rows = [l for l in lines[2:] if l.strip().startswith("|")]
+        if len(rows) != spec["n_rows"]:
+            bad.append((name, "ROW COUNT",
+                        f"{len(rows)} rows, source has {spec['n_rows']}"))
+        labelsets[name] = frozenset(
+            r.strip("|").split("|")[0].strip() for r in rows)
+    # No two blocks may share a row-label set -- that ambiguity is what let a
+    # row-label regex write Table 4's rows into the fat-contrast table.
+    seen = {}
+    for name, ls in labelsets.items():
+        if ls and ls in seen:
+            # HAZARD, not a defect. Both tables legitimately list all ten
+            # muscles, so their row labels must coincide. It is reported every
+            # run because it is the precondition for the 2026-08-06 corruption:
+            # any edit addressed by row label is ambiguous between these two
+            # blocks. The anchors are what makes it safe; this line is why they
+            # exist. Do NOT "fix" it by renaming rows.
+            hazards.append((name, "row labels identical to", seen[ls]))
+        seen[ls] = name
+    return bad, hazards
+
+
 # Caption claims that must equal a collected value. Regex must capture the
 # number in group 1. A claim listed here and absent from the manuscript is a
 # FAIL, not a skip -- a caption that lost its number is as broken as one that
@@ -151,6 +213,17 @@ def main(argv=None) -> int:
         want = float(v[key][0])
         if abs(got - abs(want)) > 0.051:
             bad.append((key, got, want))
+    tbad, thaz = check_tables(text)
+    for n, k, d in thaz:
+        print(f"  HAZARD: {n} {k} {d} — anchors required, by design")
+    print()
+    if tbad:
+        print("TABLE STRUCTURE PROBLEMS")
+        for n, k, d in tbad:
+            print(f"  {n:<20} {k}  {d}")
+    else:
+        print(f"all {len(TABLE_SCHEMA)} anchored tables match their source schema")
+
     print()
     if bad:
         print("CAPTION NUMBERS DISAGREE WITH SOURCE")
@@ -158,7 +231,7 @@ def main(argv=None) -> int:
             print(f"  {k:<22} caption={got}   source={want}")
         return 1
     print(f"all {len(CLAIMS)} caption claims match source")
-    return 0
+    return 1 if tbad else 0
 
 
 if __name__ == "__main__":
