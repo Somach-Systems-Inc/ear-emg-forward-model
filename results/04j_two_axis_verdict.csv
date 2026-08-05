@@ -1,0 +1,11 @@
+muscle,cluster_gap_dB,rand4_lo,rand4_hi,site_robust,orientation_agree_pct,verdict
+mentalis,21.236,20.8976,24.0284,True,100.0,"jaw, robust on both axes"
+depressor_anguli_oris,14.698,13.7803,17.2217,True,100.0,"jaw, robust on both axes"
+buccinator,10.236,9.2402,12.8498,True,100.0,"jaw, robust on both axes"
+orbicularis_oris,8.995,7.9771,11.4248,True,100.0,"jaw, robust on both axes"
+platysma,10.008,8.8823,12.7179,True,100.0,"jaw, robust on both axes"
+masseter,2.218,1.6465,5.7929,True,68.5,"jaw, site-robust but orientation-dependent"
+medial_pterygoid,1.254,1.1412,3.339,True,65.5,"jaw, site-robust but orientation-dependent"
+sternocleidomastoid,-0.973,-1.4023,1.2671,False,60.5,no resolvable preference
+lateral_pterygoid,-1.564,-1.5905,1.3291,False,65.5,no resolvable preference
+temporalis,-2.571,-3.3082,-0.0348,True,92.0,"ear, robust on both axes"

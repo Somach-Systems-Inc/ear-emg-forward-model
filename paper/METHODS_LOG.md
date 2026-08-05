@@ -4308,3 +4308,48 @@ lead with "8 of 10 gaps move" and preserve the novelty claim. The sign result
 is the primary criterion, it was fixed in advance, and it says the qualitative
 finding does not need the tissue detail.
 
+---
+
+## 2026-08-05 — Final rewrite applied. Two-axis verdicts, and the reframe that cost the novelty claim.
+
+Table 4 is now two-axis, computed consistently from source. The supplied
+wording quoted orientation fractions from mixed site sets — full-sweep for the
+jaw muscles, cluster-4 for the ear ones — so all ten were recomputed on the
+**pre-registered cluster** to match the gap column. Masseter moves 64.0 → 68.5%
+and medial pterygoid 62.5 → 65.5%; the other eight were already right.
+
+`results/04j_two_axis_verdict.csv` is the single source for the table.
+
+**One muscle survives both axes: temporalis** (−2.57 dB, 92.0%). SCM and
+lateral pterygoid are **no resolvable preference**. Masseter and medial
+pterygoid are site-robust but reverse in about a third of orientations.
+
+§4.4 and §4.6 were rewritten off SCM and lateral pterygoid. §4.6 now states
+explicitly that a companion experiment finding no retroauricular advantage for
+either **would agree with this model rather than falsify it** — that has to be
+said in advance or the prediction is a description.
+
+The homogeneous control in §3.5 was recomputed at the cluster to match Table 4
+(it had been argmax-14): temporalis −2.571 → −3.724, still no sign flips,
+7 of 10 gaps moving beyond the floor. The conclusion is unchanged.
+
+### On the reframe, recorded because it is the uncomfortable one
+
+The homogeneous control was **pre-committed with both branches written before
+the solve finished**, and the branch taken is the one that costs the novelty
+claim: a homogeneous conductor reaches the same verdicts, so the detailed
+tissue stack is not what produces the result, and the paper is an application
+study.
+
+Two things make that read hard to dismiss as self-serving. **Temporalis's
+advantage grows under the simpler model** (−2.571 → −3.724), so the detailed
+conductor makes the headline more conservative rather than less — the reframe
+is not buying a better number. And the alternative reading was available and
+defensible: 7 of 10 magnitudes move beyond the floor, and leading with that
+would have preserved the novelty claim against a criterion fixed in advance.
+
+**The paper now rests on one muscle**, down from three, after matched site
+counts and delivered-current renormalisation. That is a much smaller result
+than the version this session started with, and every step of the reduction is
+in this log with the measurement that forced it.
+

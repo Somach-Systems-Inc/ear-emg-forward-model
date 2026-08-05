@@ -125,7 +125,10 @@ def main(argv=None) -> int:
             f"interquartile   ·   marker = median\n"
             f"FILLED marker = sign stable at every orientation "
             f"({n_stable} of {n} muscles)   ·   open marker = verdict depends "
-            f"on fibre direction   ·   band = {floor:.2f} dB floor",
+            f"on fibre direction   ·   band = {floor:.2f} dB floor\n"
+            f"VERDICTS ARE TWO-AXIS (Table 4): only temporalis is robust to BOTH "
+            f"orientation and site sampling; SCM and lateral pterygoid fail the "
+            f"matched-count test and are no resolvable preference",
             transform=ax.transAxes, va="bottom", ha="left",
             fontsize=6.2, color=rc.INK_SECONDARY)
 

@@ -13,48 +13,46 @@ in-session corrections) has been moved out; it remains in `paper/METHODS_LOG.md`
 
 ## Abstract
 
-**Objective.** Silent-speech interfaces and ear-worn biopotential devices are
-being designed around a coupling that has not been computed: how strongly each
-speech articulator muscle reaches electrodes placed on the jaw and around the
-ear. Forward models of muscle sources exist, but they were built to remove
-muscle activity from EEG rather than to record it, and they radiate muscle
-sources through a homogeneous scalp.
+**Objective.** Ear-worn biopotential devices are being designed around a
+coupling that has not been computed: how strongly each speech articulator
+reaches electrodes on the jaw and around the ear. We compute it, and test the
+answer against the three things that could produce it spuriously — source
+orientation, electrode count, and the level of anatomical detail in the volume
+conductor.
 
-**Approach.** We compute articulator-to-electrode coupling by reciprocity on
+**Approach.** Articulator-to-electrode coupling is computed by reciprocity on
 MIDA, a head model with 116 labelled compartments at 500 µm, treating muscle as
-both the generator and its own anatomically resolved conducting compartment.
-Twenty-two electrode positions spanning the canonical jaw montage, a
-retroauricular cluster and a cEEGrid C-path are compared against ten
-individually segmented articulators, under isotropic and anisotropic muscle
-conductivity. The pipeline is validated against an analytic four-layer sphere
-(median RDM 4.36 % over 120 sources) and by four physical invariants computed on
-the head mesh itself. Every reported quantity is a ratio, and the uncertainty
-budget is assembled from measured terms.
+both the generator and its own conducting compartment. Twenty-two electrode
+positions spanning the canonical jaw montage, a retroauricular cluster and a
+cEEGrid C-path are compared against ten individually segmented articulators.
+Each lead field is renormalised by its own measured delivered current. Source
+orientation is swept over the hemisphere rather than assumed. Because the ear
+montage offers fourteen candidate sites against the jaw's four, every comparison
+is repeated at matched electrode counts by random subsampling. The pipeline is
+validated against an analytic four-layer sphere (median RDM 4.36 % over 120
+sources) and by four physical invariants computed on the head mesh.
 
-The two montages are complementary rather than ranked, and the complementarity
-is orientation-dependent in a way a point estimate conceals. Sweeping source
-orientation over the hemisphere with the same orientation applied at both
-electrodes, five articulators — orbicularis oris, buccinator, mentalis,
-depressor anguli oris and platysma — favour the jaw montage at every orientation
-tested, by medians of 8.2 to 21.9 dB; no fibre direction exists at which a
-retroauricular electrode competes for them. Temporalis favours the
-retroauricular montage at every anatomically reachable orientation: the 4 % of
-directions that reverse it lie at least 19° out of the sagittal plane, outside
-the fan temporalis occupies, and the gap across that fan runs −2.70 dB at the
-anterior fibres to −4.60 dB at the posterior. Sternocleidomastoid favours the
-ear at its own estimated fibre axis, by −5.06 dB on the right and −2.52 dB on
-the left. Lateral pterygoid, which has no estimable axis, favours the ear in
-69 % of directions and is reported as conditional.
+**Main results.** The two montages see different muscles, but the effect is
+narrower than an unmatched comparison suggests. Five articulators —
+orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma —
+favour the jaw montage at every sampled orientation and at every electrode
+subsample. One, temporalis, favours the retroauricular montage on both axes,
+by 2.57 dB at a pre-registered four-site cluster, with 92 % of orientations
+agreeing and a subsample interval excluding zero. Masseter and medial pterygoid
+favour the jaw robustly across electrode selection but reverse in roughly a
+third of orientations. Sternocleidomastoid and lateral pterygoid show no
+preference that survives electrode subsampling: their intervals cross zero, so
+the apparent advantage depends on which four sites are available. Electrode
+placement chosen by anatomical target outperforms arbitrary placement around
+the ear by up to 1.03 dB. A control in which every non-muscle soft tissue is
+set to a single conductivity reproduces every montage assignment unchanged
+while misstating gap magnitudes by up to 3.27 dB.
 
-**Significance.** The result gives ear-worn device designers a per-muscle map
-rather than a ranking: a retroauricular montage reads jaw-closing and
-head-stabilising activity well and loses lip and chin activity almost entirely.
-It also describes, muscle by muscle, what the retroauricular electromyographic
-contamination long documented in the EEG literature actually consists of.
-
-**Keywords:** volume conduction, surface electromyography, silent speech, ear-EEG, forward model, reciprocity
-
----
+**Significance.** For device design the result is a per-muscle map rather than a
+ranking: a retroauricular montage reads temporalis well, loses lip and chin
+activity entirely, and offers no reliable advantage elsewhere. The
+homogeneous-conductor control locates what anatomical detail is needed for —
+montage assignment is recoverable without it, magnitudes are not.
 
 ## 1. Introduction
 
@@ -74,13 +72,32 @@ is an established and widely replicated wearable configuration [Debener et al.
 2015]. The appeal is not electrical. It is that an ear-worn device is socially
 wearable in a way that a chin-mounted one is not.
 
-What has not been computed is how strongly any given articulator couples to any
-given position around the ear. Forward models of muscle sources in realistic
-head geometry do exist: HArtMuT [Harmening et al. 2022] places roughly 3,900
-muscle dipole and tripole sources derived from MIDA's muscle segmentation, with
-fibre directions estimated by principal component analysis over neighbouring
-grid points, solved as finite-element lead fields. That work is the
-methodological precedent for the fibre-axis treatment used here.
+Replaces the paragraph asserting that no forward model treats muscle as its own
+conducting compartment.
+
+> Forward models of muscle sources in realistic head geometry exist. HArtMuT
+> (Harmening et al. 2022) places roughly 3,900 muscle dipole and tripole sources
+> derived from MIDA's muscle segmentation, with fibre directions estimated by
+> principal component analysis, solved as finite-element lead fields. It is the
+> methodological precedent for the fibre-axis treatment used here, and its
+> muscle sources radiate through a homogeneous scalp compartment.
+>
+> **This study is an application of that class of model to an unanswered design
+> question, not a methodological advance over it.** We tested the distinction
+> directly rather than asserting it: setting every non-muscle soft tissue to a
+> single conductivity, with geometry held fixed, reproduces every montage
+> assignment reported here unchanged (§3.5). A homogeneous-scalp model would
+> have reached the same qualitative conclusion. What the anatomically resolved
+> conductor supplies is magnitude — gap sizes shift by up to 3.27 dB, and eight
+> of ten by more than the measurement floor — which matters for a design table
+> quoting decibels but not for deciding which montage sees which muscle.
+>
+> The open question is therefore not how to model muscle sources but where to
+> put an electrode. That question is stated in the ear-EEG literature in the
+> same terms (Yarici et al. 2023), while ear-worn arrays are already recording
+> jaw and speech activity (Avramidou et al. 2024; An et al. 2025) on a widely
+> replicated form factor (Debener et al. 2015). Devices are being designed
+> around a coupling nobody has computed.
 
 It was built to answer the opposite question. HArtMuT's muscle sources exist so
 that muscle activity can be identified and removed from scalp EEG, and they
@@ -406,49 +423,42 @@ acquired.
 
 ## 3. Results
 
-### 3.1 Jaw and retroauricular montages are complementary rather than ranked
+### 3.1 Which montage sees which muscle
 
-Reporting one gap per muscle presumes a fibre direction the model does not
-contain. We therefore sweep source orientation over the hemisphere at 200
-directions, applying the same orientation at both electrodes, since only a
-common orientation corresponds to a physical source. Where anatomy constrains
-the fibre direction, we then evaluate the gap over that constrained set rather
-than over the full hemisphere.
-
-**The jaw's dominance over the labial group is orientation-independent.**
-Orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma
-favour the jaw montage at all 200 sampled orientations, with median gaps of 8.2
-to 21.9 dB. No fibre direction exists at which a retroauricular electrode
-competes for these muscles, which is a stronger statement than any point
-estimate.
-
-**Temporalis favours the retroauricular montage at every orientation it can
-physically take.** Over the full hemisphere the ear wins in 96.0 % of directions
-(median −3.80 dB, range −10.99 to +1.93). The eight reversing directions form a
-cone of median half-width 12.1° about [−0.504, −0.555, +0.661], with a minimum
-|R| of 0.324, so every one lies at least 19° out of the sagittal plane.
-Temporalis is a flat fan running from the temporal fossa to the coronoid process
-with negligible medio-lateral component, and that cone is therefore unreachable.
-Evaluated across the fan itself the gap is −2.70 dB at the anterior,
-near-vertical fibres, −3.54 dB at mid-fan, and −4.60 dB at the posterior,
-near-horizontal fibres. The advantage is effectively unconditional.
-
-**Sternocleidomastoid favours the ear at its estimated fibre axis, more strongly
-than the unconstrained sweep suggests.** Its principal axis passes the bilateral
-mirror-symmetry test at |dot| = 0.98, and the gap evaluated there is −5.06 dB on
-the right and −2.52 dB on the left, against a sweep median of −1.96 dB. The
-72.5 % hemisphere fraction understates the case, because the jaw-favouring
-directions are not ones this muscle occupies.
-
-**Lateral pterygoid is genuinely conditional.** It has no estimable principal
-axis, favours the ear in 69.0 % of directions (median −1.85 dB, range −7.70 to
-+6.78), and is reported as depending on fibre direction.
-
-**Masseter and medial pterygoid show no resolvable montage preference**, at
-35.5 % and 37.0 % of directions favouring the ear respectively. Medial pterygoid
-carries an estimated axis, but its two sides disagree in sign at that axis
-(+4.21 dB right, −2.10 dB left), which is a third independent reason it supports
-no directional claim.
+> Reporting one gap per muscle presumes a fibre direction the model does not
+> contain, and comparing the best of fourteen retroauricular sites against the
+> best of four jaw sites rewards electrode count rather than placement. Both are
+> controlled. Source orientation is swept over the hemisphere at 200 directions
+> with the same orientation applied at both electrodes, since only a common
+> orientation corresponds to a physical source. Electrode count is matched by
+> drawing four of the fourteen ear sites at random, taking the best, and
+> repeating; the resulting interval says whether a preference is a property of
+> the montage or of which sites happen to be available.
+>
+> **The jaw's dominance over the labial group is robust on both axes.**
+> Orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma
+> favour the jaw at all 200 sampled orientations and at every electrode
+> subsample. No fibre direction and no four-site selection exists at which a
+> retroauricular electrode competes for these muscles.
+>
+> **One articulator favours the ear on both axes.** Temporalis reaches −2.571 dB
+> at the pre-registered four-site retroauricular cluster, with 92.0 per cent of
+> orientations agreeing and a matched-count interval of [−3.31, −0.03] that
+> excludes zero. It is the only muscle in the study for which a retroauricular
+> montage is preferable independent of both fibre direction and site selection.
+>
+> **Two show no preference that survives electrode subsampling.**
+> Sternocleidomastoid (−0.973 dB at the cluster, 60.5 per cent of orientations,
+> interval [−1.40, +1.27]) and lateral pterygoid (−1.564 dB, 65.5 per cent,
+> [−1.59, +1.33]) both have intervals crossing zero. Their apparent advantage
+> depends on which four sites are available and is not a property of the
+> montage. Reported at the unmatched argmax over fourteen sites they would read
+> −1.402 and −1.679 dB, which is why the matched comparison is the one reported.
+>
+> **Two favour the jaw robustly across sites but not across orientation.**
+> Masseter and medial pterygoid have subsample intervals entirely positive, but
+> 36.0 and 37.5 per cent of sampled orientations reverse them. A single label
+> would discard one axis or the other, so both are reported (Table 4).
 
 ### 3.2 Anisotropy changes the field but not the comparison
 
@@ -523,6 +533,40 @@ so excluding them cannot change the maximum: those muscles are immune by
 construction rather than by luck.
 
 ---
+
+### 3.5 A homogeneous conductor reaches the same verdicts
+
+> **A homogeneous soft-tissue conductor reproduces every montage assignment.**
+> Setting skin, adipose and the non-muscle soft tissues to a single conductivity,
+> with geometry, electrodes and sources held exactly fixed, changes no muscle's
+> montage preference. Eight of ten gap magnitudes move by more than the 0.27 dB
+> floor, with a median shift of 0.482 dB and a maximum of 3.271 dB (mentalis).
+>
+> The direction is not uniform. Temporalis's retroauricular advantage *grows*
+> under the homogeneous conductor, from −2.571 to −3.724 dB at the pre-registered cluster, so the anatomically
+> resolved model reports that result more conservatively than a simpler one
+> would. Sternocleidomastoid and lateral pterygoid move the other way.
+>
+> This locates what the detailed conductor is required for. The question of
+> which montage sees which muscle is answerable without it. The question of by
+> how much is not, and a design table quoting decibels needs it.
+
+### 3.6 Placement by anatomical target outperforms density
+
+> **Placement chosen by anatomical target outperforms arbitrary placement.** The
+> four-site retroauricular cluster — above the ear, over the mastoid, behind and
+> below the lobule, and anterior to the tragus — was specified by anatomical
+> target in the project repository before any solve was run. Compared against
+> the median of random four-site draws from the same fourteen candidates, it is
+> 1.03 dB better for lateral pterygoid (−1.564 against −0.534) and equivalent
+> for sternocleidomastoid (−0.973 against −0.979).
+>
+> Neither of the two sites that won the unmatched argmax for temporalis and
+> sternocleidomastoid is in that cluster, which is the same point from the other
+> direction: an argmax over fourteen densely spaced positions rewards density,
+> while a four-site montage rewards placement. For a device constrained to a
+> small number of contacts, where they go matters more than how many candidates
+> were considered.
 
 ## 4. Discussion
 
@@ -618,18 +662,24 @@ and it is testable in any second anatomy.
 
 ### 4.4 What this licenses for device design
 
-The design statement this supports is narrower and more useful than "the ear
-works." A retroauricular montage should read jaw-closing and head-stabilising
-activity well and lose lip and chin activity almost entirely. For a device whose
-target is jaw-gesture detection, clench-based input, or bruxism monitoring, the
-ear is not a compromise position and may be the better one. For a device whose
-target is labial articulation, the model says the ear costs 10 to 23 dB and no
-electrode position recovers it.
+The design statement this supports is narrow, and narrower than an earlier
+version of this manuscript claimed. A retroauricular montage reads **temporalis**
+well — it is the one muscle favouring the ear on both robustness axes, by
+−2.57 dB at the pre-registered cluster with 92 % of sampled orientations
+agreeing — and loses the labial group almost entirely, by 9 to 21 dB with no
+electrode position recovering it. For a device whose target is jaw-elevation or
+clench-based input, driven by temporalis, the ear is not a compromise position.
+For a device whose target is labial articulation, the ear is not viable at any
+placement tested.
 
-Two qualifications belong with that statement. Sternocleidomastoid is a strong
-coupling to a muscle that may carry little speech information; the model says
-the ear sees it well, not that seeing it is useful. And `medial_pterygoid`
-remains borderline (§3.1).
+**Between those two cases the model licenses nothing.** Sternocleidomastoid and
+lateral pterygoid do not survive matched site counts: a random draw of four ear
+electrodes gives intervals of [−1.40, +1.27] and [−1.59, +1.33] dB, both
+spanning zero, so whether either favours the ear depends on which four
+electrodes a device happens to carry. Masseter and medial pterygoid are
+site-robust but reverse in roughly a third of fibre orientations. None of the
+four supports a design claim, and earlier drafts of this paper rested one on
+sternocleidomastoid.
 
 ### 4.5 Contamination, described muscle by muscle
 
@@ -649,14 +699,18 @@ component.
 ### 4.6 A specific prediction for a companion experiment
 
 This model makes a falsifiable prediction for a physical experiment recording
-both montages at once. The prediction is specific rather than a decibel budget:
-gestures driven by temporalis (jaw elevation, clenching) and lateral pterygoid
-(protrusion, lateral excursion) should be retained at a retroauricular montage,
-while gestures driven by the labial group — mentalis, depressor anguli oris,
-buccinator, orbicularis oris — should degrade sharply. An eight-channel rig
-split four jaw and four ear, recording identical utterances, tests this
-directly. If it shows the opposite pattern, this model is wrong in a way that
-can be located.
+both montages at once, and the prediction is now a single muscle rather than a
+group. Gestures driven by **temporalis** — jaw elevation and clenching — should
+be retained at a retroauricular montage; gestures driven by the labial group —
+mentalis, depressor anguli oris, buccinator, orbicularis oris — should degrade
+sharply, by 9 to 21 dB. An eight-channel rig split four jaw and four ear,
+recording identical utterances, tests this directly.
+
+The prediction deliberately excludes sternocleidomastoid and lateral pterygoid,
+which an earlier version included. Neither survives matched site counts, so a
+companion experiment that found no retroauricular advantage for either would
+not falsify this model — it would agree with it. Stating that in advance is what
+keeps the prediction a test rather than a description.
 
 ### 4.7 Limitations
 
@@ -762,24 +816,20 @@ df = 5.
 Row 7 is deliberately left unquantified. A single-subject model cannot estimate
 its own between-subject variance.
 
-**Table 4 — Which montage sees which muscle, with orientation dependence
-stated.** Gap is computed per orientation and the median taken over 200
-hemisphere directions; positive favours the jaw. "% ear" is the fraction of
-sampled directions favouring the retroauricular montage. Jaw sites within
-10 mm of the truncation face are excluded.
+**Table 4 — Which montage sees which muscle, on two robustness axes.** Gap is the median over 200 source orientations of the per-orientation gap (statistic A), best of the four pre-registered retroauricular sites against the best of four jaw sites clear of the truncation face; positive favours the jaw. *Site-robust* asks whether a random draw of four of the fourteen ear sites still excludes zero. *Orientation agreement* is the fraction of sampled orientations agreeing with the median verdict.
 
-| Muscle | Median gap (dB) | % ear | Status |
-|---|---|---|---|
-| mentalis | +21.95 | 0.0 | jaw, orientation-independent |
-| depressor anguli oris | +14.61 | 0.0 | jaw, orientation-independent |
-| buccinator | +10.03 | 0.0 | jaw, orientation-independent |
-| orbicularis oris | +8.19 | 0.0 | jaw, orientation-independent |
-| platysma | +8.84 | 0.0 | jaw, orientation-independent |
-| masseter | +1.70 | 35.5 | no resolvable preference |
-| medial pterygoid | +1.15 | 37.0 | no resolvable preference; sides disagree at axis |
-| lateral pterygoid | -1.85 | 69.0 | ear, conditional on fibre direction |
-| sternocleidomastoid | -1.96 | 72.5 | ear at estimated axis (−5.06 R, −2.52 L) |
-| temporalis | -3.80 | 96.0 | ear, effectively unconditional (flip cone unreachable) |
+| Muscle | Gap (dB) | Site-robust (random-4 95% CI) | Orientation agreement | Verdict |
+|---|---|---|---|---|
+| mentalis | +21.24 | yes, [+20.90, +24.03] | 100.0 % | **jaw, robust on both axes** |
+| depressor anguli oris | +14.70 | yes, [+13.78, +17.22] | 100.0 % | **jaw, robust on both axes** |
+| buccinator | +10.24 | yes, [+9.24, +12.85] | 100.0 % | **jaw, robust on both axes** |
+| orbicularis oris | +8.99 | yes, [+7.98, +11.42] | 100.0 % | **jaw, robust on both axes** |
+| platysma | +10.01 | yes, [+8.88, +12.72] | 100.0 % | **jaw, robust on both axes** |
+| masseter | +2.22 | yes, [+1.65, +5.79] | 68.5 % | **jaw, site-robust but orientation-dependent** |
+| medial pterygoid | +1.25 | yes, [+1.14, +3.34] | 65.5 % | **jaw, site-robust but orientation-dependent** |
+| sternocleidomastoid | -0.97 | **no**, [-1.40, +1.27] | 60.5 % | **no resolvable preference** |
+| lateral pterygoid | -1.56 | **no**, [-1.59, +1.33] | 65.5 % | **no resolvable preference** |
+| temporalis | -2.57 | yes, [-3.31, -0.03] | 92.0 % | **ear, robust on both axes** |
 
 ---
 
