@@ -1,6 +1,13 @@
-# Paper 1 — Articulator muscle sources at retroauricular electrode sites
+# Canonical jaw electrode sites outperform retroauricular sites for every resolvable speech articulator
 
-A volume-conductor model answering: **which speech muscles can you actually see from behind the ear, and how much do you lose versus the jaw?**
+A volume-conductor model with orientation and electrode-count controls, answering:
+**which speech muscles can you actually see from behind the ear, and how much do
+you lose versus the jaw?**
+
+The answer is one-sided. Five articulators favour the jaw montage by 9.0 to
+21.2 dB and no articulator robustly favours the ear once source orientation and
+electrode count are controlled. Three that appeared to did not survive the
+controls; §4.8 reports how that happened.
 
 - **Human subjects:** none. No IRB required — state this explicitly in Methods.
 - **Hardware:** none. Runs on the MacBook.

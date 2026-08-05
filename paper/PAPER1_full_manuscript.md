@@ -1,4 +1,4 @@
-# Jaw and retroauricular electrode montages couple to different speech articulators: a volume-conductor model in a detailed head anatomy
+# Canonical jaw electrode sites outperform retroauricular sites for every resolvable speech articulator: a volume-conductor model with orientation and electrode-count controls
 
 **Carl Vincent Kho**
 Somach Systems, Inc., San Francisco, CA, USA
@@ -50,9 +50,11 @@ the ear by up to 1.03 dB. A control in which every non-muscle soft tissue is
 set to a single conductivity reproduces every montage assignment unchanged
 while misstating gap magnitudes by up to 3.27 dB.
 
-**Significance.** For device design the result is a per-muscle map rather than a
-ranking: a retroauricular montage loses lip and chin activity entirely and
-buys no muscle back reliably in exchange. The
+**Significance.** For device design the result is one-sided rather than a
+trade: a retroauricular montage loses lip and chin activity entirely and buys no
+muscle back reliably in exchange. What remains a design lever is placement — a
+four-site cluster chosen by anatomical target beats an arbitrary draw from the
+same candidates. The
 homogeneous-conductor control locates what anatomical detail is needed for —
 montage assignment is recoverable without it, magnitudes are not.
 
@@ -414,6 +416,15 @@ were committed the following day, 2026-08-03. The prediction therefore precedes
 the measurement by a day and by the entire solve pipeline, and both commits are
 citable by hash.
 
+**The prediction was not confirmed, and that is reported here rather than
+removed.** The first solves appeared to bear it out: temporalis and
+sternocleidomastoid both showed a retroauricular advantage, and so did lateral
+pterygoid, which the prediction had not named. None survived the orientation and
+electrode-count controls (§3.1, §4.8). A pre-registration that is quietly deleted
+when it fails records nothing; one that is reported when it fails is doing the
+work it was recorded for. It is retained here in its original form, with its
+outcome stated, precisely because the model initially appeared to confirm it.
+
 ### 2.9 Ethics
 
 No human subjects were involved. This is a computational modelling study
@@ -598,23 +609,28 @@ gains a little, at specific positions, on three muscles that attach at or near
 the temporal bone. Any claim that ear-worn silent speech is simply a
 repositioning of the jaw montage is not supported by this model.
 
-### 4.2 The prediction preceded the measurement
+### 4.2 An anatomical prediction that did not survive
 
-The three muscles the ear wins on are the three whose attachments sit at or near
-the temporal bone. Temporalis originates in the temporal fossa, directly beneath
-the superior cEEGrid row, and its best site is the most superior one.
-Sternocleidomastoid inserts on the mastoid process, and its best site is the
-posterior-inferior one. Lateral pterygoid inserts at the mandibular condyle and
-temporomandibular joint capsule, which articulates with the temporal bone's
-mandibular fossa, and its best site is the most anterior ear position.
+The prediction recorded before solving (§2.8) was that muscles attaching at or
+near the temporal bone would couple preferentially to retroauricular sites.
+The anatomy behind it is not in dispute: temporalis originates in the temporal
+fossa directly beneath the superior cEEGrid row, sternocleidomastoid inserts on
+the mastoid process, and lateral pterygoid inserts at the mandibular condyle,
+which articulates with the temporal bone's mandibular fossa.
 
-This was written down before the model was solved (§2.8). The anatomical
-reasoning is not new; the attachments are in any textbook. What the model adds
-is that a volume-conductor solution, given only tissue geometry and
-conductivities, reproduces the prediction without being told it. That constrains
-how much of the result can be an artifact of electrode placement choices, since
-placements were derived by normal projection from anatomical landmarks rather
-than tuned.
+The uncontrolled comparison reproduced it exactly — those three muscles, and only
+those three, showed a retroauricular advantage, each at the site the anatomy
+implied. Under matched electrode counts and a derived rather than assumed fibre
+field, none of the three survives (§3.1).
+
+The prediction is therefore reported as a **failed** one, and its failure is
+informative in a way its confirmation would not have been. Proximity to a bony
+attachment predicts which sites are *competitive* — the three near-temporal
+muscles are the three whose gaps come closest to zero, and the ordering is
+correct — but it does not predict that any of them crosses. A volume conductor is
+not a proximity argument: the current returns through whatever path the
+conductivities allow, and an attachment adjacent to an electrode does not make
+that electrode the better observer of the fibre.
 
 ### 4.3 The mechanism is distance, not intervening tissue
 
@@ -674,24 +690,30 @@ and it is testable in any second anatomy.
 
 ### 4.4 What this licenses for device design
 
-The design statement this supports is narrow, and narrower than an earlier
-version of this manuscript claimed. A retroauricular montage reads **temporalis**
-well — it is the no muscle favouring the ear on both robustness axes, by
-−2.57 dB at the pre-registered cluster with 92 % of sampled orientations
-agreeing — and loses the labial group almost entirely, by 9 to 21 dB with no
-electrode position recovering it. For a device whose target is jaw-elevation or
-clench-based input, driven by temporalis, the ear is not a compromise position.
-For a device whose target is labial articulation, the ear is not viable at any
-placement tested.
+The design statement this supports is a negative one with a number attached. A
+retroauricular montage loses the labial group by 9.0 to 21.2 dB, and buys
+nothing reliable in return. No articulator in this study favours the
+retroauricular montage once source orientation and electrode count are
+controlled.
 
-**Between those two cases the model licenses nothing.** Sternocleidomastoid and
-lateral pterygoid do not survive matched site counts: a random draw of four ear
-electrodes gives intervals of [−1.40, +1.27] and [−1.59, +1.33] dB, both
-spanning zero, so whether either favours the ear depends on which four
-electrodes a device happens to carry. Masseter and medial pterygoid are
-site-robust but reverse in roughly a third of fibre orientations. None of the
-four supports a design claim, and earlier drafts of this paper rested one on
-sternocleidomastoid.
+That is more useful to a device team than a small positive margin would have
+been. An ear-worn form factor is chosen for wearability, not for signal, and the
+question a designer needs answered is what it costs. The answer is that it costs
+most of the anterior articulators outright and returns nothing measurable — not
+that it trades one muscle group for another.
+
+Three apparent advantages did not survive. Temporalis, sternocleidomastoid and
+lateral pterygoid each showed a retroauricular advantage at the unmatched
+comparison, and each dissolved: their gaps depend on which four electrodes a
+device carries rather than on the anatomy (§3.1). A device built around any of
+them would be built on a site-selection lottery. Anyone reading a retroauricular
+advantage off a model that does not match electrode counts between montages
+should expect the same.
+
+What does transfer is that placement method matters more than the marginal
+advantages did. A four-site cluster chosen by anatomical target outperforms an
+arbitrary four-site draw from the same candidates (§3.6). For a device
+constrained to a few contacts, where they go is the lever that remains.
 
 ### 4.5 Contamination, described muscle by muscle
 
@@ -711,18 +733,61 @@ component.
 ### 4.6 A specific prediction for a companion experiment
 
 This model makes a falsifiable prediction for a physical experiment recording
-both montages at once, and the prediction is now a single muscle rather than a
-group. Gestures driven by **temporalis** — jaw elevation and clenching — should
-be retained at a retroauricular montage; gestures driven by the labial group —
-mentalis, depressor anguli oris, buccinator, orbicularis oris — should degrade
-sharply, by 9 to 21 dB. An eight-channel rig split four jaw and four ear,
-recording identical utterances, tests this directly.
+both montages simultaneously, and the prediction is a null.
 
-The prediction deliberately excludes sternocleidomastoid and lateral pterygoid,
-which an earlier version included. Neither survives matched site counts, so a
-companion experiment that found no retroauricular advantage for either would
-not falsify this model — it would agree with it. Stating that in advance is what
-keeps the prediction a test rather than a description.
+An eight-channel rig split four jaw and four retroauricular, recording identical
+utterances, should show **no articulator for which the retroauricular channels
+carry more information than the jaw channels**, and should show the labial group
+degrading sharply at the ear. A result finding a reliable retroauricular
+advantage for temporalis, sternocleidomastoid or lateral pterygoid would
+**falsify this model**, and would most likely indicate that a real muscle's fibre
+geometry differs from the field derived here, or that mechanical or acoustic
+coupling contributes signal this electrical model does not represent.
+
+Stating the direction in advance matters, because the alternative reading is
+available and would be unfalsifiable. Had the prediction been "the ear retains
+temporalis-driven gestures", an experiment finding no advantage could be
+explained as insufficient sensitivity rather than as evidence against the model.
+As stated, the null is the prediction and a positive finding is the refutation.
+
+### 4.8 How the retroauricular advantage dissolved
+
+An apparent retroauricular advantage was present at every intermediate stage of
+this analysis and survived to the point of being written into a draft. It did not
+survive the controls, and the way it disappeared is worth reporting because each
+control is individually standard and none was applied in response to the result.
+
+| Stage | Temporalis gap |
+|---|---|
+| field magnitude, best of 14 ear sites | −3.92 dB |
+| projected onto source orientation | −3.31 dB |
+| renormalised by measured delivered current | −2.93 dB |
+| matched electrode counts, four sites each | −2.62 dB |
+| derived per-voxel fibre field | −1.15 dB |
+| matched-count interval on the derived field | **[−1.45, +5.46], spans zero** |
+
+Five corrections, each motivated by a different defect, each moving the estimate
+the same way. Reporting the field magnitude rather than the lead field projected
+onto a source orientation overstates coupling, because the magnitude is the
+maximum over orientations. Not renormalising by the current actually delivered
+leaves a per-site term that does not cancel in a ratio. Comparing the best of
+fourteen candidate sites against the best of four rewards electrode density
+rather than placement. And assuming a fibre direction rather than deriving one
+from the label volume permitted a claim the derived field does not support.
+
+None of these is exotic. Each is the kind of simplification a forward-modelling
+study makes for defensible reasons, and each individually shifts the estimate by
+around a decibel. Their product was an effect of roughly 4 dB that is not there.
+**A monotone drift toward the null under corrections adopted for independent
+reasons is the signature of an effect that was never present**, and it is visible
+only if the corrections are applied and reported rather than chosen.
+
+We report this because the intermediate results were not obviously wrong. Each
+was internally consistent, cleared its measurement floor, and reproduced an
+a-priori anatomical prediction — the three muscles that appeared to favour the
+ear are the three whose attachments sit at or near the temporal bone, which is
+exactly what one would predict and exactly what makes a spurious result
+convincing.
 
 ### 4.7 Limitations
 
