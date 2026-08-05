@@ -1,0 +1,11 @@
+muscle,gap_min_dB,gap_max_dB,gap_median_dB,gap_range_dB,favours,sign_stable,frac_favouring_jaw,n_dirs
+masseter,-4.5345,6.9839,1.6997,11.5184,jaw,False,0.645,200
+temporalis,-10.994,1.9284,-3.8011,12.9224,ear,False,0.04,200
+medial_pterygoid,-3.5573,5.6831,1.1468,9.2404,jaw,False,0.63,200
+lateral_pterygoid,-7.7034,6.7791,-1.8548,14.4825,ear,False,0.31,200
+orbicularis_oris,2.5963,23.7423,8.1924,21.146,jaw,True,1.0,200
+buccinator,4.3434,14.5556,10.0328,10.2121,jaw,True,1.0,200
+mentalis,12.9338,32.4252,21.9455,19.4913,jaw,True,1.0,200
+depressor_anguli_oris,10.9113,24.1178,14.6066,13.2065,jaw,True,1.0,200
+platysma,1.1131,22.8066,8.8443,21.6935,jaw,True,1.0,200
+sternocleidomastoid,-9.4794,7.2836,-1.9582,16.763,ear,False,0.275,200
