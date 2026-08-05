@@ -110,6 +110,25 @@ hardest, not the one to ship fastest.**
 Before reporting that a specification was not applied, name the file where it
 WOULD have been applied and show it is not there either.
 
+**Never target an edit to the manuscript by its content.** No regex on row
+labels, no "replace the line that starts with `| temporalis |`", no search for
+text that looks like the table you mean. Address a block by NAME through
+`src/manuscript_blocks.py`, which writes only between that block's
+`<!-- TABLE:name -->` anchors and raises if the anchor is missing or duplicated.
+It deliberately has no fallback search.
+
+A content-addressed edit lands in every block that shares the pattern. On
+2026-08-06 a row-label regex overwrote §3.3's fat-contrast table with Table 4's
+rows, twice, because both tables have a `| temporalis |` row and I believed the
+document held two copies of Table 4. It never did.
+
+**Both times I reported it as a safeguard** — "rebuilt from the CSV rather than
+edited by hand". Generating from source is right and says nothing about where
+the output lands. The corrupted table traced perfectly to a real source file and
+every number in it was real; they were the wrong table's numbers in the right
+table's place. **Provenance checking cannot see this class of error, so it must
+be made structurally impossible instead.**
+
 **A verification check confirms a specification was APPLIED. It cannot confirm
 the specification was CORRECT.** Fidelity and correctness are separate channels
 and need separate tests. Passing one says nothing about the other.

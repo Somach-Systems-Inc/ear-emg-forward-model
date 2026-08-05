@@ -544,6 +544,7 @@ montage wins, and by how much of that the tissue contrast is responsible.
 The contribution is not uniform in sign across muscles, because which electrode
 is best differs by muscle and the shift is not uniform within a montage:
 
+<!-- TABLE:fat_contrast -->
 | Muscle | As modelled | Without contrast | Change | Contrast's role |
 |---|---|---|---|---|
 | temporalis | −3.801 | −4.923 | −1.121 | suppresses 29.5 % |
@@ -556,6 +557,7 @@ is best differs by muscle and the shift is not uniform within a montage:
 | buccinator | 10.033 | 9.848 | −0.185 | contributes 1.8 % |
 | depressor anguli oris | 14.607 | 14.001 | −0.606 | contributes 4.1 % |
 | mentalis | 21.945 | 19.082 | −2.863 | contributes 13.0 % |
+<!-- /TABLE:fat_contrast -->
 
 Reported per muscle only. A population differential has no clean definition
 under statistic A: the median change is +0.01 dB and conceals a sign spanning
@@ -953,6 +955,7 @@ its own between-subject variance.
 
 **Table 4 — Which montage sees which muscle, on two robustness axes.** Gap is the median over 200 source orientations of the per-orientation gap (statistic A), best of the four pre-registered retroauricular sites against the best of four jaw sites clear of the truncation face; positive favours the jaw. *Site-robust* asks whether a random draw of four of the fourteen ear sites still excludes zero. *Orientation agreement* is the fraction of sampled orientations agreeing with the median verdict.
 
+<!-- TABLE:two_axis_verdict -->
 | Muscle | Gap (dB) | Site-robust (random-4 95% CI) | Orientation agreement | Verdict |
 |---|---|---|---|---|
 | mentalis | +21.24 | yes, [+20.90, +23.99] | 100.0 % | **jaw, robust on both axes** |
@@ -965,6 +968,7 @@ its own between-subject variance.
 | sternocleidomastoid | -0.97 | **no**, [-1.40, +1.27] | 60.5 % | **no resolvable preference** |
 | lateral pterygoid | -1.56 | **no**, [-1.59, +1.09] | 65.5 % | **no resolvable preference** |
 | temporalis | -2.57 | yes, [-3.31, -0.03] | 92.0 % | **ear, robust on both axes** |
+<!-- /TABLE:two_axis_verdict -->
 
 **Temporalis is reported here under the uniform orientation sweep, for
 comparability with the other nine muscles.** Under the fibre field derived from
