@@ -500,7 +500,7 @@ is best differs by muscle and the shift is not uniform within a montage:
 
 | Muscle | As modelled | Without contrast | Change | Share of gap |
 |---|---|---|---|---|
-| temporalis | −3.801 | −4.923 | **−1.121** | contrast *suppresses* the advantage |
+| temporalis | −1.15 (per-voxel fan) | **no**, [−1.45, +5.46] | 91.5 % over the derived fan | **no resolvable preference** |
 | sternocleidomastoid | −1.958 | −1.547 | +0.411 | 21 % |
 | lateral pterygoid | −1.855 | −1.532 | +0.323 | 17 % |
 
@@ -664,7 +664,7 @@ and it is testable in any second anatomy.
 
 The design statement this supports is narrow, and narrower than an earlier
 version of this manuscript claimed. A retroauricular montage reads **temporalis**
-well — it is the one muscle favouring the ear on both robustness axes, by
+well — it is the no muscle favouring the ear on both robustness axes, by
 −2.57 dB at the pre-registered cluster with 92 % of sampled orientations
 agreeing — and loses the labial group almost entirely, by 9 to 21 dB with no
 electrode position recovering it. For a device whose target is jaw-elevation or

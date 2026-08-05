@@ -104,6 +104,11 @@ def main() -> int:
         del m, E
         gc.collect()
 
+    pd.DataFrame([{"electrode": e, "lf_pervoxel_fan": v} for e, v in pv.items()]
+                 ).to_csv(config.RESULTS / "04k_temporalis_pervoxel.csv", index=False)
+    np.savez(config.RESULTS / "04k_temporalis_perdirection.npz", **pd_)
+    print(f"wrote 04k_temporalis_pervoxel.csv and _perdirection.npz")
+
     jaw = [e for e in pv if mont[e] == "jaw" and e not in NEAR_CUT]
     print("\n=== TEMPORALIS OVER THE DERIVED FAN ===")
     for label, ear in (("pre-registered cluster", CLUSTER),

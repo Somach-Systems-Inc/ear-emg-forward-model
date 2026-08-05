@@ -175,6 +175,39 @@ surface geometry into the history and 109 of them onto a public GitHub repo.
 `git config core.hooksPath .githooks`. Adding a format is a deliberate edit,
 not a `--no-verify`.
 
+**A geometric quantity that cannot be regenerated from a clean checkout cannot
+be defended in Methods — and that includes fibre directions, not just electrode
+coordinates.** §2.3 applied this standard to electrode placement and rejected an
+interactive picker for it. It was never applied to the other class of geometric
+input, and it cost two retractions.
+
+Both were assertions about temporalis geometry, both were mine, and both
+flattered the result:
+
+1. "The flip cone is anatomically unreachable, because temporalis fibres run in
+   the sagittal plane with negligible medio-lateral component." **Derived from
+   MIDA: median |R| = 0.331**, against a cone requiring |R| ≥ 0.324. Reachable.
+2. "Temporalis favours the ear independent of fibre direction." **Derived: 91.5%
+   of the fan, not all**, and the physically correct per-voxel gap is −1.15 dB
+   against the −2.57 dB the uniform sweep gave.
+
+The second retraction then failed the matched-count test and cost the paper its
+last ear result. **Deriving the quantity took one script and seven minutes.**
+The assertion had stood for two days and was load-bearing for the headline.
+
+So: if a direction, an axis, a landmark or a distance enters a calculation,
+derive it from the labelled volume and record the derivation. "It is a fan from
+the temporal fossa to the coronoid process" is a textbook fact and not a
+measurement of *this* anatomy.
+
+**After correcting any computed quantity, GREP for the prose that described the
+old state.** Data corrections propagate through the pipeline automatically; the
+sentences describing them never do. Review item 20 is the worked example: the
+delivered-current term was corrected in Methods, regenerated through every
+downstream number, and left Table 3 row 8 still reading "bounded by row 6" —
+with every number in that row correct. The audit found it by grep, not by
+reading.
+
 **Never fabricate a number.** If a solve hasn't run, the result is unknown. Write `TODO` or `None`, not a plausible-looking value. This is a paper; an invented figure is misconduct, not a placeholder.
 
 **Flag uncertainty inline.** If a conductivity, label, or coordinate is assumed rather than verified, mark it `# UNVERIFIED:` in code and call it out in the commit message.

@@ -4406,3 +4406,56 @@ the result. The standard §2.3 applied to electrode placement — a coordinate t
 cannot be regenerated from a clean checkout cannot be defended in Methods — was
 not applied to a fibre direction until the reviewer asked for it.
 
+---
+
+## 2026-08-05 — TEMPORALIS FAILS MATCHED COUNTS. The paper has no ear result.
+
+The pre-committed reading, applied. **The interval crosses zero.**
+
+| | |
+|---|---|
+| cluster-4 gap, per-voxel fan | **−1.147 dB** |
+| argmax-14 gap | −1.453 dB |
+| random-4 subsample, median | −1.147 |
+| **random-4 95% interval** | **[−1.453, +5.458]** |
+| draws favouring the ear | **50.2%** |
+
+A coin flip. Whether temporalis favours the retroauricular montage depends
+entirely on which four ear electrodes a device happens to carry.
+
+**Temporalis is NO RESOLVABLE PREFERENCE.** No muscle in this model robustly
+favours the retroauricular montage.
+
+**The headline becomes: five articulators robustly favour the jaw montage; none
+robustly favours the retroauricular montage.** Stated plainly, not softened.
+
+Three rescues were available and all are refused, as pre-committed: the
+argmax-14 figure (−1.453 dB) is the count bias the matched comparison exists to
+remove; the 99.5% orientation fraction at 14 sites is the same bias in another
+form; and the uniform-sweep −2.571 dB is superseded by the derived fan, which is
+what a fanned muscle physically is.
+
+### How the last result fell, in order
+
+Each step was a correction that had to be made, and each cost margin:
+
+| step | temporalis gap |
+|---|---|
+| \|E\|, argmax over 14 | −3.92 |
+| projected onto orientation | −3.31 |
+| renormalised by delivered current | −3.315 → cluster −2.571 |
+| **derived fibre fan, per-voxel** | **−1.147** |
+| **matched site counts** | **interval spans zero** |
+
+Nothing here was a mistake caught late. Each was a measurement the previous step
+had assumed, and every one moved the same way. That is the shape of a result
+that was never there, revealed by removing assumptions one at a time.
+
+**What survives is not nothing.** Five articulators favour the jaw montage on
+both robustness axes, by 9.0 to 21.2 dB, and no fibre direction or electrode
+subset reverses them. The design table stands: an ear montage loses the labial
+group and gains nothing reliable. §3.6's placement finding stands. §3.5's
+homogeneous control stands. The paper is a negative result about retroauricular
+montages with a quantified positive result about jaw montages, which is
+publishable and honest.
+
