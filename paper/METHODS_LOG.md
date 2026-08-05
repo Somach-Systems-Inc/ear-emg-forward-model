@@ -4254,3 +4254,57 @@ but reversed in ~36% of fibre orientations*. **Carl's call** — the criterion h
 adopted returns "jaw" and his expected list says otherwise, and I am not
 silently choosing between them.
 
+---
+
+## 2026-08-05 — HOMOGENEOUS-SCALP CONTROL: complementarity SURVIVES; the magnitudes do not
+
+22 solves, geometry fixed, thirteen non-muscle extracerebral soft-tissue labels
+collapsed to a single 0.465 S/m. Statistic A on renormalised lead fields.
+
+| muscle | detailed | homogeneous | change |
+|---|---|---|---|
+| temporalis | −3.315 | **−4.330** | −1.015 |
+| sternocleidomastoid | −1.402 | −1.020 | +0.383 |
+| lateral_pterygoid | −1.679 | −1.097 | +0.582 |
+| medial_pterygoid | +1.141 | +1.519 | +0.378 |
+| masseter | +1.572 | +1.540 | −0.032 |
+| orbicularis_oris | +7.977 | +9.031 | +1.053 |
+| buccinator | +9.240 | +9.596 | +0.356 |
+| platysma | +8.874 | +9.099 | +0.226 |
+| depressor_anguli_oris | +13.780 | +13.131 | −0.649 |
+| mentalis | +20.898 | **+17.627** | **−3.271** |
+
+**NO SIGN FLIPS. 8 of 10 gaps move by more than the 0.27 dB floor**, median
+0.482 dB, largest 3.271 dB.
+
+### The pre-committed criterion split, and it is reported as it fell
+
+The reading fixed before the solve was: *survives* = "the same muscles favour
+the same montages, **with** gaps within the floor"; *does not survive* =
+"muscles change montage, **or** gaps move by more than the floor".
+
+**Those two halves now disagree.** Montage assignment is completely unchanged —
+the primary quantity, and the one the paper's claim is about — while eight of
+ten magnitudes move beyond the floor. The criterion was written assuming the
+two would agree, and they did not. Recording that as a defect in the criterion,
+in the same way the matched-count rule was recorded as too permissive.
+
+**The honest reading, on the primary criterion: complementarity SURVIVES.** A
+homogeneous-scalp model reaches the same conclusion about which montage sees
+which muscle. Per the pre-commitment, **the paper reframes as an application
+study and says so plainly in the Introduction** — the contribution is the
+electrode-coupling analysis and the design table, not the tissue detail, and
+HArtMuT-class models would have sufficed to reach the qualitative result.
+
+**What the detailed conductor does buy** is the magnitudes: a homogeneous model
+misstates mentalis by 3.27 dB and eight of ten gaps by more than the noise
+floor. That is a real and quotable contribution, and a much narrower one than
+"a detailed volume conductor is required to find this".
+
+**Stated against the temptation:** temporalis's advantage *grows* under the
+homogeneous model (−3.315 → −4.330), so the detailed conductor makes the
+headline result **more conservative**, not less. It would have been easy to
+lead with "8 of 10 gaps move" and preserve the novelty claim. The sign result
+is the primary criterion, it was fixed in advance, and it says the qualitative
+finding does not need the tissue detail.
+
