@@ -1,0 +1,22 @@
+# Temporalis matched-count interval over the derived fibre fan.
+# construction=pervoxel is THE REPORTED ONE: resamples electrodes
+#   only, fibre field fixed. Matches the inferential target §3.1
+#   states at lines 477-480 (site-selection uncertainty).
+# construction=perdirection_ROBUSTNESS_ONLY medians over 200
+#   orientations inside each draw, reintroducing the uniform-sweep
+#   assumption the derived field replaces. NOT reported in the
+#   manuscript; the claim rests on one support and says so.
+# floor_dB == argmax14_gap_dB BY CONSTRUCTION: the best draw is the
+#   best of all ear sites. lower_bound_is_floor=True means the
+#   interval's lower end is NOT a tail quantile.
+construction,jaw_set,dropped,is_published_basis,reported_in_manuscript,median_dB,lo_dB,hi_dB,spans_zero,pct_favouring_ear,floor_dB,floor_attained_pct,lower_bound_is_floor,argmax14_gap_dB,n_draws,seed,n_ear_sites,n_drawn
+pervoxel,buccal+mental+midjaw+submaxillary,submental_mid,True,True,-1.1474,-1.4534,5.4577,True,50.2,-1.4534,28.3,True,-1.4534,10000,0,14,4
+perdirection_ROBUSTNESS_ONLY,buccal+mental+midjaw+submaxillary,submental_mid,True,False,-1.2297,-3.2832,3.9974,True,81.6,-3.2832,28.3,True,-3.2832,10000,0,14,4
+pervoxel,buccal+mental+midjaw+submental_mid,submaxillary,False,True,-1.1474,-1.4534,5.4577,True,50.2,-1.4534,28.3,True,-1.4534,10000,0,14,4
+perdirection_ROBUSTNESS_ONLY,buccal+mental+midjaw+submental_mid,submaxillary,False,False,-1.2297,-3.2832,3.9974,True,81.6,-3.2832,28.3,True,-3.2832,10000,0,14,4
+pervoxel,buccal+mental+submaxillary+submental_mid,midjaw,False,True,-6.1258,-6.4319,0.4793,True,93.3,-6.4319,28.3,True,-6.4319,10000,0,14,4
+perdirection_ROBUSTNESS_ONLY,buccal+mental+submaxillary+submental_mid,midjaw,False,False,-5.1949,-7.1534,0.2149,True,97.2,-7.1534,28.3,True,-7.1534,10000,0,14,4
+pervoxel,buccal+midjaw+submaxillary+submental_mid,mental,False,True,-1.1474,-1.4534,5.4577,True,50.2,-1.4534,28.3,True,-1.4534,10000,0,14,4
+perdirection_ROBUSTNESS_ONLY,buccal+midjaw+submaxillary+submental_mid,mental,False,False,-1.2297,-3.2832,3.9974,True,81.6,-3.2832,28.3,True,-3.2832,10000,0,14,4
+pervoxel,mental+midjaw+submaxillary+submental_mid,buccal,False,True,-1.1474,-1.4534,5.4577,True,50.2,-1.4534,28.3,True,-1.4534,10000,0,14,4
+perdirection_ROBUSTNESS_ONLY,mental+midjaw+submaxillary+submental_mid,buccal,False,False,-1.2297,-3.2832,3.9974,True,81.6,-3.2832,28.3,True,-3.2832,10000,0,14,4

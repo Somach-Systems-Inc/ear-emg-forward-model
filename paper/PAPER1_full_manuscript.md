@@ -500,9 +500,25 @@ acquired.
 > on that treatment it would be reported as favouring the ear. The sweep assumes
 > source orientation is uniformly distributed over the sphere, which is the right
 > default when fibre direction is unknown and the wrong one for a muscle whose
-> fibres converge on a single identifiable insertion. Derived from the label
-> volume (§2.5.1), the fibre field gives −1.147 dB with an interval of
-> [−1.453, +5.458].
+> fibres converge on a single identifiable insertion.
+>
+> Electrode count is matched by drawing 4 of the 14 ear sites at random and
+> taking the best, repeated over draws at seed 0. For the derived fibre field the
+> draw resamples electrodes alone, with the fibre orientation held fixed, so the
+> resulting spread reflects site availability and nothing else. Temporalis gives a
+> median gap of −1.147 dB with an interval of [−1.453, +5.458] dB, favouring the
+> ear in 50.2 per cent of draws.
+>
+> The lower bound of this interval is not a tail quantile. The most
+> ear-favouring outcome of any 4-site draw is the best of all 14 sites, so
+> −1.453 dB is a floor fixed by the data rather than by sampling, and it is
+> attained in 28.3 per cent of draws against the 28.6 per cent expected from draw
+> size alone. It coincides with the argmax gap over all 14 sites, −1.453 dB, by
+> construction; the two figures are one measurement, not two that agree. The
+> corresponding bound under the uniform orientation sweep, −3.308 dB, is a
+> genuine percentile lying strictly above its own floor of −3.314 dB, which is
+> attained in 2.2 per cent of draws. The two lower bounds are therefore not
+> comparable quantities.
 >
 > We report the derived result because it removes an assumption rather than
 > adding one, and the pre-registered reading (§2.8) committed to that treatment
@@ -597,20 +613,25 @@ preserves every assignment while moving magnitudes.
 
 ### 3.4 Truncation sensitivity
 
-MIDA is cut at S = −116.2 mm with an insulating face, and three jaw sites sit
-within 10 mm of it (`hyoid` 8.0, `submental_lat` 8.4, `submental_mid` 9.7) while
-every ear site is 80 mm or more away, so reflection at that face inflates the
-jaw side and flatters the comparison. Reporting the gap over all seven jaw sites
-and again over the four clear of the cut:
+The inferior truncation lies closer to the jaw montage than to the
+retroauricular montage, so the cut plane could in principle inflate the jaw
+side. Perpendicular clearance to the fitted plane places 2 jaw sites within
+10 mm of it (`hyoid` 7.76 mm and `submental_lat` 9.76 mm); the next nearest is
+`submental_mid` at 10.76 mm. The closest ear site, `cg09`, is 75.27 mm away.
 
-- median gap **+6.45 dB → +5.91 dB**, a shift of **−0.54 dB**
-- **no sign flips**: which montage wins is unchanged for **10 of 10** muscles
-- every |gap| still clears the 0.27 dB measured floor
+Removing the near-cut sites moves the median gap from +4.68 dB to +4.52 dB, a
+shift of −0.17 dB. No muscle changes sign (0 of 10). The largest individual
+movements are `medial_pterygoid` −0.88, `sternocleidomastoid` −0.54 and
+`platysma` −0.37 dB. The reported advantage is not an artefact of proximity to
+the truncation.
 
-The structural reason matters more than the number. Only three muscles move at
-all — `medial_pterygoid` (−1.33), `platysma` (−1.18), `sternocleidomastoid`
-(−0.88). For the other seven the best jaw electrode was never a near-cut site,
-so excluding them cannot change the maximum: those muscles are immune by
+The 10 mm grouping above is descriptive. The reported subsets span every
+admissible site set for any near-cut threshold between 9.757 mm and 15.264 mm, a
+window of 5.507 mm, so no conclusion here depends on where in that range the
+threshold is placed.
+
+For the muscles that do not move, the best jaw electrode was never a near-cut
+site, so excluding them cannot change the maximum: those muscles are immune by
 construction rather than by luck.
 
 ---
@@ -675,7 +696,13 @@ with an interval excluding zero. Under the fibre field derived from the label
 volume it favours the ear by 1.147 dB with an interval of [−1.453, +5.458], and
 does not resolve. The difference is not a correction of an error; it is the
 difference between assuming source orientation is uniform over the sphere and
-deriving it from where the muscle actually attaches. We take the derived field
+deriving it from where the muscle actually attaches. That difference also changes
+what the accompanying intervals measure. Under the uniform sweep, orientation is
+a sampled dimension and the interval averages over 200 directions within each
+draw; under the derived field there is no orientation dimension to average over,
+and the interval reflects site selection alone. The two intervals answer
+different questions and should not be read as one quantity under two fibre
+models. We take the derived field
 because it removes an assumption, and we state the dependence rather than burying
 it: **the claim that no articulator favours the retroauricular montage rests on
 the temporalis fibre derivation, and is the single most attackable point in this
@@ -898,8 +925,8 @@ anatomy demonstrates that.
 **The inferior boundary is an unquantified limitation whose bias runs against
 the ear.** A neck-extended mesh was built specifically to measure it and did not
 conserve charge, so the pre-committed decision rule was recorded unexecuted
-rather than applied or revised. What can be said is §3.4: excluding the three
-near-cut jaw sites moves the median gap by only −0.54 dB and flips no signs, and
+rather than applied or revised. What can be said is §3.4: excluding the two
+near-cut jaw sites moves the median gap by only −0.17 dB and flips no signs, and
 seven of ten muscles are immune by construction. The magnitude of the residual
 bias is unknown rather than estimated, and its direction flatters this paper's
 own headline comparison.

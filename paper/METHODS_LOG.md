@@ -4946,3 +4946,81 @@ the retired S-differences; perpendicular gives 7.8/9.8/10.8), "three jaw sites"
 false under both metrics** — the minimum is `post_lobule` at 76.3 mm
 perpendicular, 75.7 mm under the old S-difference. That error predates this work.
 `+6.45`, `+5.91` and `−0.54` remain orphans; `−0.54` has propagated to §4.7.
+
+---
+
+## 2026-08-05 — the headline interval now has a generating script
+
+Closes the last class-2 item. `04p_headline_interval.py` emits
+`results/04p_headline_interval.csv`.
+
+### Reproduction
+
+| quantity | script | published | |
+|---|---|---|---|
+| median | −1.1474 | −1.147 | match |
+| lower | −1.4534 | −1.453 | match |
+| upper | +5.4577 | +5.458 | match |
+| favouring ear | 50.2% | 50.2% | match |
+
+All four reproduce at seed 0. The construction, which was also unrecorded, is
+**per-voxel**: the draw resamples electrodes only, with the derived fibre field
+held fixed. Ruled correct on the inferential target §3.1 states at lines 477-480,
+site-selection uncertainty, not on preference. The per-direction alternative
+medians over 200 orientations inside each draw, reintroducing the uniform-sweep
+assumption the derived field exists to remove; it is emitted to the same file
+labelled `perdirection_ROBUSTNESS_ONLY` and is **not reported in the manuscript**,
+because the claim rests on one support and the paper says so.
+
+### The lower bound is not a quantile, and this is now disclosed in §3.1
+
+The floor is attained in **28.3%** of draws against the **28.6%** predicted by
+draw size alone (4 of 14), because the most ear-favouring draw is any draw
+containing the single best ear site. It therefore equals the argmax-14 gap by
+construction: −1.453 appearing as both figures is one measurement, not two that
+agree. Table 4's corresponding bound is a genuine percentile, −3.3082 against its
+own floor of −3.3145, attained in only 2.2% of draws.
+
+The discriminator is not per-voxel versus per-direction. It is whether the best
+ear site is invariant across the resampled dimension. In `04d`'s arrays it varies
+with orientation; in both `04k` objects it does not.
+
+### §3.4 and §4.7 regenerated
+
+Median gap +4.68 dB over all seven jaw sites, +4.52 dB excluding the near-cut
+two, a shift of **−0.17 dB** against the published −0.54. No sign flips, 0 of 10.
+Movers: `medial_pterygoid` −0.88, `sternocleidomastoid` −0.54, `platysma` −0.37.
+§4.7's repeat of the figure corrected in the same pass, and its "three near-cut
+jaw sites" corrected to two.
+
+**`+6.45` and `+5.91` are orphans, not values the correction moved.** They
+reproduce under **neither** metric: the S-difference basis does not give them and
+the perpendicular basis does not give them. That is what distinguishes an orphan
+from a superseded value, and it is why they are deleted outright rather than
+carried as prior figures. The "every ear site is 80 mm or more away" claim is
+deleted for the same reason: false under both metrics, the true minimum being
+`cg09` at 75.27 mm.
+
+### Deviation from supplied wording, reported not silently applied
+
+`WORDING_interval_and_34.md` §1 says the new interval text "replaces the interval
+sentence at approximately lines 497-505". Lines 497-505 are the whole *"The two
+treatments disagree, and the anatomy-specific one governs"* paragraph, which
+carries the disagreement disclosure Carl's standing instruction requires the paper
+to make. Replacing the full range would have deleted it.
+
+**Applied narrowly instead:** the paragraph is kept, its final sentence (the bare
+interval statement) is replaced by the supplied text, and the floor paragraph
+follows. Nothing supplied was dropped and nothing existing was lost. Flagged
+because the range in the file and the phrase "the interval sentence" point at
+different amounts of text, and choosing the smaller reading is a judgement, not an
+instruction.
+
+No source-wins discrepancies arose: every value in the supplied wording either
+matched its source or was a rounding of it.
+
+### File status
+
+`paper/WORDING_interval_and_34.md` is tracked and carries **"pending Carl,
+supervisor-approved only"**. Carl's name is not on it and it is not recorded as
+approved by him.
