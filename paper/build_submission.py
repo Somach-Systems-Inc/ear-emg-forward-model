@@ -35,7 +35,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "paper" / "PAPER1_full_manuscript.md"
 STAGE = ROOT / "paper" / "_build"
-TEX = ROOT / "paper" / "PAPER1_submission.tex"
+# Self-contained arXiv bundle: the .tex and the figures it names, with BARE
+# filenames. Absolute paths compile here and nowhere else, which is exactly the
+# failure mode that reaches arXiv's build farm and not the author's laptop.
+BUNDLE = ROOT / "paper" / "arxiv"
+TEX = BUNDLE / "ms.tex"
 PDF = ROOT / "paper" / "PAPER1_submission.pdf"
 
 FIGURES = {
@@ -139,7 +143,7 @@ def preprocess(md: str) -> tuple[str, list[str]]:
         cap = cap.replace("**", "")
         block = (f"\n\\begin{{figure}}[htbp]\n\\centering\n"
                  f"\\includegraphics[width=\\linewidth,height=0.42\\textheight,"
-                 f"keepaspectratio]{{{path.as_posix()}}}\n"
+                 f"keepaspectratio]{{{fname}}}\n"
                  f"\\caption{{{latex_escape(cap)}}}\n"
                  f"\\end{{figure}}\n")
         md = md[:m.start()] + f"@@FIG{n}@@" + md[m.end():]
@@ -169,7 +173,13 @@ def latex_escape(s: str) -> str:
 
 
 def main() -> int:
+    import shutil
     STAGE.mkdir(exist_ok=True)
+    BUNDLE.mkdir(exist_ok=True)
+    for fn in FIGURES.values():
+        src = ROOT / "figures" / fn
+        if src.exists():
+            shutil.copy2(src, BUNDLE / fn)
     md = SRC.read_text()
     md, (title, author, placed, notes) = preprocess(md)
 
@@ -216,15 +226,19 @@ def main() -> int:
     print(f"wrote {TEX}")
 
     print("$ tectonic -X compile ...")
-    r = subprocess.run(["tectonic", "-X", "compile", str(TEX),
-                        "--outdir", str(TEX.parent), "--keep-logs"],
-                       capture_output=True, text=True, cwd=str(ROOT))
+    r = subprocess.run(["tectonic", "-X", "compile", TEX.name,
+                        "--outdir", str(BUNDLE)],
+                       capture_output=True, text=True, cwd=str(BUNDLE))
     if r.returncode:
         tail = (r.stderr or r.stdout)[-3000:]
         print(tail, file=sys.stderr)
         return 1
 
+    built = BUNDLE / (TEX.stem + ".pdf")
+    if built.exists():
+        shutil.copy2(built, PDF)
     print(f"\nwrote {PDF}")
+    print(f"arXiv bundle: {BUNDLE}  ({len(list(BUNDLE.glob('*')))} files)")
     print("\nBUILD NOTES")
     for n in notes:
         print(f"  - {n}")
