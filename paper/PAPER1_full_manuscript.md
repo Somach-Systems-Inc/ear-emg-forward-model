@@ -169,13 +169,31 @@ muscle and it is not a source.
 2,140,917 nodes and 15,415,273 elements. SimNIBS meshes the two electrodes into
 it at solve time, giving 15,415,668 elements of which 12,294,182 are tetrahedra.
 
-**Boundary.** MIDA terminates inferiorly at S = −116.2 mm, and that cut face is
-treated as an insulating (homogeneous Neumann) boundary. A neck-extended variant
-was constructed and rejected: it does not conserve charge, with flux failing to
-decay toward the domain floor (1.070 mA at S = −182 mm against a 1 mA injection,
-where the truncated control falls to 0.107 mA at S = −119 mm). All published
-results use the truncated mesh; the consequence for the jaw-versus-ear
-comparison is quantified in §3.4.
+**Boundary.** The MIDA head model is truncated inferiorly on a planar cut, and
+that face is treated as an insulating (homogeneous Neumann) boundary. The face is
+fitted from 18,818 boundary triangles with unit normal [−0.03336, −0.03236,
+−0.99892], tilted 2.664° off the RAS S axis, passing through (−2.301, 23.112,
+−115.600) mm; residual RMS about the fit is 0.073 mm. Because the plane is
+tilted it has no single S coordinate: the face spans S = −122.07 to −110.17 mm
+across its lateral extent, and the mesh S minimum, −122.167 mm, is a corner of
+that face rather than the location of the cut. All boundary clearances reported
+here are perpendicular distances to this plane, not differences in S.
+
+The cut plane is not fitted to an assumed orientation. Its normal recovers the
+MIDA label volume's own superior voxel axis, read from the NIfTI affine as
+[0.03335, 0.03240, 0.99892] at 2.665° from RAS +S with a 0.500 mm step, agreeing
+with the fitted normal to 0.0026°. The truncation therefore lies on a voxel plane
+of the source segmentation. No node of the mesh lies more than 0.276 mm outside
+the fitted plane, so it is the outer boundary and carries the insulating
+condition.
+
+A neck-extended variant was constructed and rejected: it does not conserve
+charge, with flux failing to decay toward the domain floor (1.070 mA at S =
+−182 mm against a 1 mA injection, where the truncated control falls to 0.107 mA
+at S = −119 mm). Its terminating face is parallel to the base mesh's, displaced
+70.001 mm inferiorly along the plane normal against the 70 mm extrusion
+requested in `01c_extend_neck.py`. All published results use the truncated mesh;
+the consequence for the jaw-versus-ear comparison is quantified in §3.4.
 
 **Mesh validation.** Every tag present in the mesh carries an assigned
 conductivity, verified by enumeration (0 of 118 volume tags uncovered). MIDA's

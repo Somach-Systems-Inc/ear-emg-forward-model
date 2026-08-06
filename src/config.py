@@ -13,6 +13,73 @@ FIGURES  = ROOT / "figures"
 MESH     = DATA / "mida_headneck.msh"
 
 # ----------------------------------------------------------------------
+# THE INFERIOR CUT PLANE  -- derived, never asserted
+#
+# MIDA's label volume terminates on a flat face. It is REAL: fitted residual
+# 0.0726 mm against 0.98 mm for a voxel staircase and 9.23 mm for a taper
+# through the same fit, and its normal matches MIDA's voxel superior axis --
+# taken from the .nii affine, which the fit never sees -- to 0.0023 deg.
+#
+# **It is tilted 2.664 deg off the S axis, so it has no single S coordinate.**
+# The face spans S -122.07 to -110.18 across its own lateral extent. The old
+# `CUT_FACE_S = -116.2` was a bare literal in SEVEN files that stood in for this
+# object; every consumer agreed with every other because all inherited the same
+# number. Any scalar replacement reintroduces the same defect, so this returns a
+# NORMAL and a POINT and there is deliberately no `CUT_FACE_S` here to import.
+#
+# Clearance is the perpendicular distance n . (x - p), NOT a difference in S.
+# Those differ per site by of order 1 mm, because n_x and n_y act on each
+# electrode's lateral offset, and the sign varies by site.
+#
+# Written by `01d_derive_cut_plane.py`. Regenerate it after any mesh rebuild:
+# the file records the mesh sha256 it was derived from and `cut_plane()`
+# refuses to serve a plane derived from a different mesh.
+# ----------------------------------------------------------------------
+CUT_PLANE_CSV = RESULTS / "01_cut_plane.csv"
+
+
+def cut_plane(require_mesh_match: bool = True):
+    """Return (normal, point, meta) for the inferior cut plane.
+
+    Raises rather than defaulting. A missing file means `01d_derive_cut_plane.py`
+    has not been run, and a silent fallback here is exactly how the old literal
+    survived seven files.
+    """
+    import csv as _csv
+    if not CUT_PLANE_CSV.exists():
+        raise FileNotFoundError(
+            f"{CUT_PLANE_CSV} missing. Run `python src/01d_derive_cut_plane.py`. "
+            f"There is no default: the cut plane is derived from the mesh, never "
+            f"assumed.")
+    with open(CUT_PLANE_CSV) as fh:
+        row = next(iter(_csv.DictReader(fh)))
+    n = (float(row["nx"]), float(row["ny"]), float(row["nz"]))
+    p = (float(row["px"]), float(row["py"]), float(row["pz"]))
+    if require_mesh_match:
+        import hashlib
+        h = hashlib.sha256()
+        with open(ROOT / row["mesh"], "rb") as fh:
+            for chunk in iter(lambda: fh.read(1 << 20), b""):
+                h.update(chunk)
+        if h.hexdigest() != row["mesh_sha256"]:
+            raise RuntimeError(
+                f"{CUT_PLANE_CSV} was derived from a different {row['mesh']} than "
+                f"the one on disk. Re-run 01d_derive_cut_plane.py; do not use a "
+                f"plane fitted to a mesh that no longer exists.")
+    return n, p, row
+
+
+def clearance_to_cut(xyz, normal=None, point=None) -> float:
+    """Perpendicular clearance of a point above the cut plane, in mm.
+
+    Positive is inside the head, above the face. This is n . (x - p), not a
+    difference in S -- see the note above.
+    """
+    if normal is None or point is None:
+        normal, point, _ = cut_plane()
+    return -sum(n * (x - p) for n, x, p in zip(normal, xyz, point))
+
+# ----------------------------------------------------------------------
 # TISSUE CONDUCTIVITIES  (S/m, quasi-static / low frequency)
 # Source: IT'IS Foundation tissue property database v4.x
 # Cite these in Table 1. Verify each against the current database version

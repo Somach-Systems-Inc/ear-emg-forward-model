@@ -59,6 +59,18 @@ CLUSTER = ["above_ear", "mastoid", "post_lobule", "pre_tragus"]
 
 # Jaw sites within one mesh element of the inferior cut are excluded; the cut is
 # an artificial insulating boundary and inflates the field beside it (§2.1).
+#
+# HELD, NOT DERIVED. Under the corrected perpendicular clearance
+# (02e_cut_clearance.py) `submental_mid` reads 10.759 mm and is ADMISSIBLE; the
+# near-cut set is {hyoid, submental_lat}. That leaves five admissible jaw sites
+# against a four-site pre-registered ear cluster, and nothing in the geometry
+# selects which of the five to drop. Choosing one now would be a constant picked
+# after seeing its effect on two verdicts.
+#
+# This set is therefore frozen as the PUBLISHED basis, and the resolution is
+# 04n_site_set_sensitivity.py, which reports all five subsets. Every conclusion
+# is invariant across them; the jaw-advantage envelope is 8.11 to 22.40 dB.
+# Do not "fix" this to agree with the derived set. METHODS_LOG 2026-08-05.
 NEAR_CUT = {"hyoid", "submental_lat", "submental_mid"}
 
 N_DRAWS = 10_000

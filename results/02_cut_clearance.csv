@@ -1,0 +1,34 @@
+# cut plane, derived by 01d_derive_cut_plane.py
+# normal,-0.03336018482,-0.03235623327,-0.9989195024
+# point,-2.300599922,23.11167234,-115.6004841
+# tilt_deg,2.66372
+# residual_rms_mm,0.0726473
+# n_triangles,18818
+# mesh,data/mida_headneck.msh
+# mesh_sha256,6b29f826d906186674902556ca91ebb41d16241a0c6861b54401ad9af1d47eff
+# clearance_perp_mm = -n.(x-p), positive is above the face
+# legacy_s_difference_mm = S - (-116.2), the retired quantity
+electrode,montage,side,R,A,S,clearance_perp_mm,legacy_s_difference_mm,delta_mm
+hyoid,jaw,right,-9.33,42.74,-108.23,7.763,7.970,-0.207
+submental_lat,jaw,right,3.45,79.44,-107.85,9.757,8.350,+1.407
+submental_mid,jaw,right,-8.14,81.92,-106.54,10.759,9.660,+1.099
+submaxillary,jaw,right,24.05,61.08,-102.43,15.264,13.770,+1.494
+mental,jaw,right,-6.21,98.22,-100.62,17.264,15.580,+1.684
+buccal,jaw,right,38.72,75.56,-78.36,40.266,37.840,+2.426
+midjaw,jaw,right,65.25,51.04,-54.93,63.762,61.270,+2.492
+cg09,ceegrid,right,65.34,6.37,-41.97,75.266,74.230,+1.036
+post_lobule,ear,right,63.42,-4.70,-40.55,76.262,75.650,+0.612
+cg08,ceegrid,right,63.46,-5.18,-40.03,76.767,76.170,+0.597
+cg10,ceegrid,right,65.18,21.96,-39.47,78.262,76.730,+1.532
+earlobe_contra,reference,right,-71.65,7.94,-33.44,79.267,82.760,-3.493
+earlobe_ipsi,reference,right,66.24,12.07,-37.18,80.265,79.020,+1.245
+cg07,ceegrid,right,62.85,-17.99,-32.09,84.264,84.110,+0.154
+mastoid,ear,right,69.41,-12.38,-22.98,93.764,93.220,+0.544
+cg06,ceegrid,right,66.68,-26.44,-19.93,96.265,96.270,-0.005
+pre_tragus,ear,right,69.37,38.55,-11.62,106.759,104.580,+2.179
+cg05,ceegrid,right,69.67,-26.88,-6.50,109.766,109.700,+0.066
+cg04,ceegrid,right,72.25,-19.89,5.20,121.766,121.400,+0.366
+above_ear,ear,right,78.76,7.24,13.61,131.262,129.810,+1.452
+cg01,ceegrid,right,75.97,23.63,13.68,131.769,129.880,+1.889
+cg03,ceegrid,right,76.23,-10.82,16.79,133.769,132.990,+0.779
+cg02,ceegrid,right,79.40,6.87,17.11,134.767,133.310,+1.457

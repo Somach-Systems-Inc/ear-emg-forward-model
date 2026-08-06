@@ -59,7 +59,12 @@ CALIB_LOG = config.RESULTS / "03_leadfield_calibration.csv"
 
 # MIDA's inferior cut face. Reported per electrode so a reader can see
 # truncation exposure per site instead of taking it on trust.
-CUT_FACE_S = -116.2
+#
+# There is deliberately NO scalar here. The face is a plane tilted 2.664 deg off
+# the S axis, so it has no single S coordinate, and the literal that used to sit
+# on this line (-116.2) was a bare constant in seven files that governed the
+# near-cut exclusion set. Clearance is the perpendicular distance to the derived
+# plane; see config.cut_plane() and 01d_derive_cut_plane.py.
 
 CONDITIONS = ("iso", "aniso")
 
@@ -393,7 +398,7 @@ def main(argv=None) -> int:
                    montage=pos[elec]["montage"], side=pos[elec]["side"],
                    depth_mm=pos[elec]["depth_mm"],
                    clearance_to_cut_mm=round(
-                       float(pos[elec]["xyz"][2]) - CUT_FACE_S, 2),
+                       config.clearance_to_cut(pos[elec]["xyz"]), 2),
                    calibration_pct=("" if cal is None else round(cal, 2)),
                    inv1_mean=round(inv["mean_ratio"], 5),
                    inv1_cv=round(inv["cv"], 5),

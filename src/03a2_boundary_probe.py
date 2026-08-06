@@ -56,7 +56,8 @@ def main() -> int:
               file=sys.stderr)
         return 1
 
-    cut_dist = abs(float(pos[INJECT_FROM][2]) - (-116.2))
+    # Perpendicular distance to the derived cut plane, not a difference in S.
+    cut_dist = config.clearance_to_cut(pos[INJECT_FROM][:3])
     print(f"probe: inject at {INJECT_FROM} (S = {pos[INJECT_FROM][2]:.1f} mm, "
           f"{cut_dist:.0f} mm from the cut plane)")
     print(f"       against {INJECT_TO}, on {mesh.name}")

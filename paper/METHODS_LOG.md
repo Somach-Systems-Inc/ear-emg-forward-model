@@ -4676,3 +4676,273 @@ truncation of it, which is the extended-mesh face check (still to run).
 Per Carl's ruling the fix is not a better threshold: report Table 4 with and
 without the three most inferior jaw sites, so the constant governs nothing.
 
+
+---
+
+## 2026-08-05 — dates were being written from memory, and one section is out of order
+
+### The defect
+
+Twelve occurrences of `2026-08-06` across nine tracked files, on a machine whose
+clock, whose UTC time and whose every commit said `2026-08-05`. No commit in the
+repository carries an 08-06 committer date.
+
+The entry headed `## 2026-08-06 — the cut plane does not exist` was committed at
+`2026-08-05T15:42:29-07:00`, which is `22:42:29Z`. The two other 08-06 entries
+were committed at `10:12Z` and `10:26Z` the same day. **None of the three crosses
+midnight UTC**, so rollover does not explain any of them. The only offset in which
+all three land on 08-06 is UTC+14, which this machine has never been in.
+
+Four of the twelve read **"approved by Carl 2026-08-06"**, attributing an approval
+to a date that had not happened. Carl does not recall giving it. All four are now
+`UNVERIFIED`, their attribution stripped and deliberately **not** re-dated, since
+re-dating would launder an invented date into a clean record of an approval nobody
+confirmed. `RULING_line608.md` is a fifth: stamped `2026-08-06`, cited by HANDOFF
+§3 as `paper/RULING_line608.md`, and until now present only in Carl's Downloads,
+untracked and absent from the repo. A citation whose target does not exist is the
+same shape as the `-182` figure: a real string pointing at an object nobody
+confirmed.
+
+### The control that decided which files are actually affected
+
+The four files stamped `2026-08-05` were written by the same generator, so the
+stamp alone proves nothing. Committer date of the commit that introduced each
+approval string:
+
+| file | stamp | commit | committer date |
+|---|---|---|---|
+| `WORDING_abstract_results.md` | 2026-08-05 | `c19c6e2` | 2026-08-04T20:17:50-07:00 = **03:17Z on 08-05** |
+| `WORDING_33_43_limitations.md` | 2026-08-05 | `4dfb214` | 2026-08-04T21:54:59-07:00 = **04:54Z on 08-05** |
+| `WORDING_43_and_fig4.md` | 2026-08-05 | `5b8c45f` | 2026-08-04T22:56:26-07:00 = **05:56Z on 08-05** |
+| `WORDING_final_rewrite.md` | 2026-08-05 | `96fee99` | 2026-08-05T01:17:54-07:00 = 08:17Z on 08-05 |
+
+Three of the four were committed on **08-04 Pacific** and would be condemned by a
+naive local-date test. They are correct: every one is 08-05 **in UTC**. The
+generator was stamping UTC, and doing it right, in that batch. The 08-06 batch is
+wrong in UTC and wrong locally, which is what separates the two.
+
+**So the four 08-05 files keep their approval and this closes.** Had the check
+been run against local time it would have produced four false retractions, which
+is the failure this log already records four instances of: a real check returning
+a true fact that does not support the conclusion drawn from it.
+
+### Ruled
+
+Dates come from `date -u +%Y-%m-%d`, never from the model's sense of the date.
+Recorded in CLAUDE.md.
+
+### Already-applied text: ratified in place, not reverted
+
+Text from all five unverified files is already in the manuscript, including the
+paper's **title**, §4.4, §4.6 and the whole of §4.8. Revert was refused, and the
+reason is methodological rather than expedient: the only available detector of
+"text originating in file X" matches verbatim digit-free runs of 45+ characters,
+so it finds text that survived unchanged and misses text that was reworded or had
+a placeholder filled. That set cannot be enumerated, so a revert would remove what
+the detector can see and leave what it cannot, producing a hybrid matching neither
+the current manuscript nor any prior state. What failed is the approval *record*,
+not the prose; nothing has been shown wrong with the text.
+
+**The unit of re-read is therefore the manuscript section, not the wording file.**
+`~/Downloads/REREAD_PACKET.md` carries the current text of every touched location.
+
+### Noted, deliberately not fixed
+
+**§4.8 sits at line 811 and §4.7 at line 854.** The sections are out of order in
+the manuscript. Section ordering is editorial and deferred; recorded here so it is
+not rediscovered as new.
+
+`REVIEW_TRIAGE.md` is stale against HEAD. Verified closed: item 2 (the "10 to 23
+dB" string is gone, the manuscript reads 8.99 to 21.24 dB), item 10 (no "robust to
+the isotropy assumption" remains), item 20 (Table 3 row 8 now reads "no —
+corrected, not bounded"), all three by `661e419`. Verified still open: item 23 —
+**zero figures are cited anywhere in the body text**, lines 1 to 903, not one
+reference to any of the six — and item 29, the assembly-notes section still at
+line 1075.
+
+---
+
+## 2026-08-05 — PRE-COMMITMENT: the site-set comparison, written before it was run
+
+**Nothing in this entry was written after seeing a Table 4 number.** The
+published `04h` run reproducing the current table was executed before this
+entry; the site-set sensitivity below was not.
+
+### What changed upstream
+
+`CUT_FACE_S = -116.2` is retired. The cut plane is now derived by
+`01d_derive_cut_plane.py` and emitted to `results/01_cut_plane.csv` as a normal
+and a point, with residual RMS, triangle count and mesh sha256. Clearance is now
+the perpendicular distance `-n.(x-p)` (`02e_cut_clearance.py`), not a difference
+in S.
+
+**The exclusion set changes under the corrected metric, and that is a finding
+change.**
+
+| site | old S-difference | perpendicular | 10 mm threshold |
+|---|---|---|---|
+| `hyoid` | 7.970 | **7.763** | excluded under both |
+| `submental_lat` | 8.350 | **9.757** | excluded under both |
+| `submental_mid` | 9.660 | **10.759** | excluded before, **admitted now** |
+| `submaxillary` | 13.770 | 15.264 | admitted under both |
+
+The correction moves every site, by −0.207 to +2.492 mm, because `n_x = −0.0334`
+and `n_y = −0.0324` act on each electrode's lateral offset. `submental_mid`
+crosses the threshold. The near-cut set goes from three sites to two.
+
+### The structural problem this creates
+
+`04h_matched_counts.py` raises unless the jaw count equals the ear cluster count,
+by design, because best-of-N against best-of-4 rewards electrode density. Seven
+jaw sites were solved. Excluding three leaves four, which matches the
+pre-registered four-site ear cluster. **Excluding two leaves five, and there is
+no pre-registered five-site ear cluster.** So "Table 4 with and without the three
+most inferior jaw sites" is not computable as stated: the with-case is a 7-vs-4
+comparison, which is the exact bias the matched design exists to remove.
+
+### The comparison that IS well posed, committed to before running it
+
+All **C(5,4) = 5** four-site subsets of the five admissible jaw sites
+{`buccal`, `mental`, `midjaw`, `submaxillary`, `submental_mid`}, each against the
+unchanged pre-registered cluster, under statistic A unchanged. This keeps counts
+matched, invents no new pre-registration, and answers the question the threshold
+was standing in for: does any verdict depend on which inferior jaw site is
+dropped?
+
+The currently published jaw set {`buccal`, `mental`, `midjaw`, `submaxillary`} is
+one of those five subsets. **It has no privileged status in this comparison.**
+
+### HALT CONDITION
+
+If any muscle's verdict differs across the five subsets, or differs from the
+published verdict, that is a finding change: **halt, report, and do not select
+the subset that agrees with the current manuscript.** Report all five regardless
+of which way they come out.
+
+### Recorded before the result is seen
+
+`NEAR_CUT_MM = 10.0` at `04_analyze.py:41` is **itself a bare literal** with no
+derivation anywhere in the repo, and the comment above it — "named here, not
+derived from a magic distance, so the exclusion set is auditable" — records that
+the membership was hardcoded rather than measured. Under the corrected metric
+`submental_mid` sits 0.759 mm above that undefended threshold. So the exclusion
+set is currently decided by an asserted constant sitting within a millimetre of a
+data point. That is the same defect class as `CUT_FACE_S`, one level up, and it
+is logged here before anyone knows which way the sensitivity runs.
+
+---
+
+## 2026-08-05 — Checks 1-4, Methods L172 corrected, and the headline tested for subset dependence
+
+Continues the CUT_FACE_S defect entry above. Same heading deliberately: every item
+here is a consequence of one asserted scalar standing in for a tilted plane.
+
+### Methods line 172 corrected, not queued
+
+*"MIDA terminates inferiorly at S = −116.2 mm"* was wrong three ways: the mesh S
+minimum is −122.167, the face spans S −122.07 to −110.17, and a plane tilted
+2.664° has no single S. Replaced with the plane as normal and point, every number
+filled from `results/01_cut_plane.csv`. `01d_derive_cut_plane.py` now also emits
+`mesh_s_min`, `face_s_low`, `face_s_high`, the MIDA axis block and
+`extrusion_perp_mm`, so no manuscript number in that paragraph is sourceless.
+
+**Source-wins discrepancies, reported not reconciled.** Three values supplied in
+the approved wording were computed from printed, rounded intermediates. The source
+values are used:
+
+| quantity | supplied | source | used |
+|---|---|---|---|
+| fitted normal vs MIDA axis | 0.0023° | **0.002570°** | 0.0026° |
+| MIDA voxel step | 0.49999985 mm | **0.4999999984 mm** | 0.500 mm |
+| extrusion, perpendicular | 70.0019 mm | **70.00102 mm** | 70.001 mm |
+
+None changes a conclusion. All three arise the same way, and it is the same way
+`-116.2` and the 69.851 mm separation arose: a rounded or cheaper stand-in used
+where the full quantity was available.
+
+### The leak-probe trap, documented before anyone fell into it
+
+`03a3_leak_probe.py:132` computes `deep = [z for z in PLANES if z < CUT_S]` over
+the discrete set (−60, −90, −112, −130, −150, −170, −182). **The selection is
+invariant for any CUT_S in the open interval (−130, −112)**, and the two numbers
+it feeds into Methods (1.070 mA at S = −182, 0.107 mA at S = −119) do not move.
+
+The plane's centroid (−115.600) and the mesh S minimum (−122.070) both sit inside
+that window. **The face's upper extreme, −110.175, does not.** Anyone replacing
+the constant with the face's topmost S rather than its centroid flips `deep[0]`
+from −130 to −112 and changes the reported retained fraction.
+
+This is the third instance of the same shape: **a scalar summary of a tilted plane
+behaves differently depending on which summary is chosen.** The first was
+`CUT_FACE_S` itself, the second the 69.851 mm S-difference standing in for a
+70.001 mm perpendicular separation. Logged here so the fourth is recognised.
+
+### Checks 1-3: the exclusion threshold, and whether anything depends on it
+
+**Check 1, gap structure.** Jaw clearances, perpendicular: `hyoid` 7.763,
+`submental_lat` 9.757, `submental_mid` 10.759, `submaxillary` 15.264, `mental`
+17.264, `buccal` 40.266, `midjaw` 63.762. The admissible set has size 5 only for
+`NEAR_CUT_MM` in (9.757, 10.759], **a window 1.002 mm wide**; it has size 4 for
+(10.759, 15.264], a window 4.505 mm wide. At `NEAR_CUT_MM = 8.0` six sites are
+admissible and only `hyoid` is excluded. The current 10.0 sits inside the narrow
+window. *Recorded as structure, not as an argument for any value.*
+
+**Check 2, both axes separately.** Across all five matched subsets,
+`lateral_pterygoid` and `sternocleidomastoid` never reach ear-on-both-axes: in the
+one subset where they become site-robust (drop `midjaw`) their orientation
+agreement is 65.0% and 72.0%, against the 90% bar. **Temporalis is
+ear-on-both-axes in all five subsets**, which is not a change: Table 4's
+temporalis row has always read that way under the uniform orientation sweep, and
+the paper's headline rests on the derived fibre field instead (§3.1, §4.1, and the
+note under Table 4).
+
+**Check 3, the jaw-advantage five.** `mentalis`, `depressor_anguli_oris`,
+`buccinator`, `platysma`, `orbicularis_oris` are all in the stable eight, all with
+a single verdict across all five subsets. Published range 8.99 to 21.24 dB is the
+four-site set only; **the envelope over all five admissible subsets is 8.11 to
+22.40 dB.**
+
+### The headline was NOT covered by Checks 1-3, and had to be tested separately
+
+`04k_temporalis_fan.py:38` hardcodes the same `NEAR_CUT` set and builds its jaw
+list from it at line 112. So the derived-fan result the headline rests on inherits
+the jaw subset, and Table 4's invariance says nothing about it. Verifying at 04h
+would not have verified it here.
+
+Re-reduced from `04k`'s saved per-electrode arrays, no re-solve. **Temporalis's
+interval spans zero in all five subsets**, including drop-`midjaw` at −6.126 dB
+with [−6.432, +0.479]. The headline is invariant to the exclusion threshold.
+
+### The headline interval has no generating script
+
+`−1.147` with `[−1.453, +5.458]` appears in no script in the repo. It was
+reproduced exactly (median −1.147, interval [−1.453, +5.458], 50.2% favouring the
+ear, at seed 0) only after identifying that **the draws were taken on the
+per-voxel scalars, not the per-direction arrays**. Per-direction draws on the same
+data give [−3.283, +3.997]. Same defect class as `04h`/`04j` before they were
+scripted, and as §3.4: a published number with a real method and no saved code.
+
+Two consequences worth a ruling. The interval's lower bound is *identically* the
+argmax-14 gap by construction, because the best draw contains the best ear site,
+so `−1.453` appearing as both is a structural artifact and not two agreeing
+measurements. And Table 4's temporalis interval (`04h`, per-direction) and the
+headline's (`04k`, per-voxel) are **different draw constructions**, while §3.1 and
+§4.1 present them as two treatments differing only in fibre model.
+
+### Check 4: what §3.4 argues, for the regeneration ruling
+
+§3.4 is a **boundary-adequacy validity argument**, not descriptive geometry: it
+concedes the cut inflates the jaw side, then reports the gap with and without the
+near-cut jaw sites to show the finding survives. Its conclusion is cited in three
+places: Methods §2.1 (forward reference), **§4.7 Limitations**, which leans on it
+directly and repeats the −0.54 dB, and **Table 3 row 3** ("unquantified; bounded
+by §3.4"). Figure 2 and Figure 5 captions cite the 10 mm exclusion without naming
+the section. It is **not** cited in the Abstract, §3.1 or §4.1.
+
+Known-wrong content awaiting regeneration: the three clearances (8.0/8.4/9.7 are
+the retired S-differences; perpendicular gives 7.8/9.8/10.8), "three jaw sites"
+(now two), "over all seven jaw sites and again over the four clear of the cut"
+(now five admissible), and **"every ear site is 80 mm or more away", which is
+false under both metrics** — the minimum is `post_lobule` at 76.3 mm
+perpendicular, 75.7 mm under the old S-difference. That error predates this work.
+`+6.45`, `+5.91` and `−0.54` remain orphans; `−0.54` has propagated to §4.7.

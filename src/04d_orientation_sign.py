@@ -43,6 +43,9 @@ import config          # noqa: E402
 import orientation     # noqa: E402
 
 WORKDIR = config.RESULTS / "leadfields" / "iso"
+# HELD, NOT DERIVED -- same status as the copies in 04h and 04k. The corrected
+# perpendicular clearance admits `submental_mid` at 10.759 mm. Frozen as the
+# published basis pending a ruling; see 04n_site_set_sensitivity.py.
 NEAR_CUT = ("hyoid", "submental_lat", "submental_mid")
 MUSCLES = [(n, lab) for n, _g, lab, _e in config.MUSCLES if lab is not None]
 MAX_ELEM = 200_000

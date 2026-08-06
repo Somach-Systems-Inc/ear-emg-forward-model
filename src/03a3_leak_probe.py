@@ -60,7 +60,18 @@ import config  # noqa: E402
 
 EXTENSION_LABEL = 200
 SLAB_SIGMA = 0.355
-CUT_S = -116.2
+# Reference S for splitting the sampling planes into above/below. NOT the cut
+# face: the cut is a plane tilted 2.664 deg with no single S. This is the fitted
+# plane's centroid S (results/01_cut_plane.csv, pz).
+#
+# TRAP, recorded before anyone falls into it. `deep` below selects from the
+# discrete PLANES set, and that selection is invariant for ANY value in the open
+# interval (-130, -112). The plane's centroid (-115.600) and the mesh S minimum
+# (-122.070) both sit inside it; the face's UPPER extreme (-110.175) does NOT.
+# Substituting the upper extreme flips deep[0] from -130 to -112 and changes the
+# reported retained fraction. This is the third instance of a scalar summary of a
+# tilted plane behaving differently by choice of summary. METHODS_LOG 2026-08-05.
+CUT_S = -115.600
 PLANES = (-60.0, -90.0, -112.0, -130.0, -150.0, -170.0, -182.0)
 HALF_T = 1.5          # mm; slab half-thickness for the volume integral
 I_INJECTED = 1e-3     # A
@@ -122,7 +133,7 @@ def main() -> int:
             continue
         # integral of Jz dV over the slab, / thickness  ->  A
         I = float(np.sum(Jz[k] * vols[k] * 1e-9) / (2 * HALF_T * 1e-3))
-        where = "between electrodes" if z0 > -116.2 else "BELOW both electrodes"
+        where = "between electrodes" if z0 > CUT_S else "BELOW both electrodes"
         print(f"  {z0:>9.1f}{I*1e3:>14.4f}{100*I/I_INJECTED:>14.1f}%   {where}")
 
     # DECAY TOWARD THE FLOOR is the discriminator, not "zero below the

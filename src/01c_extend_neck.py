@@ -4,9 +4,12 @@ Stage 1c -- extrude the neck below MIDA's inferior cut face.
 
 WHY THIS EXISTS
 
-MIDA ends at S = -116.2 mm. SimNIBS applies an insulating (zero-flux) boundary
-condition on the outer surface, so at that cut face current is reflected rather
-than continuing down the neck. The error is not uniform across the montage:
+MIDA ends on a planar cut, tilted 2.664 deg off the S axis and therefore having
+no single S coordinate (see 01d_derive_cut_plane.py; the face spans S -122.07 to
+-110.18). SimNIBS applies an insulating (zero-flux) boundary condition on the
+outer surface, so at that cut face current is reflected rather than continuing
+down the neck. The error is not uniform across the montage, in PERPENDICULAR
+distance to that plane:
 
     hyoid          ~0 mm from the cut face
     throat_scm    ~23 mm
@@ -124,8 +127,12 @@ def main(argv=None) -> int:
           f"(expect {n_slices} on axis {sup_axis}, 0 elsewhere)")
     lo = np.argwhere(out != MIDA_BACKGROUND)
     ras = lo @ new_aff[:3, :3].T + new_aff[:3, 3]
+    # The extruded mesh's face is PARALLEL to the base one and displaced by the
+    # extrusion along the plane normal. Its S minimum is a corner of that face,
+    # not the cut location, so this is a sanity print and not a measurement of
+    # the plane. 01d_derive_cut_plane.py --extended emits the real separation.
     print(f"new inferior limit: S = {ras[:,2].min():.1f} mm "
-          f"(was -116.2, expected about {-116.2 - a.mm:.1f})")
+          f"(base mesh S min -122.2, so expect about {-122.167 - a.mm:.1f})")
     return 0
 
 

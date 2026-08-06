@@ -83,7 +83,8 @@ JAW_TARGETS = {
 # which drags its centroid posteriorly. Stage 3 must not solve it.
 HELD_POSITIONS = {
     "throat_scm": "awaiting measured coordinate from the physical rig; "
-                  "MIDA's SCM is truncated at S=-116.2 so its centroid is biased",
+                  "MIDA's SCM is truncated by the inferior cut plane so its "
+                  "centroid is biased",
 }
 
 # Tissue each ear site is supposed to sit over, for the same check the jaw

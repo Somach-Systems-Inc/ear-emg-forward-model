@@ -1,6 +1,17 @@
-# Approved wording — §4.1
+# UNVERIFIED wording — §4.1
 
-Written by Claude (the assistant), approved by Carl 2026-08-06. Replaces §4.1
+> **APPROVAL UNVERIFIED. DO NOT APPLY.** This file previously read "approved by
+> Carl 2026-08-06". That date had not occurred when the file was committed, and
+> Carl does not recall approving it. The attribution is stripped and deliberately
+> NOT re-dated: re-dating would launder an invented date into a clean record of
+> an approval nobody confirmed. Nothing here enters the manuscript until Carl
+> re-reads it.
+>
+> **Measured against the current manuscript: 5 of 10 prose probes from this
+> file's proposed text are already present (50%).** Text from an unverified file
+> is already applied. That is a defect awaiting Carl's ruling, not a precedent.
+
+Written by Claude (the assistant). Replaces §4.1
 "What complementarity means" wholesale. The section currently asserts three ear
 muscles and a 10–23 dB jaw range, both superseded.
 

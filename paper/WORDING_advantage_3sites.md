@@ -1,6 +1,18 @@
-# Approved wording — lines 608, 728, 869
+# UNVERIFIED wording — lines 608, 728, 869
 
-Written by Claude (the assistant), approved by Carl 2026-08-06. Completes the
+> **APPROVAL UNVERIFIED. DO NOT APPLY.** This file previously read "approved by
+> Carl 2026-08-06". That date had not occurred when the file was committed, and
+> Carl does not recall approving it. The attribution is stripped and deliberately
+> NOT re-dated: re-dating would launder an invented date into a clean record of
+> an approval nobody confirmed. Nothing here enters the manuscript until Carl
+> re-reads it.
+>
+> **Measured against the current manuscript: 2 of 4 prose probes from this
+> file's proposed text are already present (50%).** Consistent with commit
+> a60eab3, "five applied, 608 halted as unsourced". The line-608 block is
+> separately **withdrawn** per HANDOFF §3.
+
+Written by Claude (the assistant). Completes the
 six-site "advantage" pass; `WORDING_stale_framing.md` covers 730, 732 and
 Table 3 row 9.
 

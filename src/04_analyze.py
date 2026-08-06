@@ -4,14 +4,26 @@ Stage 4. Sensitivity matrix and the jaw-versus-ear dB budget.
 
 THE TRUNCATION SENSITIVITY IS THE POINT OF THIS SCRIPT, not an appendix to it.
 
-MIDA is cut at S = -116.2 mm with an insulating face there. Three jaw sites sit
-within 10 mm of it -- `hyoid` (8.0), `submental_lat` (8.4), `submental_mid`
-(9.7) -- while every ear site is 80 mm or more away. Reflection at that face
-inflates the near sites and leaves the far ones untouched, so the truncation
-**flatters the paper's own jaw-versus-ear headline**.
+MIDA is truncated on a planar cut carrying an insulating face. The plane is
+tilted 2.664 deg off the S axis and therefore has NO single S coordinate; see
+`01d_derive_cut_plane.py`. Clearance is the PERPENDICULAR distance to it
+(`02e_cut_clearance.py`), not a difference in S, and the two differ per site by
+up to 2.5 mm because the normal's R and A components act on lateral offset.
+
+Under the corrected metric two jaw sites sit within 10 mm -- `hyoid` (7.8) and
+`submental_lat` (9.8) -- while `submental_mid` (10.8) does not, having read 9.7
+under the retired S-difference. Every ear site is at least 76.3 mm away.
+Reflection at that face inflates the near sites and leaves the far ones
+untouched, so the truncation **flatters the paper's own jaw-versus-ear
+headline**.
+
+The near-cut set is DERIVED from the clearance column, never hardcoded. The
+constant it used to be governed the jaw site list and every matched-count gap in
+Table 4, and every consumer agreed with every other because all inherited the
+same literal.
 
 The gap is therefore reported TWICE: once over all jaw sites, once excluding
-those three. Same solves, different subset, no extra compute. If the gap does
+the near-cut ones. Same solves, different subset, no extra compute. If the gap does
 not survive the exclusion, that must be known before any Discussion exists,
 which is why this runs before figures rather than after.
 
@@ -35,9 +47,15 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 import config  # noqa: E402
 
-# The three jaw sites within 10 mm of the cut face. Named here, not derived
-# from a magic distance, so the exclusion set is auditable.
-NEAR_CUT = ("hyoid", "submental_lat", "submental_mid")
+# NEAR_CUT is DERIVED in main() from the measured perpendicular clearance. It is
+# deliberately not defined here. The previous module-level tuple
+# ("hyoid", "submental_lat", "submental_mid") was asserted, and the guard that
+# "checked" it compared the assertion against a column computed from the same
+# literal, so it could only ever agree. See METHODS_LOG 2026-08-05.
+#
+# NEAR_CUT_MM is still an undefended constant. It is left explicit rather than
+# hidden: the admissible jaw set is unchanged for any value in (9.757, 15.264],
+# a 5.507 mm window, so no conclusion in this paper turns on it.
 NEAR_CUT_MM = 10.0
 
 MUSCLE_NAMES = [n for n, _, lab, _ in config.MUSCLES if lab is not None]
@@ -178,7 +196,11 @@ def main(argv=None) -> int:
           f"(95% CI [0.17, 0.65]; every claim below is read against it)")
 
     # ---- truncation exposure, stated per site rather than argued
-    print("\nCLEARANCE TO THE CUT FACE (S = -116.2 mm), per site")
+    _n, _p, _pl = config.cut_plane()
+    print(f"\nPERPENDICULAR CLEARANCE TO THE CUT PLANE, per site")
+    print(f"  plane n=[{_n[0]:+.5f} {_n[1]:+.5f} {_n[2]:+.5f}] "
+          f"through ({_p[0]:+.3f}, {_p[1]:+.3f}, {_p[2]:+.3f}), "
+          f"tilt {float(_pl['tilt_deg']):.3f} deg")
     print("-" * 74)
     ex = d[["electrode", "montage", "clearance_to_cut_mm"]].sort_values(
         "clearance_to_cut_mm")
@@ -187,15 +209,21 @@ def main(argv=None) -> int:
         print(f"  {r.electrode:<16} {r.montage:<10} "
               f"{r.clearance_to_cut_mm:>7.2f} mm{flag}")
 
-    derived = tuple(ex.loc[ex.clearance_to_cut_mm < NEAR_CUT_MM, "electrode"])
-    if set(derived) != set(NEAR_CUT):
+    # DERIVED, not hardcoded. The old form asserted the membership and merely
+    # checked the column agreed; both sides inherited the same literal, so the
+    # check could only ever pass. The set is now read off the measurement.
+    NEAR_CUT = tuple(sorted(set(
+        ex.loc[ex.clearance_to_cut_mm < NEAR_CUT_MM, "electrode"])))
+    if not NEAR_CUT:
         raise RuntimeError(
-            f"the hardcoded near-cut set {NEAR_CUT} disagrees with what the "
-            f"clearance column actually says ({derived}). One of them is "
-            f"stale; do not report a subset that is not the measured one.")
+            f"no electrode is within {NEAR_CUT_MM} mm of the cut plane. That is "
+            f"either a real change in geometry or a stale clearance column; "
+            f"refusing to report a truncation analysis with an empty near set.")
     print(f"\n  the {len(NEAR_CUT)} sites within {NEAR_CUT_MM:.0f} mm are "
-          f"exactly {list(NEAR_CUT)} — hardcoded set agrees with the measured "
-          f"clearances")
+          f"{list(NEAR_CUT)}, derived from the clearance column")
+    print(f"  NOTE: NEAR_CUT_MM = {NEAR_CUT_MM} is itself undefended. The "
+          f"admissible jaw set is unchanged for any value in (9.757, 15.264]; "
+          f"see 04n_site_set_sensitivity.py and METHODS_LOG.")
 
     # ---- THE HEADLINE, TWICE
     all_jaw = sorted(d.loc[d.montage == "jaw", "electrode"])

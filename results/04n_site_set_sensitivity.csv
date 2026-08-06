@@ -1,0 +1,51 @@
+muscle,cluster_gap_dB,rand4_lo,rand4_hi,crosses_zero,orientation_agree_pct,verdict,jaw_set,is_published_set,dropped
+masseter,2.2181,1.6465,5.7929,False,68.5,"jaw, site-robust but orientation-dependent",buccal+mental+midjaw+submaxillary,True,submental_mid
+temporalis,-2.571,-3.3082,-0.0348,False,92.0,"ear, robust on both axes",buccal+mental+midjaw+submaxillary,True,submental_mid
+medial_pterygoid,1.2542,1.1412,3.3531,False,65.5,"jaw, site-robust but orientation-dependent",buccal+mental+midjaw+submaxillary,True,submental_mid
+lateral_pterygoid,-1.5642,-1.5905,1.0909,True,65.5,no resolvable preference,buccal+mental+midjaw+submaxillary,True,submental_mid
+orbicularis_oris,8.9951,7.9771,11.4248,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submaxillary,True,submental_mid
+buccinator,10.2362,9.2402,12.4314,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submaxillary,True,submental_mid
+mentalis,21.2357,20.8976,23.994,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submaxillary,True,submental_mid
+depressor_anguli_oris,14.6985,13.7803,17.1462,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submaxillary,True,submental_mid
+platysma,10.0076,8.8823,12.4638,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submaxillary,True,submental_mid
+sternocleidomastoid,-0.9735,-1.4023,1.2671,True,60.5,no resolvable preference,buccal+mental+midjaw+submaxillary,True,submental_mid
+masseter,2.2181,1.6465,5.7647,False,68.0,"jaw, site-robust but orientation-dependent",buccal+mental+midjaw+submental_mid,False,submaxillary
+temporalis,-2.571,-3.3082,-0.0348,False,92.0,"ear, robust on both axes",buccal+mental+midjaw+submental_mid,False,submaxillary
+medial_pterygoid,0.8561,0.7297,3.0214,False,60.5,"jaw, site-robust but orientation-dependent",buccal+mental+midjaw+submental_mid,False,submaxillary
+lateral_pterygoid,-1.5905,-1.7118,1.0746,True,67.0,no resolvable preference,buccal+mental+midjaw+submental_mid,False,submaxillary
+orbicularis_oris,9.0162,8.1024,11.5259,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submental_mid,False,submaxillary
+buccinator,10.3872,9.3467,12.5102,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submental_mid,False,submaxillary
+mentalis,22.397,21.8913,24.995,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submental_mid,False,submaxillary
+depressor_anguli_oris,15.6545,14.8133,18.1646,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submental_mid,False,submaxillary
+platysma,9.8976,8.8853,12.4855,False,100.0,"jaw, robust on both axes",buccal+mental+midjaw+submental_mid,False,submaxillary
+sternocleidomastoid,-1.4369,-1.9661,0.8373,True,65.0,no resolvable preference,buccal+mental+midjaw+submental_mid,False,submaxillary
+masseter,1.2011,0.7548,4.7175,False,56.0,"jaw, site-robust but orientation-dependent",buccal+mental+submaxillary+submental_mid,False,midjaw
+temporalis,-5.4189,-6.1036,-2.7582,False,100.0,"ear, robust on both axes",buccal+mental+submaxillary+submental_mid,False,midjaw
+medial_pterygoid,1.1325,1.1015,3.266,False,59.5,"jaw, site-robust but orientation-dependent",buccal+mental+submaxillary+submental_mid,False,midjaw
+lateral_pterygoid,-3.6069,-3.8611,-1.3704,False,72.0,"ear, site-robust but orientation-dependent",buccal+mental+submaxillary+submental_mid,False,midjaw
+orbicularis_oris,9.0162,8.1024,11.5259,False,100.0,"jaw, robust on both axes",buccal+mental+submaxillary+submental_mid,False,midjaw
+buccinator,10.3872,9.3642,12.5102,False,100.0,"jaw, robust on both axes",buccal+mental+submaxillary+submental_mid,False,midjaw
+mentalis,22.397,21.8913,24.995,False,100.0,"jaw, robust on both axes",buccal+mental+submaxillary+submental_mid,False,midjaw
+depressor_anguli_oris,15.9777,15.1861,18.3472,False,100.0,"jaw, robust on both axes",buccal+mental+submaxillary+submental_mid,False,midjaw
+platysma,10.2722,9.1645,12.7789,False,100.0,"jaw, robust on both axes",buccal+mental+submaxillary+submental_mid,False,midjaw
+sternocleidomastoid,-2.5343,-2.8416,-0.3059,False,65.0,"ear, site-robust but orientation-dependent",buccal+mental+submaxillary+submental_mid,False,midjaw
+masseter,2.0163,1.5718,5.7433,False,68.0,"jaw, site-robust but orientation-dependent",buccal+midjaw+submaxillary+submental_mid,False,mental
+temporalis,-2.571,-3.3082,-0.0348,False,92.0,"ear, robust on both axes",buccal+midjaw+submaxillary+submental_mid,False,mental
+medial_pterygoid,1.3294,1.1573,3.4712,False,66.5,"jaw, site-robust but orientation-dependent",buccal+midjaw+submaxillary+submental_mid,False,mental
+lateral_pterygoid,-1.5287,-1.586,1.1375,True,66.0,no resolvable preference,buccal+midjaw+submaxillary+submental_mid,False,mental
+orbicularis_oris,8.3169,7.8398,10.9609,False,100.0,"jaw, robust on both axes",buccal+midjaw+submaxillary+submental_mid,False,mental
+buccinator,9.4495,8.2958,11.5001,False,100.0,"jaw, robust on both axes",buccal+midjaw+submaxillary+submental_mid,False,mental
+mentalis,20.9804,20.0352,23.6174,False,100.0,"jaw, robust on both axes",buccal+midjaw+submaxillary+submental_mid,False,mental
+depressor_anguli_oris,15.1049,14.5146,17.8141,False,100.0,"jaw, robust on both axes",buccal+midjaw+submaxillary+submental_mid,False,mental
+platysma,10.2722,9.1645,12.6119,False,100.0,"jaw, robust on both axes",buccal+midjaw+submaxillary+submental_mid,False,mental
+sternocleidomastoid,-0.9735,-1.4023,1.2671,True,60.5,no resolvable preference,buccal+midjaw+submaxillary+submental_mid,False,mental
+masseter,2.1618,1.6009,5.6997,False,68.5,"jaw, site-robust but orientation-dependent",mental+midjaw+submaxillary+submental_mid,False,buccal
+temporalis,-2.571,-3.3082,-0.0348,False,92.0,"ear, robust on both axes",mental+midjaw+submaxillary+submental_mid,False,buccal
+medial_pterygoid,1.3318,1.1573,3.4692,False,66.5,"jaw, site-robust but orientation-dependent",mental+midjaw+submaxillary+submental_mid,False,buccal
+lateral_pterygoid,-1.5287,-1.5828,1.1375,True,65.5,no resolvable preference,mental+midjaw+submaxillary+submental_mid,False,buccal
+orbicularis_oris,8.1089,7.3762,10.7396,False,100.0,"jaw, robust on both axes",mental+midjaw+submaxillary+submental_mid,False,buccal
+buccinator,10.3538,9.2677,12.4735,False,100.0,"jaw, robust on both axes",mental+midjaw+submaxillary+submental_mid,False,buccal
+mentalis,22.397,21.8913,24.995,False,100.0,"jaw, robust on both axes",mental+midjaw+submaxillary+submental_mid,False,buccal
+depressor_anguli_oris,15.9777,15.1861,18.3472,False,100.0,"jaw, robust on both axes",mental+midjaw+submaxillary+submental_mid,False,buccal
+platysma,9.9691,9.0461,12.5019,False,100.0,"jaw, robust on both axes",mental+midjaw+submaxillary+submental_mid,False,buccal
+sternocleidomastoid,-0.9735,-1.4023,1.2671,True,60.5,no resolvable preference,mental+midjaw+submaxillary+submental_mid,False,buccal

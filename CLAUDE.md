@@ -304,6 +304,10 @@ published table has no script, it is not a result yet.**
 
 **Never fabricate a number.** If a solve hasn't run, the result is unknown. Write `TODO` or `None`, not a plausible-looking value. This is a paper; an invented figure is misconduct, not a placeholder.
 
+**Never stamp a date from your own sense of the date. Read it from `date -u +%Y-%m-%d`.** Every date in a log entry, a commit message, or a wording file comes from that command, in UTC.
+
+On 2026-08-05 twelve occurrences of `2026-08-06` were found across nine tracked files, one day ahead of every commit that carried them and ahead of both UTC and local time. Four read "approved by Carl 2026-08-06" and attributed an approval to a date that had not yet happened; Carl did not recall giving it, and all four are now marked UNVERIFIED. The batch that was *correct* — the `2026-08-05` files, committed late evening Pacific on 08-04 — was correct precisely because those stamps were UTC. A date is a measurement. Take it from the instrument.
+
 **Flag uncertainty inline.** If a conductivity, label, or coordinate is assumed rather than verified, mark it `# UNVERIFIED:` in code and call it out in the commit message.
 
 **Never move a threshold because something failed it.** A threshold may be revised only when an independent measurement establishes the physical bound, and the revision must be recorded inline next to that measurement. A test that is loosened until it passes is not a test.

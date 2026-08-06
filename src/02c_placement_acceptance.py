@@ -20,8 +20,8 @@ the documented rule and re-checks, rather than smoothing the number.
                         montage nobody can wear predicts nothing.
   D SIDE INTEGRITY      each site on its target's side; midline sites within
                         2 mm of the symphysis-derived midline.
-  E BOUNDARY CLEARANCE  distance from each electrode to MIDA's cut face at
-                        S = -116.2, three smallest reported.
+  E BOUNDARY CLEARANCE  PERPENDICULAR distance from each electrode to MIDA's
+                        derived cut plane, three smallest reported.
   F OLD VS NEW          full displacement history.
 
     python src/02c_placement_acceptance.py \\
@@ -42,7 +42,6 @@ import importlib
 place2 = importlib.import_module("02_place_electrodes")
 
 MIDA_BACKGROUND, MIDA_SKIN = 50, 51
-CUT_FACE_S = -116.2
 SPACING_FLOOR_MM = 20.0
 DEPTH_FLAG_MM = 15.0
 MIDLINE_TOL_MM = 2.0
@@ -302,15 +301,20 @@ def main(argv=None) -> int:
 
     # ---------------------------------------------------------------- E
     print("\n" + "=" * 100)
-    print(f"E. BOUNDARY CLEARANCE  -- distance above MIDA's cut face S = {CUT_FACE_S}")
+    # PERPENDICULAR distance to the derived cut plane, not a difference in S.
+    # The plane is tilted 2.664 deg, so an S-difference is not a distance to it.
+    _n, _p, _meta = config.cut_plane()
+    print(f"E. BOUNDARY CLEARANCE  -- perpendicular distance above MIDA's cut "
+          f"plane (tilt {float(_meta['tilt_deg']):.3f} deg)")
     print("=" * 100)
     clear = []
     for name, v in accepted.items():
-        clear.append((float(v["pos"][2] - CUT_FACE_S), name))
+        clear.append((config.clearance_to_cut(v["pos"], _n, _p), name))
     for name, r in rows.items():
         if name in accepted or r.get("verified") == "held" or r["S"] == "":
             continue
-        clear.append((float(r["S"]) - CUT_FACE_S, name))
+        clear.append((config.clearance_to_cut(
+            (float(r["R"]), float(r["A"]), float(r["S"])), _n, _p), name))
     clear.sort()
     print("three smallest clearances (whole montage):")
     for d, n in clear[:3]:

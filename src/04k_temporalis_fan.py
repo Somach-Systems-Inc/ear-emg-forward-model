@@ -35,6 +35,12 @@ sys.path.insert(0, str(ROOT / "src"))
 import config  # noqa: E402
 
 TEMP, MAND = 63, 36
+# HELD, NOT DERIVED -- same status as 04h's copy, and this one carries the
+# HEADLINE. The paper's central claim rests on the temporalis interval computed
+# below, so this set is load-bearing for it, which is why invariance had to be
+# tested here separately: verifying it at 04h verifies a different object.
+# Tested across all five admissible jaw subsets, the interval spans zero in every
+# one. See 04n_site_set_sensitivity.py and METHODS_LOG 2026-08-05.
 NEAR_CUT = {"hyoid", "submental_lat", "submental_mid"}
 CLUSTER = ["above_ear", "mastoid", "post_lobule", "pre_tragus"]
 
