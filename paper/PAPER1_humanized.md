@@ -16,7 +16,7 @@ in-session corrections) has been moved out; it remains in `paper/METHODS_LOG.md`
 **Objective.** Ear-worn biopotential devices are being designed around a
 coupling that has not been computed: how strongly each speech articulator
 reaches electrodes on the jaw and around the ear. We compute it, and test the
-answer against the three things that could produce it spuriously — source
+answer against the three things that could produce it spuriously, source
 orientation, electrode count, and the level of anatomical detail in the volume
 conductor.
 
@@ -36,9 +36,9 @@ sources) and by four physical invariants computed on the head mesh.
 narrower than an unmatched comparison suggests. Five articulators —
 orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma —
 favour the jaw montage at every sampled orientation and at every electrode
-subsample. **No muscle robustly favours the retroauricular montage.** The
+subsample. No muscle robustly favours the retroauricular montage. The
 strongest ear-leaning candidate, temporalis, reaches −2.57 dB under a uniform
-orientation sweep, where its interval excludes zero — but that sweep assumes a
+orientation sweep, where its interval excludes zero, but that sweep assumes a
 fibre direction the anatomy can supply. Derived from the label volume, its fibre
 field gives −1.15 dB with an interval of [−1.45, +5.46], and only half of
 four-site retroauricular subsets favour the ear. Masseter and medial pterygoid
@@ -53,7 +53,7 @@ while misstating gap magnitudes by up to 3.27 dB.
 
 **Significance.** For device design the result is one-sided rather than a
 trade: a retroauricular montage loses lip and chin activity entirely and buys no
-muscle back reliably in exchange. What remains a design lever is placement — a
+muscle back reliably in exchange. What remains a design lever is placement, a
 four-site cluster chosen by anatomical target beats an arbitrary draw from the
 same candidates. The
 homogeneous-conductor control locates what anatomical detail is needed for —
@@ -90,8 +90,8 @@ directly rather than asserting it: setting every non-muscle soft tissue to a
 single conductivity, with geometry held fixed, reproduces every montage
 assignment reported here unchanged (§3.5). A homogeneous-scalp model would
 have reached the same qualitative conclusion. What the anatomically resolved
-conductor supplies is magnitude — gap sizes shift by up to 3.27 dB, and eight
-of ten by more than the measurement floor — which matters for a design table
+conductor supplies is magnitude, gap sizes shift by up to 3.27 dB, and eight
+of ten by more than the measurement floor, which matters for a design table
 quoting decibels but not for deciding which montage sees which muscle.
 
 The open question is therefore not how to model muscle sources but where to
@@ -103,7 +103,7 @@ around a coupling nobody has computed.
 
 It was built to answer the opposite question. HArtMuT's muscle sources exist so
 that muscle activity can be identified and removed from scalp EEG, and they
-radiate through a homogeneous scalp compartment — a simplification its authors
+radiate through a homogeneous scalp compartment, a simplification its authors
 state explicitly, and an appropriate one for a model whose purpose is artifact
 rejection. No published forward model treats facial and cervical muscle as both
 the generator and its own anatomically resolved conducting compartment, and none
@@ -123,7 +123,7 @@ conductivity, with an uncertainty budget assembled from measured terms rather
 than asserted ones.
 
 The result is not a ranking. Seven of the ten articulators couple more strongly
-to the jaw montage and three couple more strongly to the ear — temporalis,
+to the jaw montage and three couple more strongly to the ear, temporalis,
 sternocleidomastoid and lateral pterygoid, all of which attach at or near the
 temporal bone. The two montages see different muscles. That prediction was
 recorded in the repository a day before the model was solved, and both commits
@@ -208,8 +208,8 @@ single file; none is hardcoded elsewhere. All values are quoted at 100 Hz, which
 brackets the surface-EMG band.
 
 Provenance is mixed, deliberately, and stated per row. SimNIBS 4.6 defaults are
-used for the primary head tissues — skin, fat, compact and cancellous bone, grey
-and white matter, CSF, blood, eye, muscle, cartilage, air — because these are
+used for the primary head tissues, skin, fat, compact and cancellous bone, grey
+and white matter, CSF, blood, eye, muscle, cartilage, air, because these are
 the conventional head-modelling values and using them keeps this model
 comparable with the existing EEG and tDCS forward-model literature. The IT'IS
 Low Frequency database v4.2 (DOI 10.13099/VIP21000-04-2) supplies every tissue
@@ -217,7 +217,7 @@ SimNIBS carries no default for. A small number of assignments are judgement,
 marked as such in Table 1, where MIDA segments a structure IT'IS does not list
 separately; each carries a note giving the reasoning.
 
-**Air is a numerical choice, not a physical one.** True air conductivity is
+Air is a numerical choice, not a physical one. True air conductivity is
 zero, which makes the FEM system singular, so internal cavities are assigned a
 small finite value. The value matters because the stiffness matrix inherits
 σ_max/σ_min as its condition number and SimNIBS solves iteratively. At
@@ -251,7 +251,7 @@ then projected to the nearest outer-skin voxel along the surface normal.
 Target localisation uses a hybrid of centroid-interior and minimum-distance, for
 a geometric reason. For a compact compartment the centroid is a good interior
 representative. For a non-convex compartment the centroid need not lie inside
-the compartment at all — the mandible is the clear case, since it is an arch and
+the compartment at all, the mandible is the clear case, since it is an arch and
 the centroid of an arch lies in the space the arch encloses, so an electrode
 placed over that point would sit over the floor of the mouth. Where a
 compartment's centroid does not lie within the compartment, the site is instead
@@ -261,7 +261,7 @@ applied to which site is recorded per row.
 The midline is derived, not assumed to be R = 0: MIDA's head is not perfectly
 centred in its own voxel grid, so the anatomical midline is computed from the
 mandible label and midline sites are placed relative to that plane. Per-site
-depth — skin surface to target compartment along the placement ray — is reported
+depth, skin surface to target compartment along the placement ray, is reported
 for every site.
 
 `pre_tragus` is placed 14 mm anterior to the tragus, over the masseter and the
@@ -292,7 +292,7 @@ SimNIBS's tDCS solver computes exactly E_recip, so it is repurposed here: 1 mA
 is injected between each electrode and a common reference (contralateral
 earlobe), and the resulting field is read inside every segmented muscle
 compartment. The consequence is one solve per electrode instead of one per
-source — 22 solves against the order of 10⁵ a forward formulation would require
+source, 22 solves against the order of 10⁵ a forward formulation would require
 at MIDA's resolution. The formulations are mathematically equivalent; only cost
 differs.
 
@@ -342,8 +342,8 @@ an unchanged or null result, because it was never varied.
 The anisotropic condition is solved on the isotropic run's own mesh with only
 the conductivity field replaced. SimNIBS re-meshes electrodes on each session
 and two sessions of the same montage can differ, so solving on the identical
-mesh removes electrode realisation — comparable in size to the effect being
-measured — from the comparison.
+mesh removes electrode realisation, comparable in size to the effect being
+measured, from the comparison.
 
 #### 2.5.1 The anatomically-constrained sweep
 
@@ -412,8 +412,8 @@ raise, which a coverage test cannot see.
 
 ### 2.7 Error budget
 
-Every published quantity in this paper is a ratio — one site against another,
-ear against jaw, muscle against muscle — and that structure determines how
+Every published quantity in this paper is a ratio, one site against another,
+ear against jaw, muscle against muscle, and that structure determines how
 uncertainty is handled. A term that scales the whole lead field equally cancels
 exactly in every ratio and cannot reach a conclusion. A term that varies between
 sites survives into all of them. Table 3 is split into two columns on exactly
@@ -440,19 +440,19 @@ repository README. MIDA itself cannot be redistributed under its licence and is
 not included.
 
 The anatomical prediction was recorded before the model was solved. The
-`expected_at_ear` column of the muscle configuration — predicting strong
+`expected_at_ear` column of the muscle configuration, predicting strong
 retroauricular coupling for temporalis ("directly above ear") and
-sternocleidomastoid ("mastoid attachment") — entered the repository in commit
+sternocleidomastoid ("mastoid attachment"), entered the repository in commit
 `fa583f6`, dated 2026-08-02. The lead-field results that test that prediction
 were committed the following day, 2026-08-03. The prediction therefore precedes
 the measurement by a day and by the entire solve pipeline, and both commits are
 citable by hash.
 
-**A published table with no generating script is not a result yet.** Two tables
+A published table with no generating script is not a result yet. Two tables
 in this study (`04h_matched_counts.csv`, `04j_two_axis_verdict.csv`) were
 initially produced interactively rather than by a script in `src/`. They could
 not be regenerated from a clean checkout, and they drifted out of step with the
-renormalisation specified above. That suspicion proved false — they were
+renormalisation specified above. That suspicion proved false; they were
 correct, and an attempt to "correct" them applied the renormalisation a second
 time and moved nine published numbers by up to 1.04 dB before it was caught by
 checking the upstream script. The episode is reported because the failure mode is
@@ -492,7 +492,7 @@ drawing four of the fourteen ear sites at random, taking the best, and
 repeating; the resulting interval says whether a preference is a property of
 the montage or of which sites happen to be available.
 
-**The jaw's dominance over the labial group is robust on both axes.**
+The jaw's dominance over the labial group is robust on both axes.
 Orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma
 favour the jaw at all 200 sampled orientations and at every electrode
 subsample. No fibre direction and no four-site selection exists at which a
@@ -500,16 +500,16 @@ retroauricular electrode competes for these muscles. The full muscle-by-site
 sensitivity matrix is given in Figure 2, and the per-muscle verdicts in
 Figure 3.
 
-**No articulator favours the ear on both axes.** Temporalis is the closest,
+No articulator favours the ear on both axes. Temporalis is the closest,
 and it does not clear the bar. Over the fibre field derived from the anatomy
 (§2.3.1) it reaches −1.147 dB at the pre-registered four-site cluster, with
-91.5 per cent of fibre directions agreeing — but its matched-count interval is
+91.5 per cent of fibre directions agreeing, but its matched-count interval is
 **[−1.453, +5.458]** and only **50.5 per cent** of the four-site
 retroauricular subsets favour the ear at all. Whether the ear wins for
 temporalis is decided by which four electrodes a device happens to carry, not
 by the anatomy.
 
-**The two treatments disagree, and the anatomy-specific one governs.** Under a
+The two treatments disagree, and the anatomy-specific one governs. Under a
 uniform orientation sweep temporalis reaches −2.571 dB with 92.0 per cent of
 orientations agreeing and an interval of [−3.308, −0.035] that excludes zero —
 on that treatment it would be reported as favouring the ear. The sweep assumes
@@ -517,7 +517,7 @@ source orientation is uniformly distributed over the sphere, which is the right
 default when fibre direction is unknown and the wrong one for a muscle whose
 fibres converge on a single identifiable insertion.
 
-**The interval is computed exactly, not sampled.** Fourteen candidate ear sites
+The interval is computed exactly, not sampled. Fourteen candidate ear sites
 taken four at a time gives 1001 possible subsets, so every one is enumerated and
 the interval is a complete description of that set rather than an estimate from
 draws. It therefore carries no seed and no sampling error. For the derived fibre
@@ -550,7 +550,7 @@ it so the dependence is visible: **this verdict rests on the fibre derivation,
 and a reader who rejects that derivation should read temporalis as favouring
 the ear by 2.57 dB.**
 
-**Two show no preference that survives electrode subsampling.**
+Two show no preference that survives electrode subsampling.
 Sternocleidomastoid (−0.973 dB at the cluster, 60.5 per cent of orientations,
 interval [−1.40, +1.27]) and lateral pterygoid (−1.564 dB, 65.5 per cent,
 [−1.59, +1.09]) both have intervals crossing zero. Their apparent advantage
@@ -558,21 +558,21 @@ depends on which four sites are available and is not a property of the
 montage. Reported at the unmatched argmax over fourteen sites they would read
 −1.402 and −1.679 dB, which is why the matched comparison is the one reported.
 
-**Two favour the jaw robustly across sites but not across orientation.**
+Two favour the jaw robustly across sites but not across orientation.
 Masseter and medial pterygoid have subsample intervals entirely positive, but
 36.0 and 37.5 per cent of sampled orientations reverse them. A single label
 would discard one axis or the other, so both are reported (Table 4).
 
 ### 3.2 Anisotropy changes the field but not the comparison
 
-**The isotropy assumption does not measurably affect any site-to-site ratio**
+The isotropy assumption does not measurably affect any site-to-site ratio
 (Figure 4).
 Applying a fibre tensor changes the jaw-versus-ear gap by −0.085 dB for
 sternocleidomastoid, −0.010 dB for medial pterygoid, +0.137 dB for temporalis
 and +0.036 dB for lateral pterygoid. Every one of these lies below the 0.27 dB
 measured electrode-meshing floor, including for the two compartments that
-carry a tensor. Anisotropy raises the absolute lead field substantially — by
-roughly 5 dB in medial pterygoid — but it does so at the jaw and ear sites
+carry a tensor. Anisotropy raises the absolute lead field substantially, by
+roughly 5 dB in medial pterygoid, but it does so at the jaw and ear sites
 alike, so the effect subtracts out of every ratio this paper reports.
 
 This is a null with a bound rather than an absence of evidence, and it has a
@@ -582,7 +582,7 @@ resolution. Absolute lead-field values are a different matter and are affected.
 
 ### 3.3 The tissue-conductivity contrast is a small term with a muscle-dependent sign
 
-Solving the full montage twice on identical geometry — once with adipose at
+Solving the full montage twice on identical geometry, once with adipose at
 0.025 S/m and once with both adipose compartments set to muscle conductivity —
 attributes any difference to material properties alone, since source-to-electrode
 distance is unchanged by construction. The second condition is a counterfactual
@@ -625,7 +625,7 @@ the orbicularis oris gap. For the four muscles
 whose gaps sit closest to zero, the contrast is of the same order as the gap
 itself, which is part of why those gaps do not resolve.
 
-**The mechanism is therefore geometric rather than material.** Removing the
+The mechanism is therefore geometric rather than material. Removing the
 single largest conductivity contrast in the intervening tissue leaves every
 montage assignment unchanged and moves no gap across zero. This is consistent
 with §3.5, where collapsing all non-muscle soft tissue to one conductivity also
@@ -660,7 +660,7 @@ construction rather than by luck.
 
 ### 3.5 A homogeneous conductor reaches the same verdicts
 
-**A homogeneous soft-tissue conductor reproduces every montage assignment.**
+A homogeneous soft-tissue conductor reproduces every montage assignment.
 Setting skin, adipose and the non-muscle soft tissues to a single conductivity,
 with geometry, electrodes and sources held exactly fixed, changes no muscle's
 montage preference. Eight of ten gap magnitudes move by more than the 0.27 dB
@@ -678,11 +678,11 @@ how much is not, and a design table quoting decibels needs it.
 
 ### 3.6 Placement by anatomical target outperforms density
 
-**Placement chosen by anatomical target outperforms arbitrary placement.** The
-four-site retroauricular cluster — above the ear, over the mastoid, behind and
-below the lobule, and anterior to the tragus — was specified by anatomical
+Placement chosen by anatomical target outperforms arbitrary placement. The
+four-site retroauricular cluster, above the ear, over the mastoid, behind and
+below the lobule, and anterior to the tragus, was specified by anatomical
 target in the project repository before any solve was run. Compared against
-the median of random four-site draws from the same fourteen candidates, it is
+the median of random four-site draws from the same fourteen candidates; it is
 1.03 dB better for lateral pterygoid (−1.564 against −0.534) and equivalent
 for sternocleidomastoid (−0.973 against −0.979).
 
@@ -698,7 +698,7 @@ were considered.
 ### 4.1 The montages are not complementary
 
 An earlier framing of this work treated jaw and retroauricular montages as
-complementary — each better for some articulators — and that framing does not
+complementary, each better for some articulators, and that framing does not
 survive its own controls. Every articulator this model can resolve favours the
 jaw montage. The three that appeared to favour the ear, all of them attaching at
 or near the temporal bone, are the three whose gaps come closest to zero, but
@@ -740,16 +740,16 @@ fossa directly beneath the superior cEEGrid row, sternocleidomastoid inserts on
 the mastoid process, and lateral pterygoid inserts at the mandibular condyle,
 which articulates with the temporal bone's mandibular fossa.
 
-The uncontrolled comparison reproduced it exactly — those three muscles, and only
+The uncontrolled comparison reproduced it exactly, those three muscles, and only
 those three, showed a retroauricular advantage, each at the site the anatomy
 implied. Under matched electrode counts and a derived rather than assumed fibre
 field, none of the three survives (§3.1).
 
 The prediction is therefore reported as a **failed** one, and its failure is
 informative in a way its confirmation would not have been. Proximity to a bony
-attachment predicts which sites are *competitive* — the three near-temporal
+attachment predicts which sites are *competitive*, the three near-temporal
 muscles are the three whose gaps come closest to zero, and the ordering is
-correct — but it does not predict that any of them crosses. A volume conductor is
+correct, but it does not predict that any of them crosses. A volume conductor is
 not a proximity argument: the current returns through whatever path the
 conductivities allow, and an attachment adjacent to an electrode does not make
 that electrode the better observer of the fibre.
@@ -761,9 +761,9 @@ material contribution varies widely within the group: the adipose–muscle
 conductivity contrast accounts for 0.6 per cent of the gap for platysma and
 13.3 per cent for orbicularis oris. The remainder in every case is
 source-to-electrode distance, and the attenuation-against-depth relation that
-produces it is shown in Figure 5. The two regimes remain separated — 0.6 to 13.3
+produces it is shown in Figure 5. The two regimes remain separated, 0.6 to 13.3
 per cent for the muscles the jaw wins, against 17 to 21 per cent for those the
-ear wins — but the separation is narrower than a single figure would suggest,
+ear wins, but the separation is narrower than a single figure would suggest,
 and no muscle in either group is unaffected.
 
 Limb studies cannot make this separation, because adding a fat layer changes
@@ -791,14 +791,14 @@ how the two routes traverse fat, which this study does not form. This is the
 same cancellation that makes a uniform magnitude offset invisible in every
 ratio reported here, arriving in a place where it was not anticipated.
 
-Applied to the three muscles whose gaps come closest to zero — temporalis,
-sternocleidomastoid and lateral pterygoid — the same decomposition returns a
+Applied to the three muscles whose gaps come closest to zero, temporalis,
+sternocleidomastoid and lateral pterygoid, the same decomposition returns a
 modest term whose sign varies between them.
 
 For temporalis the contrast acts against the gap rather than for it: removing it
 would enlarge the gap from −3.801 to −4.923 dB. The direction is worth stating
-because it is the opposite of the intuitive reading — the tissue contrast is not
-what produces temporalis's proximity to zero, it is part of what holds it there.
+because it is the opposite of the intuitive reading, the tissue contrast is not
+what produces temporalis's proximity to zero; it is part of what holds it there.
 It does not change the verdict, which is set by the matched−count interval and
 not by this term. For sternocleidomastoid and lateral pterygoid the contrast acts
 with the gap, supplying 21.0 and 17.4 per cent of it respectively.
@@ -827,7 +827,7 @@ controlled.
 That is more useful to a device team than a small positive margin would have
 been. An ear-worn form factor is chosen for wearability, not for signal, and the
 question a designer needs answered is what it costs. The answer is that it costs
-most of the anterior articulators outright and returns nothing measurable — not
+most of the anterior articulators outright and returns nothing measurable, not
 that it trades one muscle group for another.
 
 Three apparent advantages did not survive. Temporalis, sternocleidomastoid and
@@ -851,7 +851,7 @@ contamination for decades as a nuisance to be suppressed [Goncharova et al.
 three compartments a retroauricular electrode couples to most strongly, relative
 to the canonical jaw montage, and whose sensitivity fields are shown in Figure 7,
 are temporalis, sternocleidomastoid and lateral
-pterygoid — and their best positions differ, so contamination at `cg01` is not
+pterygoid, and their best positions differ, so contamination at `cg01` is not
 the same mixture as contamination at `cg08`.
 
 That is usable in the rejection direction as well as the sensing one. A spatial
@@ -907,7 +907,7 @@ around a decibel. Their product is the difference between a 3.92 dB advantage an
 none.
 
 Two features of this sequence are worth separating, because only one of them is
-evidence. The **monotone** drift — every correction moving the same way — is
+evidence. The **monotone** drift, every correction moving the same way, is
 suggestive but not probative; corrections that each remove an optimistic
 assumption will tend to move one way by construction. What is probative is that
 the **final** step, the one that crosses zero, removes an assumption rather than
@@ -917,7 +917,7 @@ an effect.
 
 We report this because the intermediate results were not obviously wrong. Each
 was internally consistent, cleared its measurement floor, and reproduced an
-a-priori anatomical prediction — the three muscles that appeared to favour the
+a-priori anatomical prediction, the three muscles that appeared to favour the
 ear are the three whose attachments sit at or near the temporal bone, which is
 exactly what one would predict and exactly what makes a spurious result
 convincing.
@@ -927,11 +927,11 @@ convincing.
 **Ten of eighteen muscles are modelled, and the two carrying the strongest
 version of the anatomical argument are not among them.** MIDA does not
 individually segment the suprahyoid group or the tongue. Posterior digastric and
-stylohyoid — the two muscles that anchor at the mastoid notch and styloid
+stylohyoid, the two muscles that anchor at the mastoid notch and styloid
 process, and that motivated the retroauricular hypothesis in the first place —
 are therefore absent from the per-muscle comparison. The model is silent exactly
-where the a-priori argument was strongest — the muscles whose attachments most
-directly motivated a retroauricular montage are the ones it cannot test — and the
+where the a-priori argument was strongest, the muscles whose attachments most
+directly motivated a retroauricular montage are the ones it cannot test, and the
 spatial
 sensitivity field reported over the pooled compartments is a partial substitute
 rather than an equivalent one.
@@ -966,7 +966,7 @@ structures than the ear montage does.
 **Quasi-static assumption**, standard at surface electromyography frequencies
 and stated for completeness.
 
-**Fibre orientation is bounded, not known** (§2.5). A fibre tensor reaches two
+Fibre orientation is bounded, not known (§2.5). A fibre tensor reaches two
 of ten segmented muscles, and rows without one are reported as not applied
 rather than as zero change.
 
@@ -982,10 +982,10 @@ The construction requires a discrete bony insertion for voxels to point at, so
 the remainder do not form a single pending set. Sternocleidomastoid, medial
 pterygoid and mentalis are strap-like with fibres along the compartment long
 axis, and admit it directly. Masseter, lateral pterygoid and depressor anguli
-oris are multi-part or converging — superficial and deep layers at different
-angles, two heads, and a converging triangular sheet respectively — and a
+oris are multi-part or converging, superficial and deep layers at different
+angles, two heads, and a converging triangular sheet respectively, and a
 per-voxel fan toward a common attachment is the appropriate treatment for them,
-untested here. **Orbicularis oris admits it in no form**: it is a sphincter whose
+untested here. Orbicularis oris admits it in no form: it is a sphincter whose
 fibres run in a ring, with no bony insertion, so a principal axis is a category
 error rather than a missing measurement. Buccinator blends into that sphincter at
 the modiolus and inherits the same problem. Platysma is a broad sheet.
@@ -1007,13 +1007,13 @@ than is reported.
 
 ## Tables
 
-**Table 1 — Tissue conductivities.** All 116 MIDA labels with assigned
+**Table 1, Tissue conductivities.** All 116 MIDA labels with assigned
 conductivity, source (SimNIBS 4.6 default / IT'IS LF v4.2 / judgement),
 frequency, plausible range for judgement rows, volume fraction and minimum
 distance to the nearest electrode. Sorted by volume fraction × proximity.
 [`results/table1_conductivities.csv`]
 
-**Table 2 — Tissue layer stack beneath each canonical site.** Millimetres per
+**Table 2, Tissue layer stack beneath each canonical site.** Millimetres per
 MIDA tissue along the ray from each electrode through the full thickness of its
 target. *Target thickness traversed* is summed from `results/02_layer_profile.csv`
 over the target label. *Fat before target* is derived from
@@ -1033,7 +1033,7 @@ encountered **before** reaching the target, not over the whole ray.
 | `above_ear` | Temporalis | 6.00 mm | 2.00 mm |
 | `mental` | Mentalis | 2.75 mm | 4.87 mm |
 
-**Table 3 — Error budget.** Read the last two columns first: every published
+**Table 3, Error budget.** Read the last two columns first: every published
 claim here is a ratio, so a term that scales the whole lead field equally
 cancels and never reaches a conclusion, while a term varying between sites
 survives into all of them.
@@ -1062,7 +1062,7 @@ df = 5.
 Row 7 is deliberately left unquantified. A single-subject model cannot estimate
 its own between-subject variance.
 
-**Table 4 — Which montage sees which muscle, on two robustness axes.** Gap in dB between the jaw and retroauricular montages, positive favouring the jaw, taken as the median over 200 source orientations of the per-orientation gap (statistic A) against the four pre-registered retroauricular sites. Electrode counts are matched at 4 per montage. Because 5 jaw sites are admissible and the comparison takes 4, every value is reported as the envelope over all 5 admissible subsets rather than for one chosen subset. Rows marked unstable change verdict between subsets and are described in the text. *Site-robust* asks whether a random draw of four of the fourteen ear sites still excludes zero. *Orientation agreement* is the fraction of sampled orientations agreeing with the median verdict.
+**Table 4, Which montage sees which muscle, on two robustness axes.** Gap in dB between the jaw and retroauricular montages, positive favouring the jaw, taken as the median over 200 source orientations of the per-orientation gap (statistic A) against the four pre-registered retroauricular sites. Electrode counts are matched at 4 per montage. Because 5 jaw sites are admissible and the comparison takes 4, every value is reported as the envelope over all 5 admissible subsets rather than for one chosen subset. Rows marked unstable change verdict between subsets and are described in the text. *Site-robust* asks whether a random draw of four of the fourteen ear sites still excludes zero. *Orientation agreement* is the fraction of sampled orientations agreeing with the median verdict.
 
 <!-- TABLE:two_axis_verdict -->
 | Muscle | Gap (dB), envelope over subsets | Site-robust | Orientation agreement | Verdict |
@@ -1142,7 +1142,7 @@ the build if a caption and its figure disagree.
 isotropic and anisotropic conditions, 20·log₁₀(aniso/iso), per cell. The
 anisotropic condition is solved on the isotropic run's own mesh, so the two
 differ in conductivity alone and carry no electrode-realisation noise. A fibre
-tensor is applied to 2 of 10 muscles — sternocleidomastoid and medial pterygoid.
+tensor is applied to 2 of 10 muscles, sternocleidomastoid and medial pterygoid.
 Rows without a tensor are labelled **not applied**, not zero: they were never
 varied, so no null result was measured for them.
 
@@ -1203,7 +1203,7 @@ cited in §2.8 as the pre-registration record.
 4. De Luca, C. J., et al. (2011). Inter-electrode spacing of surface EMG sensors. *J Biomech*.
 5. Gaddy, D., & Klein, D. (2020). Digital Voicing of Silent Speech. *EMNLP*.
 6. Goncharova, I. I., et al. (2003). EMG contamination of EEG: spectral and topographical characteristics. *Clin Neurophysiol*.
-7. Harmening, N., Klug, M., Gramann, K., & Miklody, D. (2022). HArtMuT — modeling eye and muscle contributors in neuroelectric imaging. *J Neural Eng* 19(6):066041. doi:10.1088/1741-2552/aca8ce
+7. Harmening, N., Klug, M., Gramann, K., & Miklody, D. (2022). HArtMuT, modeling eye and muscle contributors in neuroelectric imaging. *J Neural Eng* 19(6):066041. doi:10.1088/1741-2552/aca8ce
 8. Iacono, M. I., et al. (2015). MIDA: A Multimodal Imaging-Based Detailed Anatomical Model of the Human Head and Neck. *PLOS ONE*. doi:10.1371/journal.pone.0124126
 9. Kappel, S. L., Makeig, S., & Kidmose, P. (2019). Ear-EEG Forward Models: Improved Head-Models for Ear-EEG. *Front Neurosci* 13:943. doi:10.3389/fnins.2019.00943
 10. Kapur, A., Kapur, S., & Maes, P. (2018). AlterEgo: A Personalized Wearable Silent Speech Interface. *IUI '18*.

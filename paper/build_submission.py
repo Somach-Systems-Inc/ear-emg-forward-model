@@ -42,14 +42,42 @@ BUNDLE = ROOT / "paper" / "arxiv"
 TEX = BUNDLE / "ms.tex"
 PDF = ROOT / "paper" / "PAPER1_submission.pdf"
 
+# Renumbered 2026-08-06 into FIRST-CITATION order, which is what a reader
+# following the text expects and what interleaved placement requires.
 FIGURES = {
     1: "fig1_head_model.pdf",
     2: "fig2_sensitivity_matrix.pdf",
-    3: "fig3_attenuation_vs_distance.pdf",
+    3: "fig3_complementarity_map.pdf",
     4: "fig4_anisotropy_delta.pdf",
-    5: "fig5_complementarity_map.pdf",
-    6: "fig6_suprahyoid_field.pdf",
+    5: "fig5_attenuation_vs_distance.pdf",
+    6: "fig6_material_share_vs_fat.pdf",
+    7: "fig7_suprahyoid_field.pdf",
 }
+
+# Adapted from Carl's first arXiv submission (2601.06516), kept in
+# md-capstonefall25_25TPE/.../022826_ARXIV_CleanSubmissions/paper1/main.tex,
+# so the two papers look like they came from the same author.
+ARXIV_PREAMBLE = r"""
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{etoolbox}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{microtype}
+\usepackage{url}
+\captionsetup{font=small,labelfont=bf}
+\setlength{\LTcapwidth}{\textwidth}
+\AtBeginEnvironment{longtable}{\footnotesize}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+"""
 
 # NOTE: pandoc's default template already loads xcolor and graphicx. Loading
 # xcolor again with options is an option clash and kills the build.
@@ -76,6 +104,10 @@ PREAMBLE = r"""
 # content loss a reader cannot see, so map them to real LaTeX rather than
 # hoping the font copes.
 UNICODE_MAP = {
+    # U+2212 MINUS SIGN is absent from T1 Latin Modern. Left as-is it is
+    # DROPPED, turning -1.147 into 1.147 with no warning a reader could see.
+    "−": "$-$",
+    "–": "--", "—": "---",
     "⁻": "$^{-}$", "⁴": "$^{4}$", "⁵": "$^{5}$",
     "⁶": "$^{6}$", "⁸": "$^{8}$", "¹": "$^{1}$",
     "³": "$^{3}$", "₀": "$_{0}$", "₁": "$_{1}$",
@@ -149,6 +181,23 @@ def preprocess(md: str) -> tuple[str, list[str]]:
                  f"\\end{{figure}}\n")
         md = md[:m.start()] + f"@@FIG{n}@@" + md[m.end():]
         placed.append((f"@@FIG{n}@@", block, n))
+    if INLINE[0]:
+        # Move each float from the captions section to just after the paragraph
+        # that first cites it. Floats cannot travel backwards, so a figure whose
+        # caption sits at the end of the document can never appear beside the
+        # text that discusses it.
+        for tok, _blk, n in placed:
+            md = md.replace(tok, "")
+            cite = re.search(rf"Figure {n}\b", md)
+            if not cite:
+                notes.append(f"Figure {n}: no citation found, left at the end")
+                md += f"\n{tok}\n"
+                continue
+            para = md.find("\n\n", cite.end())
+            para = len(md) if para == -1 else para
+            md = md[:para] + f"\n\n{tok}" + md[para:]
+        notes.append("figures moved to their first citation (interleaved)")
+        md = re.sub(r"^## Figure captions\s*$", "", md, flags=re.M)
     notes.append(f"placed {len(placed)} of {len(FIGURES)} figures")
     return md, (title, author_lines, placed, notes)
 
@@ -173,8 +222,25 @@ def latex_escape(s: str) -> str:
                    else esc(p) for p in parts)
 
 
+INLINE = [False]
+STYLE = ["plain"]
+
+
 def main() -> int:
     import shutil
+    import argparse as _ap
+    _p = _ap.ArgumentParser()
+    _p.add_argument("--inline-figures", action="store_true")
+    _p.add_argument("--style", default="plain", choices=["plain", "arxiv"])
+    _p.add_argument("--out-stem", default="PAPER1_submission")
+    _p.add_argument("--src", default=str(SRC))
+    _a = _p.parse_args()
+    INLINE[0] = _a.inline_figures
+    STYLE[0] = _a.style
+    globals()["SRC"] = Path(_a.src)
+    globals()["PDF"] = ROOT / "paper" / f"{_a.out_stem}.pdf"
+    globals()["BUNDLE"] = ROOT / "paper" / f"arxiv_{_a.out_stem}"
+    globals()["TEX"] = BUNDLE / "ms.tex"
     STAGE.mkdir(exist_ok=True)
     BUNDLE.mkdir(exist_ok=True)
     for fn in FIGURES.values():
@@ -187,7 +253,7 @@ def main() -> int:
     stage_md = STAGE / "body.md"
     stage_md.write_text(md)
     pre = STAGE / "preamble.tex"
-    pre.write_text(PREAMBLE)
+    pre.write_text(ARXIV_PREAMBLE if STYLE[0] == "arxiv" else PREAMBLE)
 
     cmd = ["pandoc", str(stage_md), "-f",
            "markdown+pipe_tables+implicit_figures+tex_math_dollars",
@@ -197,6 +263,7 @@ def main() -> int:
            # sections stay unnumbered and no double numbering appears.
            "--top-level-division=section",
            "-V", "documentclass=article", "-V", "fontsize=11pt",
+           "-V", ("papersize=a4" if STYLE[0] == "arxiv" else "papersize=letter"),
            "-V", "geometry:margin=1in", "-V", "colorlinks=true",
            "-M", f"title={title}", "-M", "author=AUTHORBLOCK",
            "-M", "date=", "-H", str(pre), "-o", str(TEX)]
