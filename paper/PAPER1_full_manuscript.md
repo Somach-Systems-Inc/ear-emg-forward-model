@@ -140,7 +140,8 @@ are public and timestamped.
 
 The volume conductor is MIDA v1.0 (Multimodal Imaging-Based Detailed Anatomical
 Model of the Human Head and Neck; Iacono et al. 2015, IT'IS Foundation, DOI
-10.13099/ViP-MIDA-V1.0), segmented at 500 µm isotropic.
+10.13099/ViP-MIDA-V1.0), segmented at 500 µm isotropic. The ten segmented
+articulator compartments and the electrode positions are shown in Figure 1.
 
 MIDA is commonly cited as containing 153 structures. That figure describes the
 CAD/surface distribution. The voxel distribution used here carries **116
@@ -483,7 +484,9 @@ acquired.
 > Orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma
 > favour the jaw at all 200 sampled orientations and at every electrode
 > subsample. No fibre direction and no four-site selection exists at which a
-> retroauricular electrode competes for these muscles.
+> retroauricular electrode competes for these muscles. The full muscle-by-site
+> sensitivity matrix is given in Figure 2, and the per-muscle verdicts in
+> Figure 5.
 >
 > **No articulator favours the ear on both axes.** Temporalis is the closest,
 > and it does not clear the bar. Over the fibre field derived from the anatomy
@@ -546,7 +549,8 @@ The current text describes a robustness check that survives. Under statistic A
 the correct statement is stronger and simpler: there is no resolvable effect at
 all.
 
-> **The isotropy assumption does not measurably affect any site-to-site ratio.**
+> **The isotropy assumption does not measurably affect any site-to-site ratio**
+> (Figure 4).
 > Applying a fibre tensor changes the jaw-versus-ear gap by −0.085 dB for
 > sternocleidomastoid, −0.010 dB for medial pterygoid, +0.137 dB for temporalis
 > and +0.036 dB for lateral pterygoid. Every one of these lies below the 0.27 dB
@@ -740,7 +744,8 @@ adipose–muscle conductivity contrast accounts for 0.6 to 13.3 per cent…"*
 > material contribution varies widely within the group: the adipose–muscle
 > conductivity contrast accounts for 0.6 per cent of the gap for platysma and
 > 13.3 per cent for orbicularis oris. The remainder in every case is
-> source-to-electrode distance. The two regimes remain separated — 0.6 to 13.3
+> source-to-electrode distance, and the attenuation-against-depth relation that
+> produces it is shown in Figure 3. The two regimes remain separated — 0.6 to 13.3
 > per cent for the muscles the jaw wins, against 17 to 21 per cent for those the
 > ear wins — but the separation is narrower than a single figure would suggest,
 > and no muscle in either group is unaffected.
@@ -824,7 +829,8 @@ The EEG literature has documented mastoid and retroauricular electromyographic
 contamination for decades as a nuisance to be suppressed [Goncharova et al.
 2003; Yao et al. 2019]. This model says what that contamination consists of. The
 three compartments a retroauricular electrode couples to most strongly, relative
-to the canonical jaw montage, are temporalis, sternocleidomastoid and lateral
+to the canonical jaw montage, and whose sensitivity fields are shown in Figure 6,
+are temporalis, sternocleidomastoid and lateral
 pterygoid — and their best positions differ, so contamination at `cg01` is not
 the same mixture as contamination at `cg08`.
 

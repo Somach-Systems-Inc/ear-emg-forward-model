@@ -1,6 +1,22 @@
-# UNVERIFIED ruling — line 608, and what it implies for §3.5 and axis (a)
+# WITHDRAWN ruling — line 608, and what it implies for §3.5 and axis (a)
 
-> **PROVENANCE UNVERIFIED. DO NOT APPLY.** This file is the fifth member of the
+> **WITHDRAWN 2026-08-05: PRECONDITION UNMET. Void, not pending.**
+>
+> This file's §5 block was conditional on a pre-commitment that was never
+> written. The precondition failed, so the ruling withdraws rather than waiting
+> for ratification. It is **not** a fifth file awaiting Carl's approval and must
+> not be applied, in whole or in part.
+>
+> Disclosed by the thread that produced it. Recorded here rather than deleted,
+> because a withdrawn ruling that vanishes leaves the defect it addressed looking
+> unexamined.
+>
+> **The defect it was written to fix is still live.** §3.5 line 648 pairs `04h`'s
+> cluster gap (−2.571) with a homogeneous value (−3.724) that exists in no
+> results file. That orphan is unfixed and now has no approved remedy. See
+> METHODS_LOG 2026-08-05.
+
+> **PROVENANCE UNVERIFIED.** This file is the fifth member of the
 > 2026-08-06 set: it is stamped with a date that had not occurred when it was
 > written, by the generator that also produced four false "approved by Carl"
 > attributions. The date line is left in place rather than re-dated, for the same
