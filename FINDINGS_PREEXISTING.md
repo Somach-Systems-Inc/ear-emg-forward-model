@@ -6,7 +6,9 @@ the committed tree before anything was changed — by reading `git show HEAD:<pa
 or by running the check against `HEAD`'s copy of the file, never against a
 worktree that a live process might have rewritten underneath the reader.
 
-Ordered by consequence.
+Ordered by consequence. **Finding 5 is a RETRACTION** — it was written up as a
+finding, turned out to be something this repository had already measured and
+corrected, and is kept as a record of how that happened rather than deleted.
 
 ---
 
@@ -160,41 +162,66 @@ invites exactly the mistake made here.
 
 ---
 
-## 5. `meshmesh` is not deterministic, and the convergence inputs carry unquantified noise
+## 5. RETRACTED — mesh-realisation noise is already measured, and better
 
-Two runs of the **same command on the same machine** produce different meshes and
-different metrics:
+**This was written up as a finding. It is not one. Retained as a correction
+rather than deleted, because the way it went wrong is the useful part.**
+
+The observation was real: two runs of the same command on the same machine give
+different meshes and different metrics.
 
 | run | tets | h_mean | RDM % | MAG % |
 |---|---|---|---|---|
 | A | 650,285 | 1.56236 | 3.8518 | +1.1510 |
 | B | 649,176 | 1.56100 | 3.9568 | +3.8027 |
-| Δ | −1,109 (−0.17 %) | −0.087 % | **+0.1049 pp** | **+2.6517 pp** |
+| Δ | −1,109 (−0.17 %) | −0.087 % | +0.1049 pp | **+2.6517 pp** |
 
-Because `fine.ini` saturates to the medium density (finding 3), the `fine` row is
-an independent realisation at essentially fixed density, which is what makes this
-measurable at all.
+The conclusion drawn from it — that this noise is unquantified and that `RDM_0`
+inherits it invisibly — was **wrong**. This repository already:
 
-Consequences:
+- **names the phenomenon**: the *electrode-meshing floor*. `measure_electrode_floor.py`
+  solves "two nominally-identical sphere meshes (0.13 % apart in element count)"
+  and states plainly that the difference "is not physics: it is the electrode's
+  contact geometry being realised differently by incidental surface triangulation".
+- **made exactly this n=2 measurement**, got |ΔMAG| = 1.5198 pp → 0.1310 dB, and
+  labelled it in the output file `# n = 2 (one difference, not a distribution)`.
+- **superseded it** with `measure_floor_multidraw.py`: n = 6 draws, each a rigid
+  rotation of electrodes *and* sources on one fixed mesh, so relative geometry is
+  identical and any spread is realisation noise by construction.
+- **publishes the result**: `results/electrode_meshing_floor.txt` holds 0.272 dB,
+  per-site spread 0.12–0.49 dB, electrode-specific residual SD 3.181 pp, and
+  records the median-MAG distribution's SD as **4.607 pp**.
+- **guards the ordering**: `measure_electrode_floor.py` refuses to overwrite the
+  n=6 file, because re-running the n=2 estimate "would quietly loosen every
+  threshold the floor gates".
+- **carries it into the paper**: `METHODS.md:203` tests a spread against "a
+  0.27 dB electrode-meshing floor", and `METHODS_LOG.md` has a dated ruling on
+  correcting it.
 
-- **`MAG` is dominated by mesh realisation.** A 2.65 pp swing at fixed density is
-  the same order as the differences between densities. Any MAG comparison at or
-  below this magnitude carries no information.
-- **`RDM_0 = 2.0118 %` is quoted to four decimals from three inputs that each
-  carry ~0.1 pp of mesh noise.** The 3-point fit is exact by construction, so it
-  propagates that noise into `RDM_0` invisibly and reports a residual of ~1e-26
-  that describes only the algebra, not the measurement.
-- A repeat of any density is not a reproduction check unless the same `.msh` is
-  reused; rebuilding the mesh changes the answer.
+Against that, the measurement above is **one draw from a distribution whose SD is
+already published as 4.607 pp**. |ΔMAG| = 2.65 pp is an unremarkable member of it.
+It is a useful independent cross-platform corroboration — a different OS, compiler
+and BLAS reproduce the same order of realisation noise — and nothing more.
 
-**Caveat on this finding:** n = 2. This is a single pairwise difference and a
-lower bound on the spread, not a standard deviation. Establishing the real
-distribution needs several rebuilds per density — which is also the cheapest way
-to put an honest error bar on `RDM_0`.
+### Why this is recorded
 
-**Not fixed here.** The remedy is a design decision for the authors: either pin
-the mesh (ship or hash the `.msh` used for the published fit), or repeat each
-density N times and quote `RDM_0` with an interval.
+`CLAUDE.md` states the rule that was broken:
+
+> **Verifying that a step is absent HERE does not verify that it is absent.**
+> Check upstream before concluding a specification was not applied. […] Before
+> reporting that a specification was not applied, name the file where it WOULD
+> have been applied and show it is not there either.
+
+The finding was written after observing the noise in `val_convergence_fit.py` and
+`val_rdm_mag.py`, without grepping for an existing floor measurement. Two files
+named `measure_electrode_floor.py` and `measure_floor_multidraw.py` sat in the
+same directory. The repository had not only done the work, it had already made and
+then corrected the precise mistake being reported — quoting an n=2 difference as
+if it were a spread.
+
+It was also, in `CLAUDE.md`'s words, "tidier than the truth": a clean story about
+unquantified noise undermining a headline number is more interesting than
+"independently reproduced a known floor", which is what actually happened.
 
 ---
 

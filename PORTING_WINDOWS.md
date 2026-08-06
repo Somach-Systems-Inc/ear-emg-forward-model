@@ -147,10 +147,16 @@ coordinate delta exactly 0):
 
 Zero of 120 rows match to 1e-9. Both pass `preflight`'s ≤5 % gates.
 
-Before reading anything into that, see finding 5 in `FINDINGS_PREEXISTING.md`:
-`meshmesh` is **not deterministic**, and two runs of the same command on this one
-machine differ by 0.10 pp in RDM and **2.65 pp in MAG**. The MAG difference above
-is within that; the RDM difference is roughly 5× it.
+Before reading anything into that, note the scale this repository has already
+established for mesh-realisation noise. `results/electrode_meshing_floor.txt`
+records the median-MAG distribution's **SD as 4.607 pp** (n = 6 draws,
+`measure_floor_multidraw.py`), and a per-site floor of **0.272 dB**.
+
+Two runs of the same command on this machine differ by 0.10 pp RDM and 2.65 pp
+MAG — an unremarkable draw from that published distribution, and a cross-platform
+corroboration of it rather than a new result. **The MAG difference above is
+comfortably inside the known floor and should not be interpreted.** The RDM
+difference is the part that is not obviously accounted for.
 
 Measured across all four `.ini` densities on this machine, against the committed
 Mac values:
