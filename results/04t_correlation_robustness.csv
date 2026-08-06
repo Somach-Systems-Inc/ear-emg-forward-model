@@ -1,0 +1,13 @@
+# Leave-one-out robustness for the material-share correlation.
+# full sample: n=7, rho=-0.9550, p=0.00081
+# rho range under leave-one-out: -0.9856 to -0.9276
+# worst p under leave-one-out: 0.00767
+# n=7 is small; this tests whether one muscle carries the result.
+dropped,n,rho,p,still_p_below_05,still_p_below_01
+lateral_pterygoid,6,-0.9856,0.00031,True,True
+orbicularis_oris,6,-0.9276,0.00767,True,True
+buccinator,6,-0.9429,0.0048,True,True
+mentalis,6,-0.9276,0.00767,True,True
+depressor_anguli_oris,6,-0.9429,0.0048,True,True
+platysma,6,-0.9276,0.00767,True,True
+sternocleidomastoid,6,-0.9856,0.00031,True,True

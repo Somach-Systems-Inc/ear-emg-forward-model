@@ -73,9 +73,32 @@ PUBLISHED_JAW = ("buccal", "mental", "midjaw", "submaxillary")
 PUBLISHED = dict(median=-1.147, lo=-1.453, hi=5.458, pct_ear=50.2)
 
 
+def exact_pervoxel(pv, jaw, ear):
+    """EXACT over every possible subset, not a sample of them.
+
+    The ear pool is 14 sites and the draw is 4, so there are C(14,4) = 1001
+    possible subsets -- small enough to enumerate. The published figures came
+    from 10,000 random draws, which is a Monte Carlo approximation to a quantity
+    that can simply be computed.
+
+    This matters for two reasons beyond accuracy. It removes the seed, so the
+    interval stops depending on a choice nobody defended. And it settles what
+    the interval IS: a complete description of a finite, enumerable set of
+    montage choices, not an inference from a sample to a population. That is why
+    no multiple-comparison correction applies across the ten muscles -- there is
+    no sampling distribution and no null hypothesis being rejected.
+    """
+    J = max(pv[e] for e in jaw)
+    d = np.array([20 * np.log10(J / max(pv[e] for e in s))
+                  for s in itertools.combinations(sorted(ear), len(CLUSTER))])
+    floor = 20 * np.log10(J / max(pv[e] for e in ear))
+    return d, float(floor)
+
+
 def draws_pervoxel(pv, jaw, ear, seed=SEED, n=N_DRAWS):
     """Resample electrodes only. The fibre field is fixed and already integrated
-    over voxels, so each site is one number."""
+    over voxels, so each site is one number. Retained to reproduce the published
+    Monte Carlo figures; `exact_pervoxel` supersedes it."""
     J = max(pv[e] for e in jaw)
     rng = np.random.default_rng(seed)
     d = np.array([20 * np.log10(J / max(pv[e] for e in
@@ -135,13 +158,14 @@ def main() -> int:
     for sset in itertools.combinations(admissible, len(CLUSTER)):
         dropped = (set(admissible) - set(sset)).pop()
         is_pub = tuple(sorted(sset)) == tuple(sorted(PUBLISHED_JAW))
-        for label, fn in (("pervoxel", draws_pervoxel),
+        for label, fn in (("pervoxel_EXACT", exact_pervoxel),
+                          ("pervoxel_montecarlo", draws_pervoxel),
                           ("perdirection_ROBUSTNESS_ONLY", draws_perdirection)):
-            src = pv if label == "pervoxel" else pd_
+            src = pd_ if label.startswith("perdirection") else pv
             d, floor = fn(src, list(sset), ear)
             r = dict(construction=label, jaw_set="+".join(sorted(sset)),
                      dropped=dropped, is_published_basis=is_pub,
-                     reported_in_manuscript=(label == "pervoxel"),
+                     reported_in_manuscript=(label == "pervoxel_EXACT"),
                      **summarise(d, floor),
                      argmax14_gap_dB=round(floor, 4),
                      n_draws=N_DRAWS, seed=SEED, n_ear_sites=len(ear),
@@ -175,7 +199,7 @@ def main() -> int:
 
     # ---- reproduction check against the published figures
     p = [r for r in rows if r["is_published_basis"]
-         and r["construction"] == "pervoxel"][0]
+         and r["construction"] == "pervoxel_montecarlo"][0]
     print(f"\n  REPRODUCTION CHECK against the published headline")
     ok = True
     for k, got, want in (("median", p["median_dB"], PUBLISHED["median"]),

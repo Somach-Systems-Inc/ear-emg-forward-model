@@ -504,7 +504,7 @@ Figure 5.
 and it does not clear the bar. Over the fibre field derived from the anatomy
 (§2.3.1) it reaches −1.147 dB at the pre-registered four-site cluster, with
 91.5 per cent of fibre directions agreeing — but its matched-count interval is
-**[−1.453, +5.458]** and only **50.2 per cent** of random four-site
+**[−1.453, +5.458]** and only **50.5 per cent** of the four-site
 retroauricular subsets favour the ear at all. Whether the ear wins for
 temporalis is decided by which four electrodes a device happens to carry, not
 by the anatomy.
@@ -517,17 +517,26 @@ source orientation is uniformly distributed over the sphere, which is the right
 default when fibre direction is unknown and the wrong one for a muscle whose
 fibres converge on a single identifiable insertion.
 
-The draws are taken at seed 0. For the derived fibre field the
-draw resamples electrodes alone, with the fibre orientation held fixed, so the
-resulting spread reflects site availability and nothing else. Temporalis gives a
-median gap of −1.147 dB with an interval of [−1.453, +5.458] dB, favouring the
-ear in 50.2 per cent of draws.
+**The interval is computed exactly, not sampled.** Fourteen candidate ear sites
+taken four at a time gives 1001 possible subsets, so every one is enumerated and
+the interval is a complete description of that set rather than an estimate from
+draws. It therefore carries no seed and no sampling error. For the derived fibre
+field the enumeration varies electrodes alone, with the fibre orientation held
+fixed, so the resulting spread reflects site availability and nothing else.
+Temporalis gives a median gap of −1.147 dB with an interval of
+[−1.453, +5.458] dB, favouring the ear in 50.5 per cent of subsets
+[`results/04p_headline_interval.csv`].
+
+This also fixes what the interval means. It is not an inference from a sample to
+a population, so there is no sampling distribution, no null hypothesis, and
+nothing for a multiple-comparison correction to act on across the ten muscles.
+It is a statement about which montages a device could physically carry.
 
 The lower bound of this interval is not a tail quantile. The most
-ear-favouring outcome of any 4-site draw is the best of all 14 sites, so
+ear-favouring outcome of any 4-site subset is the best of all 14 sites, so
 −1.453 dB is a floor fixed by the data rather than by sampling, and it is
-attained in 28.3 per cent of draws against the 28.6 per cent expected from draw
-size alone. It coincides with the argmax gap over all 14 sites, −1.453 dB, by
+attained in exactly the 28.6 per cent of subsets that contain that site, which is
+4/14 as expected from subset size alone. It coincides with the argmax gap over all 14 sites, −1.453 dB, by
 construction; the two figures are one measurement, not two that agree. The
 corresponding bound under the uniform orientation sweep, −3.308 dB, is a
 genuine percentile lying strictly above its own floor of −3.314 dB, which is
@@ -768,7 +777,10 @@ The material share is not a dose response. Across the muscles for which a
 layer profile exists, it correlates *negatively* with the adipose fraction of
 the muscle-to-skin path (Spearman ρ = −0.955, p = 0.001, n = 7): platysma sits
 at 0.650 fat fraction and 0.6 per cent material share, while
-sternocleidomastoid sits at 0.225 and 21 per cent. The strength of that
+sternocleidomastoid sits at 0.225 and 21 per cent. At n = 7 a single muscle could
+carry that relationship, so it was tested: dropping each muscle in turn leaves
+ρ between −0.928 and −0.986 and p below 0.01 in all seven cases
+[`results/04t_correlation_robustness.csv`]. The strength of that
 relationship shows the swap is measuring adipose path rather than something
 incidental, but its sign shows it does so through cancellation. The reported
 share is |Δgap| / |gap|, and a muscle embedded uniformly in fat has both the
