@@ -6,7 +6,7 @@ the committed tree before anything was changed — by reading `git show HEAD:<pa
 or by running the check against `HEAD`'s copy of the file, never against a
 worktree that a live process might have rewritten underneath the reader.
 
-Ordered by consequence. **Finding 5 is a RETRACTION** — it was written up as a
+Ordered by consequence. **Finding 6 is a RETRACTION** — it was written up as a
 finding, turned out to be something this repository had already measured and
 corrected, and is kept as a record of how that happened rather than deleted.
 
@@ -162,7 +162,74 @@ invites exactly the mistake made here.
 
 ---
 
-## 5. RETRACTED — mesh-realisation noise is already measured, and better
+## 4. `test_guard_coverage.py --strict` fails on a clean checkout
+
+The second red check at `f633865`. It names two solving scripts that run without
+the guard chain:
+
+```
+  FAILED
+    2 script(s) solve without their guards:
+
+      03g_fat_swap.py
+        MISSING: calibration (records the solver's own fields_summary.txt value)
+        MISSING: invariants 1 and 2 (radius plateau, magnitude, charge conservation)
+        MISSING: conductivity span gate (sigma_max/sigma_min)
+
+      03h_homog_scalp.py
+        MISSING: calibration
+        MISSING: invariants 1 and 2
+        MISSING: conductivity span gate
+```
+
+Verified pre-existing by running the check against a pristine `git archive main`
+checkout, not the working tree. The only changes made here to either file are
+one-word `encoding="utf-8"` additions.
+
+This matters more than the geometry test in finding 2, because **both scripts
+produce committed results that feed published analysis** — `results/03_fat_swap.csv`
+and `results/03_homog_scalp.csv`, consumed downstream by
+`04e_fat_contrast_statisticA.csv` and `04i_homog_scalp.csv`. Those solves ran
+without the calibration readback that caught both of this project's real solver
+failures (the σ_air 1e-15 conditioning failure at 200 %, and the neck-extended
+mesh leaking at ~100 %), and without the σ-span gate that exists precisely
+because an excessive span makes the iterative solver fail to converge *while
+still writing a result file*.
+
+Note the check itself is **not** defective: without `--strict` it prints FAILED
+and returns 0, which is the same deliberate convention `preflight.py` uses and is
+documented in its own docstring (`--strict  # non-zero exit blocks a run`).
+
+**Not fixed here.** Wiring the invariants into two solve paths is substantive
+work, not a mechanical edit: by this repository's own standard a guard is not
+trusted until it has been shown to fire in isolation, so adding the calls without
+also adding synthetic cases to `test_guards_fire.py` would produce exactly the
+unproven green tick `CLAUDE.md` warns about. Either wire them in properly, or add
+both scripts to `EXEMPT` with a reason that survives a reviewer — the same choice
+the check's own output offers.
+
+---
+
+## 5. Mac-only paths in executable code
+
+Three sites assumed a macOS layout and would fail anywhere else. All fixed here.
+
+| file | was | now |
+|---|---|---|
+| `src/03d_cavity_solves.py:47` | `ROOT=Path("/Users/carl/CODELocalProjects/ear-emg-forward-model")` | `Path(__file__).resolve().parent.parent`, the idiom at `config.py:9` |
+| `src/run_solves_parallel.py:26` | `Path.home()/"Applications/SimNIBS-4.6/bin/simnibs_python"` | `shutil.which()` first, then both platform defaults, mirroring `01_build_mesh.py` |
+| `src/01_build_mesh.py` | `meshmesh` fallback checked only the macOS install path | also checks `~/SimNIBS-4.6/bin/meshmesh.cmd` |
+
+The remaining `~/Applications/SimNIBS-4.6/...` references in other files are
+docstrings, and are left alone.
+
+**Not changed:** `run_solves_parallel.py` still carries `PEAK_RSS_GB = 10.8` and
+`TOTAL_RAM_GB = 48.0`. Those are measurements from the machine that took them.
+They should be re-measured per machine, not edited to taste.
+
+---
+
+## 6. RETRACTED — mesh-realisation noise is already measured, and better
 
 **This was written up as a finding. It is not one. Retained as a correction
 rather than deleted, because the way it went wrong is the useful part.**
@@ -224,20 +291,3 @@ unquantified noise undermining a headline number is more interesting than
 "independently reproduced a known floor", which is what actually happened.
 
 ---
-
-## 4. Mac-only paths in executable code
-
-Three sites assumed a macOS layout and would fail anywhere else. All fixed here.
-
-| file | was | now |
-|---|---|---|
-| `src/03d_cavity_solves.py:47` | `ROOT=Path("/Users/carl/CODELocalProjects/ear-emg-forward-model")` | `Path(__file__).resolve().parent.parent`, the idiom at `config.py:9` |
-| `src/run_solves_parallel.py:26` | `Path.home()/"Applications/SimNIBS-4.6/bin/simnibs_python"` | `shutil.which()` first, then both platform defaults, mirroring `01_build_mesh.py` |
-| `src/01_build_mesh.py` | `meshmesh` fallback checked only the macOS install path | also checks `~/SimNIBS-4.6/bin/meshmesh.cmd` |
-
-The remaining `~/Applications/SimNIBS-4.6/...` references in other files are
-docstrings, and are left alone.
-
-**Not changed:** `run_solves_parallel.py` still carries `PEAK_RSS_GB = 10.8` and
-`TOTAL_RAM_GB = 48.0`. Those are measurements from the machine that took them.
-They should be re-measured per machine, not edited to taste.
