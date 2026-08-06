@@ -61,13 +61,45 @@ Verified: `parse_lut` on the real MIDA LUT returns `'Skull Diploë'`, 116 labels
 no U+FFFD. `results/01_label_inventory.csv` regenerated with the fix is valid
 UTF-8 (`C3 AB`) and differs from the committed file by exactly one line.
 
+### Guarded
+
+`src/test_encoding_integrity.py` was added because **nothing in this repository
+could have caught this**. Two checks, each self-demonstrating before it reports:
+
+- `check_no_mojibake` — **correctness**. Scans every tracked text artifact for
+  the byte sequence `EF BF BD`. A grep for a rendered character cannot see this;
+  the bytes can.
+- `check_io_pinned` — **fidelity-only**, labelled as such. Proves every text read
+  and write declares an encoding. It cannot tell you the declared encoding is the
+  *right* one; `check_no_mojibake` is its correctness partner.
+
+The script refuses to give a verdict unless both checks have first fired on a
+synthetic known-bad input and passed on a clean control in the same run.
+
+### The write-only fix was a hazard, and this is worth recording
+
+Pinning writes without reads made Windows **worse**, not better. Once the
+inventory is written utf-8 (`C3 AB`), a bare `open()` reads it back as cp1252 and
+silently yields `Skull DiploÃ«` — a *new* corruption of the same class,
+introduced by fixing one direction. `build_table1.py` was doing exactly that read.
+
+Reads are now pinned too (49 sites, 28 files), which is safe because regenerating
+the inventory left **zero** tracked text files that are not valid utf-8.
+`build_table1.py`'s IT'IS read is the single deliberate exemption: that file is an
+external export whose encoding is not ours to assume, so it decodes utf-8 then
+falls back to latin-1.
+
+**A half-applied encoding fix is worse than none.** Both directions or neither.
+
 ### Still outstanding
 
 **The two Table 1 artifacts are not fixed.** `build_table1.py` needs
 `data/itis/itis_lf_v4.2_conductivity.csv` — the IT'IS LF v4.2 export, DOI
 10.13099/VIP21000-04-2 — which is not in the repository and must come from the
 IT'IS SQLite database. Table 1 cannot be regenerated without it. The code path is
-fixed; the published artifacts still carry the bad character.
+fixed; the published artifacts still carry the bad character, and
+`test_encoding_integrity.py` **stays red until they are rebuilt** rather than
+being loosened to pass.
 
 ---
 
