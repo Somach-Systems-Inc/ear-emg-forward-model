@@ -56,6 +56,11 @@ MESH = config.DATA / "mida_headneck.msh"
 OUT_CSV = config.RESULTS / "03_leadfields.csv"
 WORKDIR = config.RESULTS / "leadfields"
 CALIB_LOG = config.RESULTS / "03_leadfield_calibration.csv"
+# paired_invariants() had this inline. It has to be a module-level name like the
+# others, or --workdir redirects the solve directories and the summary CSV while
+# this one keeps overwriting the committed results/03_paired_invariants.csv --
+# which is exactly what happened the first time --workdir was used.
+PAIRED_CSV = config.RESULTS / "03_paired_invariants.csv"
 
 # MIDA's inferior cut face. Reported per electrode so a reader can see
 # truncation exposure per site instead of taking it on trust.
@@ -271,7 +276,7 @@ def paired_invariants(pos, sigma, targets, condition="iso"):
                 lambda: SI.check_reciprocity_symmetry(base_msh, ms, pts))
         rows.append(row)
 
-    out_csv = config.RESULTS / "03_paired_invariants.csv"
+    out_csv = PAIRED_CSV
     with out_csv.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
@@ -290,6 +295,10 @@ def append_row(path: Path, row: dict, fieldnames):
 
 
 def main(argv=None) -> int:
+    # Declared up front because the --workdir/--out help strings interpolate
+    # these names, and a `global` after any use of them is a SyntaxError.
+    global WORKDIR, OUT_CSV, CALIB_LOG, PAIRED_CSV
+
     ap = argparse.ArgumentParser(prog="03_leadfields.py")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--conditions", nargs="+", default=["iso"],
@@ -304,7 +313,33 @@ def main(argv=None) -> int:
                          "batch. Names must exist in 02_electrode_positions.csv "
                          "and must not be the reference. Does NOT change the "
                          "default: omit it and every target is solved.")
+    ap.add_argument("--workdir", type=Path, default=None,
+                    help=f"solve directory (default: {WORKDIR}). Every val_*.py "
+                         f"harness already takes one; this did not, so a timing "
+                         f"or re-measurement run had no way to avoid CLEARING "
+                         f"the committed solves under results/leadfields/.")
+    ap.add_argument("--out", type=Path, default=None,
+                    help=f"results CSV (default: {OUT_CSV})")
+    ap.add_argument("--calib-log", type=Path, default=None,
+                    help=f"calibration log (default: {CALIB_LOG})")
     a = ap.parse_args(argv)
+
+    # Rebind the module-level destinations so the helpers that read them write
+    # to the redirected tree too. Redirecting only main() would leave
+    # paired_invariants() still clearing the committed directories.
+    if a.workdir is not None:
+        WORKDIR = a.workdir
+    if a.out is not None:
+        OUT_CSV = a.out
+    if a.calib_log is not None:
+        CALIB_LOG = a.calib_log
+    if a.out is not None:
+        # keep the paired-invariant summary beside the redirected results,
+        # never back in results/ where the committed copy lives
+        PAIRED_CSV = OUT_CSV.parent / "03_paired_invariants.csv"
+    if a.workdir is not None or a.out is not None or a.calib_log is not None:
+        print(f"redirected: workdir={WORKDIR}  out={OUT_CSV}  calib={CALIB_LOG}\n"
+              f"            paired={PAIRED_CSV}")
 
     if not MESH.exists():
         print(f"ERROR: missing mesh {MESH}", file=sys.stderr)

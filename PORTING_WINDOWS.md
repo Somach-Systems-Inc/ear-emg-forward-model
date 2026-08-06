@@ -197,21 +197,79 @@ validation.
 
 One sphere solve is roughly 9.4 s and 0.67 GB peak.
 
-### Not yet measured
+### The production workload
 
-The numbers above are the **sphere validation only**. The production workload —
-building `mida_headneck.msh` from MIDA and solving a leadfield on it — is a
-different scale and is not characterised here yet. Do not extrapolate from the
-sphere: the head mesh is roughly 20× the element count.
+The full-configuration mesh **cannot be built from a clean checkout**: 8 of 18
+muscles are pooled in MIDA labels 38/42 awaiting hand sub-segmentation
+(`config.py:200-231`), and `01_build_mesh.py` correctly refuses without
+`--skip-label-check`. Everything below used the provisional mesh that flag
+produces — **complete geometry, provisional muscle mapping**. Valid for timing
+and memory. **No sensitivity number from it is valid.**
 
-Partial figure, for the mesh build only: on this machine `01_build_mesh.py` was
-still running past 38 minutes with a peak of 9.15 GB, having spent 6:49 on
-preparation and 6:10 on meshing before entering post-processing. That is a
-lower bound, not a result.
+**Mesh build** — `01_build_mesh.py --label-volume … --skip-label-check`:
 
-Note also that the full-configuration mesh **cannot be built from a clean
-checkout**: 8 of 18 muscles are pooled in MIDA labels 38/42 awaiting hand
-sub-segmentation (`config.py:200-231`), and `01_build_mesh.py` correctly refuses
-without `--skip-label-check`. The provisional mesh that flag produces has
-complete geometry but provisional muscle mapping, so it is valid for timing and
-memory measurement and **not** for any sensitivity result.
+| | |
+|---|---|
+| wall clock | **68.73 min** (prep 6:49, mesh 6:10, post-process **55:35**) |
+| peak RSS | **9.150 GB** |
+| min system free during build | 38.08 GB |
+| remeshing passes | 17,176,324 → 13,179,716 → **12,587,663** tets |
+
+Post-processing is 81 % of the build. SimNIBS warns `Anisotropic image, meshing
+may contain extra artifacts` — MIDA voxels are 0.5 × 0.5 × 0.499916 mm.
+
+**The mesh**: 489.8 MB · 2,190,582 nodes · 15,754,325 elements
+(12,587,663 tets + 3,166,662 triangles) · 211 tags · mean h 0.7983 mm.
+That matches the "12.3M-tet MIDA mesh" `run_solves_parallel.py` cites.
+
+**Loading it**: `read_msh` 0.67 s, **1.450 GB peak**.
+
+**One leadfield solve** (`pre_tragus`, iso, against `earlobe_contra`):
+
+| | |
+|---|---|
+| wall clock, that solve | **207.4 s = 3.46 min** |
+| peak RSS | **8.711 GB** |
+| solver time within it | 25.6 s (KSP setup 6.5 s) |
+| calibration error | 4.2 % → 2.1 % per interface, inside the 10 % gate |
+| guards | calibration clean · inv1 mean 1.0187, CV 0.55 % · inv2 net −0.0001 |
+| paired invariants | linearity 0.000e+00 · reciprocity 3.193e-06 |
+
+**Read the peak carefully.** 8.711 GB is the high-water mark of a run that solved
+three times — the target plus the `__2x` and `__swap` solves the paired
+invariants require — and that comparison holds two result meshes at once. It is
+an **upper bound** on a solitary solve, not a measurement of one. The invocation
+took 19.16 min total: 10.20 min in the three solves, 8.96 min in mesh loading,
+field extraction and invariant sampling.
+
+### Versus the Mac
+
+| | Mac (recorded) | this machine |
+|---|---|---|
+| RAM per solve | 12 GB | **8.711 GB** (−27 %) |
+| wall clock per solve | 5.5 min | **3.46 min** (−37 %) |
+
+### How many solves fit in 62 GB
+
+Measured, not assumed: baseline (OS, apps, ollama idle) = 61.61 − 38.96 − 8.711
+= **13.94 GB**.
+
+The answer depends entirely on which model ollama has resident. Anything up to
+~25 GB fits in the 5090's 32 GB VRAM and costs ~0 system RAM;
+`Llama-3.3-70B-Q4_K_M` (39.6 GB) exceeds VRAM and partial-offloads ~10–15 GB into
+system RAM.
+
+| ollama system RAM | free for FEM | concurrent solves at 8.711 GB |
+|---|---|---|
+| 0 GB (≤25 GB model, or idle) | 47.67 GB | **5** |
+| 10 GB | 37.67 GB | 4 (3 with 4 GB headroom) |
+| 15 GB (70B loaded) | 32.67 GB | **3** |
+
+`run_solves_parallel.py`'s own defaults (`TOTAL_RAM_GB = 48`,
+`PEAK_RSS_GB = 10.8`) would pick **3** workers here. That is conservative but not
+wrong, and those constants are deliberately left as the measurements they are —
+they should be re-measured per machine, not edited to taste.
+
+**No parallel run was started.** These are arithmetic from one measured solve;
+memory bandwidth contention across concurrent solves is not captured and would
+have to be measured separately.
