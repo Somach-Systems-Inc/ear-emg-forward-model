@@ -325,7 +325,10 @@ suprahyoid and tongue muscles. And each axis must pass a bilateral
 mirror-symmetry test: MIDA assigns one label to both sides of a paired muscle,
 so PCA on the pooled voxel cloud returns the left–right separation between the
 two bellies rather than the fibre direction along either. Axes are therefore
-computed per side and required to be mirror images in x. Sternocleidomastoid
+computed per side and required to be mirror images in x. Three compartments were
+tested against it, that being the entire population which is both individually
+segmented and PCA-defensible; it is not a gate the remaining seven passed.
+Sternocleidomastoid
 passes at |dot| = 0.98 and medial pterygoid at 1.000; mentalis fails at 0.215,
 its two fragments having a right-side elongation ratio of 1.07, so no long axis
 exists to find, and it receives no tensor.
@@ -364,8 +367,10 @@ spanning radii 20–75 mm, median RDM is 4.36 % and median MAG +4.40 %. This is
 the only layer that can detect a uniform scale error, since no invariant
 computed on the head mesh can: multiplying every field value by a constant
 leaves flux radius-independence, boundary conservation, linearity and
-reciprocity symmetry all satisfied. The sphere is therefore a permanent
-pre-flight gate rather than a one-time result.
+reciprocity symmetry all satisfied. Both figures are reported as validation
+results. No pass criterion is stated, because none was fixed before the values
+were computed and supplying one now would be a threshold chosen to admit the
+numbers it is meant to test.
 
 **Reciprocity on the head mesh.** The identity is verified on the real geometry
 by solving a montage and its polarity-swapped counterpart and requiring
@@ -410,6 +415,12 @@ exactly in every ratio and cannot reach a conclusion. A term that varies between
 sites survives into all of them. Table 3 is split into two columns on exactly
 that distinction, and terms are admitted to the second column only when shown to
 vary per site.
+
+Four rows are admitted on a second and different basis, and the table marks them
+as such. Terms 1, 2, 3 and 7 are known to act on the ratio directionally but are
+not quantifiable at current precision, so they carry no value. Admitting them
+records that they are unresolved rather than absent; it does not claim a
+magnitude. The rule above is unchanged, and these rows do not satisfy it.
 
 The distinction is not cosmetic. Electrode contact area would naturally be
 treated as a global scale factor; it is not, because each electrode's contact is
@@ -937,6 +948,24 @@ and stated for completeness.
 of ten segmented muscles, and rows without one are reported as not applied
 rather than as zero change.
 
+**The orientation constraint is derived for one muscle and assumed for nine.**
+The anatomically-constrained sweep of §2.5.1 derives a per-voxel fibre field for
+temporalis from its insertion geometry. The other nine articulators are swept
+uniformly over the hemisphere, which assumes source orientation is uniformly
+distributed for each of them. That assumption is stated once and inherited
+throughout, and it is the same assumption the temporalis derivation was built to
+remove. Deriving nine further fibre fields is outside this study; any muscle with
+an identifiable bony insertion admits the same construction.
+
+**One jaw site is withheld, and its omission runs against the reported jaw
+advantage.** `throat_scm` carries no coordinate because MIDA's
+sternocleidomastoid is truncated by the inferior cut plane, which biases its
+centroid posteriorly, so no defensible automatic placement exists (§2.3). It is
+the jaw site nearest the ear montage, so a jaw montage carrying it would be
+compared from a position closer to the retroauricular sites than any jaw site
+actually used. The direction of that omission is toward a smaller jaw advantage
+than is reported.
+
 ---
 
 ## Tables
@@ -974,13 +1003,13 @@ survives into all of them.
 
 | # | Term | What sets it | Affects absolute | Affects ratios | Value |
 |---|---|---|---|---|---|
-| 1 | Discretisation | finite element size | yes | partly | not separable from term 6 at current precision |
-| 2 | Interface proximity | source near a conductivity boundary | yes | yes | requires a geometry decoupling eccentricity from interface distance; not measured |
-| 3 | Inferior boundary | MIDA's cut face | yes | yes — jaw sites, not ear | unquantified; bounded by §3.4 |
+| 1 | Discretisation | finite element size | yes | partly — directional, unquantified | not separable from term 6 at current precision |
+| 2 | Interface proximity | source near a conductivity boundary | yes | yes — directional, unquantified | requires a geometry decoupling eccentricity from interface distance; not measured |
+| 3 | Inferior boundary | MIDA's cut face | yes | yes — jaw sites, not ear; directional, unquantified | unquantified; bounded by §3.4 |
 | 4 | Muscle anisotropy | σ tensor vs scalar | **yes — ~5 dB in medial pterygoid, ~4.5 dB in SCM** | **no — below the floor** | statistic A: largest change to any gap is **−0.085 dB** (SCM); medial pterygoid −0.010, temporalis +0.137, lateral pterygoid +0.036, all under the 0.27 dB floor. The absolute lead field IS affected; the reclassification is specific to ratios. Tensor on 2 of 10 compartments, the rest NOT APPLIED |
 | 5 | Fibre orientation | n̂ unknown in MIDA | yes | yes | per-muscle min–max envelope |
 | 6 | Electrode meshing | contact area from incidental surface triangulation | yes | **yes — per-site** | **0.27 dB, 95 % CI [0.17, 0.65], n = 6** |
-| 7 | Single anatomy | MIDA is one subject | yes | unknown | not quantifiable from one head |
+| 7 | Single anatomy | MIDA is one subject | yes | unknown — directional, unquantified | not quantifiable from one head |
 | 8 | Delivered current | injected vs requested per solve | yes | **no — corrected, not bounded** | 0.887–1.075 × requested across 22 solves, measured per solve by the tet-patch integral. Each site's lead field is divided by its own delivered current (§2.4), so the term does not enter any reported ratio. It is listed here because it was measured and corrected, not because it remains an uncertainty: the 1.67 dB spread it would otherwise contribute is six times the row-6 floor and could not have been bounded by it |
 | 9 | Adipose conductivity | fat at 0.025 vs muscle 0.355 S/m | yes | **yes — and the SIGN differs by muscle** | Reported **per muscle only** — a population differential across sites has no clean definition under statistic A (the median change over muscles is +0.01 dB and conceals a sign that spans −2.86 to +1.09). Statistic A, per muscle, sign varies: **−1.121 dB** for temporalis (acts against the gap), **+0.411 dB** for sternocleidomastoid and **+0.323 dB** for lateral pterygoid (act with it), **−2.863 to +1.093 dB** across the labial group. No single figure is admissible — the sign differs by muscle. Shares are not quoted here because they are dominated by the denominator; see §4.3. |
 
