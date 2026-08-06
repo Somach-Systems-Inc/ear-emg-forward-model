@@ -4627,6 +4627,28 @@ its decision per compartment. Logged, not fixed.
 
 ## 2026-08-06 — the cut plane does not exist
 
+> **RETRACTED 2026-08-05, IN ITS CONCLUSION BUT NOT ITS DATA.** The heading is
+> false. The mesh **does** have a planar inferior face: 18,818 boundary triangles
+> fitting a plane at 0.0726 mm residual RMS, whose normal matches MIDA's own voxel
+> superior axis — read from the NIfTI affine, which the fit never sees — to
+> 0.002570°. **§2's original geometry description was correct, and "correcting" it
+> would have introduced an error.**
+>
+> Every node count below is real. The inference from them was not. The test binned
+> all 2.1M node S-coordinates, and a plane tilted 2.664° across a 180 mm lateral
+> extent is smeared over 11.9 mm of S *by construction*, while ~4,000 interior
+> nodes per mm bin swamp the ~12,000 forming the entire face. The smooth taper
+> recorded below is exactly what a tilted plane produces under that test. In the
+> plane's own frame 12,001 nodes lie within 0.25 mm of it, against the 921 within
+> 0.25 mm of S = −116.2 that this entry calls unremarkable.
+>
+> This is the fifth instance of the shape this log keeps recording: a real check
+> returning a true fact that does not support the conclusion drawn from it. It is
+> the first where the error would have been a *correction*.
+>
+> Superseded by the 2026-08-05 entries below. `-116.2` is retired from all seven
+> files and the plane is derived by `01d_derive_cut_plane.py`.
+
 `-116.2` governs the near-cut exclusion set. It is a bare literal,
 `CUT_FACE_S = -116.2`, in `02c_placement_acceptance.py:45`.
 
