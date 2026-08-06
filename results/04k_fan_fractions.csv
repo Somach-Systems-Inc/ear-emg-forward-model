@@ -1,0 +1,9 @@
+# Fraction of the DERIVED temporalis fibre fan favouring the ear.
+# basis=cluster is the reported one. The manuscript pairs this
+#   with the unconstrained orientation agreement from 04q, which
+#   is ALSO cluster basis. Pairing across bases is statistic B.
+# pct_fan_conditional is the complement: the share of the fan
+#   on which the montage preference is conditional.
+muscle,basis,n_fan_directions,pct_fan_favouring_ear,pct_fan_conditional,median_gap_dB,ear_sites,jaw_sites
+temporalis,cluster,200,91.5,8.5,-1.2297,above_ear+mastoid+post_lobule+pre_tragus,buccal+mental+midjaw+submaxillary
+temporalis,argmax14,200,99.5,0.5,-3.2832,above_ear+cg01+cg02+cg03+cg04+cg05+cg06+cg07+cg08+cg09+cg10+mastoid+post_lobule+pre_tragus,buccal+mental+midjaw+submaxillary

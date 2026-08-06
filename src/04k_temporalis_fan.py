@@ -45,7 +45,67 @@ NEAR_CUT = {"hyoid", "submental_lat", "submental_mid"}
 CLUSTER = ["above_ear", "mastoid", "post_lobule", "pre_tragus"]
 
 
+def emit_fan_fractions(pv, pd_, mont, out=None):
+    """Write the fan fractions this script previously only PRINTED.
+
+    `8.5 %` reached §2.5.1 and was correct to the decimal, but existed in no
+    results file. **A correct number with no file is invisible to a
+    source-to-prose check in exactly the way an orphan is**, which is a distinct
+    failure mode from -3.724 and -5.06 and is why this emitter exists.
+
+    BASIS IS RECORDED EXPLICITLY. Reporting a cluster-basis fraction beside an
+    argmax-14 one is the statistic-B pairing that produced the line-608 defect,
+    and a basis question has now cost two halts. Do not drop the column.
+    """
+    import csv as _csv
+    out = out or (config.RESULTS / "04k_fan_fractions.csv")
+    jaw = [e for e in pv if mont[e] == "jaw" and e not in NEAR_CUT]
+    ear14 = [e for e in pv if mont[e] in ("ear", "ceegrid")]
+    rows = []
+    for basis, ear in (("cluster", CLUSTER), ("argmax14", ear14)):
+        J = np.max(np.stack([pd_[e] for e in jaw]), axis=0)
+        R = np.max(np.stack([pd_[e] for e in ear]), axis=0)
+        gd = 20 * np.log10(J / R)
+        rows.append(dict(
+            muscle="temporalis", basis=basis, n_fan_directions=len(gd),
+            pct_fan_favouring_ear=round(100 * float((gd < 0).mean()), 1),
+            pct_fan_conditional=round(100 * float((gd >= 0).mean()), 1),
+            median_gap_dB=round(float(np.median(gd)), 4),
+            ear_sites="+".join(sorted(ear)), jaw_sites="+".join(sorted(jaw)),
+        ))
+    with open(out, "w", newline="") as fh:
+        fh.write("# Fraction of the DERIVED temporalis fibre fan favouring the ear.\n")
+        fh.write("# basis=cluster is the reported one. The manuscript pairs this\n")
+        fh.write("#   with the unconstrained orientation agreement from 04q, which\n")
+        fh.write("#   is ALSO cluster basis. Pairing across bases is statistic B.\n")
+        fh.write("# pct_fan_conditional is the complement: the share of the fan\n")
+        fh.write("#   on which the montage preference is conditional.\n")
+        w = _csv.DictWriter(fh, fieldnames=list(rows[0]))
+        w.writeheader(); w.writerows(rows)
+    print(f"\nwrote {out.name}")
+    for r in rows:
+        print(f"  {r['basis']:<9} {r['pct_fan_favouring_ear']:>5.1f} % favour the ear, "
+              f"{r['pct_fan_conditional']:>4.1f} % conditional")
+    return rows
+
+
+def reduce_only() -> int:
+    """Re-emit the fractions from the saved arrays. No mesh reads, no solve."""
+    import pandas as pd
+    pv = {r["electrode"]: float(r["lf_pervoxel_fan"]) for r in
+          __import__("csv").DictReader(
+              open(config.RESULTS / "04k_temporalis_pervoxel.csv"))}
+    pd_ = np.load(config.RESULTS / "04k_temporalis_perdirection.npz")
+    mont = pd.read_csv(config.RESULTS / "03_leadfields.csv").set_index(
+        "electrode").montage.to_dict()
+    emit_fan_fractions(pv, pd_, mont)
+    return 0
+
+
 def main() -> int:
+    import sys as _sys
+    if "--reduce-only" in _sys.argv:
+        return reduce_only()
     import nibabel as nib, pandas as pd
     from scipy.spatial import cKDTree
     from simnibs import mesh_io
@@ -114,6 +174,8 @@ def main() -> int:
                  ).to_csv(config.RESULTS / "04k_temporalis_pervoxel.csv", index=False)
     np.savez(config.RESULTS / "04k_temporalis_perdirection.npz", **pd_)
     print(f"wrote 04k_temporalis_pervoxel.csv and _perdirection.npz")
+
+    emit_fan_fractions(pv, pd_, mont)
 
     jaw = [e for e in pv if mont[e] == "jaw" and e not in NEAR_CUT]
     print("\n=== TEMPORALIS OVER THE DERIVED FAN ===")

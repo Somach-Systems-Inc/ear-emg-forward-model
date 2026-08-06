@@ -5361,3 +5361,48 @@ Recomputed from `results/04k_temporalis_perdirection.npz`, **no solve**: over th
 200 sampled fan directions, 91.5 % favour the ear and **8.5 %** do not. The
 published figure is exact. It is not emitted to any results file, which is the
 only reason it counted as unsourced.
+
+---
+
+## 2026-08-06 — §2.5.1 anchored at cluster basis. A correct number with no file.
+
+Ruled: cluster basis, 92.0 %. The argmax-14 figures are what the matched-count
+design exists to reject, so quoting one beside a cluster-basis gap is the
+statistic-B pairing that produced the line-608 defect. The 91.5 / 8.5 pair is
+itself computed at cluster, so 92.0 with 8.5 compares two fractions on one basis
+while 94.0 with 8.5 would compare across bases inside a single clause.
+
+**The emit settles it far more decisively than the argument did.** Over the same
+200 fan directions:
+
+| basis | favouring the ear | conditional |
+|---|---|---|
+| cluster | 91.5 % | **8.5 %** |
+| argmax-14 | 99.5 % | **0.5 %** |
+
+A seventeen-fold difference in the reported quantity, from the basis alone. Both
+are now emitted to `results/04k_fan_fractions.csv` **with an explicit `basis`
+column**, because a basis question has now cost two halts.
+
+### The failure mode this one belongs to, which is not the orphan class
+
+`8.5 %` was **never wrong**. It was exact to the decimal, and it recomputes from
+`04k_temporalis_perdirection.npz` with no solve. It counted as unsourced only
+because `04k` printed it and never wrote it.
+
+That is distinct from `−3.724` (correct, unstored, and misread as wrong) and from
+`−5.06` (a quantity that never existed). Name it separately: **a correct number
+with no file is invisible to a source-to-prose check in exactly the way an orphan
+is.** The check cannot tell them apart, because the check compares prose to files
+and the number is in neither. Printing is not emitting.
+
+`04k_temporalis_fan.py` now writes what it used to print, and gains a
+`--reduce-only` mode that re-emits from the saved arrays without re-reading
+twenty gigabytes of result meshes.
+
+### Standing practice, adopted
+
+**Strip a figure from the prose while its provenance is unsettled, rather than
+leaving it in place pending a ruling.** `−3.724` and `−5.06` both survived
+multiple passes because each read as plausible while unverified. A removed number
+is visible; an unverified one is not.

@@ -350,12 +350,16 @@ measured — from the comparison.
 An unconstrained orientation fraction is conservative to the point of being
 misleading, because orientation space is not uniformly reachable. Temporalis
 demonstrates this: the directions that reverse the montage preference lie outside
-the anatomical fan entirely, so an unconstrained fraction understates a result
-that is conditional on fibre direction over only part of the derived fan. We
-therefore sweep the hemisphere first and intersect with the anatomically
-permitted set wherever one can be established, reporting the unconstrained
-fraction alongside so the constraint is visible rather than implicit. That
-intersection is available for temporalis alone; §4.7 states where it is not.
+the anatomical fan entirely, so an unconstrained 92 % understates a result that is
+conditional on fibre direction over only 8.5 % of the derived fan. Both fractions
+are taken at the pre-registered cluster [`results/04q_table4_envelope.csv`,
+`results/04k_fan_fractions.csv`]; the same fan read against all fourteen ear sites
+gives 0.5 %, and pairing fractions across those two bases would compare different
+comparisons. We therefore sweep the hemisphere first and intersect with the
+anatomically permitted set wherever one can be established, reporting the
+unconstrained fraction alongside so the constraint is visible rather than
+implicit. That intersection is available for temporalis alone; §4.7 states where
+it is not.
 
 ### 2.6 Validation
 
