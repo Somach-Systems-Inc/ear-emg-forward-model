@@ -121,7 +121,8 @@ def preprocess(md: str) -> tuple[str, list[str]]:
     title = lines[0].lstrip("# ").strip()
     body_start = next(i for i, l in enumerate(lines) if l.strip() == "---")
     author_block = [l for l in lines[1:body_start] if l.strip()]
-    author = " \\\\ ".join(l.replace("**", "").strip() for l in author_block)
+    author_lines = [l.replace("**", "").strip() for l in author_block]
+    author = "AUTHORBLOCK"
     md = "\n".join(lines[body_start + 1:])
 
     # 4. figures: caption paragraph -> float with the vector PDF
@@ -149,7 +150,7 @@ def preprocess(md: str) -> tuple[str, list[str]]:
         md = md[:m.start()] + f"@@FIG{n}@@" + md[m.end():]
         placed.append((f"@@FIG{n}@@", block, n))
     notes.append(f"placed {len(placed)} of {len(FIGURES)} figures")
-    return md, (title, author, placed, notes)
+    return md, (title, author_lines, placed, notes)
 
 
 def latex_escape(s: str) -> str:
@@ -181,7 +182,7 @@ def main() -> int:
         if src.exists():
             shutil.copy2(src, BUNDLE / fn)
     md = SRC.read_text()
-    md, (title, author, placed, notes) = preprocess(md)
+    md, (title, author_lines, placed, notes) = preprocess(md)
 
     stage_md = STAGE / "body.md"
     stage_md.write_text(md)
@@ -197,7 +198,7 @@ def main() -> int:
            "--top-level-division=section",
            "-V", "documentclass=article", "-V", "fontsize=11pt",
            "-V", "geometry:margin=1in", "-V", "colorlinks=true",
-           "-M", f"title={title}", "-M", f"author={author}",
+           "-M", f"title={title}", "-M", "author=AUTHORBLOCK",
            "-M", "date=", "-H", str(pre), "-o", str(TEX)]
     print("$ " + " ".join(cmd[:8]) + " ...")
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -206,6 +207,15 @@ def main() -> int:
         return 1
 
     tex = TEX.read_text()
+    # pandoc escapes metadata, so a literal backslash-backslash reaches the page
+    # and the author line overruns the text block. Substitute a real multi-line
+    # \author{}. A LaTeX line break is exactly two backslashes; re.sub also
+    # interprets backslashes in the replacement, so pass a function to bypass
+    # that rather than counting escapes.
+    real = "\\author{" + " \\\\ ".join(author_lines) + "}"
+    tex = re.sub(r"\\author\{[^}]*\}", lambda _m: real, tex, count=1)
+    tex = re.sub(r"pdfauthor=\{[^}]*\}",
+                 "pdfauthor={" + author_lines[0] + "}", tex, count=1)
     # splice the figure floats back in
     for token, block, n in placed:
         if token not in tex:
