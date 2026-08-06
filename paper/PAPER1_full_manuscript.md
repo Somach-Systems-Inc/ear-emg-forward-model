@@ -642,9 +642,10 @@ montage preference. Eight of ten gap magnitudes move by more than the 0.27 dB
 floor, with a median shift of 0.482 dB and a maximum of 3.271 dB (mentalis).
 
 The direction is not uniform. Temporalis's retroauricular advantage *grows*
-under the homogeneous conductor, from −2.571 to −3.724 dB at the pre-registered cluster, so the anatomically
-resolved model reports that result more conservatively than a simpler one
-would. Sternocleidomastoid and lateral pterygoid move the other way.
+under the homogeneous conductor, from −2.571 to −3.724 dB at the pre-registered
+cluster [`results/04r_homog_cluster.csv`], so the anatomically resolved model
+reports that result more conservatively than a simpler one would.
+Sternocleidomastoid and lateral pterygoid move the other way.
 
 This locates what the detailed conductor is required for. The question of
 which montage sees which muscle is answerable without it. The question of by

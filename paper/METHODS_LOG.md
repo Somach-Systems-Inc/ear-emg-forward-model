@@ -5113,3 +5113,57 @@ still holds single-subset point values and the file supplies no body and names n
 generator for one. Applying the caption alone would make the caption false about
 its own table, which is the §3.4 defect in a new place. Halted and reported; no
 part applied.
+
+---
+
+## 2026-08-05 — −3.724 was correct, and the framing that called it broken was not
+
+Class-3 heading, seventh instance, and the **second where the proposed correction
+was itself the error**.
+
+### The number is right
+
+§3.5's *"from −2.571 to −3.724 dB at the pre-registered cluster"* reproduces at
+**−2.5710 and −3.7237**. Both are cluster-basis. The pairing is correct. The only
+defect was that no file stored the second value, which `04r_homog_cluster.py` now
+does.
+
+### HANDOFF's "basis mismatch" framing was wrong
+
+`HANDOFF.md` §3 recorded line 608 as pairing `04h`'s cluster gap with a
+homogeneous value "that exists in no results file", and inferred a **basis
+mismatch** because `04i_homog_scalp.csv` gives −3.3145 → −4.3299. Those are
+argmax-14 values, so the inference was reasonable and wrong: the manuscript was
+never using `04i`. It was quoting a cluster-basis number nobody had saved.
+
+`RULING_line608.md` then proposed **replacing correct text** on the strength of
+that framing. It is withdrawn for an unrelated reason (its precondition was never
+written), but it would have been wrong even had the precondition held. A missing
+source was read as a wrong number.
+
+### The control is the finding, not the number
+
+The two per-direction stores are normalised differently and nothing says so:
+`04d_orientation_sign.npz` is already divided by delivered current (04d line 123);
+`03_homog_scalp_per_direction.npz` is not.
+
+Reducing both alike reproduced the detailed values exactly (argmax-14 −3.3145,
+cluster −2.5710) and **both** homogeneous values wrongly: −4.8123 against `04i`'s
+−4.3299, and **−3.6722** for the unknown.
+
+**−3.6722 is wrong by 0.05 dB.** Against a published −3.724 that reads as a
+rounding difference, and reporting it would have made a correct sentence look
+defective enough to rewrite. It was withheld because a reduction that fails to
+reproduce two of four known values cannot be trusted for the fifth, whatever the
+fifth looks like. Applying the renormalisation reproduces `04i`'s −4.3299 exactly
+and yields −3.7237.
+
+Recorded as the rule: **a partial control failure disqualifies the unknown. It is
+not noise to be reported alongside a caveat.**
+
+### Also closed
+
+`04i_homog_scalp.csv` now carries an explicit `basis` column (`argmax14`) and a
+header naming `04r` as the cluster-basis source, which closes the outstanding
+thread-1 ruling. Its values are unchanged. It still has no generating script; that
+is unfixed and separate.

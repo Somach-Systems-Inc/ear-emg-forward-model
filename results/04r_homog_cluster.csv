@@ -1,0 +1,9 @@
+# Homogeneous-conductor control for temporalis at the
+# PRE-REGISTERED CLUSTER basis. This is the source for the
+# -2.571 -> -3.724 pair in section 3.5.
+# NOT interchangeable with 04i_homog_scalp.csv, which is
+#   argmax-14 basis. Differencing across bases is statistic B.
+# The two per-direction stores are normalised DIFFERENTLY:
+#   04d is already divided by delivered current; 03h is not.
+muscle,basis,cluster_sites,jaw_sites,gap_detailed_dB,gap_homog_dB,change_dB,detailed_source,homog_source,renormalisation,statistic
+temporalis,cluster,above_ear+mastoid+post_lobule+pre_tragus,buccal+mental+midjaw+submaxillary,-2.571,-3.7237,-1.1527,"results/04d_orientation_sign.npz (already renormalised, 04d:123)",results/03_homog_scalp_per_direction.npz,"inv1_mean, condition=iso, results/03_leadfields.csv",A: median over orientations of the per-orientation gap

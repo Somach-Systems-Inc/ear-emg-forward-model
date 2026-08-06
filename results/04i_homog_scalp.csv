@@ -1,11 +1,18 @@
-muscle,gap_detailed,gap_homog,change_dB,sign_flip
-temporalis,-3.3145,-4.3299,-1.0153,False
-sternocleidomastoid,-1.4023,-1.0197,0.3826,False
-lateral_pterygoid,-1.6788,-1.0968,0.582,False
-medial_pterygoid,1.1412,1.5193,0.3781,False
-masseter,1.5718,1.5397,-0.032,False
-orbicularis_oris,7.9771,9.0306,1.0534,False
-buccinator,9.2402,9.5964,0.3563,False
-mentalis,20.8976,17.6266,-3.271,False
-depressor_anguli_oris,13.7803,13.1312,-0.6492,False
-platysma,8.8736,9.0992,0.2256,False
+# BASIS: argmax-14. Every gap here maximises over all 14 ear
+#   candidate sites. These values are NOT interchangeable with
+#   cluster-basis numbers, and differencing across the two bases
+#   is the statistic-B error.
+# For the PRE-REGISTERED CLUSTER basis, which is what section 3.5
+#   quotes, see results/04r_homog_cluster.csv (script 04r).
+# Values below are unchanged; only the basis column was added.
+muscle,gap_detailed,gap_homog,change_dB,sign_flip,basis
+temporalis,-3.3145,-4.3299,-1.0153,False,argmax14
+sternocleidomastoid,-1.4023,-1.0197,0.3826,False,argmax14
+lateral_pterygoid,-1.6788,-1.0968,0.582,False,argmax14
+medial_pterygoid,1.1412,1.5193,0.3781,False,argmax14
+masseter,1.5718,1.5397,-0.032,False,argmax14
+orbicularis_oris,7.9771,9.0306,1.0534,False,argmax14
+buccinator,9.2402,9.5964,0.3563,False,argmax14
+mentalis,20.8976,17.6266,-3.271,False,argmax14
+depressor_anguli_oris,13.7803,13.1312,-0.6492,False,argmax14
+platysma,8.8736,9.0992,0.2256,False,argmax14
