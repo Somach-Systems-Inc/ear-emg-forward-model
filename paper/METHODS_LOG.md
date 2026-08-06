@@ -5406,3 +5406,67 @@ twenty gigabytes of result meshes.
 leaving it in place pending a ruling.** `−3.724` and `−5.06` both survived
 multiple passes because each read as plausible while unverified. A removed number
 is visible; an unverified one is not.
+
+---
+
+## 2026-08-06 — an HC pass over the paper: three revisions, all strengthening
+
+Carl asked for the Minerva HC handbook to be applied to the paper. Three
+revisions came out of it, and none of them weakened a claim.
+
+### #dataviz → Figure 3's caption stated no trend
+
+Its caption was 14 words naming the axes. The HC's failure list has this exactly:
+"the caption is either undescriptive or inaccurately describes what can be seen."
+The omitted trend is the geometric mechanism the labial-group deficit rests on:
+retroauricular sites attenuate at −0.158 dB/mm against the jaw's −0.045 over the
+3–87 mm range where both montages have electrodes, a factor of 3.5.
+
+`render_fig3.py` had computed those slopes and **printed** them. Now emitted to
+`04s_fig3_slopes.csv`, and the caption is written from that file.
+
+**The caption guard was broken and this found it.** Tolerance was a flat 0.051
+for every claim: fine for 20.9, useless for 0.158. A caption reading −0.191
+against a true −0.158 passed, a 21 % error. Tolerance is now half the last
+printed digit. Demonstrated firing at both magnitudes before being trusted.
+
+### #significance → the interval is exact, and multiplicity dissolves
+
+The HC asks whether multiple tests are corrected for. Ten muscles each carry a
+95 % interval and the paper said nothing about it. Chasing it found something
+better: the ear pool is 14 sites taken 4 at a time, so there are
+**C(14,4) = 1001 subsets** and the interval was a 10,000-draw Monte Carlo
+approximation to a quantity that can simply be enumerated.
+
+Enumerated, it is identical: median −1.1474, [−1.4534, +5.4577]. **The published
+interval was exact all along.** Two consequences. The seed disappears, so the
+paper's central number stops depending on an undefended choice. And the
+multiplicity question dissolves rather than needing a correction: this is a
+complete description of a finite set of montages a device could carry, not an
+inference from a sample, so there is no sampling distribution to correct over.
+
+Two figures moved to their exact values: ear-favouring subsets 50.2 → **50.5 %**,
+floor attainment 28.3 → **28.6 %**, the latter now exactly 4/14, which is the
+analytic prediction the paper already stated and was previously only approaching.
+
+### #correlation → n = 7 was stated but never tested
+
+§4.3 reported Spearman ρ = −0.955 at n = 7. The HC warns against failing to
+recognise a coefficient's limitations, and at that n one muscle could carry the
+result. Leave-one-out (`04t`) says it does not: ρ stays between −0.928 and −0.986
+and p below 0.01 in all seven cases. Same question the jaw-subset envelope
+answers for Table 4, same answer.
+
+### Checked and found clean, no action
+
+Prose readability (mean 23.4 words per sentence, 5 % over 45 — an earlier alarming
+reading was counting table rows as sentences). Comparison groups: the paper
+carries homogeneous-conductor, isotropic/anisotropic and truncated/extended
+controls. In-line citations present throughout.
+
+### The one #dataviz gap left, deliberately not closed
+
+`#correlation` asks for a scatter plot of any reported correlation, and the
+ρ = −0.955 relationship has none — the data is in `04f_fat_path_vs_share.csv` and
+it is seven points. Adding a seventh figure hours before submission, unreviewed,
+is the kind of change this project has been burned by. Left for Carl.
