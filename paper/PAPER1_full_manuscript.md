@@ -77,9 +77,6 @@ is an established and widely replicated wearable configuration [Debener et al.
 2015]. The appeal is not electrical. It is that an ear-worn device is socially
 wearable in a way that a chin-mounted one is not.
 
-Replaces the paragraph asserting that no forward model treats muscle as its own
-conducting compartment.
-
 > Forward models of muscle sources in realistic head geometry exist. HArtMuT
 > (Harmening et al. 2022) places roughly 3,900 muscle dipole and tripole sources
 > derived from MIDA's muscle segmentation, with fibre directions estimated by
@@ -545,10 +542,6 @@ would discard one axis or the other, so both are reported (Table 4).
 
 ### 3.2 Anisotropy changes the field but not the comparison
 
-The current text describes a robustness check that survives. Under statistic A
-the correct statement is stronger and simpler: there is no resolvable effect at
-all.
-
 **The isotropy assumption does not measurably affect any site-to-site ratio**
 (Figure 4).
 Applying a fibre tensor changes the jaw-versus-ear gap by −0.085 dB for
@@ -737,9 +730,6 @@ that electrode the better observer of the fibre.
 
 ### 4.3 The mechanism is distance, not intervening tissue
 
-Replaces: *"The ear's deficit against the labial group is geometric. The
-adipose–muscle conductivity contrast accounts for 0.6 to 13.3 per cent…"*
-
 For the labial group the ear's deficit is predominantly geometric, though the
 material contribution varies widely within the group: the adipose–muscle
 conductivity contrast accounts for 0.6 per cent of the gap for platysma and
@@ -756,10 +746,6 @@ material properties and source-to-electrode distance together (Kuiken et al.
 geometry held exactly fixed. This is a comparison the limb geometry
 structurally cannot support, and it is available here for the cost of one
 additional solve.
-
-State the correlation reversal. It is honest, it pre-empts a reviewer who
-computes the same thing, and it is the fourth appearance of the ratio-cancellation
-argument the paper is organised around.
 
 The material share is not a dose response. Across the muscles for which a
 layer profile exists, it correlates *negatively* with the adipose fraction of
