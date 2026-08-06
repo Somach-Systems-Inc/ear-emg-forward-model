@@ -44,7 +44,7 @@ from pathlib import Path
 from scipy.stats import spearmanr
 from scipy.spatial import cKDTree
 import nibabel as nib
-ROOT=Path("/Users/carl/CODELocalProjects/ear-emg-forward-model")
+ROOT=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(ROOT/"src")); import config, solve_invariants as SI
 from simnibs import sim_struct, run_simnibs, mesh_io
 
@@ -84,7 +84,7 @@ def solve(sig,e,tag):
     for lab,v in sig.items(): t.cond[lab-1].value=v; t.cond[lab-1].name=f"tag{lab}"
     for j,nm in enumerate((e,REF)):
         el=t.add_electrode(); el.channelnr=j+1; el.centre=list(pos[nm])
-        el.shape="ellipse"; el.dimensions=[10,10]; el.thickness=2
+        el.shape="ellipse"; el.dimensions=[config.ELECTRODE_DIAMETER_MM]*2; el.thickness=2
     run_simnibs(S)
     # Record the solver's own calibration line. RECORDED ONLY -- it gates
     # nothing, and the 11-15% "benign band" that cg10's 11.90% was once waved
