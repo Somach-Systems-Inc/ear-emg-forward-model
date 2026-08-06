@@ -1,0 +1,16 @@
+# Table 4 as an envelope over every admissible jaw subset.
+# 5 jaw sites admissible, comparison takes 4, so all 5 subsets are reported.
+# NO SUBSET IS SELECTED. Choosing one after seeing its effect
+#   on a verdict is the CUT_FACE_S defect again.
+# seed 0, 10000 draws, orientation bar 90.0%
+muscle,gap_lo_dB,gap_hi_dB,orient_lo_pct,orient_hi_pct,site_robust_subsets,n_subsets,stable,verdict,all_verdicts,published_gap_dB
+mentalis,20.9804,22.397,100.0,100.0,5,5,True,"jaw, robust on both axes","jaw, robust on both axes",21.2357
+depressor_anguli_oris,14.6985,15.9777,100.0,100.0,5,5,True,"jaw, robust on both axes","jaw, robust on both axes",14.6985
+buccinator,9.4495,10.3872,100.0,100.0,5,5,True,"jaw, robust on both axes","jaw, robust on both axes",10.2362
+platysma,9.8976,10.2722,100.0,100.0,5,5,True,"jaw, robust on both axes","jaw, robust on both axes",10.0076
+orbicularis_oris,8.1089,9.0162,100.0,100.0,5,5,True,"jaw, robust on both axes","jaw, robust on both axes",8.9951
+masseter,1.2011,2.2181,56.0,68.5,5,5,True,"jaw, site-robust but orientation-dependent","jaw, site-robust but orientation-dependent",2.2181
+medial_pterygoid,0.8561,1.3318,59.5,66.5,5,5,True,"jaw, site-robust but orientation-dependent","jaw, site-robust but orientation-dependent",1.2542
+sternocleidomastoid,-2.5343,-0.9735,60.5,65.0,1,5,False,unstable across subsets,"ear, site-robust but orientation-dependent | no resolvable preference",-0.9735
+lateral_pterygoid,-3.6069,-1.5287,65.5,72.0,1,5,False,unstable across subsets,"ear, site-robust but orientation-dependent | no resolvable preference",-1.5642
+temporalis,-5.4189,-2.571,92.0,100.0,5,5,True,"ear, robust on both axes","ear, robust on both axes",-2.571

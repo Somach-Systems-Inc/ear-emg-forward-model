@@ -681,7 +681,7 @@ none crosses it once source orientation and electrode count are controlled
 
 The result is therefore one-sided rather than a trade. A retroauricular montage
 is not a repositioning of the jaw montage that exchanges one muscle group for
-another; it is a montage that loses the labial group by 8.99 to 21.24 dB and
+another; it is a montage that loses the labial group by 8.11 to 22.40 dB and
 returns nothing measurable. Anatomical proximity to a bony attachment does
 predict which retroauricular sites are competitive, and in the right order, but
 competitive is not the same as better.
@@ -785,7 +785,7 @@ and it is testable in any second anatomy.
 ### 4.4 What this licenses for device design
 
 The design statement this supports is a negative one with a number attached. A
-retroauricular montage loses the labial group by 9.0 to 21.2 dB, and buys
+retroauricular montage loses the labial group by 8.1 to 22.4 dB, and buys
 nothing reliable in return. No articulator in this study favours the
 retroauricular montage once source orientation and electrode count are
 controlled.
@@ -995,22 +995,41 @@ df = 5.
 Row 7 is deliberately left unquantified. A single-subject model cannot estimate
 its own between-subject variance.
 
-**Table 4 — Which montage sees which muscle, on two robustness axes.** Gap is the median over 200 source orientations of the per-orientation gap (statistic A), best of the four pre-registered retroauricular sites against the best of four jaw sites clear of the truncation face; positive favours the jaw. *Site-robust* asks whether a random draw of four of the fourteen ear sites still excludes zero. *Orientation agreement* is the fraction of sampled orientations agreeing with the median verdict.
+**Table 4 — Which montage sees which muscle, on two robustness axes.** Gap in dB between the jaw and retroauricular montages, positive favouring the jaw, taken as the median over 200 source orientations of the per-orientation gap (statistic A) against the four pre-registered retroauricular sites. Electrode counts are matched at 4 per montage. Because 5 jaw sites are admissible and the comparison takes 4, every value is reported as the envelope over all 5 admissible subsets rather than for one chosen subset. Rows marked unstable change verdict between subsets and are described in the text. *Site-robust* asks whether a random draw of four of the fourteen ear sites still excludes zero. *Orientation agreement* is the fraction of sampled orientations agreeing with the median verdict.
 
 <!-- TABLE:two_axis_verdict -->
-| Muscle | Gap (dB) | Site-robust (random-4 95% CI) | Orientation agreement | Verdict |
+| Muscle | Gap (dB), envelope over subsets | Site-robust | Orientation agreement | Verdict |
 |---|---|---|---|---|
-| mentalis | +21.24 | yes, [+20.90, +23.99] | 100.0 % | **jaw, robust on both axes** |
-| depressor anguli oris | +14.70 | yes, [+13.78, +17.15] | 100.0 % | **jaw, robust on both axes** |
-| buccinator | +10.24 | yes, [+9.24, +12.43] | 100.0 % | **jaw, robust on both axes** |
-| orbicularis oris | +9.00 | yes, [+7.98, +11.42] | 100.0 % | **jaw, robust on both axes** |
-| platysma | +10.01 | yes, [+8.88, +12.46] | 100.0 % | **jaw, robust on both axes** |
-| masseter | +2.22 | yes, [+1.65, +5.79] | 68.5 % | **jaw, site-robust but orientation-dependent** |
-| medial pterygoid | +1.25 | yes, [+1.14, +3.35] | 65.5 % | **jaw, site-robust but orientation-dependent** |
-| sternocleidomastoid | -0.97 | **no**, [-1.40, +1.27] | 60.5 % | **no resolvable preference** |
-| lateral pterygoid | -1.56 | **no**, [-1.59, +1.09] | 65.5 % | **no resolvable preference** |
-| temporalis | -2.57 | yes, [-3.31, -0.03] | 92.0 % | **ear, robust on both axes** |
+| mentalis | +20.98 to +22.40 | yes, all 5 | 100.0 % | **jaw, robust on both axes** |
+| depressor anguli oris | +14.70 to +15.98 | yes, all 5 | 100.0 % | **jaw, robust on both axes** |
+| buccinator | +9.45 to +10.39 | yes, all 5 | 100.0 % | **jaw, robust on both axes** |
+| platysma | +9.90 to +10.27 | yes, all 5 | 100.0 % | **jaw, robust on both axes** |
+| orbicularis oris | +8.11 to +9.02 | yes, all 5 | 100.0 % | **jaw, robust on both axes** |
+| masseter | +1.20 to +2.22 | yes, all 5 | 56.0–68.5 % | **jaw, site-robust but orientation-dependent** |
+| medial pterygoid | +0.86 to +1.33 | yes, all 5 | 59.5–66.5 % | **jaw, site-robust but orientation-dependent** |
+| sternocleidomastoid | -2.53 to -0.97 | 1 of 5 | 60.5–65.0 % | **unstable across subsets** |
+| lateral pterygoid | -3.61 to -1.53 | 1 of 5 | 65.5–72.0 % | **unstable across subsets** |
+| temporalis | -5.42 to -2.57 | yes, all 5 | 92.0–100.0 % | **ear, robust on both axes** |
 <!-- /TABLE:two_axis_verdict -->
+
+No jaw site is preferred by the design over any other, so rather than select one
+4-site subset the comparison is run over all 5 admissible subsets and reported as
+an envelope. 5 of 10 muscles favour the jaw montage on both robustness axes in
+every subset, spanning 8.11 to 22.40 dB. No muscle favours the retroauricular
+montage on both axes in any subset.
+
+8 muscles return an identical verdict in all 5 subsets. Two do not. Lateral
+pterygoid gives no resolvable preference across four subsets (−1.53 to −1.59 dB)
+and −3.61 dB in the fifth; sternocleidomastoid gives −0.97 to −1.44 dB across
+four and −2.53 dB in the fifth. In both cases the deviating subset is the one
+dropping `midjaw`, and in both cases the deviating value is site-robust but
+orientation-dependent, with agreement of 72.0 and 65.0 per cent against the
+90 per cent required for a robust preference. Neither reaches a retroauricular
+preference on both axes, and neither is among the 5 muscles carrying the jaw
+advantage. The subset that deviates is the one dropping `midjaw`, which has the
+largest perpendicular clearance to the cut plane of any jaw site at 63.76 mm; the
+instability follows from removing the site furthest from the truncation, not one
+near it.
 
 **Temporalis is reported here under the uniform orientation sweep, for
 comparability with the other nine muscles.** Under the fibre field derived from
