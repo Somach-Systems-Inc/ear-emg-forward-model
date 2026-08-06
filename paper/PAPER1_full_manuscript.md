@@ -470,78 +470,78 @@ acquired.
 
 ### 3.1 Which montage sees which muscle
 
-> Reporting one gap per muscle presumes a fibre direction the model does not
-> contain, and comparing the best of fourteen retroauricular sites against the
-> best of four jaw sites rewards electrode count rather than placement. Both are
-> controlled. Source orientation is swept over the hemisphere at 200 directions
-> with the same orientation applied at both electrodes, since only a common
-> orientation corresponds to a physical source. Electrode count is matched by
-> drawing four of the fourteen ear sites at random, taking the best, and
-> repeating; the resulting interval says whether a preference is a property of
-> the montage or of which sites happen to be available.
->
-> **The jaw's dominance over the labial group is robust on both axes.**
-> Orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma
-> favour the jaw at all 200 sampled orientations and at every electrode
-> subsample. No fibre direction and no four-site selection exists at which a
-> retroauricular electrode competes for these muscles. The full muscle-by-site
-> sensitivity matrix is given in Figure 2, and the per-muscle verdicts in
-> Figure 5.
->
-> **No articulator favours the ear on both axes.** Temporalis is the closest,
-> and it does not clear the bar. Over the fibre field derived from the anatomy
-> (§2.3.1) it reaches −1.147 dB at the pre-registered four-site cluster, with
-> 91.5 per cent of fibre directions agreeing — but its matched-count interval is
-> **[−1.453, +5.458]** and only **50.2 per cent** of random four-site
-> retroauricular subsets favour the ear at all. Whether the ear wins for
-> temporalis is decided by which four electrodes a device happens to carry, not
-> by the anatomy.
->
-> **The two treatments disagree, and the anatomy-specific one governs.** Under a
-> uniform orientation sweep temporalis reaches −2.571 dB with 92.0 per cent of
-> orientations agreeing and an interval of [−3.308, −0.035] that excludes zero —
-> on that treatment it would be reported as favouring the ear. The sweep assumes
-> source orientation is uniformly distributed over the sphere, which is the right
-> default when fibre direction is unknown and the wrong one for a muscle whose
-> fibres converge on a single identifiable insertion.
->
-> Electrode count is matched by drawing 4 of the 14 ear sites at random and
-> taking the best, repeated over draws at seed 0. For the derived fibre field the
-> draw resamples electrodes alone, with the fibre orientation held fixed, so the
-> resulting spread reflects site availability and nothing else. Temporalis gives a
-> median gap of −1.147 dB with an interval of [−1.453, +5.458] dB, favouring the
-> ear in 50.2 per cent of draws.
->
-> The lower bound of this interval is not a tail quantile. The most
-> ear-favouring outcome of any 4-site draw is the best of all 14 sites, so
-> −1.453 dB is a floor fixed by the data rather than by sampling, and it is
-> attained in 28.3 per cent of draws against the 28.6 per cent expected from draw
-> size alone. It coincides with the argmax gap over all 14 sites, −1.453 dB, by
-> construction; the two figures are one measurement, not two that agree. The
-> corresponding bound under the uniform orientation sweep, −3.308 dB, is a
-> genuine percentile lying strictly above its own floor of −3.314 dB, which is
-> attained in 2.2 per cent of draws. The two lower bounds are therefore not
-> comparable quantities.
->
-> We report the derived result because it removes an assumption rather than
-> adding one, and the pre-registered reading (§2.8) committed to that treatment
-> before the derivation was run. The uniform-sweep figure is reported alongside
-> it so the dependence is visible: **this verdict rests on the fibre derivation,
-> and a reader who rejects that derivation should read temporalis as favouring
-> the ear by 2.57 dB.**
->
-> **Two show no preference that survives electrode subsampling.**
-> Sternocleidomastoid (−0.973 dB at the cluster, 60.5 per cent of orientations,
-> interval [−1.40, +1.27]) and lateral pterygoid (−1.564 dB, 65.5 per cent,
-> [−1.59, +1.09]) both have intervals crossing zero. Their apparent advantage
-> depends on which four sites are available and is not a property of the
-> montage. Reported at the unmatched argmax over fourteen sites they would read
-> −1.402 and −1.679 dB, which is why the matched comparison is the one reported.
->
-> **Two favour the jaw robustly across sites but not across orientation.**
-> Masseter and medial pterygoid have subsample intervals entirely positive, but
-> 36.0 and 37.5 per cent of sampled orientations reverse them. A single label
-> would discard one axis or the other, so both are reported (Table 4).
+Reporting one gap per muscle presumes a fibre direction the model does not
+contain, and comparing the best of fourteen retroauricular sites against the
+best of four jaw sites rewards electrode count rather than placement. Both are
+controlled. Source orientation is swept over the hemisphere at 200 directions
+with the same orientation applied at both electrodes, since only a common
+orientation corresponds to a physical source. Electrode count is matched by
+drawing four of the fourteen ear sites at random, taking the best, and
+repeating; the resulting interval says whether a preference is a property of
+the montage or of which sites happen to be available.
+
+**The jaw's dominance over the labial group is robust on both axes.**
+Orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma
+favour the jaw at all 200 sampled orientations and at every electrode
+subsample. No fibre direction and no four-site selection exists at which a
+retroauricular electrode competes for these muscles. The full muscle-by-site
+sensitivity matrix is given in Figure 2, and the per-muscle verdicts in
+Figure 5.
+
+**No articulator favours the ear on both axes.** Temporalis is the closest,
+and it does not clear the bar. Over the fibre field derived from the anatomy
+(§2.3.1) it reaches −1.147 dB at the pre-registered four-site cluster, with
+91.5 per cent of fibre directions agreeing — but its matched-count interval is
+**[−1.453, +5.458]** and only **50.2 per cent** of random four-site
+retroauricular subsets favour the ear at all. Whether the ear wins for
+temporalis is decided by which four electrodes a device happens to carry, not
+by the anatomy.
+
+**The two treatments disagree, and the anatomy-specific one governs.** Under a
+uniform orientation sweep temporalis reaches −2.571 dB with 92.0 per cent of
+orientations agreeing and an interval of [−3.308, −0.035] that excludes zero —
+on that treatment it would be reported as favouring the ear. The sweep assumes
+source orientation is uniformly distributed over the sphere, which is the right
+default when fibre direction is unknown and the wrong one for a muscle whose
+fibres converge on a single identifiable insertion.
+
+Electrode count is matched by drawing 4 of the 14 ear sites at random and
+taking the best, repeated over draws at seed 0. For the derived fibre field the
+draw resamples electrodes alone, with the fibre orientation held fixed, so the
+resulting spread reflects site availability and nothing else. Temporalis gives a
+median gap of −1.147 dB with an interval of [−1.453, +5.458] dB, favouring the
+ear in 50.2 per cent of draws.
+
+The lower bound of this interval is not a tail quantile. The most
+ear-favouring outcome of any 4-site draw is the best of all 14 sites, so
+−1.453 dB is a floor fixed by the data rather than by sampling, and it is
+attained in 28.3 per cent of draws against the 28.6 per cent expected from draw
+size alone. It coincides with the argmax gap over all 14 sites, −1.453 dB, by
+construction; the two figures are one measurement, not two that agree. The
+corresponding bound under the uniform orientation sweep, −3.308 dB, is a
+genuine percentile lying strictly above its own floor of −3.314 dB, which is
+attained in 2.2 per cent of draws. The two lower bounds are therefore not
+comparable quantities.
+
+We report the derived result because it removes an assumption rather than
+adding one, and the pre-registered reading (§2.8) committed to that treatment
+before the derivation was run. The uniform-sweep figure is reported alongside
+it so the dependence is visible: **this verdict rests on the fibre derivation,
+and a reader who rejects that derivation should read temporalis as favouring
+the ear by 2.57 dB.**
+
+**Two show no preference that survives electrode subsampling.**
+Sternocleidomastoid (−0.973 dB at the cluster, 60.5 per cent of orientations,
+interval [−1.40, +1.27]) and lateral pterygoid (−1.564 dB, 65.5 per cent,
+[−1.59, +1.09]) both have intervals crossing zero. Their apparent advantage
+depends on which four sites are available and is not a property of the
+montage. Reported at the unmatched argmax over fourteen sites they would read
+−1.402 and −1.679 dB, which is why the matched comparison is the one reported.
+
+**Two favour the jaw robustly across sites but not across orientation.**
+Masseter and medial pterygoid have subsample intervals entirely positive, but
+36.0 and 37.5 per cent of sampled orientations reverse them. A single label
+would discard one axis or the other, so both are reported (Table 4).
 
 ### 3.2 Anisotropy changes the field but not the comparison
 
@@ -549,20 +549,20 @@ The current text describes a robustness check that survives. Under statistic A
 the correct statement is stronger and simpler: there is no resolvable effect at
 all.
 
-> **The isotropy assumption does not measurably affect any site-to-site ratio**
-> (Figure 4).
-> Applying a fibre tensor changes the jaw-versus-ear gap by −0.085 dB for
-> sternocleidomastoid, −0.010 dB for medial pterygoid, +0.137 dB for temporalis
-> and +0.036 dB for lateral pterygoid. Every one of these lies below the 0.27 dB
-> measured electrode-meshing floor, including for the two compartments that
-> carry a tensor. Anisotropy raises the absolute lead field substantially — by
-> roughly 5 dB in medial pterygoid — but it does so at the jaw and ear sites
-> alike, so the effect subtracts out of every ratio this paper reports.
->
-> This is a null with a bound rather than an absence of evidence, and it has a
-> practical consequence: for coupling *ratios* between electrode sites, a
-> muscle-fibre tensor is not worth the modelling effort in a head model of this
-> resolution. Absolute lead-field values are a different matter and are affected.
+**The isotropy assumption does not measurably affect any site-to-site ratio**
+(Figure 4).
+Applying a fibre tensor changes the jaw-versus-ear gap by −0.085 dB for
+sternocleidomastoid, −0.010 dB for medial pterygoid, +0.137 dB for temporalis
+and +0.036 dB for lateral pterygoid. Every one of these lies below the 0.27 dB
+measured electrode-meshing floor, including for the two compartments that
+carry a tensor. Anisotropy raises the absolute lead field substantially — by
+roughly 5 dB in medial pterygoid — but it does so at the jaw and ear sites
+alike, so the effect subtracts out of every ratio this paper reports.
+
+This is a null with a bound rather than an absence of evidence, and it has a
+practical consequence: for coupling *ratios* between electrode sites, a
+muscle-fibre tensor is not worth the modelling effort in a head model of this
+resolution. Absolute lead-field values are a different matter and are affected.
 
 ### 3.3 The tissue-conductivity contrast is a small term with a muscle-dependent sign
 
@@ -642,37 +642,37 @@ construction rather than by luck.
 
 ### 3.5 A homogeneous conductor reaches the same verdicts
 
-> **A homogeneous soft-tissue conductor reproduces every montage assignment.**
-> Setting skin, adipose and the non-muscle soft tissues to a single conductivity,
-> with geometry, electrodes and sources held exactly fixed, changes no muscle's
-> montage preference. Eight of ten gap magnitudes move by more than the 0.27 dB
-> floor, with a median shift of 0.482 dB and a maximum of 3.271 dB (mentalis).
->
-> The direction is not uniform. Temporalis's retroauricular advantage *grows*
-> under the homogeneous conductor, from −2.571 to −3.724 dB at the pre-registered cluster, so the anatomically
-> resolved model reports that result more conservatively than a simpler one
-> would. Sternocleidomastoid and lateral pterygoid move the other way.
->
-> This locates what the detailed conductor is required for. The question of
-> which montage sees which muscle is answerable without it. The question of by
-> how much is not, and a design table quoting decibels needs it.
+**A homogeneous soft-tissue conductor reproduces every montage assignment.**
+Setting skin, adipose and the non-muscle soft tissues to a single conductivity,
+with geometry, electrodes and sources held exactly fixed, changes no muscle's
+montage preference. Eight of ten gap magnitudes move by more than the 0.27 dB
+floor, with a median shift of 0.482 dB and a maximum of 3.271 dB (mentalis).
+
+The direction is not uniform. Temporalis's retroauricular advantage *grows*
+under the homogeneous conductor, from −2.571 to −3.724 dB at the pre-registered cluster, so the anatomically
+resolved model reports that result more conservatively than a simpler one
+would. Sternocleidomastoid and lateral pterygoid move the other way.
+
+This locates what the detailed conductor is required for. The question of
+which montage sees which muscle is answerable without it. The question of by
+how much is not, and a design table quoting decibels needs it.
 
 ### 3.6 Placement by anatomical target outperforms density
 
-> **Placement chosen by anatomical target outperforms arbitrary placement.** The
-> four-site retroauricular cluster — above the ear, over the mastoid, behind and
-> below the lobule, and anterior to the tragus — was specified by anatomical
-> target in the project repository before any solve was run. Compared against
-> the median of random four-site draws from the same fourteen candidates, it is
-> 1.03 dB better for lateral pterygoid (−1.564 against −0.534) and equivalent
-> for sternocleidomastoid (−0.973 against −0.979).
->
-> Neither of the two sites that won the unmatched argmax for temporalis and
-> sternocleidomastoid is in that cluster, which is the same point from the other
-> direction: an argmax over fourteen densely spaced positions rewards density,
-> while a four-site montage rewards placement. For a device constrained to a
-> small number of contacts, where they go matters more than how many candidates
-> were considered.
+**Placement chosen by anatomical target outperforms arbitrary placement.** The
+four-site retroauricular cluster — above the ear, over the mastoid, behind and
+below the lobule, and anterior to the tragus — was specified by anatomical
+target in the project repository before any solve was run. Compared against
+the median of random four-site draws from the same fourteen candidates, it is
+1.03 dB better for lateral pterygoid (−1.564 against −0.534) and equivalent
+for sternocleidomastoid (−0.973 against −0.979).
+
+Neither of the two sites that won the unmatched argmax for temporalis and
+sternocleidomastoid is in that cluster, which is the same point from the other
+direction: an argmax over fourteen densely spaced positions rewards density,
+while a four-site montage rewards placement. For a device constrained to a
+small number of contacts, where they go matters more than how many candidates
+were considered.
 
 ## 4. Discussion
 
@@ -740,40 +740,40 @@ that electrode the better observer of the fibre.
 Replaces: *"The ear's deficit against the labial group is geometric. The
 adipose–muscle conductivity contrast accounts for 0.6 to 13.3 per cent…"*
 
-> For the labial group the ear's deficit is predominantly geometric, though the
-> material contribution varies widely within the group: the adipose–muscle
-> conductivity contrast accounts for 0.6 per cent of the gap for platysma and
-> 13.3 per cent for orbicularis oris. The remainder in every case is
-> source-to-electrode distance, and the attenuation-against-depth relation that
-> produces it is shown in Figure 3. The two regimes remain separated — 0.6 to 13.3
-> per cent for the muscles the jaw wins, against 17 to 21 per cent for those the
-> ear wins — but the separation is narrower than a single figure would suggest,
-> and no muscle in either group is unaffected.
->
-> Limb studies cannot make this separation, because adding a fat layer changes
-> material properties and source-to-electrode distance together (Kuiken et al.
-> 2003). A labelled head model can, because conductivity is changed with
-> geometry held exactly fixed. This is a comparison the limb geometry
-> structurally cannot support, and it is available here for the cost of one
-> additional solve.
+For the labial group the ear's deficit is predominantly geometric, though the
+material contribution varies widely within the group: the adipose–muscle
+conductivity contrast accounts for 0.6 per cent of the gap for platysma and
+13.3 per cent for orbicularis oris. The remainder in every case is
+source-to-electrode distance, and the attenuation-against-depth relation that
+produces it is shown in Figure 3. The two regimes remain separated — 0.6 to 13.3
+per cent for the muscles the jaw wins, against 17 to 21 per cent for those the
+ear wins — but the separation is narrower than a single figure would suggest,
+and no muscle in either group is unaffected.
+
+Limb studies cannot make this separation, because adding a fat layer changes
+material properties and source-to-electrode distance together (Kuiken et al.
+2003). A labelled head model can, because conductivity is changed with
+geometry held exactly fixed. This is a comparison the limb geometry
+structurally cannot support, and it is available here for the cost of one
+additional solve.
 
 State the correlation reversal. It is honest, it pre-empts a reviewer who
 computes the same thing, and it is the fourth appearance of the ratio-cancellation
 argument the paper is organised around.
 
-> The material share is not a dose response. Across the muscles for which a
-> layer profile exists, it correlates *negatively* with the adipose fraction of
-> the muscle-to-skin path (Spearman ρ = −0.955, p = 0.001, n = 7): platysma sits
-> at 0.650 fat fraction and 0.6 per cent material share, while
-> sternocleidomastoid sits at 0.225 and 21 per cent. The strength of that
-> relationship shows the swap is measuring adipose path rather than something
-> incidental, but its sign shows it does so through cancellation. The reported
-> share is |Δgap| / |gap|, and a muscle embedded uniformly in fat has both the
-> jaw and the ear route shifted together, so the change subtracts out of the
-> ratio. The quantity that would track positively is the *difference* between
-> how the two routes traverse fat, which this study does not form. This is the
-> same cancellation that makes a uniform magnitude offset invisible in every
-> ratio reported here, arriving in a place where it was not anticipated.
+The material share is not a dose response. Across the muscles for which a
+layer profile exists, it correlates *negatively* with the adipose fraction of
+the muscle-to-skin path (Spearman ρ = −0.955, p = 0.001, n = 7): platysma sits
+at 0.650 fat fraction and 0.6 per cent material share, while
+sternocleidomastoid sits at 0.225 and 21 per cent. The strength of that
+relationship shows the swap is measuring adipose path rather than something
+incidental, but its sign shows it does so through cancellation. The reported
+share is |Δgap| / |gap|, and a muscle embedded uniformly in fat has both the
+jaw and the ear route shifted together, so the change subtracts out of the
+ratio. The quantity that would track positively is the *difference* between
+how the two routes traverse fat, which this study does not form. This is the
+same cancellation that makes a uniform magnitude offset invisible in every
+ratio reported here, arriving in a place where it was not anticipated.
 
 Applied to the three muscles whose gaps come closest to zero — temporalis,
 sternocleidomastoid and lateral pterygoid — the same decomposition returns a
