@@ -1114,8 +1114,19 @@ the boxes carry the sign independently of colour. **The 0 dB reference here
 includes all jaw sites, whereas Figure 5 and Table 4 exclude those within 10 mm
 of the truncation face, so the named best jaw site differs for some muscles.**
 
-**Figure 3.** Attenuation against source depth for each articulator, jaw sites
-against retroauricular sites.
+**Figure 3. Attenuation against source-electrode distance.** One point per
+(electrode, muscle) pair: straight-line distance from the electrode to the
+nearest voxel of that muscle compartment against the lead field in dB relative to
+that muscle's best jaw site, isotropic condition, truncated mesh. **The two
+montages do not lie on the same attenuation curve.** Fitted over the 3 to 87 mm
+range where both montages have electrodes, the retroauricular sites fall off at
+−0.158 dB/mm against the jaw's −0.045 dB/mm, a factor of 3.5
+[`results/04s_fig3_slopes.csv`]. A retroauricular electrode therefore loses
+signal with distance more than three times as fast as a jaw electrode does, which
+is the geometric mechanism behind the labial-group deficit reported in §4.3.
+Lines are least-squares fits over the overlapping range only, so the comparison
+is made where both montages have data rather than extrapolated across the ear's
+longer reach.
 
 **Figure 4. Anisotropy robustness check.** Change in lead field between the
 isotropic and anisotropic conditions, 20·log₁₀(aniso/iso), per cell. The

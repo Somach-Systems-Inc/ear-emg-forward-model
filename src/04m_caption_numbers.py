@@ -89,6 +89,20 @@ def collect() -> dict:
         if hi:
             v["floor_ci_hi_dB"] = (round(float(hi.group(1)), 2), f.name, "5")
 
+    # --- Fig 3: the distance-attenuation slopes --------------------------
+    # Added 2026-08-06. Fig 3's caption used to describe no trend at all,
+    # because these numbers were printed by render_fig3.py and written nowhere.
+    # Now that the caption states them, they get guarded like every other
+    # caption number.
+    f3 = config.RESULTS / "04s_fig3_slopes.csv"
+    if f3.exists():
+        s3 = pd.read_csv(f3, comment="#").set_index("montage")
+        v["fig3_ear_slope"] = (abs(round(float(
+            s3.loc["retroauricular", "overlap_slope_dB_per_mm"]), 3)),
+            f3.name, "3")
+        v["fig3_jaw_slope"] = (abs(round(float(
+            s3.loc["jaw", "overlap_slope_dB_per_mm"]), 3)), f3.name, "3")
+
     # --- Supplementary S1: air compartments ------------------------------
     # Air-assigned labels in Table 1, EXCLUDING `Background` (label 50), which
     # is the space around the head rather than a compartment within it.
@@ -181,6 +195,8 @@ CLAIMS = [
     ("s1_n_air", r"all (\w+) air-filled compartments"),
     ("floor_dB", r"electrode-meshing floor \(([\d.]+)\s*dB"),
     ("floor_ci_hi_dB", r"upper bound of\s*([\d.]+)\s*dB"),
+    ("fig3_ear_slope", r"retroauricular sites fall off at\s*[-−]([\d.]+)\s*dB/mm"),
+    ("fig3_jaw_slope", r"against the jaw's\s*[-−]([\d.]+)\s*dB/mm"),
 ]
 
 
@@ -216,7 +232,14 @@ def main(argv=None) -> int:
         got = float(WORDS.get(raw.lower(), raw if raw.replace(".", "").isdigit()
                               else "nan"))
         want = float(v[key][0])
-        if abs(got - abs(want)) > 0.051:
+        # TOLERANCE FROM THE PRINTED PRECISION, not a flat constant.
+        # This was 0.051 for every claim, which is fine for a value like 20.9
+        # and useless for one like 0.158: a caption reading -0.191 against a
+        # true -0.158 passed, an error of 21 %. The caption quotes a rounded
+        # number, so the only defensible tolerance is half its last digit.
+        dec = len(raw.split(".")[1]) if "." in raw else 0
+        tol = 0.5 * 10 ** (-dec) + 1e-9
+        if abs(got - abs(want)) > tol:
             bad.append((key, got, want))
     tbad, thaz = check_tables(text)
     for n, k, d in thaz:

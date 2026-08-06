@@ -44,6 +44,16 @@
     "source": "electrode_meshing_floor.txt",
     "figure": "5"
   },
+  "fig3_ear_slope": {
+    "value": 0.158,
+    "source": "04s_fig3_slopes.csv",
+    "figure": "3"
+  },
+  "fig3_jaw_slope": {
+    "value": 0.045,
+    "source": "04s_fig3_slopes.csv",
+    "figure": "3"
+  },
   "s1_n_air": {
     "value": 9,
     "source": "01_table1_conductivities.csv",

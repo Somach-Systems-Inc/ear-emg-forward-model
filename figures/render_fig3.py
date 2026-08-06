@@ -79,6 +79,38 @@ def main(argv=None) -> int:
     ratio = fits["retroauricular"] / fits["jaw"]
     print(f"  slope ratio over the overlap: {ratio:.2f}x")
 
+    # EMIT, do not merely print. These numbers ARE the trend the figure exists
+    # to show, and Fig 3's caption described no trend because they lived only in
+    # stdout. A correct number with no file is invisible to a source-to-prose
+    # check in exactly the way an orphan is. Same defect class as the 8.5 %
+    # fan fraction; see METHODS_LOG 2026-08-06.
+    import csv as _csv
+    out = Path(__file__).resolve().parent.parent / "results" / "04s_fig3_slopes.csv"
+    with open(out, "w", newline="") as fh:
+        fh.write("# Distance-attenuation slopes behind Figure 3.\n")
+        fh.write("# Fitted over the OVERLAPPING distance range only, so the two\n")
+        fh.write("#   montages are compared where both actually have electrodes.\n")
+        fh.write("# own_range_slope refits over each montage's full span, for contrast.\n")
+        fh.write(f"# slope_ratio_ear_over_jaw = {ratio:.4f}\n")
+        w = _csv.DictWriter(fh, fieldnames=[
+            "montage", "overlap_slope_dB_per_mm", "own_range_slope_dB_per_mm",
+            "n_pairs_in_overlap", "overlap_lo_mm", "overlap_hi_mm",
+            "condition", "mesh"])
+        w.writeheader()
+        for grp in ("jaw", "retroauricular"):
+            g = m[m.grp == grp]
+            ov = g[(g.dist_mm >= lo) & (g.dist_mm <= hi)]
+            w.writerow(dict(
+                montage=grp,
+                overlap_slope_dB_per_mm=round(float(fits[grp]), 4),
+                own_range_slope_dB_per_mm=round(
+                    float(np.polyfit(g.dist_mm, g.db_rel_best_jaw, 1)[0]), 4),
+                n_pairs_in_overlap=len(ov),
+                overlap_lo_mm=round(float(lo), 1),
+                overlap_hi_mm=round(float(hi), 1),
+                condition=a.condition, mesh=a.mesh))
+    print(f"  wrote {out.name}")
+
     ax.axhline(0, color=rc.INK_PRIMARY, lw=0.9, zorder=4)
     ax.set_xlabel("distance from electrode to nearest voxel of the muscle (mm)",
                   fontsize=7.5)

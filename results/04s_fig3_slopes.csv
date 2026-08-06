@@ -1,0 +1,8 @@
+# Distance-attenuation slopes behind Figure 3.
+# Fitted over the OVERLAPPING distance range only, so the two
+#   montages are compared where both actually have electrodes.
+# own_range_slope refits over each montage's full span, for contrast.
+# slope_ratio_ear_over_jaw = 3.4918
+montage,overlap_slope_dB_per_mm,own_range_slope_dB_per_mm,n_pairs_in_overlap,overlap_lo_mm,overlap_hi_mm,condition,mesh
+jaw,-0.0453,-0.0453,70,3.0,86.9,iso,truncated
+retroauricular,-0.1582,-0.1645,93,3.0,86.9,iso,truncated
