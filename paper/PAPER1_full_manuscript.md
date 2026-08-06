@@ -513,8 +513,7 @@ source orientation is uniformly distributed over the sphere, which is the right
 default when fibre direction is unknown and the wrong one for a muscle whose
 fibres converge on a single identifiable insertion.
 
-Electrode count is matched by drawing 4 of the 14 ear sites at random and
-taking the best, repeated over draws at seed 0. For the derived fibre field the
+The draws are taken at seed 0. For the derived fibre field the
 draw resamples electrodes alone, with the fibre orientation held fixed, so the
 resulting spread reflects site availability and nothing else. Temporalis gives a
 median gap of −1.147 dB with an interval of [−1.453, +5.458] dB, favouring the
@@ -1172,53 +1171,3 @@ cited in §2.8 as the pre-registration record.
 17. Wand, M., & Schultz, T. (2011). Session-Independent EMG-Based Speech Recognition.
 18. Yao, D., et al. (2019). Which Reference Should We Use for EEG and ERP practice? *Brain Topogr*.
 19. Yarici, M., Thornton, M., & Mandic, D. P. (2023). Ear-EEG sensitivity modeling for neural sources and ocular artifacts. *Front Neurosci* 16:997377. doi:10.3389/fnins.2022.997377
-
----
-
-# ASSEMBLY NOTES — not part of the manuscript
-
-## What I removed, and why
-
-All of this is working record. It stays in `METHODS_LOG.md`; none of it belongs
-in a paper.
-
-- **Every "withdrawn / corrected / recorded rather than quietly fixed" note.**
-  The bootstrap interval [0.16, 0.28], the 0.43 dB and 0.1310 dB floors, the
-  Table 2 percent-of-path version, the anti-correlation claim about SimNIBS's
-  calibration, the AlterEgo provenance note, the Kappel attribution correction.
-  A paper states the current value and its derivation.
-- **The MAG disposition section.** Three paragraphs on why MAG is unquotable.
-  Reduced to reporting the value in §2.6 alongside RDM. Keep the longer version
-  for the SimNIBS thread, where it is the point.
-- **Row 2's failed interface-proximity measurement** and the r = 40 mm anomaly.
-  Reduced to one Table 3 cell saying it needs a different geometry.
-- **The neck-extension diagnostic history.** Reduced to "constructed and
-  rejected, does not conserve charge," with the discriminating number.
-- **Channel-redundancy section.** It describes an analysis that has not been
-  run. Removed rather than promised — add it back when the correlation matrix
-  exists.
-- **Fig 7.** Deleted per the falsification; the air-void inventory survives as
-  supplementary.
-- **Table 2b.** Not computed. Removed rather than promised.
-
-## What is still missing before submission
-
-1. ~~Figures 1, 3 and 6 do not exist yet.~~ **DONE 2026-08-05.** All six figures are built and rendered: `fig1_head_model`, `fig2_sensitivity_matrix`, `fig3_attenuation_vs_distance`, `fig4_anisotropy_delta`, `fig5_complementarity_map`, `fig6_suprahyoid_field`, plus `02_electrode_qa`. Fig 1 and Fig 6 both pass `anonymise_head()` and are gated by `assert_anonymised()`.
-2. **Table 1 CSV** needs exporting to a publication-ready form.
-3. **SimNIBS citation** is incomplete (ref 16).
-4. **`throat_scm`** is withheld; if you measure it on the rig before submission,
-   it becomes a 23rd position and §2.3 changes.
-5. **Repo must be public** for §2.8's pre-registration citation to be checkable.
-6. **Author affiliation** — decide whether Minerva appears alongside Somach.
-
-## Two things you should decide
-
-**The title.** The working title ("Where can you hear the tongue from the ear?")
-is now wrong twice over: the tongue muscles are pooled and absent from the
-result, and the finding is complementarity rather than a loss. I've replaced it
-with a declarative one. If you want the question form back, make it about the
-actual finding.
-
-**Whether §4.4 stays.** It names uses you are not chasing — clench input,
-bruxism monitoring. It widens who cites this beyond silent speech. Cut it if you
-would rather keep the paper narrow.

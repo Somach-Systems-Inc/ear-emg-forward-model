@@ -232,3 +232,35 @@ bony insertion. §4.7 states this.
 Regeneration if run: per-muscle pervoxel CSV and perdirection npz, then `04h`,
 `04j`, `04q`, `04n`, `04p` if temporalis is touched, then §3.1, §4.1, Table 4 and
 the Abstract.
+
+---
+
+## 8. PRE-SUBMISSION CHECKLIST — rescued from the manuscript's assembly notes
+
+Item 29 removed an "ASSEMBLY NOTES — not part of the manuscript" section from the
+end of the manuscript. Most of it was working record duplicated in METHODS_LOG.
+**This part was not, and would have been destroyed with it.** Preserved verbatim
+in substance, with dead entries marked.
+
+1. ~~Figures 1, 3 and 6 do not exist.~~ **DONE 2026-08-05**, all six built and
+   rendered; Fig 1 and Fig 6 pass `anonymise_head()` and `assert_anonymised()`.
+2. **Table 1 CSV** needs exporting to a publication-ready form.
+   `paper/TABLE1_conductivities.csv` exists; the manuscript describes Table 1 but
+   does not include it. This is review item 48, deferred.
+3. **SimNIBS citation is incomplete (ref 16).** This is review item 45, and it is
+   the same defect: SimNIBS is named throughout and cited nowhere in text.
+4. **`throat_scm` is withheld.** If it is ever measured on the physical rig it
+   becomes a 23rd position and §2.3 changes. Disclosed in §4.7 as running against
+   the reported jaw advantage.
+5. **The repository must be public for §2.8's pre-registration citation to be
+   checkable.** §2.8 cites commits by hash as evidence the prediction preceded the
+   solve. The remote is currently **private** following the MIDA licensing
+   incident (history purged with `git filter-repo`, incident closed). **A reader
+   cannot verify the pre-registration while it stays private.** This is a live
+   pre-submission blocker and it is recorded nowhere else.
+6. **Author affiliation** — decide whether Minerva appears alongside Somach.
+7. **Whether §4.4 stays.** It names uses Carl is not chasing (clench input,
+   bruxism monitoring) and widens who cites this beyond silent speech. A decision,
+   not a defect.
+
+~~The title.~~ **Resolved 2026-08-05**, see §4.

@@ -5219,3 +5219,50 @@ earlier the same day.
 `paper/WORDING_title_and_item11.md` is tracked and carries **"pending Carl,
 supervisor-approved only"**. Carl chose option A in chat; that is recorded as the
 choice of an option, not as approval of the file.
+
+---
+
+## 2026-08-05 — CORRECTION to the 2026-08-03 charge-failure entry: hypothesis 1 was never tested
+
+The entry above ("CONFIRMED: the extended mesh does not conserve charge") records
+its stopping rule as:
+
+> 1. **element-size jump at the interface** — FALSIFIED by the `above_ear` probe
+>    (identical 100.49% at 130 mm and at 8 mm)
+
+**That falsification is void.** `results/_failed_runs/boundary_probe_above_ear_VOID_solved_hyoid_20260803/WHY_VOID.txt`
+records that the probe solved **hyoid**, not `above_ear`: `03a2_boundary_probe.py`
+called `03a_boundary_run.solve()` without passing the montage, so `solve()` fell
+back to 03a's module-level `INJECT_FROM = "hyoid"`. The result mesh is
+byte-identical to the boundary run's hyoid solve. The "identical 100.49% at
+130 mm and at 8 mm" is one measurement at 8 mm, reported twice.
+
+**Hypothesis 1 is UNTESTED, not falsified, and it is the leading candidate.** The
+slab is meshed roughly an order of magnitude coarser than the head it abuts: a
+70 mm extrusion adding ~10% of head volume yields 0.83% more elements. The named
+remedy is already in this log at the 2026-08-03 entry — rebuild with the slab at
+head-comparable element size.
+
+This correction is recorded here, not only in `HANDOFF.md` §7, because a session
+reading the log first would otherwise rule out the leading candidate on a probe
+that solved the wrong montage and go looking elsewhere.
+
+### A second orphan, found the same way as −3.724
+
+§2.5.1 states that for sternocleidomastoid "an unconstrained 72.5 % understates a
+gap that is **−5.06 dB** at the estimated axis". **No file in `results/` or `src/`
+produces −5.06.** Every stored SCM gap is −8.5776 (min over orientations),
++7.6535 (max), −1.4023 (median), −0.9735 (cluster), −1.9582 (with contrast) and
+−2.5343 (drop-`midjaw` subset). −5.06 lies inside the orientation range, which is
+what makes it plausible, and corresponds to no statistic on disk.
+
+By contrast the "21 per cent" in §4.3 **is** sourced: `04f_fat_path_vs_share.csv`
+gives sternocleidomastoid `fat_frac_of_path` 0.225 and `material_share_pct` 21.0,
+matching the manuscript exactly. Review item 17 treats the two as a pair to be
+deleted together. They are not a pair: one is an orphan and one is a correlation
+data point whose removal would alter a reported ρ = −0.955, n = 7. Held for a
+ruling rather than executed.
+
+**This is the third orphan found by checking rather than assuming, and the second
+after I reported that none could be named.** Until axis (a)'s reverse sweep
+exists, that report cannot be made.
