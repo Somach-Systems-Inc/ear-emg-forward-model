@@ -252,12 +252,13 @@ in substance, with dead entries marked.
 4. **`throat_scm` is withheld.** If it is ever measured on the physical rig it
    becomes a 23rd position and §2.3 changes. Disclosed in §4.7 as running against
    the reported jaw advantage.
-5. **The repository must be public for §2.8's pre-registration citation to be
-   checkable.** §2.8 cites commits by hash as evidence the prediction preceded the
-   solve. The remote is currently **private** following the MIDA licensing
-   incident (history purged with `git filter-repo`, incident closed). **A reader
-   cannot verify the pre-registration while it stays private.** This is a live
-   pre-submission blocker and it is recorded nowhere else.
+5. ~~The repository must be public for §2.8's pre-registration citation to be
+   checkable.~~ **STALE, closed 2026-08-06.** The remote is public
+   (`gh repo view` → `isPrivate: false`, `visibility: PUBLIC`). §2.8 verifies:
+   `fa583f6` is real, dated 2026-08-02T10:57:34-07:00, introduces
+   `expected_at_ear` in `src/config.py`, and is reachable from `origin/main`;
+   `results/03_leadfields.csv` first lands in `0492f57` on 2026-08-03T10:34, the
+   following day as the section claims. **Do not chase this again.**
 6. **Author affiliation** — decide whether Minerva appears alongside Somach.
 7. **Whether §4.4 stays.** It names uses Carl is not chasing (clench input,
    bruxism monitoring) and widens who cites this beyond silent speech. A decision,
