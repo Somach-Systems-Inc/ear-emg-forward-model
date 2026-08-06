@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import sys
 from datetime import datetime
+import os
 from pathlib import Path
 
 import numpy as np
@@ -278,6 +279,8 @@ def add_watermark(fig, is_mock: bool):
 
 
 def footer(fig, df: pd.DataFrame):
+    if PAPER_MODE:
+        return
     # A thin provenance line pinned to the TOP-LEFT corner, above the title —
     # the one place clear of axis labels on every figure shape (a bottom stamp
     # collides with the centered x-axis label on the narrow single-column plots).
@@ -330,6 +333,27 @@ def decorate_matrix(ax, rows, cols, row_labels=None):
     return col_montage, row_group
 
 
+# PAPER MODE. A journal figure carries no title of its own: the LaTeX caption
+# does that job, and baking one in duplicates it, crams the plot area, and goes
+# stale the moment figures are renumbered (a figure reading "Fig 5" under a
+# caption reading "Figure 2" shipped once already). The provenance footer is
+# suppressed too -- it stamps a wall-clock time, so it also makes renders
+# non-reproducible. The mock watermark is NEVER suppressed; that is a safety
+# interlock, not decoration.
+PAPER_MODE = os.environ.get("FIG_PAPER_MODE", "") not in ("", "0")
+
+
+def fig_title(ax, title, subtitle=None, **kw):
+    """Figure-level title. Silent in paper mode; panel labels bypass this."""
+    if PAPER_MODE:
+        return
+    ax.set_title(title, loc=kw.pop("loc", "left"), fontsize=kw.pop("fontsize", 9.5),
+                 fontweight="bold", pad=kw.pop("pad", 22))
+    if subtitle:
+        ax.text(0, kw.pop("suby", 1.045), subtitle, transform=ax.transAxes,
+                fontsize=6.8, color=INK_SECONDARY, va="bottom")
+
+
 def matrix_titles(ax, title, subtitle):
     """Title above, caption below it — consistent with the scatter/bar figures,
     sitting clear of the montage headers that ride just above the matrix."""
@@ -338,6 +362,8 @@ def matrix_titles(ax, title, subtitle):
     # on real data had the subtitle running straight through "Jaw",
     # "Retroauricular" and "cEEGrid C-path" -- caught by rendering and looking,
     # which is the only check that finds this class of defect.
+    if PAPER_MODE:
+        return
     ax.set_title(title, loc="left", fontsize=9.5, fontweight="bold", pad=46)
     ax.text(0, 1.105, subtitle, transform=ax.transAxes, va="bottom", ha="left",
             fontsize=6.5, color=INK_SECONDARY)

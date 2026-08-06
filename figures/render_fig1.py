@@ -169,16 +169,17 @@ def main(argv=None) -> int:
     for t in leg.get_texts():
         t.set_color(rc.INK_SECONDARY)
 
-    fig.suptitle("Fig 1 · Head model, segmented articulators and electrode "
-                 "positions", x=0.012, ha="left", fontsize=9.5,
-                 fontweight="bold")
-    fig.text(0.012, 0.925,
-             f"MIDA v1.0, {len(muscles)} segmented articulator compartments "
-             f"coloured by group   ·   {len(pos)} electrode positions\n"
-             f"face cropped per MIDA licence clause 2.3.3: the anterior skin "
-             f"is removed, so the jaw electrodes sit against empty space "
-             f"rather than the chin they are placed on",
-             ha="left", fontsize=6.4, color=rc.INK_SECONDARY)
+    if not rc.PAPER_MODE:
+        fig.suptitle("Fig 1 · Head model, segmented articulators and electrode "
+                     "positions", x=0.012, ha="left", fontsize=9.5,
+                     fontweight="bold")
+        fig.text(0.012, 0.925,
+                 f"MIDA v1.0, {len(muscles)} segmented articulator compartments "
+                 f"coloured by group   ·   {len(pos)} electrode positions\n"
+                 f"face cropped per MIDA licence clause 2.3.3: the anterior skin "
+                 f"is removed, so the jaw electrodes sit against empty space "
+                 f"rather than the chin they are placed on",
+                 ha="left", fontsize=6.4, color=rc.INK_SECONDARY)
     fig.tight_layout(rect=[0, 0.04, 1, 0.90])
 
     import pandas as pd

@@ -7,7 +7,6 @@
   a4paper,
 ]{article}
 \usepackage{xcolor}
-\usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 \usepackage{iftex}
@@ -57,7 +56,9 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+\usepackage{arxiv}
 \usepackage[T1]{fontenc}
+\usepackage{textcomp}
 \usepackage{lmodern}
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
@@ -100,7 +101,8 @@
 \begin{document}
 \maketitle
 
-\subsection{Abstract}\label{abstract}
+\begin{abstract}
+
 
 \textbf{Objective.} Ear-worn biopotential devices are being designed around a
 coupling that has not been computed: how strongly each speech articulator
@@ -110,7 +112,7 @@ orientation, electrode count, and the level of anatomical detail in the volume
 conductor.
 
 \textbf{Approach.} Articulator-to-electrode coupling is computed by reciprocity on
-MIDA, a head model with 116 labelled compartments at 500 \(\mu\)m, treating muscle as
+MIDA, a head model with 116 labelled compartments at 500 \textmu{}m, treating muscle as
 both the generator and its own conducting compartment. Twenty-two electrode
 positions spanning the canonical jaw montage, a retroauricular cluster and a
 cEEGrid C-path are compared against ten individually segmented articulators.
@@ -126,10 +128,10 @@ narrower than an unmatched comparison suggests. Five articulators ---
 orbicularis oris, buccinator, mentalis, depressor anguli oris and platysma ---
 favour the jaw montage at every sampled orientation and at every electrode
 subsample. No muscle robustly favours the retroauricular montage. The
-strongest ear-leaning candidate, temporalis, reaches \$-\$2.57 dB under a uniform
+strongest ear-leaning candidate, temporalis, reaches \textminus{}2.57 dB under a uniform
 orientation sweep, where its interval excludes zero, but that sweep assumes a
 fibre direction the anatomy can supply. Derived from the label volume, its fibre
-field gives \$-\(1.15 dB with an interval of [\)-\$1.45, +5.46{]}, and only half of
+field gives \textminus{}1.15 dB with an interval of {[}\textminus{}1.45, +5.46{]}, and only half of
 four-site retroauricular subsets favour the ear. Masseter and medial pterygoid
 favour the jaw robustly across electrode selection but reverse in roughly a
 third of orientations. Sternocleidomastoid and lateral pterygoid show no
@@ -147,6 +149,9 @@ four-site cluster chosen by anatomical target beats an arbitrary draw from the
 same candidates. The
 homogeneous-conductor control locates what anatomical detail is needed for ---
 montage assignment is recoverable without it, magnitudes are not.
+
+
+\end{abstract}
 
 \subsection{1. Introduction}\label{introduction}
 
@@ -226,7 +231,7 @@ are public and timestamped.
 
 The volume conductor is MIDA v1.0 (Multimodal Imaging-Based Detailed Anatomical
 Model of the Human Head and Neck; Iacono et al.~2015, IT'IS Foundation, DOI
-10.13099/ViP-MIDA-V1.0), segmented at 500 \(\mu\)m isotropic. The ten segmented
+10.13099/ViP-MIDA-V1.0), segmented at 500 \textmu{}m isotropic. The ten segmented
 articulator compartments and the electrode positions are shown in Figure 1.
 
 
@@ -252,7 +257,7 @@ orbicularis oris (75), buccinator (84), mentalis (71), depressor anguli oris
 The suprahyoid and tongue muscles are not individually segmented. Digastric
 (both bellies), stylohyoid, mylohyoid, geniohyoid, genioglossus, hyoglossus and
 styloglossus are pooled into \texttt{Muscle\ (General)} (label 38; 1,975,307 voxels,
-246,872 mm\(^{3}\)) and \texttt{Tongue} (label 42; 521,131 voxels, 65,130 mm\(^{3}\)). They are
+246,872 mm\textsuperscript{3}) and \texttt{Tongue} (label 42; 521,131 voxels, 65,130 mm\textsuperscript{3}). They are
 therefore absent from the per-muscle results, which is a limitation of the
 source segmentation rather than of the method. MIDA also merges temporalis with
 temporoparietalis in a single label (63) and carries the temporalis tendon
@@ -268,26 +273,26 @@ it at solve time, giving 15,415,668 elements of which 12,294,182 are tetrahedra.
 
 \textbf{Boundary.} The MIDA head model is truncated inferiorly on a planar cut, and
 that face is treated as an insulating (homogeneous Neumann) boundary. The face is
-fitted from 18,818 boundary triangles with unit normal {[}\$-\$0.03336, \$-\$0.03236,
-\$-\(0.99892], tilted 2.664\)\^{}\{\circ\}\$ off the RAS S axis, passing through (\$-\$2.301, 23.112,
-\$-\$115.600) mm; residual RMS about the fit is 0.073 mm. Because the plane is
-tilted it has no single S coordinate: the face spans S = \$-\$122.07 to \$-\$110.17 mm
-across its lateral extent, and the mesh S minimum, \$-\$122.167 mm, is a corner of
+fitted from 18,818 boundary triangles with unit normal {[}\textminus{}0.03336, \textminus{}0.03236,
+\textminus{}0.99892{]}, tilted 2.664\textdegree{} off the RAS S axis, passing through (\textminus{}2.301, 23.112,
+\textminus{}115.600) mm; residual RMS about the fit is 0.073 mm. Because the plane is
+tilted it has no single S coordinate: the face spans S = \textminus{}122.07 to \textminus{}110.17 mm
+across its lateral extent, and the mesh S minimum, \textminus{}122.167 mm, is a corner of
 that face rather than the location of the cut. All boundary clearances reported
 here are perpendicular distances to this plane, not differences in S.
 
 The cut plane is not fitted to an assumed orientation. Its normal recovers the
 MIDA label volume's own superior voxel axis, read from the NIfTI affine as
-{[}0.03335, 0.03240, 0.99892{]} at 2.665\(^{\circ}\) from RAS +S with a 0.500 mm step, agreeing
-with the fitted normal to 0.0026\(^{\circ}\). The truncation therefore lies on a voxel plane
+{[}0.03335, 0.03240, 0.99892{]} at 2.665\textdegree{} from RAS +S with a 0.500 mm step, agreeing
+with the fitted normal to 0.0026\textdegree{}. The truncation therefore lies on a voxel plane
 of the source segmentation. No node of the mesh lies more than 0.276 mm outside
 the fitted plane, so it is the outer boundary and carries the insulating
 condition.
 
 A neck-extended variant was constructed and rejected: it does not conserve
 charge, with flux failing to decay toward the domain floor (1.070 mA at S =
-\$-\$182 mm against a 1 mA injection, where the truncated control falls to 0.107 mA
-at S = \$-\$119 mm). Its terminating face is parallel to the base mesh's, displaced
+\textminus{}182 mm against a 1 mA injection, where the truncated control falls to 0.107 mA
+at S = \textminus{}119 mm). Its terminating face is parallel to the base mesh's, displaced
 70.001 mm inferiorly along the plane normal against the 70 mm extrusion
 requested in \texttt{01c\_extend\_neck.py}. All published results use the truncated mesh;
 the consequence for the jaw-versus-ear comparison is quantified in §3.4.
@@ -317,23 +322,23 @@ separately; each carries a note giving the reasoning.
 Air is a numerical choice, not a physical one. True air conductivity is
 zero, which makes the FEM system singular, so internal cavities are assigned a
 small finite value. The value matters because the stiffness matrix inherits
-\(\sigma\)\_max/\(\sigma\)\_min as its condition number and SimNIBS solves iteratively. At
-\(\sigma\)\_air = 1 \(\times\) 10\(^{-15}\) S/m the span reaches 1.879 \(\times\) 10\(^{15}\), the iterative solve does
-not converge, and the returned fields are 10--20\(\times\) too large while a result file
-is still written. We use \(\sigma\)\_air = 1 \(\times\) 10\(^{-6}\) S/m throughout, giving a span of
-1.879 \(\times\) 10\(^{6}\). A pre-flight gate refuses any assignment whose span exceeds
-1 \(\times\) 10\(^{8}\).
+$\sigma$\_max/$\sigma$\_min as its condition number and SimNIBS solves iteratively. At
+$\sigma$\_air = 1 \texttimes{} 10\textsuperscript{\textminus15} S/m the span reaches 1.879 \texttimes{} 10\textsuperscript{15}, the iterative solve does
+not converge, and the returned fields are 10--20\texttimes{} too large while a result file
+is still written. We use $\sigma$\_air = 1 \texttimes{} 10\textsuperscript{\textminus6} S/m throughout, giving a span of
+1.879 \texttimes{} 10\textsuperscript{6}. A pre-flight gate refuses any assignment whose span exceeds
+1 \texttimes{} 10\textsuperscript{8}.
 
 Insensitivity to that choice was measured rather than assumed. Solving at
-\(\sigma\)\_air = 10\(^{-6}\), 10\(^{-5}\), 10\(^{-4}\) and 10\(^{-3}\) S/m on identical geometry, the largest
-departure over the ten muscle compartments from the 10\(^{-6}\) baseline is 0.007 dB at
-10\(^{-5}\), 0.069 dB at 10\(^{-4}\) and 0.467 dB at 10\(^{-3}\). The result is therefore
-insensitive across 10\(^{-6}\) to 10\(^{-4}\), where the largest departure sits roughly four
-times below the measured noise floor of 0.27 dB. Departure begins at 10\(^{-3}\), where
-it reaches 1.7\(\times\) the floor and concentrates in the compartments nearest the oral
-and nasal cavities (mentalis \$-\$0.467, orbicularis oris \$-\$0.433) while remote
-compartments are essentially unmoved (temporalis \$-\$0.029, lateral pterygoid
-\$-\$0.009). The operating value sits two decades inside the insensitive range.
+$\sigma$\_air = 10\textsuperscript{\textminus6}, 10\textsuperscript{\textminus5}, 10\textsuperscript{\textminus4} and 10\textsuperscript{\textminus3} S/m on identical geometry, the largest
+departure over the ten muscle compartments from the 10\textsuperscript{\textminus6} baseline is 0.007 dB at
+10\textsuperscript{\textminus5}, 0.069 dB at 10\textsuperscript{\textminus4} and 0.467 dB at 10\textsuperscript{\textminus3}. The result is therefore
+insensitive across 10\textsuperscript{\textminus6} to 10\textsuperscript{\textminus4}, where the largest departure sits roughly four
+times below the measured noise floor of 0.27 dB. Departure begins at 10\textsuperscript{\textminus3}, where
+it reaches 1.7\texttimes{} the floor and concentrates in the compartments nearest the oral
+and nasal cavities (mentalis \textminus{}0.467, orbicularis oris \textminus{}0.433) while remote
+compartments are essentially unmoved (temporalis \textminus{}0.029, lateral pterygoid
+\textminus{}0.009). The operating value sits two decades inside the insensitive range.
 
 \subsubsection{2.3 Electrode placement}\label{electrode-placement}
 
@@ -391,7 +396,7 @@ SimNIBS's tDCS solver computes exactly E\_recip, so it is repurposed here: 1 mA
 is injected between each electrode and a common reference (contralateral
 earlobe), and the resulting field is read inside every segmented muscle
 compartment. The consequence is one solve per electrode instead of one per
-source, 22 solves against the order of 10\(^{5}\) a forward formulation would require
+source, 22 solves against the order of 10\textsuperscript{5} a forward formulation would require
 at MIDA's resolution. The formulations are mathematically equivalent; only cost
 differs.
 
@@ -411,7 +416,7 @@ We use the same approach and cite it as precedent.
 
 The isotropic condition is primary: all 22 production solves assign muscle a
 single isotropic conductivity of 0.355 S/m. A second, anisotropic condition
-assigns a per-element tensor with \(\sigma\) = 0.4 S/m along the fibre and 0.1 S/m across
+assigns a per-element tensor with $\sigma$ = 0.4 S/m along the fibre and 0.1 S/m across
 it, aligned to a PCA-derived axis.
 
 PCA is applied only where a principal axis is a meaningful object. It describes
@@ -477,8 +482,8 @@ numbers it is meant to test.
 
 \textbf{Reciprocity on the head mesh.} The identity is verified on the real geometry
 by solving a montage and its polarity-swapped counterpart and requiring
-L(A\(\rightarrow\)B) = \(-\)L(B\(\rightarrow\)A). On identical discretisations the residual is 7.5 \(\times\) 10\(^{-6}\) of
-\textbar L\textbar, i.e.~6.5 \(\times\) 10\(^{-5}\) dB --- four orders of magnitude below the measured per-site
+L(A$\rightarrow$B) = \textminus{}L(B$\rightarrow$A). On identical discretisations the residual is 7.5 \texttimes{} 10\textsuperscript{\textminus6} of
+\textbar L\textbar, i.e.~6.5 \texttimes{} 10\textsuperscript{\textminus5} dB --- four orders of magnitude below the measured per-site
 noise floor.
 
 \textbf{Four physical invariants}, computed from the field alone and requiring no
@@ -488,7 +493,7 @@ is zero; (3) doubling the injected current doubles the field exactly; (4)
 swapping source and sink negates the field. Invariant 1 uses an exact tet-patch
 integral in which flux is integrated over the interior cut of a patch of
 tetrahedra using the mesh's own faces as the quadrature, so enclosure and
-orientation are exact by construction (the patch surface closes to 1.2 \(\times\) 10\(^{-16}\)
+orientation are exact by construction (the patch surface closes to 1.2 \texttimes{} 10\textsuperscript{\textminus16}
 of its own area) and no inside/outside point test is required. A stationary
 plateau across radii 25--75 mm is required before any value is used. Invariants 1
 and 2 run on every solve; 3 and 4 require paired solves and run on the first and
@@ -497,7 +502,7 @@ than raising on the first.
 
 \textbf{Convergence.} RDM against the analytic sphere was fitted across three mesh
 densities, giving a convergence exponent p = 0.980, consistent with the
-theoretical p \(\approx\) 1 expected for a gradient quantity in a first-order FEM. This is
+theoretical p $\approx$ 1 expected for a gradient quantity in a first-order FEM. This is
 stated as consistency, not corroboration: three data points fitted with three
 free parameters is an exact fit by construction, so p is determined
 algebraically and the residual carries no goodness-of-fit information.
@@ -603,7 +608,7 @@ Figure 3.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{fig3_complementarity_map.pdf}
-\caption{Which montage sees which muscle. For each articulator, the difference between the best jaw site and the best retroauricular site, in dB. Negative bars are muscles the ear sees more strongly. Jaw sites within 10 mm of the truncation face are excluded. The shaded band is the measured electrode-meshing floor (0.27 dB, with the lighter band extending to its 95 \% CI upper bound of 0.65 dB). The axis is linear in dB rather than a rank, because the asymmetry between the arms is itself a result: the jaw's advantages reach +20.90 dB while the ear's reach only $-$3.31 dB. Both numbers are emitted from the figure's own source file by src/04m\_caption\_numbers.py, which fails the build if a caption and its figure disagree.}
+\caption{Which montage sees which muscle. For each articulator, the difference between the best jaw site and the best retroauricular site, in dB. Negative bars are muscles the ear sees more strongly. Jaw sites within 10 mm of the truncation face are excluded. The shaded band is the measured electrode-meshing floor (0.27 dB, with the lighter band extending to its 95 \% CI upper bound of 0.65 dB). The axis is linear in dB rather than a rank, because the asymmetry between the arms is itself a result: the jaw's advantages reach +20.90 dB while the ear's reach only \textminus{}3.31 dB. Both numbers are emitted from the figure's own source file by src/04m\_caption\_numbers.py, which fails the build if a caption and its figure disagree.}
 \end{figure}
 
 
@@ -611,22 +616,22 @@ Figure 3.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{fig2_sensitivity_matrix.pdf}
-\caption{Articulator sensitivity matrix. Median lead field in each segmented muscle compartment for each electrode site, in dB relative to that muscle's best jaw site (0 dB, ringed). Isotropic condition, truncated mesh, 22 electrodes $\times$ 10 muscles. The colour scale is diverging about 0 dB: red is attenuation relative to the best jaw site, blue is a site that exceeds it, and boxed cells mark every (site, muscle) pair where a retroauricular electrode beats every jaw electrode. The two arms are not equally scaled ($-$28 to 0 dB against 0 to +4 dB), so colour saturation is not comparable across the midpoint; the boxes carry the sign independently of colour. The 0 dB reference here includes all jaw sites, whereas Figure 3 and Table 4 exclude those within 10 mm of the truncation face, so the named best jaw site differs for some muscles.}
+\caption{Articulator sensitivity matrix. Median lead field in each segmented muscle compartment for each electrode site, in dB relative to that muscle's best jaw site (0 dB, ringed). Isotropic condition, truncated mesh, 22 electrodes \texttimes{} 10 muscles. The colour scale is diverging about 0 dB: red is attenuation relative to the best jaw site, blue is a site that exceeds it, and boxed cells mark every (site, muscle) pair where a retroauricular electrode beats every jaw electrode. The two arms are not equally scaled (\textminus{}28 to 0 dB against 0 to +4 dB), so colour saturation is not comparable across the midpoint; the boxes carry the sign independently of colour. The 0 dB reference here includes all jaw sites, whereas Figure 3 and Table 4 exclude those within 10 mm of the truncation face, so the named best jaw site differs for some muscles.}
 \end{figure}
 
 
 No articulator favours the ear on both axes. Temporalis is the closest,
 and it does not clear the bar. Over the fibre field derived from the anatomy
-(§2.3.1) it reaches \$-\(1.147 dB at the pre-registered four-site cluster, with
+(§2.3.1) it reaches \textminus{}1.147 dB at the pre-registered four-site cluster, with
 91.5 per cent of fibre directions agreeing, but its matched-count interval is
-**[\)-\$1.453, +5.458{]}** and only \textbf{50.5 per cent} of the four-site
+\textbf{{[}\textminus{}1.453, +5.458{]}} and only \textbf{50.5 per cent} of the four-site
 retroauricular subsets favour the ear at all. Whether the ear wins for
 temporalis is decided by which four electrodes a device happens to carry, not
 by the anatomy.
 
 The two treatments disagree, and the anatomy-specific one governs. Under a
-uniform orientation sweep temporalis reaches \$-\(2.571 dB with 92.0 per cent of
-orientations agreeing and an interval of [\)-\$3.308, \$-\$0.035{]} that excludes zero ---
+uniform orientation sweep temporalis reaches \textminus{}2.571 dB with 92.0 per cent of
+orientations agreeing and an interval of {[}\textminus{}3.308, \textminus{}0.035{]} that excludes zero ---
 on that treatment it would be reported as favouring the ear. The sweep assumes
 source orientation is uniformly distributed over the sphere, which is the right
 default when fibre direction is unknown and the wrong one for a muscle whose
@@ -638,8 +643,8 @@ the interval is a complete description of that set rather than an estimate from
 draws. It therefore carries no seed and no sampling error. For the derived fibre
 field the enumeration varies electrodes alone, with the fibre orientation held
 fixed, so the resulting spread reflects site availability and nothing else.
-Temporalis gives a median gap of \$-\(1.147 dB with an interval of
-[\)-\$1.453, +5.458{]} dB, favouring the ear in 50.5 per cent of subsets
+Temporalis gives a median gap of \textminus{}1.147 dB with an interval of
+{[}\textminus{}1.453, +5.458{]} dB, favouring the ear in 50.5 per cent of subsets
 {[}\texttt{results/04p\_headline\_interval.csv}{]}.
 
 This also fixes what the interval means. It is not an inference from a sample to
@@ -649,12 +654,12 @@ It is a statement about which montages a device could physically carry.
 
 The lower bound of this interval is not a tail quantile. The most
 ear-favouring outcome of any 4-site subset is the best of all 14 sites, so
-\$-\$1.453 dB is a floor fixed by the data rather than by sampling, and it is
+\textminus{}1.453 dB is a floor fixed by the data rather than by sampling, and it is
 attained in exactly the 28.6 per cent of subsets that contain that site, which is
-4/14 as expected from subset size alone. It coincides with the argmax gap over all 14 sites, \$-\$1.453 dB, by
+4/14 as expected from subset size alone. It coincides with the argmax gap over all 14 sites, \textminus{}1.453 dB, by
 construction; the two figures are one measurement, not two that agree. The
-corresponding bound under the uniform orientation sweep, \$-\$3.308 dB, is a
-genuine percentile lying strictly above its own floor of \$-\$3.314 dB, which is
+corresponding bound under the uniform orientation sweep, \textminus{}3.308 dB, is a
+genuine percentile lying strictly above its own floor of \textminus{}3.314 dB, which is
 attained in 2.2 per cent of draws. The two lower bounds are therefore not
 comparable quantities.
 
@@ -666,12 +671,12 @@ and a reader who rejects that derivation should read temporalis as favouring
 the ear by 2.57 dB.}
 
 Two show no preference that survives electrode subsampling.
-Sternocleidomastoid (\$-\(0.973 dB at the cluster, 60.5 per cent of orientations,
-interval [\)-\(1.40, +1.27]) and lateral pterygoid (\)-\(1.564 dB, 65.5 per cent,
-[\)-\$1.59, +1.09{]}) both have intervals crossing zero. Their apparent advantage
+Sternocleidomastoid (\textminus{}0.973 dB at the cluster, 60.5 per cent of orientations,
+interval {[}\textminus{}1.40, +1.27{]}) and lateral pterygoid (\textminus{}1.564 dB, 65.5 per cent,
+{[}\textminus{}1.59, +1.09{]}) both have intervals crossing zero. Their apparent advantage
 depends on which four sites are available and is not a property of the
 montage. Reported at the unmatched argmax over fourteen sites they would read
-\$-\$1.402 and \$-\$1.679 dB, which is why the matched comparison is the one reported.
+\textminus{}1.402 and \textminus{}1.679 dB, which is why the matched comparison is the one reported.
 
 Two favour the jaw robustly across sites but not across orientation.
 Masseter and medial pterygoid have subsample intervals entirely positive, but
@@ -682,8 +687,8 @@ would discard one axis or the other, so both are reported (Table 4).
 
 The isotropy assumption does not measurably affect any site-to-site ratio
 (Figure 4).
-Applying a fibre tensor changes the jaw-versus-ear gap by \$-\$0.085 dB for
-sternocleidomastoid, \$-\$0.010 dB for medial pterygoid, +0.137 dB for temporalis
+Applying a fibre tensor changes the jaw-versus-ear gap by \textminus{}0.085 dB for
+sternocleidomastoid, \textminus{}0.010 dB for medial pterygoid, +0.137 dB for temporalis
 and +0.036 dB for lateral pterygoid. Every one of these lies below the 0.27 dB
 measured electrode-meshing floor, including for the two compartments that
 carry a tensor. Anisotropy raises the absolute lead field substantially, by
@@ -694,7 +699,7 @@ alike, so the effect subtracts out of every ratio this paper reports.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{fig4_anisotropy_delta.pdf}
-\caption{Anisotropy robustness check. Change in lead field between the isotropic and anisotropic conditions, 20\textbackslash\{\}textperiodcentered\{\}log$_{1}$$_{0}$(aniso/iso), per cell. The anisotropic condition is solved on the isotropic run's own mesh, so the two differ in conductivity alone and carry no electrode-realisation noise. A fibre tensor is applied to 2 of 10 muscles, sternocleidomastoid and medial pterygoid. Rows without a tensor are labelled not applied, not zero: they were never varied, so no null result was measured for them.}
+\caption{Anisotropy robustness check. Change in lead field between the isotropic and anisotropic conditions, 20\textperiodcentered{}log\textsubscript{1}\textsubscript{0}(aniso/iso), per cell. The anisotropic condition is solved on the isotropic run's own mesh, so the two differ in conductivity alone and carry no electrode-realisation noise. A fibre tensor is applied to 2 of 10 muscles, sternocleidomastoid and medial pterygoid. Rows without a tensor are labelled not applied, not zero: they were never varied, so no null result was measured for them.}
 \end{figure}
 
 
@@ -722,44 +727,29 @@ The contribution is not uniform in sign across muscles, because which electrode
 is best differs by muscle and the shift is not uniform within a montage:
 
 {\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}@{}}
+\begin{longtable}[]{@{}lllll@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Muscle
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-As modelled
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Without contrast
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Change
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Contrast's role
-\end{minipage} \\
+Muscle & As modelled & Without contrast & Change & Contrast's role \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-temporalis & \$-\$3.801 & \$-\$4.923 & \$-\$1.121 & suppresses 29.5 \% \\
-sternocleidomastoid & \$-\$1.958 & \$-\$1.547 & 0.411 & contributes 21.0 \% \\
-lateral pterygoid & \$-\$1.855 & \$-\$1.532 & 0.323 & contributes 17.4 \% \\
+temporalis & \textminus{}3.801 & \textminus{}4.923 & \textminus{}1.121 & suppresses 29.5 \% \\
+sternocleidomastoid & \textminus{}1.958 & \textminus{}1.547 & 0.411 & contributes 21.0 \% \\
+lateral pterygoid & \textminus{}1.855 & \textminus{}1.532 & 0.323 & contributes 17.4 \% \\
 medial pterygoid & 1.147 & 1.245 & 0.098 & suppresses 8.6 \% \\
-masseter & 1.700 & 1.668 & \$-\$0.032 & contributes 1.9 \% \\
+masseter & 1.700 & 1.668 & \textminus{}0.032 & contributes 1.9 \% \\
 orbicularis oris & 8.192 & 9.286 & 1.093 & suppresses 13.3 \% \\
 platysma & 8.844 & 8.901 & 0.057 & suppresses 0.6 \% \\
-buccinator & 10.033 & 9.848 & \$-\$0.185 & contributes 1.8 \% \\
-depressor anguli oris & 14.607 & 14.001 & \$-\$0.606 & contributes 4.1 \% \\
-mentalis & 21.945 & 19.082 & \$-\$2.863 & contributes 13.0 \% \\
+buccinator & 10.033 & 9.848 & \textminus{}0.185 & contributes 1.8 \% \\
+depressor anguli oris & 14.607 & 14.001 & \textminus{}0.606 & contributes 4.1 \% \\
+mentalis & 21.945 & 19.082 & \textminus{}2.863 & contributes 13.0 \% \\
 \end{longtable}
 }
 
 Reported per muscle only. A population differential has no clean definition
 under statistic A: the median change is +0.01 dB and conceals a sign spanning
-\$-\$2.86 to +1.09 dB, so a single percentage would hide the finding rather than
+\textminus{}2.86 to +1.09 dB, so a single percentage would hide the finding rather than
 summarise it.
 
 For the labial group, where the jaw's advantage is largest, the contrast
@@ -784,9 +774,9 @@ side. Perpendicular clearance to the fitted plane places 2 jaw sites within
 \texttt{submental\_mid} at 10.76 mm. The closest ear site, \texttt{cg09}, is 75.27 mm away.
 
 Removing the near-cut sites moves the median gap from +4.68 dB to +4.52 dB, a
-shift of \$-\$0.17 dB. No muscle changes sign (0 of 10). The largest individual
-movements are \texttt{medial\_pterygoid} \$-\$0.88, \texttt{sternocleidomastoid} \$-\$0.54 and
-\texttt{platysma} \$-\$0.37 dB. The reported advantage is not an artefact of proximity to
+shift of \textminus{}0.17 dB. No muscle changes sign (0 of 10). The largest individual
+movements are \texttt{medial\_pterygoid} \textminus{}0.88, \texttt{sternocleidomastoid} \textminus{}0.54 and
+\texttt{platysma} \textminus{}0.37 dB. The reported advantage is not an artefact of proximity to
 the truncation. The sensitivity reported here measures the effect of excluding
 the most exposed sites. It does not bound the residual boundary artefact on the
 sites that remain, which is addressed in §4.7.
@@ -811,7 +801,7 @@ montage preference. Eight of ten gap magnitudes move by more than the 0.27 dB
 floor, with a median shift of 0.482 dB and a maximum of 3.271 dB (mentalis).
 
 The direction is not uniform. Temporalis's retroauricular advantage \emph{grows}
-under the homogeneous conductor, from \$-\$2.571 to \$-\$3.724 dB at the pre-registered
+under the homogeneous conductor, from \textminus{}2.571 to \textminus{}3.724 dB at the pre-registered
 cluster {[}\texttt{results/04r\_homog\_cluster.csv}{]}, so the anatomically resolved model
 reports that result more conservatively than a simpler one would.
 Sternocleidomastoid and lateral pterygoid move the other way.
@@ -827,8 +817,8 @@ four-site retroauricular cluster, above the ear, over the mastoid, behind and
 below the lobule, and anterior to the tragus, was specified by anatomical
 target in the project repository before any solve was run. Compared against
 the median of random four-site draws from the same fourteen candidates; it is
-1.03 dB better for lateral pterygoid (\$-\$1.564 against \$-\(0.534) and equivalent
-for sternocleidomastoid (\)-\$0.973 against \$-\$0.979).
+1.03 dB better for lateral pterygoid (\textminus{}1.564 against \textminus{}0.534) and equivalent
+for sternocleidomastoid (\textminus{}0.973 against \textminus{}0.979).
 
 Neither of the two sites that won the unmatched argmax for temporalis and
 sternocleidomastoid is in that cluster, which is the same point from the other
@@ -860,7 +850,7 @@ Temporalis is the clearest case and the one that took longest to settle, and it
 is the one place where this conclusion depends on a modelling choice rather than
 on a control. Under a uniform orientation sweep it favours the ear by 2.57 dB
 with an interval excluding zero. Under the fibre field derived from the label
-volume it favours the ear by 1.147 dB with an interval of {[}\$-\$1.453, +5.458{]}, and
+volume it favours the ear by 1.147 dB with an interval of {[}\textminus{}1.453, +5.458{]}, and
 does not resolve. The difference is not a correction of an error; it is the
 difference between assuming source orientation is uniform over the sphere and
 deriving it from where the muscle actually attaches. That difference also changes
@@ -914,7 +904,7 @@ and no muscle in either group is unaffected.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{fig5_attenuation_vs_distance.pdf}
-\caption{Attenuation against source-electrode distance. One point per (electrode, muscle) pair: straight-line distance from the electrode to the nearest voxel of that muscle compartment against the lead field in dB relative to that muscle's best jaw site, isotropic condition, truncated mesh. The two montages do not lie on the same attenuation curve. Fitted over the 3 to 87 mm range where both montages have electrodes, the retroauricular sites fall off at $-$0.158 dB/mm against the jaw's $-$0.045 dB/mm, a factor of 3.5 [results/04s\_fig3\_slopes.csv]. A retroauricular electrode therefore loses signal with distance more than three times as fast as a jaw electrode does, which is the geometric mechanism behind the labial-group deficit reported in §4.3. Lines are least-squares fits over the overlapping range only, so the comparison is made where both montages have data rather than extrapolated across the ear's longer reach.}
+\caption{Attenuation against source-electrode distance. One point per (electrode, muscle) pair: straight-line distance from the electrode to the nearest voxel of that muscle compartment against the lead field in dB relative to that muscle's best jaw site, isotropic condition, truncated mesh. The two montages do not lie on the same attenuation curve. Fitted over the 3 to 87 mm range where both montages have electrodes, the retroauricular sites fall off at \textminus{}0.158 dB/mm against the jaw's \textminus{}0.045 dB/mm, a factor of 3.5 [results/04s\_fig3\_slopes.csv]. A retroauricular electrode therefore loses signal with distance more than three times as fast as a jaw electrode does, which is the geometric mechanism behind the labial-group deficit reported in §4.3. Lines are least-squares fits over the overlapping range only, so the comparison is made where both montages have data rather than extrapolated across the ear's longer reach.}
 \end{figure}
 
 
@@ -927,16 +917,16 @@ additional solve.
 
 The material share is not a dose response. Across the muscles for which a
 layer profile exists, it correlates \emph{negatively} with the adipose fraction of
-the muscle-to-skin path (Spearman \(\rho\) = \$-\$0.955, p = 0.001, n = 7): platysma sits
+the muscle-to-skin path (Spearman $\rho$ = \textminus{}0.955, p = 0.001, n = 7): platysma sits
 at 0.650 fat fraction and 0.6 per cent material share, while
 sternocleidomastoid sits at 0.225 and 21 per cent. At n = 7 a single muscle could
 carry that relationship, so it was tested: dropping each muscle in turn leaves
-\(\rho\) between \$-\$0.928 and \$-\(0.986 and p below 0.01 in all seven cases
-[`results/04t_correlation_robustness.csv`]; the seven muscles and that
+$\rho$ between \textminus{}0.928 and \textminus{}0.986 and p below 0.01 in all seven cases
+{[}\texttt{results/04t\_correlation\_robustness.csv}{]}; the seven muscles and that
 relationship are plotted in Figure 6. The strength of that
 relationship shows the swap is measuring adipose path rather than something
 incidental, but its sign shows it does so through cancellation. The reported
-share is |\)\Delta\$gap\textbar{} / \textbar gap\textbar, and a muscle embedded uniformly in fat has both the
+share is \textbar $\Delta$gap\textbar{} / \textbar gap\textbar, and a muscle embedded uniformly in fat has both the
 jaw and the ear route shifted together, so the change subtracts out of the
 ratio. The quantity that would track positively is the \emph{difference} between
 how the two routes traverse fat, which this study does not form. This is the
@@ -956,10 +946,10 @@ sternocleidomastoid and lateral pterygoid, the same decomposition returns a
 modest term whose sign varies between them.
 
 For temporalis the contrast acts against the gap rather than for it: removing it
-would enlarge the gap from \$-\$3.801 to \$-\(4.923 dB. The direction is worth stating
+would enlarge the gap from \textminus{}3.801 to \textminus{}4.923 dB. The direction is worth stating
 because it is the opposite of the intuitive reading, the tissue contrast is not
 what produces temporalis's proximity to zero; it is part of what holds it there.
-It does not change the verdict, which is set by the matched\)-\$count interval and
+It does not change the verdict, which is set by the matched\textminus{}count interval and
 not by this term. For sternocleidomastoid and lateral pterygoid the contrast acts
 with the gap, supplying 21.0 and 17.4 per cent of it respectively.
 
@@ -1068,10 +1058,10 @@ Temporalis gap
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-field magnitude, best of 14 ear sites & \$-\$3.92 dB \\
-projected onto source orientation & \$-\$3.31 dB \\
-matched electrode counts, four sites each & \$-\(2.57 dB, interval [\)-\$3.31, \$-\(0.03] |
-| derived per-voxel fibre field | **\)-\(1.15 dB, interval [\)-\$1.45, +5.46{]} spans zero** \\
+field magnitude, best of 14 ear sites & \textminus{}3.92 dB \\
+projected onto source orientation & \textminus{}3.31 dB \\
+matched electrode counts, four sites each & \textminus{}2.57 dB, interval {[}\textminus{}3.31, \textminus{}0.03{]} \\
+derived per-voxel fibre field & \textbf{\textminus{}1.15 dB, interval {[}\textminus{}1.45, +5.46{]} spans zero} \\
 \end{longtable}
 }
 
@@ -1134,7 +1124,7 @@ anatomy demonstrates that.
 the ear.} A neck-extended mesh was built specifically to measure it and did not
 conserve charge, so the pre-committed decision rule was recorded unexecuted
 rather than applied or revised. What can be said is §3.4: excluding the two
-near-cut jaw sites moves the median gap by only \$-\$0.17 dB and flips no signs, and
+near-cut jaw sites moves the median gap by only \textminus{}0.17 dB and flips no signs, and
 seven of ten muscles are immune by construction. The magnitude of the residual
 bias is unknown rather than estimated, and its direction flatters this paper's
 own headline comparison.
@@ -1192,7 +1182,7 @@ than is reported.
 \textbf{Table 1, Tissue conductivities.} All 116 MIDA labels with assigned
 conductivity, source (SimNIBS 4.6 default / IT'IS LF v4.2 / judgement),
 frequency, plausible range for judgement rows, volume fraction and minimum
-distance to the nearest electrode. Sorted by volume fraction \(\times\) proximity.
+distance to the nearest electrode. Sorted by volume fraction \texttimes{} proximity.
 {[}\texttt{results/table1\_conductivities.csv}{]}
 
 \textbf{Table 2, Tissue layer stack beneath each canonical site.} Millimetres per
@@ -1257,18 +1247,18 @@ Value
 1 & Discretisation & finite element size & yes & partly --- directional, unquantified & not separable from term 6 at current precision \\
 2 & Interface proximity & source near a conductivity boundary & yes & yes --- directional, unquantified & requires a geometry decoupling eccentricity from interface distance; not measured \\
 3 & Inferior boundary & MIDA's cut face & yes & yes --- jaw sites, not ear; directional, unquantified & unquantified; direction known, magnitude not bounded \\
-4 & Muscle anisotropy & \(\sigma\) tensor vs scalar & \textbf{yes --- \textasciitilde5 dB in medial pterygoid, \textasciitilde4.5 dB in SCM} & \textbf{no --- below the floor} & statistic A: largest change to any gap is \textbf{\$-\$0.085 dB} (SCM); medial pterygoid \$-\$0.010, temporalis +0.137, lateral pterygoid +0.036, all under the 0.27 dB floor. The absolute lead field IS affected; the reclassification is specific to ratios. Tensor on 2 of 10 compartments, the rest NOT APPLIED \\
+4 & Muscle anisotropy & $\sigma$ tensor vs scalar & \textbf{yes --- \textasciitilde5 dB in medial pterygoid, \textasciitilde4.5 dB in SCM} & \textbf{no --- below the floor} & statistic A: largest change to any gap is \textbf{\textminus{}0.085 dB} (SCM); medial pterygoid \textminus{}0.010, temporalis +0.137, lateral pterygoid +0.036, all under the 0.27 dB floor. The absolute lead field IS affected; the reclassification is specific to ratios. Tensor on 2 of 10 compartments, the rest NOT APPLIED \\
 5 & Fibre orientation & n unknown in MIDA & yes & yes & per-muscle min--max envelope \\
 6 & Electrode meshing & contact area from incidental surface triangulation & yes & \textbf{yes --- per-site} & \textbf{0.27 dB, 95 \% CI {[}0.17, 0.65{]}, n = 6} \\
 7 & Single anatomy & MIDA is one subject & yes & unknown --- directional, unquantified & not quantifiable from one head \\
-8 & Delivered current & injected vs requested per solve & yes & \textbf{no --- corrected, not bounded} & 0.887--1.075 \(\times\) requested across 22 solves, measured per solve by the tet-patch integral. Each site's lead field is divided by its own delivered current (§2.4), so the term does not enter any reported ratio. It is listed here because it was measured and corrected, not because it remains an uncertainty: the 1.67 dB spread it would otherwise contribute is six times the row-6 floor and could not have been bounded by it \\
-9 & Adipose conductivity & fat at 0.025 vs muscle 0.355 S/m & yes & \textbf{yes --- and the SIGN differs by muscle} & Reported \textbf{per muscle only} --- a population differential across sites has no clean definition under statistic A (the median change over muscles is +0.01 dB and conceals a sign that spans \$-\(2.86 to +1.09). Statistic A, per muscle, sign varies: **\)-\(1.121 dB** for temporalis (acts against the gap), **+0.411 dB** for sternocleidomastoid and **+0.323 dB** for lateral pterygoid (act with it), **\)-\$2.863 to +1.093 dB** across the labial group. No single figure is admissible --- the sign differs by muscle. Shares are not quoted here because they are dominated by the denominator; see §4.3. \\
+8 & Delivered current & injected vs requested per solve & yes & \textbf{no --- corrected, not bounded} & 0.887--1.075 \texttimes{} requested across 22 solves, measured per solve by the tet-patch integral. Each site's lead field is divided by its own delivered current (§2.4), so the term does not enter any reported ratio. It is listed here because it was measured and corrected, not because it remains an uncertainty: the 1.67 dB spread it would otherwise contribute is six times the row-6 floor and could not have been bounded by it \\
+9 & Adipose conductivity & fat at 0.025 vs muscle 0.355 S/m & yes & \textbf{yes --- and the SIGN differs by muscle} & Reported \textbf{per muscle only} --- a population differential across sites has no clean definition under statistic A (the median change over muscles is +0.01 dB and conceals a sign that spans \textminus{}2.86 to +1.09). Statistic A, per muscle, sign varies: \textbf{\textminus{}1.121 dB} for temporalis (acts against the gap), \textbf{+0.411 dB} for sternocleidomastoid and \textbf{+0.323 dB} for lateral pterygoid (act with it), \textbf{\textminus{}2.863 to +1.093 dB} across the labial group. No single figure is admissible --- the sign differs by muscle. Shares are not quoted here because they are dominated by the denominator; see §4.3. \\
 \end{longtable}
 }
 
 Row 6 is measured by rotating the electrode array and the source points together
 on a fixed mesh, which preserves every source-to-electrode vector (verified to
-2.8 \(\times\) 10\(^{-14}\) mm) so the exact answer is identical across draws and the whole
+2.8 \texttimes{} 10\textsuperscript{\textminus14} mm) so the exact answer is identical across draws and the whole
 spread is realisation noise. The term splits into a common-mode part (SD
 4.93 pp, 0.42 dB, cancels in a ratio) and an electrode-specific residual (SD
 3.18 pp, 0.27 dB, does not). The reported statistic is the mean over 16
@@ -1323,9 +1313,9 @@ every subset, spanning 8.11 to 22.40 dB. No muscle favours the retroauricular
 montage on both axes in any subset.
 
 8 muscles return an identical verdict in all 5 subsets. Two do not. Lateral
-pterygoid gives no resolvable preference across four subsets (\$-\$1.53 to \$-\$1.59 dB)
-and \$-\$3.61 dB in the fifth; sternocleidomastoid gives \$-\$0.97 to \$-\$1.44 dB across
-four and \$-\$2.53 dB in the fifth. In both cases the deviating subset is the one
+pterygoid gives no resolvable preference across four subsets (\textminus{}1.53 to \textminus{}1.59 dB)
+and \textminus{}3.61 dB in the fifth; sternocleidomastoid gives \textminus{}0.97 to \textminus{}1.44 dB across
+four and \textminus{}2.53 dB in the fifth. In both cases the deviating subset is the one
 dropping \texttt{midjaw}, and in both cases the deviating value is site-robust but
 orientation-dependent, with agreement of 72.0 and 65.0 per cent against the
 90 per cent required for a robust preference. Neither reaches a retroauricular
@@ -1337,8 +1327,8 @@ near it.
 
 \textbf{Temporalis is reported here under the uniform orientation sweep, for
 comparability with the other nine muscles.} Under the fibre field derived from
-the label volume (§2.5.1) it reads \$-\(1.15 dB with a random-4 interval of
-[\)-\$1.45, +5.46{]}, which crosses zero, and that is the value the paper's conclusions
+the label volume (§2.5.1) it reads \textminus{}1.15 dB with a random-4 interval of
+{[}\textminus{}1.45, +5.46{]}, which crosses zero, and that is the value the paper's conclusions
 use (§3.1, §4.1). The two treatments disagree; the derived one governs because it
 removes an assumption rather than adding one. This row shows what the
 assumption-free treatment gives, so the dependence is visible rather than buried.

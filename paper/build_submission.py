@@ -58,7 +58,9 @@ FIGURES = {
 # md-capstonefall25_25TPE/.../022826_ARXIV_CleanSubmissions/paper1/main.tex,
 # so the two papers look like they came from the same author.
 ARXIV_PREAMBLE = r"""
+\usepackage{arxiv}
 \usepackage[T1]{fontenc}
+\usepackage{textcomp}
 \usepackage{lmodern}
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
@@ -82,6 +84,7 @@ ARXIV_PREAMBLE = r"""
 # NOTE: pandoc's default template already loads xcolor and graphicx. Loading
 # xcolor again with options is an option clash and kills the build.
 PREAMBLE = r"""
+\usepackage{textcomp}
 \usepackage{etoolbox}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -128,12 +131,50 @@ def fix_unicode(md: str) -> tuple[str, int]:
     return md, n
 
 
+
+# Applied to the LATEX, not the markdown. Routing these through markdown lets
+# pandoc re-parse "$-$" as inline math; with two of them in a sentence it pairs
+# the wrong dollars and swallows every space between, turning
+# "-1.15 dB with an interval of [-1.45" into one run-together math blob.
+# Text-mode commands avoid math entirely and give the right glyphs.
+TEX_UNICODE = {
+    "\u2212": r"\textminus{}",
+    "\u00d7": r"\texttimes{}",
+    "\u00b0": r"\textdegree{}",
+    "\u00b5": r"\textmu{}",
+    "\u00b7": r"\textperiodcentered{}",
+    "\u2248": r"$\approx$",
+    "\u2192": r"$\rightarrow$",
+    "\u03c3": r"$\sigma$",
+    "\u03c1": r"$\rho$",
+    "\u0394": r"$\Delta$",
+    "\u207b": r"\textsuperscript{\textminus}",
+    "\u00b9": r"\textsuperscript{1}",
+    "\u00b3": r"\textsuperscript{3}",
+    "\u2074": r"\textsuperscript{4}",
+    "\u2075": r"\textsuperscript{5}",
+    "\u2076": r"\textsuperscript{6}",
+    "\u2078": r"\textsuperscript{8}",
+    "\u2080": r"\textsubscript{0}",
+    "\u2081": r"\textsubscript{1}",
+    "\u0302": "",
+}
+
+
+def fix_unicode_tex(tex):
+    n = sum(tex.count(k) for k in TEX_UNICODE)
+    for k, v in TEX_UNICODE.items():
+        tex = tex.replace(k, v)
+    # merge adjacent superscripts: \textsuperscript{1}\textsuperscript{4}
+    tex = re.sub(r"\\textsuperscript\{([^}]*)\}\\textsuperscript\{([^}]*)\}",
+                 r"\\textsuperscript{\1\2}", tex)
+    tex = re.sub(r"\\textsuperscript\{([^}]*)\}\\textsuperscript\{([^}]*)\}",
+                 r"\\textsuperscript{\1\2}", tex)
+    return tex, n
+
+
 def preprocess(md: str) -> tuple[str, list[str]]:
     notes = []
-    md, n_uni = fix_unicode(md)
-    if n_uni:
-        notes.append(f"mapped {n_uni} unicode super/subscripts and symbols to "
-                     f"LaTeX (they render as nothing otherwise)")
 
     # 1. production note -- internal provenance, must not ship
     prod = re.search(r"\*Draft manuscript assembled.*?METHODS_LOG\.md`\.\*\n",
@@ -247,6 +288,9 @@ def main() -> int:
         src = ROOT / "figures" / fn
         if src.exists():
             shutil.copy2(src, BUNDLE / fn)
+    sty = ROOT / "paper" / "arxiv.sty"
+    if sty.exists() and STYLE[0] == "arxiv":
+        shutil.copy2(sty, BUNDLE / "arxiv.sty")
     md = SRC.read_text()
     md, (title, author_lines, placed, notes) = preprocess(md)
 
@@ -255,6 +299,7 @@ def main() -> int:
     pre = STAGE / "preamble.tex"
     pre.write_text(ARXIV_PREAMBLE if STYLE[0] == "arxiv" else PREAMBLE)
 
+    geom = [] if STYLE[0] == "arxiv" else ["-V", "geometry:margin=1in"]
     cmd = ["pandoc", str(stage_md), "-f",
            "markdown+pipe_tables+implicit_figures+tex_math_dollars",
            "-t", "latex", "-s", "--wrap=preserve",
@@ -264,8 +309,8 @@ def main() -> int:
            "--top-level-division=section",
            "-V", "documentclass=article", "-V", "fontsize=11pt",
            "-V", ("papersize=a4" if STYLE[0] == "arxiv" else "papersize=letter"),
-           "-V", "geometry:margin=1in", "-V", "colorlinks=true",
-           "-M", f"title={title}", "-M", "author=AUTHORBLOCK",
+ "-V", "colorlinks=true",
+           *geom, "-M", f"title={title}", "-M", "author=AUTHORBLOCK",
            "-M", "date=", "-H", str(pre), "-o", str(TEX)]
     print("$ " + " ".join(cmd[:8]) + " ...")
     r = subprocess.run(cmd, capture_output=True, text=True)
@@ -299,6 +344,19 @@ def main() -> int:
             notes.append(f"flushed pending floats before '{heading}'")
         else:
             notes.append(f"NO BARRIER APPLIED: heading '{heading}' not matched")
+    # Abstract as a real environment, matching the first arXiv paper, rather
+    # than a numbered subsection.
+    m = re.search(r"\\(sub)*section\{Abstract\}(\\label\{[^}]*\})?", tex)
+    if m:
+        nxt = re.search(r"\\(sub)*section\{", tex[m.end():])
+        end = m.end() + (nxt.start() if nxt else 0)
+        tex = (tex[:m.start()] + "\\begin{abstract}\n" + tex[m.end():end]
+               + "\n\\end{abstract}\n\n" + tex[end:])
+        notes.append("abstract set as a real abstract environment")
+
+    tex, n_uni = fix_unicode_tex(tex)
+    notes.append(f"mapped {n_uni} unicode symbols to text-mode LaTeX "
+                 f"(after every insertion, so the author block is covered too)")
     TEX.write_text(tex)
     print(f"wrote {TEX}")
 
