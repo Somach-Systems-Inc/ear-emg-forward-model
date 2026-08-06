@@ -109,10 +109,10 @@ def main(argv=None) -> int:
     del skin, surf
     print(f"  {len(skin_ras):,} outer-skin voxels\n")
 
-    rows = {r["name"]: r for r in csv.DictReader(a.positions.open())}
+    rows = {r["name"]: r for r in csv.DictReader(a.positions.open(encoding="utf-8"))}
     baseline = {}
     if a.baseline and a.baseline.exists():
-        baseline = {r["name"]: r for r in csv.DictReader(a.baseline.open())}
+        baseline = {r["name"]: r for r in csv.DictReader(a.baseline.open(encoding="utf-8"))}
 
     # ---------------------------------------------------------------- A
     print("=" * 100)
@@ -348,7 +348,7 @@ def main(argv=None) -> int:
     lut = {}
     inv_csv = config.RESULTS / "01_label_inventory.csv"
     if inv_csv.exists():
-        for r in csv.DictReader(inv_csv.open()):
+        for r in csv.DictReader(inv_csv.open(encoding="utf-8")):
             lut[int(r["label"])] = r["name"]
 
     targets = {n: place2.JAW_TARGETS[n]["label"] for n in accepted}

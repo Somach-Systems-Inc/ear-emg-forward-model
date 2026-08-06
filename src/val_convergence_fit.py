@@ -41,7 +41,7 @@ def load(name):
     p = config.RESULTS / "convergence" / name
     if not p.exists():
         return None
-    rows = list(csv.DictReader(p.open()))
+    rows = list(csv.DictReader(p.open(encoding="utf-8")))
     rdm = np.array([float(r["RDM_pct"]) for r in rows])
     mag = np.array([float(r["MAG_pct"]) for r in rows])
     return float(np.nanmedian(rdm)), float(np.nanmedian(mag))

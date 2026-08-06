@@ -147,7 +147,7 @@ def pipeline_scripts_exist():
     if not md.exists():
         return [f"{md} missing; cannot check the pipeline table"]
     missing = []
-    for line in md.read_text().splitlines():
+    for line in md.read_text(encoding="utf-8").splitlines():
         # pipeline table rows look like: | 3 | `03_leadfields.py` | ... |
         if not line.strip().startswith("|"):
             continue
@@ -170,7 +170,7 @@ def main(argv=None) -> int:
         if p.name.startswith("test_"):
             continue
         try:
-            tree = ast.parse(p.read_text())
+            tree = ast.parse(p.read_text(encoding="utf-8"))
         except SyntaxError as e:
             failures.append((p.name, [f"does not parse: {e}"]))
             continue
@@ -197,7 +197,7 @@ def main(argv=None) -> int:
         if p.name.startswith("test_"):
             continue
         try:
-            all_calls |= calls_in(ast.parse(p.read_text()))
+            all_calls |= calls_in(ast.parse(p.read_text(encoding="utf-8")))
         except SyntaxError:
             pass
     batch_missing = [(label, fn) for label, fn in BATCH_REQUIRED.items()

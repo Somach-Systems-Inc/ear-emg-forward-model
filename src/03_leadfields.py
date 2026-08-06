@@ -74,7 +74,7 @@ def load_positions():
     coordinates pending a physical measurement on Carl's neck, and every
     consumer skips it rather than inventing a placement."""
     rows = list(csv.DictReader(
-        (config.RESULTS / "02_electrode_positions.csv").open()))
+        (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8")))
     pos, held = {}, []
     for r in rows:
         if r.get("verified") == "held" or not r["R"]:
@@ -90,7 +90,7 @@ def load_positions():
 def load_sigma():
     p = config.RESULTS / "01_table1_conductivities.csv"
     sig = {}
-    for r in csv.DictReader(p.open()):
+    for r in csv.DictReader(p.open(encoding="utf-8")):
         lab, val = r.get("mida_label", "").strip(), r.get("sigma_S_per_m", "").strip()
         if lab.isdigit() and val:
             sig[int(lab)] = float(val)

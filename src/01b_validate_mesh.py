@@ -61,7 +61,7 @@ def main() -> int:
     voxel_vol = {}
     inv = ROOT / "results/01_label_inventory.csv"
     if inv.exists():
-        for row in csv.DictReader(inv.open()):
+        for row in csv.DictReader(inv.open(encoding="utf-8")):
             voxel_vol[int(row["label"])] = float(row["volume_mm3"])
     else:
         print("\nWARNING: results/01_label_inventory.csv missing; "

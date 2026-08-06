@@ -66,7 +66,7 @@ def main(argv=None) -> int:
               file=sys.stderr)
         return 1
 
-    rows = list(csv.DictReader(a.positions.open()))
+    rows = list(csv.DictReader(a.positions.open(encoding="utf-8")))
     if not rows:
         print("ERROR: positions file is empty", file=sys.stderr)
         return 1

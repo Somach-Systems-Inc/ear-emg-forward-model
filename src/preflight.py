@@ -184,7 +184,7 @@ def read_calibration(pathfem):
     if not f.exists():
         raise FileNotFoundError(f"no fields_summary.txt in {pathfem}; "
                                 f"cannot confirm the solve succeeded")
-    for line in f.read_text(errors="replace").splitlines():
+    for line in f.read_text(errors="replace", encoding="utf-8").splitlines():
         if "calibration error" in line:
             # The line reads:
             #   "...calibration error exceeded 10%! Estimated error value: 11.90%"
@@ -234,7 +234,7 @@ def main(argv=None) -> int:
             f"      simnibs_python src/val_rdm_mag.py --phase simnibs\n"
             f"      .venv/bin/python src/val_rdm_mag.py --phase analytic")
     else:
-        rows = list(csv.DictReader(a.results.open()))
+        rows = list(csv.DictReader(a.results.open(encoding="utf-8")))
         rdm = np.array([float(r["RDM_pct"]) for r in rows])
         mag = np.array([float(r["MAG_pct"]) for r in rows])
         rdm_med = float(np.nanmedian(rdm))
@@ -255,7 +255,7 @@ def main(argv=None) -> int:
         notes.append(f"no environment fingerprint at {a.envs}; "
                      f"reproducibility of the two-phase split is unrecorded")
     else:
-        rec = json.loads(a.envs.read_text())
+        rec = json.loads(a.envs.read_text(encoding="utf-8"))
         cur = current_env()
         print("\n  recorded environments:")
         for phase, env in rec.items():

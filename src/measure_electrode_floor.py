@@ -37,7 +37,7 @@ def main() -> int:
             print(f"missing {p} -- run the 10 mm sphere re-run first",
                   file=sys.stderr)
             return 1
-        rows = list(csv.DictReader(p.open()))
+        rows = list(csv.DictReader(p.open(encoding="utf-8")))
         got.append((f, np.array([float(r["RDM_pct"]) for r in rows]),
                     np.array([float(r["MAG_pct"]) for r in rows])))
 
@@ -68,7 +68,7 @@ def main() -> int:
     # 4.61 pp, so it lands low by roughly a factor of three. Re-running this
     # after the n=6 measurement would quietly loosen every threshold the floor
     # gates, which is the exact failure the ordering guard exists to prevent.
-    if out.exists() and "n = 6" in out.read_text():
+    if out.exists() and "n = 6" in out.read_text(encoding="utf-8"):
         print(f"\nREFUSING TO OVERWRITE {out}", file=sys.stderr)
         print("  It holds the n=6 per-site measurement from "
               "src/measure_floor_multidraw.py,", file=sys.stderr)

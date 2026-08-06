@@ -87,7 +87,7 @@ def main(argv=None) -> int:
 
     mont = {}
     for r in csv.DictReader(
-            (config.RESULTS / "02_electrode_positions.csv").open()):
+            (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8")):
         if r.get("verified") == "held" or not r["R"]:
             continue
         mont[r["name"]] = r.get("montage", "")

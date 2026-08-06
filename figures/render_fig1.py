@@ -107,11 +107,11 @@ def main(argv=None) -> int:
         GROUP_COLOUR[g] = cmap(SAFE[i % len(SAFE)])
 
     SOLVED = {r["electrode"] for r in csv.DictReader(
-        (config.RESULTS / "03_leadfields.csv").open())}
+        (config.RESULTS / "03_leadfields.csv").open(encoding="utf-8"))}
 
     pos, montage = {}, {}
     for r in csv.DictReader(
-            (config.RESULTS / "02_electrode_positions.csv").open()):
+            (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8")):
         # Plot exactly the electrodes that were SOLVED, read from the solve
         # table rather than inferred from a placement flag. Filtering on
         # `verified != "held"` let `earlobe_contra` through -- it has

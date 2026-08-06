@@ -167,13 +167,27 @@ def main() -> int:
         print(f"ERROR: {ITIS_CSV} missing. Export it from the IT'IS SQLite "
               f"database first.", file=sys.stderr)
         return 1
-    itis = {r["tissue"]: r for r in csv.DictReader(ITIS_CSV.open())}
+    # NOT pinned to utf-8, deliberately. Every other read in this repo now is,
+    # because every tracked text file is utf-8. This one is not ours: it is an
+    # export from the IT'IS SQLite database and its encoding is whatever the
+    # exporter chose. Assuming utf-8 would raise on a latin-1 export; assuming
+    # the platform default is what corrupted "Skull Diplo-e-umlaut" in the first
+    # place. So: try utf-8 strictly, fall back to latin-1, which is total and
+    # therefore cannot silently drop a byte. Same strategy as parse_lut().
+    _raw = ITIS_CSV.read_bytes()
+    for _enc in ("utf-8", "latin-1"):
+        try:
+            _text = _raw.decode(_enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    itis = {r["tissue"]: r for r in csv.DictReader(_text.splitlines())}
     inv = {int(r["label"]): r for r in
-           csv.DictReader((config.RESULTS / "01_label_inventory.csv").open())}
+           csv.DictReader((config.RESULTS / "01_label_inventory.csv").open(encoding="utf-8"))}
 
     pos = [np.array([float(r["R"]), float(r["A"]), float(r["S"])])
            for r in csv.DictReader(
-               (config.RESULTS / "02_electrode_positions.csv").open())
+               (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8"))
            if r.get("verified") != "held" and r["R"] != ""]
     P = np.array(pos)
 

@@ -81,7 +81,7 @@ def collect() -> dict:
     # --- the measured electrode-realisation floor ------------------------
     f = config.RESULTS / "electrode_meshing_floor.txt"
     if f.exists():
-        txt = f.read_text()
+        txt = f.read_text(encoding="utf-8")
         nums = [float(x) for x in re.findall(r"[-+]?\d*\.\d+|\d+", txt)]
         if nums:
             v["floor_dB"] = (round(nums[0], 2), f.name, "5")
@@ -197,7 +197,7 @@ def main(argv=None) -> int:
     if not a.check:
         return 0
 
-    text = MANUSCRIPT.read_text()
+    text = MANUSCRIPT.read_text(encoding="utf-8")
     bad = []
     for key, pat in CLAIMS:
         if key not in v or v[key][0] is None:

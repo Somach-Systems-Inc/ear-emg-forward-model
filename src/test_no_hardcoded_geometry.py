@@ -18,7 +18,7 @@ def main() -> int:
     for f in sorted((ROOT / "src").glob("*.py")):
         if f.name == Path(__file__).name:
             continue
-        for i, line in enumerate(f.read_text().splitlines(), 1):
+        for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
             if PATTERN.search(line):
                 bad.append(f"{f.relative_to(ROOT)}:{i}: {line.strip()}")
     if bad:

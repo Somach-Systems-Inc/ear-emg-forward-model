@@ -90,7 +90,7 @@ def main() -> int:
     zc = m.nodes.node_coord[nn][:, :, 2].mean(axis=1)     # mm
 
     sig = {}
-    for r in csv.DictReader((config.RESULTS / "01_table1_conductivities.csv").open()):
+    for r in csv.DictReader((config.RESULTS / "01_table1_conductivities.csv").open(encoding="utf-8")):
         lab, val = r.get("mida_label", "").strip(), r.get("sigma_S_per_m", "").strip()
         if lab.isdigit() and val:
             sig[int(lab)] = float(val)

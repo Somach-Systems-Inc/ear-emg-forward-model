@@ -65,7 +65,7 @@ def load_sigma_and_fat():
     """Table-1 map, plus the set of labels whose assigned tissue is fat."""
     sig, fat = {}, set()
     p = config.RESULTS / "01_table1_conductivities.csv"
-    for r in csv.DictReader(p.open()):
+    for r in csv.DictReader(p.open(encoding="utf-8")):
         lab = r.get("mida_label", "").strip()
         val = r.get("sigma_S_per_m", "").strip()
         if not (lab.isdigit() and val):

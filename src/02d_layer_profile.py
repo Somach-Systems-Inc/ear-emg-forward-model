@@ -75,13 +75,13 @@ def main(argv=None) -> int:
     lut = {}
     inv_csv = config.RESULTS / "01_label_inventory.csv"
     if inv_csv.exists():
-        for r in csv.DictReader(inv_csv.open()):
+        for r in csv.DictReader(inv_csv.open(encoding="utf-8")):
             lut[int(r["label"])] = r["name"]
 
     def nm(l):
         return lut.get(int(l), str(int(l)))
 
-    rows = {r["name"]: r for r in csv.DictReader(a.positions.open())}
+    rows = {r["name"]: r for r in csv.DictReader(a.positions.open(encoding="utf-8"))}
     targets = {n: s["label"] for n, s in place2.JAW_TARGETS.items()}
     for n, (lab, _) in place2.EAR_TISSUE_CHECK.items():
         targets[n] = lab

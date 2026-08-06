@@ -55,7 +55,7 @@ ELECS=["hyoid","buccal","submental_lat","midjaw","cg10","pre_tragus",
        "mastoid","above_ear"]
 REF="earlobe_contra"
 
-rows=list(csv.DictReader((ROOT/"results/01_table1_conductivities.csv").open()))
+rows=list(csv.DictReader((ROOT/"results/01_table1_conductivities.csv").open(encoding="utf-8")))
 base={int(r["mida_label"]):float(r["sigma_S_per_m"]) for r in rows}
 missing=[l for l in CAVITY if l not in base]
 assert not missing, f"cavity labels absent from Table 1: {missing}"
@@ -63,7 +63,7 @@ filled=dict(base)
 for l in CAVITY: filled[l]=config.SIGMA["muscle_iso"]
 
 pos={r["name"]:np.array([float(r["R"]),float(r["A"]),float(r["S"])])
-     for r in csv.DictReader((ROOT/"results/02_electrode_positions.csv").open())
+     for r in csv.DictReader((ROOT/"results/02_electrode_positions.csv").open(encoding="utf-8"))
      if r.get("verified")!="held" and r["R"]!=""}
 img=nib.load(str(ROOT/"data/MIDA_v1.0/MIDA_v1_voxels/MIDA_v1.nii"))
 arr=np.asanyarray(img.dataobj); aff=img.affine

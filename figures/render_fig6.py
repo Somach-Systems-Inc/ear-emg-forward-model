@@ -70,7 +70,7 @@ def main(argv=None) -> int:
 
     pos = {}
     for r in csv.DictReader(
-            (config.RESULTS / "02_electrode_positions.csv").open()):
+            (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8")):
         if r["R"]:
             pos[r["name"]] = np.array([float(r["R"]), float(r["A"]),
                                        float(r["S"])])

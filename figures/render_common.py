@@ -173,7 +173,7 @@ def _detect_mock(path: Path) -> bool:
     if "mock" in path.name.lower():
         return True
     try:
-        with open(path) as fh:
+        with open(path, encoding="utf-8") as fh:
             first = fh.readline()
         return first.lstrip().startswith("#") and "SYNTHETIC" in first.upper()
     except OSError:

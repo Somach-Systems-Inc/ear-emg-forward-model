@@ -92,7 +92,7 @@ def read_measured_floor():
     f = config.RESULTS / FLOOR_FILE
     if not f.exists():
         return None
-    for line in f.read_text().splitlines():
+    for line in f.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line and not line.startswith("#"):
             try:
@@ -115,7 +115,7 @@ def main() -> int:
     tree = cKDTree(cav)
     pos = {r["name"]: np.array([float(r["R"]), float(r["A"]), float(r["S"])])
            for r in csv.DictReader(
-               (config.RESULTS / "02_electrode_positions.csv").open())
+               (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8"))
            if r.get("verified") != "held" and r["R"] != ""}
 
     if read_measured_floor() is None:
