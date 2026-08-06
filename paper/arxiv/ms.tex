@@ -589,7 +589,7 @@ Figure 5.
 and it does not clear the bar. Over the fibre field derived from the anatomy
 (§2.3.1) it reaches −1.147 dB at the pre-registered four-site cluster, with
 91.5 per cent of fibre directions agreeing --- but its matched-count interval is
-\textbf{{[}−1.453, +5.458{]}} and only \textbf{50.2 per cent} of random four-site
+\textbf{{[}−1.453, +5.458{]}} and only \textbf{50.5 per cent} of the four-site
 retroauricular subsets favour the ear at all. Whether the ear wins for
 temporalis is decided by which four electrodes a device happens to carry, not
 by the anatomy.
@@ -602,17 +602,26 @@ source orientation is uniformly distributed over the sphere, which is the right
 default when fibre direction is unknown and the wrong one for a muscle whose
 fibres converge on a single identifiable insertion.
 
-The draws are taken at seed 0. For the derived fibre field the
-draw resamples electrodes alone, with the fibre orientation held fixed, so the
-resulting spread reflects site availability and nothing else. Temporalis gives a
-median gap of −1.147 dB with an interval of {[}−1.453, +5.458{]} dB, favouring the
-ear in 50.2 per cent of draws.
+\textbf{The interval is computed exactly, not sampled.} Fourteen candidate ear sites
+taken four at a time gives 1001 possible subsets, so every one is enumerated and
+the interval is a complete description of that set rather than an estimate from
+draws. It therefore carries no seed and no sampling error. For the derived fibre
+field the enumeration varies electrodes alone, with the fibre orientation held
+fixed, so the resulting spread reflects site availability and nothing else.
+Temporalis gives a median gap of −1.147 dB with an interval of
+{[}−1.453, +5.458{]} dB, favouring the ear in 50.5 per cent of subsets
+{[}\texttt{results/04p\_headline\_interval.csv}{]}.
+
+This also fixes what the interval means. It is not an inference from a sample to
+a population, so there is no sampling distribution, no null hypothesis, and
+nothing for a multiple-comparison correction to act on across the ten muscles.
+It is a statement about which montages a device could physically carry.
 
 The lower bound of this interval is not a tail quantile. The most
-ear-favouring outcome of any 4-site draw is the best of all 14 sites, so
+ear-favouring outcome of any 4-site subset is the best of all 14 sites, so
 −1.453 dB is a floor fixed by the data rather than by sampling, and it is
-attained in 28.3 per cent of draws against the 28.6 per cent expected from draw
-size alone. It coincides with the argmax gap over all 14 sites, −1.453 dB, by
+attained in exactly the 28.6 per cent of subsets that contain that site, which is
+4/14 as expected from subset size alone. It coincides with the argmax gap over all 14 sites, −1.453 dB, by
 construction; the two figures are one measurement, not two that agree. The
 corresponding bound under the uniform orientation sweep, −3.308 dB, is a
 genuine percentile lying strictly above its own floor of −3.314 dB, which is
@@ -859,7 +868,10 @@ The material share is not a dose response. Across the muscles for which a
 layer profile exists, it correlates \emph{negatively} with the adipose fraction of
 the muscle-to-skin path (Spearman \(\rho\) = −0.955, p = 0.001, n = 7): platysma sits
 at 0.650 fat fraction and 0.6 per cent material share, while
-sternocleidomastoid sits at 0.225 and 21 per cent. The strength of that
+sternocleidomastoid sits at 0.225 and 21 per cent. At n = 7 a single muscle could
+carry that relationship, so it was tested: dropping each muscle in turn leaves
+\(\rho\) between −0.928 and −0.986 and p below 0.01 in all seven cases
+{[}\texttt{results/04t\_correlation\_robustness.csv}{]}. The strength of that
 relationship shows the swap is measuring adipose path rather than something
 incidental, but its sign shows it does so through cancellation. The reported
 share is \textbar{}\(\Delta\)gap\textbar{} / \textbar gap\textbar, and a muscle embedded uniformly in fat has both the
@@ -1277,7 +1289,7 @@ assumption-free treatment gives, so the dependence is visible rather than buried
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{fig3_attenuation_vs_distance.pdf}
-\caption{Attenuation against source depth for each articulator, jaw sites against retroauricular sites.}
+\caption{Attenuation against source-electrode distance. One point per (electrode, muscle) pair: straight-line distance from the electrode to the nearest voxel of that muscle compartment against the lead field in dB relative to that muscle's best jaw site, isotropic condition, truncated mesh. The two montages do not lie on the same attenuation curve. Fitted over the 3 to 87 mm range where both montages have electrodes, the retroauricular sites fall off at −0.158 dB/mm against the jaw's −0.045 dB/mm, a factor of 3.5 [results/04s\_fig3\_slopes.csv]. A retroauricular electrode therefore loses signal with distance more than three times as fast as a jaw electrode does, which is the geometric mechanism behind the labial-group deficit reported in §4.3. Lines are least-squares fits over the overlapping range only, so the comparison is made where both montages have data rather than extrapolated across the ear's longer reach.}
 \end{figure}
 
 
