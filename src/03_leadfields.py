@@ -297,6 +297,13 @@ def main(argv=None) -> int:
     ap.add_argument("--paired-only", action="store_true",
                     help="skip the main batch and run invariants 3 and 4 "
                          "against the solves already on disk")
+    ap.add_argument("--electrodes", nargs="+", metavar="NAME",
+                    help="solve only these electrodes instead of all targets. "
+                         "For re-running a single failed site, and for timing "
+                         "or memory measurement without committing to the full "
+                         "batch. Names must exist in 02_electrode_positions.csv "
+                         "and must not be the reference. Does NOT change the "
+                         "default: omit it and every target is solved.")
     a = ap.parse_args(argv)
 
     if not MESH.exists():
@@ -309,6 +316,27 @@ def main(argv=None) -> int:
               file=sys.stderr)
         return 1
     targets = [e for e in pos if e != config.REFERENCE]
+
+    if a.electrodes:
+        # Fail loudly on a name that is not a target. Silently solving a subset
+        # because a name was misspelled would look exactly like a completed run
+        # and the missing rows would only surface in stage 4.
+        unknown = [e for e in a.electrodes if e not in pos]
+        isref = [e for e in a.electrodes if e == config.REFERENCE]
+        if unknown or isref:
+            if unknown:
+                print(f"ERROR: not in 02_electrode_positions.csv: "
+                      f"{', '.join(sorted(unknown))}", file=sys.stderr)
+            if isref:
+                print(f"ERROR: {config.REFERENCE} is the reference, not a "
+                      f"target; every solve is already against it.",
+                      file=sys.stderr)
+            print(f"  available: {', '.join(sorted(targets))}", file=sys.stderr)
+            return 1
+        targets = [e for e in targets if e in set(a.electrodes)]
+        print(f"--electrodes: SUBSET of {len(targets)} "
+              f"({', '.join(sorted(targets))}) -- this is NOT a full run")
+
     sigma_iso = load_sigma()
 
     muscles = [n for n, _, lab, _ in config.MUSCLES if lab is not None]
