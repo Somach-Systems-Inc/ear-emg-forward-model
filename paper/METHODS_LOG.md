@@ -5266,3 +5266,53 @@ ruling rather than executed.
 **This is the third orphan found by checking rather than assuming, and the second
 after I reported that none could be named.** Until axis (a)'s reverse sweep
 exists, that report cannot be made.
+
+---
+
+## 2026-08-06 — §2.5.1 CANNOT be regenerated: two of its four quantities do not exist
+
+**Pre-commitment, written before attempting the regeneration:** regenerate all
+four of §2.5.1's numbers from `04d` and `04q`, emit them to a results file, and
+**if any regenerated number changes what the paragraph CLAIMS rather than only
+its value, halt and report.** Recorded per the ruling; the outcome below was not
+known when this condition was written.
+
+**The condition fired, and not on a value. Two of the four quantities were never
+defined in code.**
+
+| §2.5.1 asserts | status |
+|---|---|
+| temporalis, "unconstrained 96 %" | two candidate sources, **neither is 96**: `04d` `frac_favouring_jaw` 0.06 gives 94.0 %, `04q` `orientation_agree_pct` gives 92.0 % |
+| temporalis, "8.5 % of the derived fan" | complement of the 91.5 % recorded in this log's prose. **Not emitted to any results file.** |
+| SCM, "unconstrained 72.5 %" | two candidates, **neither is 72.5**: `04d` gives 66.0 %, `04q` gives 60.5 % |
+| SCM, "−5.06 dB at the estimated axis" | **the quantity does not exist.** `grep` over `src/` finds no gap-at-estimated-axis computation of any kind. |
+
+Regenerating requires knowing which quantity "the unconstrained fraction" denotes,
+and the paragraph is consistent with two different ones that disagree by 2 points
+for temporalis and 5.5 for SCM. Choosing between them after seeing which reads
+closer to the published figure is the defect this project keeps paying for.
+
+### The claim-level defect underneath, which is worse than the numbers
+
+§2.5.1 says *"For sternocleidomastoid, the jaw-favouring directions are not ones
+the muscle occupies."* That is a statement about the **anatomically-constrained**
+set for SCM.
+
+**No anatomically-constrained sweep exists for sternocleidomastoid.** The derived
+fibre field was computed for temporalis alone — that is the whole content of
+§4.7's fibre limitation and of review item 13. The paragraph describes, for SCM,
+an analysis the paper elsewhere discloses it did not perform.
+
+So the repair is not renumbering. Either the constrained analysis is run for SCM,
+which is v2 work with the consequences recorded in HANDOFF §7.3, or the SCM half
+of the paragraph comes out and the section keeps the temporalis illustration
+alone. **That is a ruling, not a computation.** Nothing in §2.5.1 was touched.
+
+### The two near-miss fractions, logged under the class-1 heading
+
+96 against 94.0, and 72.5 against 66.0. Wrong by 2 and 6.5 points while reading
+as rounding — the same signature as the **−3.6722** near-miss caught earlier, where
+an unrenormalised reduction landed 0.05 dB from a published −3.724. Numbers that
+are wrong by less than a reader's rounding tolerance survive every pass that
+reads rather than recomputes. That is what axis (a)'s reverse sweep is for, and
+it remains unbuilt.

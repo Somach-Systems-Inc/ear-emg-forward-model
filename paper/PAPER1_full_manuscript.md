@@ -1,8 +1,8 @@
 # No speech articulator robustly favours retroauricular electrodes over canonical jaw sites: a volume-conductor model with orientation and electrode-count controls
 
 **Carl Vincent Kho**
-Somach Systems, Inc., San Francisco, CA, USA
-carl@somach.life
+Independent researcher; Somach Systems, Inc., San Francisco, CA, USA
+carl@somach.life · https://somach.life
 
 *Draft manuscript assembled 2026-08-05. Methods from `paper/METHODS.md`;
 Introduction and Discussion from `paper/INTRO_AND_DISCUSSION_draft2.md`; Results
@@ -163,7 +163,9 @@ separately (98); the tendon is excluded, since its conductivity differs from
 muscle and it is not a source.
 
 **Meshing.** The labelled volume was tetrahedralised with SimNIBS 4.6's
-`meshmesh`, using per-label conductivity assignment. The base mesh contains
+`meshmesh` (Thielscher et al. 2015), using per-label conductivity assignment. The
+finite-element electric-field solver this study repurposes for reciprocity is
+described in Saturnino et al. (2019). The base mesh contains
 2,140,917 nodes and 15,415,273 elements. SimNIBS meshes the two electrodes into
 it at solve time, giving 15,415,668 elements of which 12,294,182 are tetrahedra.
 
@@ -790,8 +792,12 @@ That distinction predicts which results should transfer between subjects. A
 margin carried by skeletal attachment geometry inherits only anatomical variance;
 a margin carried by a tissue-conductivity contrast also inherits variance in
 adipose distribution, which is the larger and more variable of the two between
-individuals. Temporalis and the labial group should therefore be expected to
-transfer more readily than sternocleidomastoid and lateral pterygoid. The
+individuals. The two classes are therefore defined by material share rather than
+by which montage wins. A margin with a small share should transfer more readily
+than one with a large share: 0.6 to 13.3 per cent across the labial group,
+against 21 and 17 per cent for sternocleidomastoid and lateral pterygoid.
+Temporalis, masseter and medial pterygoid are not classified, because no layer
+profile exists for them and their share is unmeasured. The
 prediction is a consequence of the decomposition rather than a separate claim,
 and it is testable in any second anatomy.
 
@@ -1167,7 +1173,8 @@ cited in §2.8 as the pre-registration record.
 13. Meiser, A., Knoll, J., & Bleichner, M. G. (2024). High-density ear-EEG for understanding ear-centered EEG. *J Neural Eng* 21(1):016001. doi:10.1088/1741-2552/ad1783
 14. Mesin, L. (2020). Crosstalk in surface electromyogram: literature review. *Phys Eng Sci Med*. doi:10.1007/s13246-020-00868-1
 15. Sato, W., & Kochiyama, T. (2023). Crosstalk in Facial EMG and Its Reduction Using ICA. *Sensors* 23:2720.
-16. Thielscher, A., et al. SimNIBS. *[complete citation before submission]*
-17. Wand, M., & Schultz, T. (2011). Session-Independent EMG-Based Speech Recognition.
-18. Yao, D., et al. (2019). Which Reference Should We Use for EEG and ERP practice? *Brain Topogr*.
-19. Yarici, M., Thornton, M., & Mandic, D. P. (2023). Ear-EEG sensitivity modeling for neural sources and ocular artifacts. *Front Neurosci* 16:997377. doi:10.3389/fnins.2022.997377
+16. Saturnino, G. B., Madsen, K. H., & Thielscher, A. (2019). Electric field simulations for transcranial brain stimulation using FEM: an efficient implementation and error analysis. *J Neural Eng* 16(6):066032. doi:10.1088/1741-2552/ab41ba
+17. Thielscher, A., Antunes, A., & Saturnino, G. B. (2015). Field modeling for transcranial magnetic stimulation: a useful tool to understand the physiological effects of TMS? *37th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)*, 222–225. doi:10.1109/EMBC.2015.7318340
+18. Wand, M., & Schultz, T. (2011). Session-Independent EMG-Based Speech Recognition.
+19. Yao, D., et al. (2019). Which Reference Should We Use for EEG and ERP practice? *Brain Topogr*.
+20. Yarici, M., Thornton, M., & Mandic, D. P. (2023). Ear-EEG sensitivity modeling for neural sources and ocular artifacts. *Front Neurosci* 16:997377. doi:10.3389/fnins.2022.997377
