@@ -77,29 +77,29 @@ is an established and widely replicated wearable configuration [Debener et al.
 2015]. The appeal is not electrical. It is that an ear-worn device is socially
 wearable in a way that a chin-mounted one is not.
 
-> Forward models of muscle sources in realistic head geometry exist. HArtMuT
-> (Harmening et al. 2022) places roughly 3,900 muscle dipole and tripole sources
-> derived from MIDA's muscle segmentation, with fibre directions estimated by
-> principal component analysis, solved as finite-element lead fields. It is the
-> methodological precedent for the fibre-axis treatment used here, and its
-> muscle sources radiate through a homogeneous scalp compartment.
->
-> **This study is an application of that class of model to an unanswered design
-> question, not a methodological advance over it.** We tested the distinction
-> directly rather than asserting it: setting every non-muscle soft tissue to a
-> single conductivity, with geometry held fixed, reproduces every montage
-> assignment reported here unchanged (§3.5). A homogeneous-scalp model would
-> have reached the same qualitative conclusion. What the anatomically resolved
-> conductor supplies is magnitude — gap sizes shift by up to 3.27 dB, and eight
-> of ten by more than the measurement floor — which matters for a design table
-> quoting decibels but not for deciding which montage sees which muscle.
->
-> The open question is therefore not how to model muscle sources but where to
-> put an electrode. That question is stated in the ear-EEG literature in the
-> same terms (Yarici et al. 2023), while ear-worn arrays are already recording
-> jaw and speech activity (Avramidou et al. 2024; An et al. 2025) on a widely
-> replicated form factor (Debener et al. 2015). Devices are being designed
-> around a coupling nobody has computed.
+Forward models of muscle sources in realistic head geometry exist. HArtMuT
+(Harmening et al. 2022) places roughly 3,900 muscle dipole and tripole sources
+derived from MIDA's muscle segmentation, with fibre directions estimated by
+principal component analysis, solved as finite-element lead fields. It is the
+methodological precedent for the fibre-axis treatment used here, and its
+muscle sources radiate through a homogeneous scalp compartment.
+
+**This study is an application of that class of model to an unanswered design
+question, not a methodological advance over it.** We tested the distinction
+directly rather than asserting it: setting every non-muscle soft tissue to a
+single conductivity, with geometry held fixed, reproduces every montage
+assignment reported here unchanged (§3.5). A homogeneous-scalp model would
+have reached the same qualitative conclusion. What the anatomically resolved
+conductor supplies is magnitude — gap sizes shift by up to 3.27 dB, and eight
+of ten by more than the measurement floor — which matters for a design table
+quoting decibels but not for deciding which montage sees which muscle.
+
+The open question is therefore not how to model muscle sources but where to
+put an electrode. That question is stated in the ear-EEG literature in the
+same terms (Yarici et al. 2023), while ear-worn arrays are already recording
+jaw and speech activity (Avramidou et al. 2024; An et al. 2025) on a widely
+replicated form factor (Debener et al. 2015). Devices are being designed
+around a coupling nobody has computed.
 
 It was built to answer the opposite question. HArtMuT's muscle sources exist so
 that muscle activity can be identified and removed from scalp EEG, and they
