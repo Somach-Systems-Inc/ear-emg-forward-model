@@ -119,3 +119,39 @@ systematic, and it is not any numbered review item.
 All six figures are now cited at first use in the body: Figure 1 in §2.1,
 Figures 2 and 5 in §3.1, Figure 4 in §3.2, Figure 3 in §4.3, Figure 6 in §4.5.
 Verified by grep over lines 1–1000, one citation each.
+
+---
+
+## Regenerated against HEAD `736b7f4`, pre-post check
+
+Closed since the previous regeneration, each verified by grep at HEAD:
+
+| # | how verified |
+|---|---|
+| 11 | `bounded by §3.4` → 0 hits; row 3 reads "unquantified; direction known, magnitude not bounded" |
+| 12 | `throat_scm` omission and its direction disclosed in §4.7 |
+| 13 | temporalis-only orientation derivation disclosed in §4.7 |
+| 14 | §2.5 states the mirror-symmetry test's actual population, three compartments |
+| 19 | gate framing dropped, no threshold invented; none exists in config or METHODS.md |
+| 21 | §2.7 rule unchanged; rows 1, 2, 3, 7 labelled "directional, unquantified" |
+| 23 | all six figures cited at first use |
+| 28 | editor-voice sweep → 0 hits (four were live, not two) |
+| — | blockquote artifacts → 0 in the whole manuscript |
+| — | title replaced; it asserted more than its own abstract |
+
+**STILL OPEN AND OUTSIDE THE DEFERRED SET (3):**
+
+| # | sev | objection |
+|---|---|---|
+| 29 | major | assembly-notes section still at the end of the file |
+| 16, 17 | major | the n=1 transferability argument and the 21% / 5.06 dB figures rest on SCM and lateral pterygoid, which carry no claim; rewrite, not patch |
+| — | — | §3.1 states the draw procedure twice, once in words and once in numerals, introduced when the interval wording was applied |
+
+**Deferred set confirmed** as minors 30, 35–41, 43, 47 and editorial 44–49.
+Item 45 (SimNIBS never cited in text) is open but falls inside editorial 44–49,
+so it is deferred by that rule rather than flagged.
+
+**Not review items, still open:** `04i_homog_scalp.csv` has no generating script
+(its basis is now labelled, and `04r` supplies the cluster-basis pair). Axis (a)'s
+`--check-body` reverse sweep is unbuilt, so no one can say the manuscript has no
+orphans, only that none is currently enumerated.
