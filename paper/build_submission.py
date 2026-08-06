@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+r"""
+Build the arXiv submission from PAPER1_full_manuscript.md.
+
+WHY THIS IS A SCRIPT
+
+A published artifact with no generating script is not a result, and a submission
+PDF is an artifact. This emits LaTeX source and a PDF, both regenerable.
+
+WHAT IT HAS TO FIX, because the markdown is not submission-ready as written
+
+  1. **No figures.** The manuscript carries six caption paragraphs and zero image
+     includes. Rendered naively you get six captions and no figures. Each caption
+     is matched to its vector PDF in `figures/` and turned into a float.
+  2. **A production note** at the top recording which working files the draft was
+     assembled from. That is internal provenance and must not ship. Removed here
+     rather than in the manuscript, so the manuscript stays the working document
+     and this stays the submission view. Review item 46.
+  3. **Anchor comments** (`<!-- TABLE:name -->`) that `manuscript_blocks.py` needs
+     and a reader does not.
+  4. **Table 3 is six columns of prose** and overflows a portrait text block. It
+     is set landscape.
+
+arXiv prefers LaTeX source over PDF. Both are written; submit the `.tex`.
+
+    python paper/build_submission.py
+"""
+from __future__ import annotations
+
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "paper" / "PAPER1_full_manuscript.md"
+STAGE = ROOT / "paper" / "_build"
+TEX = ROOT / "paper" / "PAPER1_submission.tex"
+PDF = ROOT / "paper" / "PAPER1_submission.pdf"
+
+FIGURES = {
+    1: "fig1_head_model.pdf",
+    2: "fig2_sensitivity_matrix.pdf",
+    3: "fig3_attenuation_vs_distance.pdf",
+    4: "fig4_anisotropy_delta.pdf",
+    5: "fig5_complementarity_map.pdf",
+    6: "fig6_suprahyoid_field.pdf",
+}
+
+# NOTE: pandoc's default template already loads xcolor and graphicx. Loading
+# xcolor again with options is an option clash and kills the build.
+PREAMBLE = r"""
+\usepackage{etoolbox}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{pdflscape}
+\usepackage{placeins}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+\setlength{\LTcapwidth}{\textwidth}
+% Table 3 is six columns of prose; without this it overflows the text block.
+\AtBeginEnvironment{longtable}{\footnotesize}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+"""
+
+
+# Latin Modern has no superscript/subscript glyphs. Left as Unicode they are
+# silently DROPPED from the PDF -- "mm^3" would render as "mm". That is a
+# content loss a reader cannot see, so map them to real LaTeX rather than
+# hoping the font copes.
+UNICODE_MAP = {
+    "⁻": "$^{-}$", "⁴": "$^{4}$", "⁵": "$^{5}$",
+    "⁶": "$^{6}$", "⁸": "$^{8}$", "¹": "$^{1}$",
+    "³": "$^{3}$", "₀": "$_{0}$", "₁": "$_{1}$",
+    "σ": "$\\sigma$", "ρ": "$\\rho$", "Δ": "$\\Delta$",
+    "×": "$\\times$", "≈": "$\\approx$", "→": "$\\rightarrow$",
+    "°": "$^{\\circ}$", "µ": "$\\mu$", "·": "\\textperiodcentered{}",
+    "̂": "",
+}
+
+
+def fix_unicode(md: str) -> tuple[str, int]:
+    n = sum(md.count(k) for k in UNICODE_MAP)
+    for k, v in UNICODE_MAP.items():
+        md = md.replace(k, v)
+    # collapse the artefacts of adjacent superscripts: $^{1}$$^{4}$ -> $^{14}$
+    md = re.sub(r"\$\^\{([^}]*)\}\$\$\^\{([^}]*)\}\$", r"$^{\1\2}$", md)
+    md = re.sub(r"\$\^\{([^}]*)\}\$\$\^\{([^}]*)\}\$", r"$^{\1\2}$", md)
+    return md, n
+
+
+def preprocess(md: str) -> tuple[str, list[str]]:
+    notes = []
+    md, n_uni = fix_unicode(md)
+    if n_uni:
+        notes.append(f"mapped {n_uni} unicode super/subscripts and symbols to "
+                     f"LaTeX (they render as nothing otherwise)")
+
+    # 1. production note -- internal provenance, must not ship
+    prod = re.search(r"\*Draft manuscript assembled.*?METHODS_LOG\.md`\.\*\n",
+                     md, re.S)
+    if prod:
+        md = md.replace(prod.group(0), "")
+        notes.append("removed the production note at the top (review item 46)")
+
+    # 2. anchor comments
+    n_anchor = len(re.findall(r"<!-- /?TABLE:[A-Za-z0-9_]+ -->", md))
+    md = re.sub(r"<!-- /?TABLE:[A-Za-z0-9_]+ -->\n?", "", md)
+    if n_anchor:
+        notes.append(f"stripped {n_anchor} manuscript_blocks anchor comments")
+
+    # 3. author block -> metadata, so LaTeX gets a real \author
+    lines = md.split("\n")
+    title = lines[0].lstrip("# ").strip()
+    body_start = next(i for i, l in enumerate(lines) if l.strip() == "---")
+    author_block = [l for l in lines[1:body_start] if l.strip()]
+    author = " \\\\ ".join(l.replace("**", "").strip() for l in author_block)
+    md = "\n".join(lines[body_start + 1:])
+
+    # 4. figures: caption paragraph -> float with the vector PDF
+    placed = []
+    for n, fname in FIGURES.items():
+        path = ROOT / "figures" / fname
+        if not path.exists():
+            notes.append(f"MISSING figure file for Figure {n}: {fname}")
+            continue
+        # caption paragraph: starts **Figure N.** ... up to a blank line
+        pat = re.compile(r"^\*\*Figure " + str(n) + r"[.:].*?(?=\n\n)",
+                         re.S | re.M)
+        m = pat.search(md)
+        if not m:
+            notes.append(f"NO CAPTION MATCHED for Figure {n}; figure not placed")
+            continue
+        cap = " ".join(m.group(0).split())
+        cap = re.sub(r"^\*\*Figure \d+[.:]\*{0,2}\s*", "", cap)
+        cap = cap.replace("**", "")
+        block = (f"\n\\begin{{figure}}[htbp]\n\\centering\n"
+                 f"\\includegraphics[width=\\linewidth,height=0.42\\textheight,"
+                 f"keepaspectratio]{{{path.as_posix()}}}\n"
+                 f"\\caption{{{latex_escape(cap)}}}\n"
+                 f"\\end{{figure}}\n")
+        md = md[:m.start()] + f"@@FIG{n}@@" + md[m.end():]
+        placed.append((f"@@FIG{n}@@", block, n))
+    notes.append(f"placed {len(placed)} of {len(FIGURES)} figures")
+    return md, (title, author, placed, notes)
+
+
+def latex_escape(s: str) -> str:
+    """Escape caption text for LaTeX, LEAVING $...$ MATH ALONE.
+
+    fix_unicode() has already turned characters like U+00D7 into `$\\times$`.
+    Escaping that blindly produces `$\\textbackslash{}times$`, which renders as
+    literal garbage inside a caption -- caught in Figure 2 as `$\\{}times$`.
+    Math spans are therefore split out and passed through untouched.
+    """
+    def esc(chunk: str) -> str:
+        for a, b in (("\\", r"\textbackslash{}"), ("&", r"\&"), ("%", r"\%"),
+                     ("#", r"\#"), ("_", r"\_"),
+                     ("{", r"\{"), ("}", r"\}"), ("~", r"\textasciitilde{}")):
+            chunk = chunk.replace(a, b)
+        return chunk.replace("`", "")
+
+    parts = re.split(r"(\$[^$]*\$)", s)
+    return "".join(p if p.startswith("$") and p.endswith("$") and len(p) > 1
+                   else esc(p) for p in parts)
+
+
+def main() -> int:
+    STAGE.mkdir(exist_ok=True)
+    md = SRC.read_text()
+    md, (title, author, placed, notes) = preprocess(md)
+
+    stage_md = STAGE / "body.md"
+    stage_md.write_text(md)
+    pre = STAGE / "preamble.tex"
+    pre.write_text(PREAMBLE)
+
+    cmd = ["pandoc", str(stage_md), "-f",
+           "markdown+pipe_tables+implicit_figures+tex_math_dollars",
+           "-t", "latex", "-s", "--wrap=preserve",
+           # Without this every `##` becomes \subsection and the whole hierarchy
+           # sits one level too deep. The manuscript numbers its own headings, so
+           # sections stay unnumbered and no double numbering appears.
+           "--top-level-division=section",
+           "-V", "documentclass=article", "-V", "fontsize=11pt",
+           "-V", "geometry:margin=1in", "-V", "colorlinks=true",
+           "-M", f"title={title}", "-M", f"author={author}",
+           "-M", "date=", "-H", str(pre), "-o", str(TEX)]
+    print("$ " + " ".join(cmd[:8]) + " ...")
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode:
+        print(r.stderr[:2000], file=sys.stderr)
+        return 1
+
+    tex = TEX.read_text()
+    # splice the figure floats back in
+    for token, block, n in placed:
+        if token not in tex:
+            notes.append(f"figure token for Figure {n} lost in conversion")
+            continue
+        tex = tex.replace(token, block)
+    # Floats cannot move backwards. The caption paragraphs sit late in the
+    # document, so without a barrier every figure drifts past the reference list
+    # and the PDF ends with figures interleaved among the references.
+    for heading in ("Data and code availability", "References"):
+        m = re.search(r"\\(sub)*section\{" + re.escape(heading) + r"\}", tex)
+        if m:
+            tex = tex[:m.start()] + "\\FloatBarrier\n" + tex[m.start():]
+            notes.append(f"flushed pending floats before '{heading}'")
+        else:
+            notes.append(f"NO BARRIER APPLIED: heading '{heading}' not matched")
+    TEX.write_text(tex)
+    print(f"wrote {TEX}")
+
+    print("$ tectonic -X compile ...")
+    r = subprocess.run(["tectonic", "-X", "compile", str(TEX),
+                        "--outdir", str(TEX.parent), "--keep-logs"],
+                       capture_output=True, text=True, cwd=str(ROOT))
+    if r.returncode:
+        tail = (r.stderr or r.stdout)[-3000:]
+        print(tail, file=sys.stderr)
+        return 1
+
+    print(f"\nwrote {PDF}")
+    print("\nBUILD NOTES")
+    for n in notes:
+        print(f"  - {n}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

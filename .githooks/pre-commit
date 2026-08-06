@@ -30,6 +30,7 @@ MAX_BYTES=2097152          # 2 MiB, any extension
 ALLOWED_EXT=(
     py md txt csv json bib ini toml yml yaml     # source, prose, config, data
     log mat npy npz png pdf                      # solve byproducts and figures
+    tex                                          # arXiv submission source
 )
 # Exact filenames with no extension, or dotfiles.
 ALLOWED_NAMES=(
