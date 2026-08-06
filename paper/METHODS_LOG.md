@@ -5167,3 +5167,55 @@ not noise to be reported alongside a caveat.**
 header naming `04r` as the cluster-basis source, which closes the outstanding
 thread-1 ruling. Its values are unchanged. It still has no generating script; that
 is unfixed and separate.
+
+---
+
+## 2026-08-05 — the title, and item 11 applied
+
+### Title changed to the negative claim
+
+Was: *"Canonical jaw electrode sites outperform retroauricular sites for every
+resolvable speech articulator"*. That is a universal claim over resolvable
+muscles, and the result is 5 of 10 favouring the jaw on both axes, 2 unstable
+across subsets reaching no verdict, and temporalis reading ear-on-both-axes under
+the uniform sweep. Under either reading of "resolvable" it overstates: if it
+denotes the muscles that resolved to jaw it is circular, and if it denotes
+anything reaching a verdict then temporalis is a counterexample in one treatment.
+
+Now: *"No speech articulator robustly favours retroauricular electrodes over
+canonical jaw sites"*. Carl chose option A in chat. **The reason is structural,
+not stylistic: its truth conditions are identical to the abstract's headline
+sentence, so no future correction can make the title and the abstract disagree.**
+The old title asserted something stronger than its own abstract, which is
+backwards.
+
+The abstract is deliberately unchanged. It was correct as written and is the
+reason option A works.
+
+**Cascade, enumerated before editing.** Three tracked locations held the old
+string: `README.md:1` (short form, no subtitle), `paper/PAPER1_full_manuscript.md:1`
+(with subtitle), and `paper/WORDING_title_44_46_cascade.md:28`. The first two are
+updated. **The third is deliberately left**: it records what that file proposed,
+inside a file already marked UNVERIFIED, and rewriting it would falsify the
+record of what was proposed. No arXiv metadata file exists yet.
+
+### Item 11 applied
+
+Table 3 row 3's final cell now reads *"unquantified; direction known, magnitude
+not bounded"*. It keeps the item-21 label in the ratios column for consistency
+with rows 1, 2 and 7. §4.7 unchanged; its wording was the correct one all along.
+
+§3.4 gained the clarifying sentence, because its closing line ("the reported
+advantage is not an artefact of proximity to the truncation") could otherwise be
+read as settling the boundary question that row 3 now says is open. The two are
+different quantities and the section now says so.
+
+Pipe-count check run afterward, all eleven Table 3 rows carry seven pipes. That
+check exists because labelling row 2 by string slicing produced a doubled pipe
+earlier the same day.
+
+### File status
+
+`paper/WORDING_title_and_item11.md` is tracked and carries **"pending Carl,
+supervisor-approved only"**. Carl chose option A in chat; that is recorded as the
+choice of an option, not as approval of the file.

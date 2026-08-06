@@ -1,4 +1,4 @@
-# Canonical jaw electrode sites outperform retroauricular sites for every resolvable speech articulator: a volume-conductor model with orientation and electrode-count controls
+# No speech articulator robustly favours retroauricular electrodes over canonical jaw sites: a volume-conductor model with orientation and electrode-count controls
 
 **Carl Vincent Kho**
 Somach Systems, Inc., San Francisco, CA, USA
@@ -631,7 +631,9 @@ Removing the near-cut sites moves the median gap from +4.68 dB to +4.52 dB, a
 shift of −0.17 dB. No muscle changes sign (0 of 10). The largest individual
 movements are `medial_pterygoid` −0.88, `sternocleidomastoid` −0.54 and
 `platysma` −0.37 dB. The reported advantage is not an artefact of proximity to
-the truncation.
+the truncation. The sensitivity reported here measures the effect of excluding
+the most exposed sites. It does not bound the residual boundary artefact on the
+sites that remain, which is addressed in §4.7.
 
 The 10 mm grouping above is descriptive. The reported subsets span every
 admissible site set for any near-cut threshold between 9.757 mm and 15.264 mm, a
@@ -1005,7 +1007,7 @@ survives into all of them.
 |---|---|---|---|---|---|
 | 1 | Discretisation | finite element size | yes | partly — directional, unquantified | not separable from term 6 at current precision |
 | 2 | Interface proximity | source near a conductivity boundary | yes | yes — directional, unquantified | requires a geometry decoupling eccentricity from interface distance; not measured |
-| 3 | Inferior boundary | MIDA's cut face | yes | yes — jaw sites, not ear; directional, unquantified | unquantified and **not bounded**; the extended-mesh measurement did not conserve charge (§4.7). §3.4 reports a different quantity: the shift from excluding near-cut sites |
+| 3 | Inferior boundary | MIDA's cut face | yes | yes — jaw sites, not ear; directional, unquantified | unquantified; direction known, magnitude not bounded |
 | 4 | Muscle anisotropy | σ tensor vs scalar | **yes — ~5 dB in medial pterygoid, ~4.5 dB in SCM** | **no — below the floor** | statistic A: largest change to any gap is **−0.085 dB** (SCM); medial pterygoid −0.010, temporalis +0.137, lateral pterygoid +0.036, all under the 0.27 dB floor. The absolute lead field IS affected; the reclassification is specific to ratios. Tensor on 2 of 10 compartments, the rest NOT APPLIED |
 | 5 | Fibre orientation | n̂ unknown in MIDA | yes | yes | per-muscle min–max envelope |
 | 6 | Electrode meshing | contact area from incidental surface triangulation | yes | **yes — per-site** | **0.27 dB, 95 % CI [0.17, 0.65], n = 6** |

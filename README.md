@@ -1,4 +1,4 @@
-# Canonical jaw electrode sites outperform retroauricular sites for every resolvable speech articulator
+# No speech articulator robustly favours retroauricular electrodes over canonical jaw sites
 
 A volume-conductor model with orientation and electrode-count controls, answering:
 **which speech muscles can you actually see from behind the ear, and how much do
