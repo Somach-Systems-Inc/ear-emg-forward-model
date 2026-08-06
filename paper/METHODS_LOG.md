@@ -5316,3 +5316,48 @@ an unrenormalised reduction landed 0.05 dB from a published −3.724. Numbers th
 are wrong by less than a reader's rounding tolerance survive every pass that
 reads rather than recomputes. That is what axis (a)'s reverse sweep is for, and
 it remains unbuilt.
+
+---
+
+## 2026-08-06 — §2.5.1: SCM half removed, temporalis half held for one ruling
+
+Ruled: drop the SCM half, keep temporalis. The reason is the claim-level defect,
+not the numbers. §2.5.1 asserted that SCM's jaw-favouring directions are ones the
+muscle does not occupy, which is a statement about a constrained sweep for SCM.
+**No constrained sweep for SCM exists.** §4.7 and review item 13 disclose that the
+constrained analysis was run for temporalis alone, so the paragraph contradicted
+the paper's own limitations section. Nothing could be regenerated because there
+was nothing to regenerate from.
+
+### Removed
+
+The SCM clause, its `72.5 %`, its `−5.06 dB at the estimated axis`, and the "two
+muscles demonstrate this in opposite directions" framing, which cannot survive
+losing one of its two directions. The section now names temporalis alone and adds
+that the intersection is available for temporalis only, pointing at §4.7.
+
+`96 %` and `8.5 %` were also removed from the temporalis clause, which now makes
+its argument qualitatively. **Both were unanchored, and leaving a figure in place
+while its provenance is unsettled is how −3.724 and −5.06 survived.** The
+argument does not depend on the values; it depends on the reversing directions
+lying outside the fan, which is true.
+
+### The four figures, logged under the class-1 heading
+
+`96 %`, `8.5 %`, `72.5 %`, `−5.06 dB`. Two were near-misses of a real quantity
+(96 against 94.0 or 92.0; 72.5 against 66.0 or 60.5), wrong by margins a reader
+reads as rounding. One was the complement of a figure living only in this log's
+prose. One named a quantity that exists nowhere in `src/`.
+
+**The pre-commitment fired before any value was regenerated**, and it fired on
+inspection of what the paragraph claims rather than on a computed difference.
+That ordering is the point: had the numbers been regenerated first, two of them
+would have been replaced with plausible values and the claim defect underneath
+would have shipped.
+
+### `8.5 %` is recoverable, and cheaply
+
+Recomputed from `results/04k_temporalis_perdirection.npz`, **no solve**: over the
+200 sampled fan directions, 91.5 % favour the ear and **8.5 %** do not. The
+published figure is exact. It is not emitted to any results file, which is the
+only reason it counted as unsourced.

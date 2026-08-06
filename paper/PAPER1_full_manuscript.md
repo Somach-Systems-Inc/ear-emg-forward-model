@@ -348,16 +348,14 @@ measured — from the comparison.
 #### 2.5.1 The anatomically-constrained sweep
 
 An unconstrained orientation fraction is conservative to the point of being
-misleading, because orientation space is not uniformly reachable. Two muscles
-demonstrate this in opposite directions. For temporalis, the directions that
-reverse the montage preference lie outside the anatomical fan entirely, so an
-unconstrained 96 % understates a result that is conditional on fibre direction in 8.5 % of the derived fan. For
-sternocleidomastoid, the jaw-favouring directions are not ones the muscle
-occupies, so an unconstrained 72.5 % understates a gap that is −5.06 dB at the
-estimated axis. We therefore sweep the hemisphere first and intersect with the
-anatomically permitted set wherever one can be established, reporting the
-unconstrained fraction alongside so the constraint is visible rather than
-implicit.
+misleading, because orientation space is not uniformly reachable. Temporalis
+demonstrates this: the directions that reverse the montage preference lie outside
+the anatomical fan entirely, so an unconstrained fraction understates a result
+that is conditional on fibre direction over only part of the derived fan. We
+therefore sweep the hemisphere first and intersect with the anatomically
+permitted set wherever one can be established, reporting the unconstrained
+fraction alongside so the constraint is visible rather than implicit. That
+intersection is available for temporalis alone; §4.7 states where it is not.
 
 ### 2.6 Validation
 
