@@ -191,7 +191,7 @@ def main(argv=None) -> int:
         del m, cond, E
         gc.collect()
 
-    with a.out.open("w", newline="") as fh:
+    with a.out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=fields)
         w.writeheader()
         w.writerows(rows)

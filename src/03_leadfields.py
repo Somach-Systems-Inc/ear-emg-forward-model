@@ -272,7 +272,7 @@ def paired_invariants(pos, sigma, targets, condition="iso"):
         rows.append(row)
 
     out_csv = config.RESULTS / "03_paired_invariants.csv"
-    with out_csv.open("w", newline="") as fh:
+    with out_csv.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
@@ -282,7 +282,7 @@ def paired_invariants(pos, sigma, targets, condition="iso"):
 
 def append_row(path: Path, row: dict, fieldnames):
     new = not path.exists()
-    with path.open("a", newline="") as fh:
+    with path.open("a", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=fieldnames)
         if new:
             w.writeheader()

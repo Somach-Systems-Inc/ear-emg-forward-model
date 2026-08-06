@@ -402,7 +402,7 @@ def main(argv=None) -> int:
 
     if comp_rows:
         out = config.RESULTS / "02_path_composition.csv"
-        with out.open("w", newline="") as fh:
+        with out.open("w", newline="", encoding="utf-8") as fh:
             w2 = csv.DictWriter(fh, fieldnames=list(comp_rows[0].keys()))
             w2.writeheader()
             w2.writerows(comp_rows)
@@ -440,7 +440,7 @@ def main(argv=None) -> int:
                            + (f", {v['region']}" if v["region"] else "")
                            + "), min-distance projection to compartment")
             r["verified"] = "no" if fails else "accepted"
-        with a.positions.open("w", newline="") as fh:
+        with a.positions.open("w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, fieldnames=list(next(iter(rows.values())).keys()))
             w.writeheader()
             w.writerows(rows.values())

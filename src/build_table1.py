@@ -249,7 +249,7 @@ def main() -> int:
     rows.sort(key=influence, reverse=True)
 
     out = config.RESULTS / "01_table1_conductivities.csv"
-    with out.open("w", newline="") as fh:
+    with out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)

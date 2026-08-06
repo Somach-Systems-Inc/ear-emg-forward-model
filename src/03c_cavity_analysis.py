@@ -263,7 +263,7 @@ def main() -> int:
     print(f"{abs(common):.3f} dB in absolute lead field.")
 
     out = config.RESULTS / "03_cavity_exposure.csv"
-    with out.open("w", newline="") as fh:
+    with out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)

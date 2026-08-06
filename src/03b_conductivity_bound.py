@@ -343,7 +343,7 @@ def main(argv=None) -> int:
                   f"(filling the voids RAISES sensitivity where positive)")
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    with a.out.open("w", newline="") as fh:
+    with a.out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(out_rows[0].keys()))
         w.writeheader()
         w.writerows(out_rows)

@@ -132,7 +132,7 @@ def main() -> int:
           f"(h=1.677 mm): {disc:.3f} % RDM")
 
     out = config.RESULTS / "convergence" / "fit.csv"
-    with out.open("w", newline="") as fh:
+    with out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow(["density", "tets", "h_mean_mm", "RDM_pct", "MAG_pct"])
         for lbl, hh, n, r_, m_ in data:
