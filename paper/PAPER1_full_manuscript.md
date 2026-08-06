@@ -950,14 +950,29 @@ and stated for completeness.
 of ten segmented muscles, and rows without one are reported as not applied
 rather than as zero change.
 
-**The orientation constraint is derived for one muscle and assumed for nine.**
-The anatomically-constrained sweep of §2.5.1 derives a per-voxel fibre field for
-temporalis from its insertion geometry. The other nine articulators are swept
+**The orientation constraint is derived for one muscle and assumed for the rest,
+and it cannot be extended to all of them.** The anatomically-constrained sweep of
+§2.5.1 derives a per-voxel fibre field for temporalis by pointing each voxel at
+its mandibular insertion. The other nine segmented articulators are swept
 uniformly over the hemisphere, which assumes source orientation is uniformly
-distributed for each of them. That assumption is stated once and inherited
-throughout, and it is the same assumption the temporalis derivation was built to
-remove. Deriving nine further fibre fields is outside this study; any muscle with
-an identifiable bony insertion admits the same construction.
+distributed for each. That assumption is stated once and inherited throughout,
+and it is the assumption the temporalis derivation exists to remove.
+
+The construction requires a discrete bony insertion for voxels to point at, so
+the remainder do not form a single pending set. Sternocleidomastoid, medial
+pterygoid and mentalis are strap-like with fibres along the compartment long
+axis, and admit it directly. Masseter, lateral pterygoid and depressor anguli
+oris are multi-part or converging — superficial and deep layers at different
+angles, two heads, and a converging triangular sheet respectively — and a
+per-voxel fan toward a common attachment is the appropriate treatment for them,
+untested here. **Orbicularis oris admits it in no form**: it is a sphincter whose
+fibres run in a ring, with no bony insertion, so a principal axis is a category
+error rather than a missing measurement. Buccinator blends into that sphincter at
+the modiolus and inherits the same problem. Platysma is a broad sheet.
+
+The limitation is therefore not that nine derivations are outstanding. It is that
+the treatment which changed the temporalis result is available for some
+compartments, inappropriate for others, and impossible for at least one.
 
 **One jaw site is withheld, and its omission runs against the reported jaw
 advantage.** `throat_scm` carries no coordinate because MIDA's

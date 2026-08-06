@@ -1,4 +1,8 @@
-# HANDOFF — Paper 1, as of 2026-08-05 (HEAD after `cd61e66`)
+# HANDOFF — Paper 1, as of 2026-08-05 (HEAD after `e903f5b`)
+
+**Status: v1 is ready to post.** The review queue is worked, the title is ruled
+and applied, and the two remaining substantive items are deliberately deferred to
+v2 (§7). Do not start §7 work before the preprint is timestamped.
 
 **Read in this order:** `CLAUDE.md`, this file, `paper/METHODS_LOG.md` (last six
 entries), `paper/REVIEW_TRIAGE.md`.
@@ -74,22 +78,28 @@ unchanged for any value in (9.757, 15.264], a 5.507 mm window.
 
 ---
 
-## 3. Live defects, highest first
+## 3. What was open here, and is now closed
 
-**`−3.724` is an orphan, live at line 648 in §3.5.** It pairs `04h`'s cluster gap
-(−2.571) with a homogeneous value existing in no results file.
-**`RULING_line608.md` is WITHDRAWN — its precondition was never met — so this
-defect now has no approved remedy.** It needs a new ruling.
+Kept as a record of what each defect was, because the shapes recur.
 
-**Table 4's basis is unresolved.** Wording exists for an envelope presentation
-(`WORDING_table4_envelope.md`, pending Carl) but applying it **halted on its own
-note 3**: the caption asserts every value is an envelope while the table body
-still holds single-subset point values, and no generator for an envelope body
-exists. Applying the caption alone would make it false about its own table.
+**`−3.724` was NOT an orphan; it was correct and unsourced.** It reproduces at
+−3.7237 from `03_homog_scalp_per_direction.npz` once the delivered-current
+renormalisation is applied, and both it and −2.571 are cluster-basis, so the
+"basis mismatch" this file previously recorded was not one. `04r_homog_cluster.py`
+now emits it. `RULING_line608.md` is **withdrawn** (precondition never met) and
+would have replaced correct text.
 
-**Item 23: not one of the six figures is cited anywhere in the body text.**
+**Table 4 is now an envelope** over all five admissible jaw subsets
+(`04q_table4_envelope.py`), which refuses to write unless the published four-site
+subset reproduces the old table row for row. It does.
 
-**Item 29:** the assembly-notes section is still in the file at line 1075.
+**Item 23 closed** — all six figures cited at first use. **Item 28 closed** — four
+editing instructions were live in the body, not the two originally recorded.
+**Items 11, 12, 13, 14, 19, 21 closed.**
+
+**Still open:** item 29 (assembly-notes section at the end of the file), items 16
+and 17 (the n=1 transferability argument rests on muscles that now carry no
+claim), and a duplicated draw-procedure sentence in §3.1.
 
 ---
 
@@ -107,9 +117,15 @@ Text from all four is already in the manuscript, including the **title**, §4.4,
 §4.6 and §4.8. `REREAD_PACKET.md` (in Carl's Downloads) carries the current text
 of every touched location; it is a quality pass, not a gate.
 
-**The title is the open content problem.** It came from an unverified file and
-describes a three-muscle result that is now one muscle. Ratifying it does not fix
-that. Carl has not ruled.
+**The title was the open content problem and is now RULED and applied.** The old
+one asserted jaw sites outperform "for every resolvable speech articulator", a
+universal claim stronger than its own abstract. It is now *"No speech articulator
+robustly favours retroauricular electrodes over canonical jaw sites"*, chosen
+because its truth conditions are identical to the abstract's headline sentence,
+so no future correction can make the two disagree. The abstract is deliberately
+unchanged. `WORDING_title_44_46_cascade.md:28` still holds the old string on
+purpose: it records what that file proposed, and rewriting it would falsify the
+record.
 
 ---
 
@@ -131,8 +147,12 @@ derived set; that is the open question in §2.
 
 ## 6. The rule that keeps being paid for
 
-Six times now a real check returned a true fact that did not support the
-conclusion drawn from it. The two most recent:
+Seven times now a real check returned a true fact that did not support the
+conclusion drawn from it, and twice the proposed *correction* was the error. The
+most recent three:
+
+- `−3.724` was read as a wrong number because no file held it. It was right, and
+  the ruling written to "fix" it would have replaced correct text.
 
 - The cut plane "did not exist" because a histogram binned by S cannot see a plane
   tilted across 180 mm of lateral extent. **Every node count in that entry was
@@ -144,3 +164,71 @@ conclusion drawn from it. The two most recent:
 known cases does not establish the general claim.** Until axis (a)'s
 `--check-body` reverse sweep exists, the correct statement is "no orphan has been
 enumerated", never "there are none."
+
+---
+
+## 7. V2 QUEUE — future work, NOT open items. Do not treat as cleanup.
+
+Everything below was investigated, costed, and **deliberately deferred past the
+v1 preprint**. Each is disclosed in the manuscript as a limitation. A future
+session must not pick these up as tidying: **every one of them can move Table 4
+verdicts**, and the first fires a pre-commitment.
+
+### 7.1 Extended-mesh rebuild — ARMS A LIVE TRIP-WIRE
+
+The neck-extended mesh does not conserve charge: 1.070 mA through a plane at
+S = −182 against a 1 mA injection, where the truncated control collapses to
+0.107 mA at its own floor. Diagnosis is a mesh defect presenting as solver
+non-convergence — the slab is meshed roughly an order of magnitude coarser than
+the head, yielding 0.83% more elements for ~10% more volume. **Remedy is named at
+METHODS_LOG 1265–1267:** rebuild with the slab at head-comparable element size.
+
+Two cautions the record does not make obvious.
+
+**Hypothesis 1 is UNTESTED, not falsified.** METHODS_LOG records it as falsified
+by the `above_ear` probe, but `_failed_runs/boundary_probe_above_ear_VOID_solved_hyoid_20260803/WHY_VOID.txt`
+shows that probe solved `hyoid`, not `above_ear`. The coarse-slab hypothesis is
+still live and is the leading candidate.
+
+**The 1.0 dB pre-commitment is recorded UNEXECUTED, and a successful measurement
+fires it.** The measured floor is 0.27 dB, so exceeding 1.0 dB is well within
+range. If it fires, the cascade reaches `04h`, `04q`, `04j`, `04p`, `04n`,
+Table 4, §3.1, §4.1 and the Abstract. Cost: 22 solves at ~5.5 min wall each,
+about two hours, plus the rebuild and a fresh memory measurement — the recorded
+12 GB per solve does not survive refining the slab.
+
+Closing this would bound Table 3 row 3's term on the **retained** sites, which is
+what §3.4 cannot do. That is a real gain and it is why this is queued rather than
+abandoned. Fire it when either outcome is affordable.
+
+### 7.2 `EXTENSION_LABEL = 200` renumbering
+
+`01c_extend_neck.py` labels the slab 200, inside SimNIBS's electrode-rubber range
+(100–499), so `with_electrode_tags()` silently assigns 29.4 S/m — an 83x error
+that once produced a fabricated invariant-2 reading (−0.310 against −0.0038 with
+the correct map). It is **not** the cause of the flux failure, but any rebuild
+must renumber it out of that range first.
+
+### 7.3 Derived fibre fields — ZERO SOLVES, WHICH IS THE DANGER
+
+`04k` reads the existing `*_scalar.msh` result meshes and computes E·n̂ per voxel.
+The lead field is already solved; fibre direction enters only at read time. So
+this is a re-reduction over 22 meshes at 911 MB each, about 20 GB read per
+muscle, and **no new simulation**.
+
+**That cheapness is exactly why it is deferred.** The derived field moved
+temporalis from −2.571 to −1.147 and flipped *ear, robust on both axes* to *no
+resolvable preference* — the single most consequential number change in this
+paper. Running it on sternocleidomastoid and medial pterygoid, the two muscles
+currently unstable across subsets, could resolve them in either direction off a
+computation that costs nothing to start.
+
+Scope is smaller than "the other nine": the construction needs a discrete bony
+insertion. SCM, medial pterygoid and mentalis admit it directly; masseter,
+lateral pterygoid and depressor anguli oris need a per-voxel fan toward a common
+attachment; **orbicularis oris admits it in no form**, being a sphincter with no
+bony insertion. §4.7 states this.
+
+Regeneration if run: per-muscle pervoxel CSV and perdirection npz, then `04h`,
+`04j`, `04q`, `04n`, `04p` if temporalis is touched, then §3.1, §4.1, Table 4 and
+the Abstract.
