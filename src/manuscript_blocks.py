@@ -109,7 +109,7 @@ def replace_block(name: str, content: str, path: Path | None = None) -> None:
     j = text.index(c)
     if j < i:
         raise AnchorError(f"block {name!r}: closing anchor precedes opening")
-    p.write_text(text[:i] + "\n" + content.strip("\n") + "\n" + text[j:])
+    p.write_text(text[:i] + "\n" + content.strip("\n") + "\n" + text[j:], encoding="utf-8")
 
 
 if __name__ == "__main__":

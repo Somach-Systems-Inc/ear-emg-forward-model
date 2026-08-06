@@ -187,7 +187,7 @@ def main(argv=None) -> int:
     v = collect()
     OUT.write_text(json.dumps(
         {k: {"value": val, "source": src, "figure": fig}
-         for k, (val, src, fig) in v.items()}, indent=2))
+         for k, (val, src, fig) in v.items()}, indent=2), encoding="utf-8")
     print(f"{'key':<22}{'value':>12}   source")
     print("-" * 66)
     for k, (val, src, _f) in v.items():

@@ -86,7 +86,7 @@ def main() -> int:
         f"# electrode diameter {config.ELECTRODE_DIAMETER_MM} mm (production)\n"
         f"# from |dMAG| = {d_mag:.4f} pp between two nominally-identical meshes\n"
         f"# n = 2 (one difference, not a distribution)\n"
-        f"# supersedes the 0.43 dB figure measured with a 15 mm electrode\n")
+        f"# supersedes the 0.43 dB figure measured with a 15 mm electrode\n", encoding="utf-8")
     print(f"\nWritten: {out}")
     return 0
 

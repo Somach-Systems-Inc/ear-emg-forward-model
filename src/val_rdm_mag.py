@@ -266,7 +266,7 @@ def phase_analytic(npz: Path, out_csv: Path):
     env = {"analytic_phase": env_fingerprint(),
            "simnibs_phase": json.loads(str(d["env_simnibs"]))}
     (out_csv.parent / "val_environments.json").write_text(
-        json.dumps(env, indent=2))
+        json.dumps(env, indent=2), encoding="utf-8")
     print(f"\nWritten: {out_csv}")
     print(f"Written: {out_csv.parent / 'val_environments.json'}")
 
