@@ -323,6 +323,11 @@ def main(argv=None) -> int:
                          f"harness already takes one; this did not, so a timing "
                          f"or re-measurement run had no way to avoid CLEARING "
                          f"the committed solves under results/leadfields/.")
+    ap.add_argument("--cut-plane", type=Path, default=None,
+                    help="cut-plane CSV matching --mesh (default: the committed "
+                         "results/01_cut_plane.csv). The plane is FITTED to a "
+                         "specific mesh and config.cut_plane() verifies its "
+                         "sha256, so a second mesh needs its own plane file.")
     ap.add_argument("--mesh", type=Path, default=None,
                     help=f"head mesh to solve on (default: {MESH.name}). For "
                          f"the discretisation convergence study, which needs "
@@ -340,7 +345,22 @@ def main(argv=None) -> int:
     # the CSVs have no mesh column. This is the same failure that overwrote a
     # committed 03_paired_invariants.csv on 2026-08-06, so --mesh refuses
     # rather than trusting the caller to remember.
+    if a.cut_plane is not None:
+        config.CUT_PLANE_CSV = a.cut_plane
     if a.mesh is not None:
+        # A PLANE FITTED TO ANOTHER MESH IS NOT A PLANE FOR THIS ONE. The cut
+        # plane is a total-least-squares fit to the truncation face of ONE
+        # mesh, and config.cut_plane() verifies the mesh sha256 for exactly
+        # that reason. --mesh without --cut-plane sends the guard a mesh it was
+        # never fitted to, which is how this flag first failed: it ran one
+        # electrode, then raised on the second machine's mesh hash.
+        if a.cut_plane is None:
+            print("ERROR: --mesh requires --cut-plane.\n"
+                  "  The cut plane is fitted to one mesh and its hash is "
+                  "checked. Derive one for the new mesh first:\n"
+                  "    01d_derive_cut_plane.py --mesh <new.msh> --out <new_plane.csv>",
+                  file=sys.stderr)
+            return 2
         if a.workdir is None or a.out is None:
             print("ERROR: --mesh requires --workdir AND --out.\n"
                   "  Solving a different mesh into the production tree would "
