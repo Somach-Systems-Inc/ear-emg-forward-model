@@ -302,7 +302,7 @@ def append_row(path: Path, row: dict, fieldnames):
 def main(argv=None) -> int:
     # Declared up front because the --workdir/--out help strings interpolate
     # these names, and a `global` after any use of them is a SyntaxError.
-    global WORKDIR, OUT_CSV, CALIB_LOG, PAIRED_CSV
+    global WORKDIR, OUT_CSV, CALIB_LOG, PAIRED_CSV, MESH
 
     ap = argparse.ArgumentParser(prog="03_leadfields.py")
     ap.add_argument("--dry-run", action="store_true")
@@ -323,11 +323,35 @@ def main(argv=None) -> int:
                          f"harness already takes one; this did not, so a timing "
                          f"or re-measurement run had no way to avoid CLEARING "
                          f"the committed solves under results/leadfields/.")
+    ap.add_argument("--mesh", type=Path, default=None,
+                    help=f"head mesh to solve on (default: {MESH.name}). For "
+                         f"the discretisation convergence study, which needs "
+                         f"the SAME pipeline on a mesh built at a different "
+                         f"resolution. Requires --workdir: see below.")
     ap.add_argument("--out", type=Path, default=None,
                     help=f"results CSV (default: {OUT_CSV})")
     ap.add_argument("--calib-log", type=Path, default=None,
                     help=f"calibration log (default: {CALIB_LOG})")
     a = ap.parse_args(argv)
+
+    # A DIFFERENT MESH MUST WRITE SOMEWHERE ELSE. Solving a refined mesh into
+    # results/leadfields/ would overwrite the production solves with fields
+    # from a different discretisation, and nothing downstream would notice:
+    # the CSVs have no mesh column. This is the same failure that overwrote a
+    # committed 03_paired_invariants.csv on 2026-08-06, so --mesh refuses
+    # rather than trusting the caller to remember.
+    if a.mesh is not None:
+        if a.workdir is None or a.out is None:
+            print("ERROR: --mesh requires --workdir AND --out.\n"
+                  "  Solving a different mesh into the production tree would "
+                  "silently replace the committed solves with fields from a\n"
+                  "  different discretisation, and no downstream file records "
+                  "which mesh produced it.\n"
+                  "  e.g. --mesh data/mida_fine.msh --workdir results/conv/leadfields "
+                  "--out results/conv/03_leadfields.csv",
+                  file=sys.stderr)
+            return 2
+        MESH = a.mesh
 
     # Rebind the module-level destinations so the helpers that read them write
     # to the redirected tree too. Redirecting only main() would leave
