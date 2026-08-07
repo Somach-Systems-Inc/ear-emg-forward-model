@@ -187,7 +187,7 @@ def derive(mesh_path: Path, nz=NZ_THRESHOLD, depth=BAND_DEPTH_MM, verbose=True):
         mesh_s_min=float(all_nodes[:, 2].min()),
         face_s_low=float(pts[:, 2].min()), face_s_high=float(pts[:, 2].max()),
         **mida,
-        mesh=str(mesh_path.relative_to(config.ROOT)), mesh_sha256=sha256(mesh_path),
+        mesh=_record_path(mesh_path), mesh_sha256=sha256(mesh_path),
     )
 
 
@@ -224,6 +224,21 @@ def self_test():
     return 0 if ok else 1
 
 
+def _record_path(p: Path) -> str:
+    """Repo-relative when the mesh is inside the repo, absolute when it is not.
+
+    The old code was an unconditional relative_to(config.ROOT), which raises
+    two ways that both showed up the first time a second mesh was used: a
+    RELATIVE --mesh ("data/mida_headneck.msh") is not a subpath of an absolute
+    ROOT, and a mesh built outside the repo is not under ROOT at all. Neither
+    is a user error; the convergence study needs both.
+    """
+    q = p.resolve()
+    try:
+        return str(q.relative_to(config.ROOT))
+    except ValueError:
+        return str(q)
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="01d_derive_cut_plane.py")
     ap.add_argument("--mesh", type=Path, default=config.MESH)
@@ -259,7 +274,7 @@ def main(argv=None):
                       e["pz"] - row["pz"]])
         row["extrusion_perp_mm"] = float(abs(np.dot(n, d)))
         row["extrusion_s_difference_mm"] = float(abs(d[2]))
-        row["extended_mesh"] = str(ext.relative_to(config.ROOT))
+        row["extended_mesh"] = _record_path(ext)
         print(f"\nextended plane  : perpendicular separation "
               f"{row['extrusion_perp_mm']:.4f} mm  "
               f"(S-difference alone would say {row['extrusion_s_difference_mm']:.4f})")
