@@ -51,7 +51,11 @@ FIGURES = {
     4: "fig4_anisotropy_delta.pdf",
     5: "fig5_attenuation_vs_distance.pdf",
     6: "fig6_material_share_vs_fat.pdf",
-    7: "fig7_suprahyoid_field.pdf",
+    7: "fig7_gap_decomposition.pdf",
+    8: "fig8_distance_mechanism.pdf",
+    9: "fig9_suprahyoid_field.pdf",
+    10: "fig10_advantage_cascade.pdf",
+    11: "fig11_two_axis_envelope.pdf",
 }
 
 # Adapted from Carl's first arXiv submission (2601.06516), kept in
@@ -227,17 +231,44 @@ def preprocess(md: str) -> tuple[str, list[str]]:
         # that first cites it. Floats cannot travel backwards, so a figure whose
         # caption sits at the end of the document can never appear beside the
         # text that discusses it.
+        # ANCHORS ARE COMPUTED BEFORE ANY INSERTION, THEN APPLIED BACK TO FRONT.
+        #
+        # The first version inserted each token as it went. Figures 2 and 3 are
+        # cited in one sentence -- "the sensitivity matrix is given in Figure 2,
+        # and the per-muscle verdicts in Figure 3" -- so both resolved to the
+        # same paragraph break. Inserting @@FIG2@@ there created a NEW "\n\n"
+        # immediately after the paragraph, which Figure 3's search then found
+        # first, so @@FIG3@@ landed in front of @@FIG2@@. LaTeX numbers floats
+        # by order of appearance, so the complementarity map was printed as
+        # "Figure 2" while the body told the reader Figure 2 was the sensitivity
+        # matrix. The captions and images stayed together; only the numbering
+        # was wrong, which is exactly the kind of defect that survives a
+        # proofread.
+        #
+        # Resolving every anchor against the same untouched string, then
+        # inserting from the end backwards, makes the result independent of
+        # insertion order. Ties at one anchor are broken by figure number.
         for tok, _blk, n in placed:
             md = md.replace(tok, "")
+        anchors = []
+        for tok, _blk, n in placed:
             cite = re.search(rf"Figure {n}\b", md)
             if not cite:
                 notes.append(f"Figure {n}: no citation found, left at the end")
-                md += f"\n{tok}\n"
+                anchors.append((len(md), n, tok))
                 continue
             para = md.find("\n\n", cite.end())
-            para = len(md) if para == -1 else para
-            md = md[:para] + f"\n\n{tok}" + md[para:]
-        notes.append("figures moved to their first citation (interleaved)")
+            anchors.append((len(md) if para == -1 else para, n, tok))
+        for pos, n, tok in sorted(anchors, reverse=True):
+            md = md[:pos] + f"\n\n{tok}" + md[pos:]
+        order = [n for _p, n, _t in sorted(anchors)]
+        if order != sorted(order):
+            raise SystemExit(
+                f"figure placement is out of citation order: {order}. "
+                f"LaTeX numbers floats by appearance, so this would print "
+                f"wrong figure numbers. Fix the citation order in the "
+                f"manuscript, do not reorder FIGURES.")
+        notes.append(f"figures moved to their first citation, in order {order}")
         md = re.sub(r"^## Figure captions\s*$", "", md, flags=re.M)
     notes.append(f"placed {len(placed)} of {len(FIGURES)} figures")
     return md, (title, author_lines, placed, notes)
@@ -259,12 +290,250 @@ def latex_escape(s: str) -> str:
         return chunk.replace("`", "")
 
     parts = re.split(r"(\$[^$]*\$)", s)
-    return "".join(p if p.startswith("$") and p.endswith("$") and len(p) > 1
-                   else esc(p) for p in parts)
+    out = "".join(p if p.startswith("$") and p.endswith("$") and len(p) > 1
+                  else esc(p) for p in parts)
+    # MARKDOWN EMPHASIS SURVIVES INTO THE CAPTION AND MUST BE CONVERTED.
+    # Captions are lifted out of the markdown BEFORE pandoc runs, so pandoc
+    # never sees them and never converts their `*italics*`. The bold markers
+    # were already stripped by the caller, which made the omission of the
+    # single-asterisk case easy to miss: Figure 6 shipped the literal string
+    # "*smaller*" into the PDF. Done after escaping, which is safe because none
+    # of the escapes above can introduce an asterisk.
+    return re.sub(r"\*([^*\n]+)\*", r"\\emph{\1}", out)
 
 
 INLINE = [False]
 STYLE = ["plain"]
+
+
+
+def fix_table_widths(tex, notes):
+    """Give wide-prose columns the room they need.
+
+    pandoc splits a five-column table 20/20/20/20/20 regardless of content, so
+    Table 4's Verdict column ("jaw, site-robust but orientation-dependent")
+    wrapped onto three lines and stranded the word "axes" on its own row. The
+    widths below are allocated by what each column actually holds.
+    """
+    import re as _re
+    WIDTHS = {
+        # First column widened from 0.17 to 0.20 in Table 4 and set to 0.20 in
+        # Table 5: "sternocleidomastoid" at 9 pt overflowed the muscle column
+        # by 1.4 and 2.7 pt. Under a millimetre, and invisible in tectonic's
+        # output, but pdflatex reports it as an overfull hbox and it is free
+        # to fix.
+        "Gap (dB), envelope": [0.20, 0.17, 0.12, 0.16, 0.35],   # Table 4
+        "Best single site":   [0.20, 0.18, 0.10, 0.18, 0.13, 0.21],  # Table 5
+        "As modelled":        [0.22, 0.16, 0.18, 0.14, 0.30],   # fat contrast
+        "What sets it":       [0.04, 0.14, 0.19, 0.11, 0.17, 0.35],  # Table 3
+    }
+    for marker, w in WIDTHS.items():
+        i = tex.find(marker)
+        if i < 0:
+            continue
+        start = tex.rfind("\\begin{longtable}", 0, i)
+        end = tex.find("@{}}", start)
+        if start < 0 or end < 0:
+            continue
+        spec = "\\begin{longtable}[]{@{}\n" + "\n".join(
+            "  >{\\raggedright\\arraybackslash}p{(\\linewidth - "
+            f"{2*len(w)}\\tabcolsep) * \\real{{{x:.4f}}}}}" for x in w)
+        tex = tex[:start] + spec + tex[end:]
+        notes.append(f"re-allocated column widths for the '{marker}' table")
+    return tex
+
+
+# Extensions arXiv's AutoTeX will accept in a source package. Anything else in
+# the bundle is either an accident or a licence problem, so the check is an
+# allowlist, matching .githooks/pre-commit.
+BUNDLE_EXT = {".tex", ".sty", ".pdf", ".bbl", ".bib", ".cls"}
+# Files that live in the working bundle for convenience but must NOT be
+# uploaded. ms.pdf is the compiled output; shipping it beside the source is
+# dead weight at best and confuses AutoTeX at worst.
+NOT_UPLOADED = {"ms.pdf"}
+
+
+def harden_bundle(notes) -> int:
+    """Make the bundle a faithful, self-contained arXiv source package.
+
+    THE DEFECT THIS EXISTS FOR. The bundle directory was written but never
+    cleaned, so it accumulated. After the figures were renumbered it still
+    carried `fig7_suprahyoid_field.pdf` from the previous numbering: a
+    licensed-geometry-derived render, orphaned from every caption, sitting in
+    the directory that gets uploaded. Nothing referenced it and nothing
+    complained. Stale files in an upload directory are the same class of
+    failure as the *.geo leak, so this prunes by allowlist and says what it
+    removed.
+    """
+    import shutil
+    import tarfile
+    import tempfile
+
+    tex = TEX.read_text()
+    referenced = set(re.findall(r"\\includegraphics\[[^]]*\]\{([^}]+)\}", tex))
+    keep = referenced | {TEX.name} | ({"arxiv.sty"} if STYLE[0] == "arxiv" else set())
+
+    # --- prune anything not referenced
+    stale = [p for p in sorted(BUNDLE.iterdir())
+             if p.is_file() and p.name not in keep and p.name not in NOT_UPLOADED]
+    for p in stale:
+        p.unlink()
+    if stale:
+        notes.append("PRUNED " + str(len(stale)) + " stale bundle file(s): "
+                     + ", ".join(p.name for p in stale))
+
+    # --- everything the tex names must actually be there
+    missing = sorted(f for f in referenced if not (BUNDLE / f).exists())
+    if missing:
+        print(f"\nBUNDLE INCOMPLETE: ms.tex references {missing} which are not "
+              f"in {BUNDLE}. arXiv would fail to build this.", file=sys.stderr)
+        return 1
+
+    # --- no absolute paths: they compile here and nowhere else
+    abs_refs = [f for f in referenced if f.startswith("/")]
+    abs_any = re.findall(r"(?:/Users/|/home/|[A-Z]:\\\\)\S*", tex)
+    if abs_refs or abs_any:
+        print(f"\nABSOLUTE PATHS IN ms.tex: {abs_refs or abs_any[:3]}. "
+              f"This compiles on this laptop only.", file=sys.stderr)
+        return 1
+
+    # --- allowlist the extensions
+    bad = [p.name for p in BUNDLE.iterdir()
+           if p.is_file() and p.suffix.lower() not in BUNDLE_EXT]
+    if bad:
+        print(f"\nNOT UPLOADABLE: {bad} are not on the arXiv source allowlist "
+              f"{sorted(BUNDLE_EXT)}.", file=sys.stderr)
+        return 1
+
+    # --- CLEAN-ROOM COMPILE. Copying to a directory outside the repo is the
+    # only way to prove the bundle does not silently depend on a sibling file.
+    # Building in place cannot detect that, which is the whole failure mode.
+    upload = sorted(p for p in BUNDLE.iterdir()
+                    if p.is_file() and p.name not in NOT_UPLOADED)
+    with tempfile.TemporaryDirectory() as td:
+        room = Path(td) / "cleanroom"
+        room.mkdir()
+        for p in upload:
+            shutil.copy2(p, room / p.name)
+        r = subprocess.run(["tectonic", "-X", "compile", TEX.name,
+                            "--outdir", str(room)],
+                           capture_output=True, text=True, cwd=str(room))
+        if r.returncode:
+            print("\nCLEAN-ROOM COMPILE FAILED. The bundle is not "
+                  "self-contained.\n" + (r.stderr or r.stdout)[-2500:],
+                  file=sys.stderr)
+            return 1
+        # PAGE COUNT VIA pdfinfo, NOT A REGEX. Counting /Type /Page in the
+        # bytes returned 0 here, because tectonic writes object streams and
+        # the page objects are compressed out of reach. A check that silently
+        # reports 0 is worse than no check.
+        room_pdf = room / (TEX.stem + ".pdf")
+
+        def _pages(f):
+            q = subprocess.run(["pdfinfo", str(f)], capture_output=True,
+                               text=True)
+            for line in q.stdout.splitlines():
+                if line.startswith("Pages:"):
+                    return int(line.split()[1])
+            return None
+
+        pages, repo_pages = _pages(room_pdf), _pages(PDF)
+        if pages is None or repo_pages is None:
+            notes.append("clean-room compile OK outside the repo "
+                         f"({len(upload)} source files); page count not "
+                         "checked, pdfinfo unavailable")
+        elif pages != repo_pages:
+            print(f"\nCLEAN-ROOM PDF DIFFERS: {pages} pages outside the repo "
+                  f"against {repo_pages} inside it. Something in the build is "
+                  f"reading a file that is not in the bundle.", file=sys.stderr)
+            return 1
+        else:
+            notes.append(f"clean-room compile OK outside the repo, {pages} "
+                         f"pages matching the in-repo build, {len(upload)} "
+                         f"source files")
+
+        # --- every font must be embedded or arXiv rejects the PDF
+        q = subprocess.run(["pdffonts", str(room_pdf)], capture_output=True,
+                           text=True)
+        # PARSE FROM THE RIGHT. Two earlier versions of this check were
+        # wrong and both reported healthy PDFs as broken.
+        #   split()[3]      -- wrong, because type names contain spaces
+        #                      ("Type 1C", "CID TrueType").
+        #   fixed offsets   -- wrong, because a long font name overflows the
+        #                      36-char name column and shifts every field
+        #                      right. "CAFSZL+LatinModernMath-Regular-
+        #                      Identity-H" does exactly that, and it was
+        #                      reported as unembedded while pdffonts said yes.
+        # The trailing five fields are always emb, sub, uni, object, ID
+        # whatever the name and type widths do, so index from the end.
+        loose, t3, n = [], [], 0
+        for l in q.stdout.splitlines()[2:]:
+            f = l.split()
+            if len(f) < 6:
+                continue
+            n += 1
+            if f[-5].lower() != "yes":
+                loose.append(f[0])
+            if " Type 3 " in l[len(f[0]):]:
+                t3.append(f[0])
+        if loose:
+            print(f"\nFONTS NOT EMBEDDED: {loose}", file=sys.stderr)
+            return 1
+        if t3:
+            print(f"\nTYPE 3 FONTS: {t3}. Regenerate the figure with "
+                  f"pdf.fonttype 42.", file=sys.stderr)
+            return 1
+        if n:
+            notes.append(f"all {n} fonts embedded, no Type 3")
+
+        # --- SECOND ENGINE. tectonic is XeTeX; arXiv runs pdflatex. Verifying
+        # one engine says nothing about the other, and the one that matters is
+        # the one we do not use locally. A fresh copy is needed because the
+        # tectonic run above left aux files in `room`.
+        pdftex = shutil.which("pdflatex") or shutil.which(
+            "pdflatex", path="/Library/TeX/texbin")
+        if not pdftex:
+            notes.append("pdflatex NOT FOUND, so the engine arXiv actually "
+                         "uses is unverified; install basictex to close this")
+        else:
+            room2 = Path(td) / "pdflatex"
+            room2.mkdir()
+            for p_ in upload:
+                shutil.copy2(p_, room2 / p_.name)
+            for _pass in (1, 2):     # longtable needs two to settle widths
+                r2 = subprocess.run(
+                    [pdftex, "-interaction=nonstopmode", "-halt-on-error",
+                     TEX.name], capture_output=True, text=True, cwd=str(room2))
+                if r2.returncode:
+                    log = (room2 / (TEX.stem + ".log"))
+                    tail = log.read_text(errors="replace")[-2500:] \
+                        if log.exists() else (r2.stdout or "")[-2500:]
+                    print(f"\nPDFLATEX FAILED on pass {_pass}. arXiv builds "
+                          f"with this engine, so this is a submission "
+                          f"blocker.\n{tail}", file=sys.stderr)
+                    return 1
+            log = (room2 / (TEX.stem + ".log")).read_text(errors="replace")
+            over = log.count("Overfull \\hbox")
+            p2 = _pages(room2 / (TEX.stem + ".pdf"))
+            notes.append(f"pdflatex compile OK, {p2} pages, {over} overfull "
+                         f"hbox(es); page count may differ from tectonic's "
+                         f"{pages} because the engines break floats "
+                         f"differently, which is not an error")
+
+    # --- the tarball arXiv actually wants
+    tgz = ROOT / "paper" / f"{PDF.stem}_arxiv.tar.gz"
+    with tarfile.open(tgz, "w:gz") as tf:
+        for p in upload:
+            tf.add(p, arcname=p.name)
+    mb = tgz.stat().st_size / 1e6
+    notes.append(f"wrote {tgz.name} ({mb:.2f} MB, {len(upload)} files); "
+                 f"arXiv's limit is 50 MB")
+    if mb > 50:
+        print(f"\nTARBALL TOO LARGE: {mb:.1f} MB exceeds arXiv's 50 MB limit.",
+              file=sys.stderr)
+        return 1
+
+    return 0
 
 
 def main() -> int:
@@ -354,6 +623,7 @@ def main() -> int:
                + "\n\\end{abstract}\n\n" + tex[end:])
         notes.append("abstract set as a real abstract environment")
 
+    tex = fix_table_widths(tex, notes)
     tex, n_uni = fix_unicode_tex(tex)
     notes.append(f"mapped {n_uni} unicode symbols to text-mode LaTeX "
                  f"(after every insertion, so the author block is covered too)")
@@ -373,11 +643,13 @@ def main() -> int:
     if built.exists():
         shutil.copy2(built, PDF)
     print(f"\nwrote {PDF}")
+
+    rc = harden_bundle(notes)
     print(f"arXiv bundle: {BUNDLE}  ({len(list(BUNDLE.glob('*')))} files)")
     print("\nBUILD NOTES")
     for n in notes:
         print(f"  - {n}")
-    return 0
+    return rc
 
 
 if __name__ == "__main__":
