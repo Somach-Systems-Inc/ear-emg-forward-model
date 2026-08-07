@@ -47,7 +47,7 @@ FLOOR_CI_HI = 0.65      # upper bound of the measured floor's 95% CI
 def _floor():
     import config
     f = config.RESULTS / "electrode_meshing_floor.txt"
-    for line in f.read_text().splitlines():
+    for line in f.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line and not line.startswith("#"):
             return float(line.split()[0])

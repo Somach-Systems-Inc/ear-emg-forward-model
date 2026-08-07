@@ -73,7 +73,7 @@ def emit_fan_fractions(pv, pd_, mont, out=None):
             median_gap_dB=round(float(np.median(gd)), 4),
             ear_sites="+".join(sorted(ear)), jaw_sites="+".join(sorted(jaw)),
         ))
-    with open(out, "w", newline="") as fh:
+    with open(out, "w", newline="", encoding="utf-8") as fh:
         fh.write("# Fraction of the DERIVED temporalis fibre fan favouring the ear.\n")
         fh.write("# basis=cluster is the reported one. The manuscript pairs this\n")
         fh.write("#   with the unconstrained orientation agreement from 04q, which\n")
@@ -94,7 +94,7 @@ def reduce_only() -> int:
     import pandas as pd
     pv = {r["electrode"]: float(r["lf_pervoxel_fan"]) for r in
           __import__("csv").DictReader(
-              open(config.RESULTS / "04k_temporalis_pervoxel.csv"))}
+              open(config.RESULTS / "04k_temporalis_pervoxel.csv", encoding="utf-8"))}
     pd_ = np.load(config.RESULTS / "04k_temporalis_perdirection.npz")
     mont = pd.read_csv(config.RESULTS / "03_leadfields.csv").set_index(
         "electrode").montage.to_dict()

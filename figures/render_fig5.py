@@ -86,7 +86,7 @@ def main(argv=None) -> int:
     # fan fraction; see METHODS_LOG 2026-08-06.
     import csv as _csv
     out = Path(__file__).resolve().parent.parent / "results" / "04s_fig3_slopes.csv"
-    with open(out, "w", newline="") as fh:
+    with open(out, "w", newline="", encoding="utf-8") as fh:
         fh.write("# Distance-attenuation slopes behind Figure 3.\n")
         fh.write("# Fitted over the OVERLAPPING distance range only, so the two\n")
         fh.write("#   montages are compared where both actually have electrodes.\n")

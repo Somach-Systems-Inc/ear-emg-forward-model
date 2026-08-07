@@ -265,7 +265,7 @@ def main(argv=None):
               f"(S-difference alone would say {row['extrusion_s_difference_mm']:.4f})")
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    with open(a.out, "w", newline="") as fh:
+    with open(a.out, "w", newline="", encoding="utf-8") as fh:
         wr = csv.DictWriter(fh, fieldnames=list(row))
         wr.writeheader()
         wr.writerow({k: (f"{v:.10g}" if isinstance(v, float) else v)

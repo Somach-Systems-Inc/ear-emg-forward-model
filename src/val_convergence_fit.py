@@ -41,7 +41,7 @@ def load(name):
     p = config.RESULTS / "convergence" / name
     if not p.exists():
         return None
-    rows = list(csv.DictReader(p.open()))
+    rows = list(csv.DictReader(p.open(encoding="utf-8")))
     rdm = np.array([float(r["RDM_pct"]) for r in rows])
     mag = np.array([float(r["MAG_pct"]) for r in rows])
     return float(np.nanmedian(rdm)), float(np.nanmedian(mag))
@@ -132,7 +132,7 @@ def main() -> int:
           f"(h=1.677 mm): {disc:.3f} % RDM")
 
     out = config.RESULTS / "convergence" / "fit.csv"
-    with out.open("w", newline="") as fh:
+    with out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow(["density", "tets", "h_mean_mm", "RDM_pct", "MAG_pct"])
         for lbl, hh, n, r_, m_ in data:

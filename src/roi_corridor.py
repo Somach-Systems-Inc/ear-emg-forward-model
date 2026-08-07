@@ -177,7 +177,7 @@ def _report(volume_path: Path, side: str, out_csv: Path | None) -> int:
 
     if out_csv is not None:
         out_csv.parent.mkdir(parents=True, exist_ok=True)
-        with out_csv.open("w", newline="") as fh:
+        with out_csv.open("w", newline="", encoding="utf-8") as fh:
             w = _csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
             w.writeheader()
             w.writerows(rows)

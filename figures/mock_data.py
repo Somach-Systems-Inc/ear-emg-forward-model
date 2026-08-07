@@ -226,7 +226,7 @@ def generate(seed: int = 20260802) -> pd.DataFrame:
 
 def write(df: pd.DataFrame, out: Path) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
-    with open(out, "w", newline="") as fh:
+    with open(out, "w", newline="", encoding="utf-8") as fh:
         fh.write(BANNER + "\n")
         df.to_csv(fh, index=False)
 

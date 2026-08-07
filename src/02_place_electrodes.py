@@ -365,7 +365,7 @@ def place(volume_path: Path, side: str, out_csv: Path, qa_nifti: Path | None) ->
     _sanity(np, rows)
 
     out_csv.parent.mkdir(parents=True, exist_ok=True)
-    with out_csv.open("w", newline="") as fh:
+    with out_csv.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)

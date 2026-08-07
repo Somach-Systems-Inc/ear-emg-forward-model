@@ -62,7 +62,7 @@ def main(argv=None):
     print()
 
     rows = []
-    with open(a.positions) as fh:
+    with open(a.positions, encoding="utf-8") as fh:
         for r in csv.DictReader(fh):
             if not r.get("S"):
                 continue
@@ -106,7 +106,7 @@ def main(argv=None):
               "numbers, not the set.")
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    with open(a.out, "w", newline="") as fh:
+    with open(a.out, "w", newline="", encoding="utf-8") as fh:
         fh.write(f"# cut plane, derived by 01d_derive_cut_plane.py\n")
         fh.write(f"# normal,{n[0]:.10g},{n[1]:.10g},{n[2]:.10g}\n")
         fh.write(f"# point,{p[0]:.10g},{p[1]:.10g},{p[2]:.10g}\n")
@@ -125,7 +125,7 @@ def main(argv=None):
     if a.refresh_leadfields:
         lf_path = config.RESULTS / "03_leadfields.csv"
         perp = {r["electrode"]: r["clearance_perp_mm"] for r in rows}
-        with open(lf_path) as fh:
+        with open(lf_path, encoding="utf-8") as fh:
             rd = list(csv.DictReader(fh))
             cols = rd[0].keys()
         n = 0
@@ -133,7 +133,7 @@ def main(argv=None):
             if r["electrode"] in perp:
                 r["clearance_to_cut_mm"] = f"{float(perp[r['electrode']]):.2f}"
                 n += 1
-        with open(lf_path, "w", newline="") as fh:
+        with open(lf_path, "w", newline="", encoding="utf-8") as fh:
             wr = csv.DictWriter(fh, fieldnames=list(cols))
             wr.writeheader()
             wr.writerows(rd)

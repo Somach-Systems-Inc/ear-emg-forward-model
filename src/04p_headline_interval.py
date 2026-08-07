@@ -135,12 +135,12 @@ def summarise(d, floor):
 
 def main() -> int:
     pv = {r["electrode"]: float(r["lf_pervoxel_fan"])
-          for r in csv.DictReader(open(PERVOX))}
+          for r in csv.DictReader(open(PERVOX, encoding="utf-8"))}
     pd_ = np.load(PERDIR)
     lf = pd.read_csv(config.RESULTS / "03_leadfields.csv").set_index("electrode")
     mont = lf.montage.to_dict()
     clear = {r["electrode"]: float(r["clearance_perp_mm"]) for r in
-             csv.DictReader(l for l in open(CLEAR) if not l.startswith("#"))}
+             csv.DictReader(l for l in open(CLEAR, encoding="utf-8") if not l.startswith("#"))}
 
     ear = sorted(e for e in pv if mont[e] in ("ear", "ceegrid"))
     jaw_all = [e for e in pv if mont[e] == "jaw"]
@@ -172,7 +172,7 @@ def main() -> int:
                      n_drawn=len(CLUSTER))
             rows.append(r)
 
-    with open(OUT, "w", newline="") as fh:
+    with open(OUT, "w", newline="", encoding="utf-8") as fh:
         fh.write("# Temporalis matched-count interval over the derived fibre fan.\n")
         fh.write("# construction=pervoxel is THE REPORTED ONE: resamples electrodes\n")
         fh.write("#   only, fibre field fixed. Matches the inferential target §3.1\n")

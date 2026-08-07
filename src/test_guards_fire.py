@@ -305,7 +305,7 @@ def case_read_calibration_parse():
         (p / "fields_summary.txt").write_text(
             "some header\n"
             "The current calibration error exceeded 10%! "
-            "Estimated error value: 11.90%\n")
+            "Estimated error value: 11.90%\n", encoding="utf-8")
         got = preflight.read_calibration(p)
         return (got == 11.90), f"parsed {got!r}, expected 11.90"
 
@@ -314,7 +314,8 @@ def case_read_calibration_clean():
     """...and returns None, not 0.0, when the solver printed no warning."""
     with tempfile.TemporaryDirectory() as d:
         p = Path(d)
-        (p / "fields_summary.txt").write_text("no warning here\n")
+        (p / "fields_summary.txt").write_text("no warning here\n",
+                                              encoding="utf-8")
         got = preflight.read_calibration(p)
         return (got is None), f"parsed {got!r}, expected None"
 

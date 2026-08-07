@@ -255,7 +255,7 @@ def phase_analytic(npz: Path, out_csv: Path):
         print(f"\n  correlation(distance to interface, RDM) = {cc:+.3f}")
 
     out_csv.parent.mkdir(parents=True, exist_ok=True)
-    with out_csv.open("w", newline="") as fh:
+    with out_csv.open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow(["x_mm", "y_mm", "z_mm", "r_mm", "nx", "ny", "nz",
                     "dist_to_interface_mm", "RDM_pct", "MAG_pct"])
@@ -266,7 +266,7 @@ def phase_analytic(npz: Path, out_csv: Path):
     env = {"analytic_phase": env_fingerprint(),
            "simnibs_phase": json.loads(str(d["env_simnibs"]))}
     (out_csv.parent / "val_environments.json").write_text(
-        json.dumps(env, indent=2))
+        json.dumps(env, indent=2), encoding="utf-8")
     print(f"\nWritten: {out_csv}")
     print(f"Written: {out_csv.parent / 'val_environments.json'}")
 

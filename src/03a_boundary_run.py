@@ -63,7 +63,7 @@ INJECT_TO = "earlobe_contra"
 
 def load_positions():
     rows = {r["name"]: r for r in
-            csv.DictReader((config.RESULTS / "02_electrode_positions.csv").open())}
+            csv.DictReader((config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8"))}
     return {n: np.array([float(r["R"]), float(r["A"]), float(r["S"])])
             for n, r in rows.items()
             if r.get("verified") != "held" and r["R"] != ""}
@@ -83,7 +83,7 @@ def read_measured_floor():
         raise FileNotFoundError(
             f"{f} missing. Run src/measure_electrode_floor.py first; the "
             f"boundary shift is reported against the measured floor.")
-    for line in f.read_text().splitlines():
+    for line in f.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line and not line.startswith("#"):
             return float(line.split()[0])
@@ -107,7 +107,7 @@ def load_table1():
             f"{p} missing. Every mesh tag needs a sourced conductivity; "
             f"run src/build_table1.py first.")
     sig = {}
-    for r in csv.DictReader(p.open()):
+    for r in csv.DictReader(p.open(encoding="utf-8")):
         lab = r.get("mida_label", "").strip()
         val = r.get("sigma_S_per_m", "").strip()
         if lab.isdigit() and val:
@@ -330,7 +330,7 @@ def main(argv=None) -> int:
               "in Limitations.")
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    with a.out.open("w", newline="") as fh:
+    with a.out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)

@@ -70,7 +70,7 @@ def main() -> int:
     print(f"  all p<0.05: {all(r['still_p_below_05'] for r in rows)}")
     print(f"  all p<0.01: {all(r['still_p_below_01'] for r in rows)}")
 
-    with open(OUT, "w", newline="") as fh:
+    with open(OUT, "w", newline="", encoding="utf-8") as fh:
         fh.write("# Leave-one-out robustness for the material-share correlation.\n")
         fh.write(f"# full sample: n={len(d)}, rho={rho:.4f}, p={p:.5f}\n")
         fh.write(f"# rho range under leave-one-out: {min(rhos):.4f} to {max(rhos):.4f}\n")

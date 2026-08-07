@@ -96,7 +96,7 @@ def main(argv=None):
     lf = pd.read_csv(config.RESULTS / "03_leadfields.csv").set_index("electrode")
     d = np.load(PERDIR)
     clear = {r["electrode"]: float(r["clearance_perp_mm"]) for r in
-             csv.DictReader(l for l in open(CLEAR) if not l.startswith("#"))}
+             csv.DictReader(l for l in open(CLEAR, encoding="utf-8") if not l.startswith("#"))}
 
     present = {e for e in lf.index if f"lf_{e}|temporalis" in d}
     jaw_all = sorted(e for e in present if lf.montage[e] == "jaw")
@@ -154,7 +154,7 @@ def main(argv=None):
         ))
     rows.sort(key=lambda r: -r["published_gap_dB"])
 
-    with open(OUT, "w", newline="") as fh:
+    with open(OUT, "w", newline="", encoding="utf-8") as fh:
         fh.write("# Table 4 as an envelope over every admissible jaw subset.\n")
         fh.write(f"# {len(admissible)} jaw sites admissible, comparison takes "
                  f"{len(CLUSTER)}, so all {len(subsets)} subsets are reported.\n")

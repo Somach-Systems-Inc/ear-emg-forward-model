@@ -128,7 +128,7 @@ def main() -> int:
         renormalisation="inv1_mean, condition=iso, results/03_leadfields.csv",
         statistic="A: median over orientations of the per-orientation gap",
     )
-    with open(OUT, "w", newline="") as fh:
+    with open(OUT, "w", newline="", encoding="utf-8") as fh:
         fh.write("# Homogeneous-conductor control for temporalis at the\n")
         fh.write("# PRE-REGISTERED CLUSTER basis. This is the source for the\n")
         fh.write("# -2.571 -> -3.724 pair in section 3.5.\n")

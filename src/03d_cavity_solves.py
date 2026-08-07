@@ -44,7 +44,7 @@ from pathlib import Path
 from scipy.stats import spearmanr
 from scipy.spatial import cKDTree
 import nibabel as nib
-ROOT=Path("/Users/carl/CODELocalProjects/ear-emg-forward-model")
+ROOT=Path(__file__).resolve().parent.parent
 sys.path.insert(0,str(ROOT/"src")); import config, solve_invariants as SI
 from simnibs import sim_struct, run_simnibs, mesh_io
 
@@ -55,7 +55,7 @@ ELECS=["hyoid","buccal","submental_lat","midjaw","cg10","pre_tragus",
        "mastoid","above_ear"]
 REF="earlobe_contra"
 
-rows=list(csv.DictReader((ROOT/"results/01_table1_conductivities.csv").open()))
+rows=list(csv.DictReader((ROOT/"results/01_table1_conductivities.csv").open(encoding="utf-8")))
 base={int(r["mida_label"]):float(r["sigma_S_per_m"]) for r in rows}
 missing=[l for l in CAVITY if l not in base]
 assert not missing, f"cavity labels absent from Table 1: {missing}"
@@ -63,7 +63,7 @@ filled=dict(base)
 for l in CAVITY: filled[l]=config.SIGMA["muscle_iso"]
 
 pos={r["name"]:np.array([float(r["R"]),float(r["A"]),float(r["S"])])
-     for r in csv.DictReader((ROOT/"results/02_electrode_positions.csv").open())
+     for r in csv.DictReader((ROOT/"results/02_electrode_positions.csv").open(encoding="utf-8"))
      if r.get("verified")!="held" and r["R"]!=""}
 img=nib.load(str(ROOT/"data/MIDA_v1.0/MIDA_v1_voxels/MIDA_v1.nii"))
 arr=np.asanyarray(img.dataobj); aff=img.affine
@@ -84,7 +84,7 @@ def solve(sig,e,tag):
     for lab,v in sig.items(): t.cond[lab-1].value=v; t.cond[lab-1].name=f"tag{lab}"
     for j,nm in enumerate((e,REF)):
         el=t.add_electrode(); el.channelnr=j+1; el.centre=list(pos[nm])
-        el.shape="ellipse"; el.dimensions=[10,10]; el.thickness=2
+        el.shape="ellipse"; el.dimensions=[config.ELECTRODE_DIAMETER_MM]*2; el.thickness=2
     run_simnibs(S)
     # Record the solver's own calibration line. RECORDED ONLY -- it gates
     # nothing, and the 11-15% "benign band" that cg10's 11.90% was once waved

@@ -310,7 +310,7 @@ def main(argv=None) -> int:
           f"   (0 = perfectly linear)")
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    with a.out.open("w", newline="") as fh:
+    with a.out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow(["x_mm", "y_mm", "z_mm", "r_mm", "nx", "ny", "nz",
                     "L_analytic", "L_reciprocal", "ratio"])

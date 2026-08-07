@@ -49,14 +49,14 @@ def _anchors(name: str) -> tuple[str, str]:
 
 
 def block_names(path: Path | None = None) -> list[str]:
-    text = (path or MANUSCRIPT).read_text()
+    text = (path or MANUSCRIPT).read_text(encoding="utf-8")
     return re.findall(r"<!-- TABLE:([A-Za-z0-9_]+) -->", text)
 
 
 def audit(path: Path | None = None) -> list[str]:
     """Structural problems with the anchor set itself. Empty list == clean."""
     p = path or MANUSCRIPT
-    text = p.read_text()
+    text = p.read_text(encoding="utf-8")
     problems = []
     opens = re.findall(r"<!-- TABLE:([A-Za-z0-9_]+) -->", text)
     closes = re.findall(r"<!-- /TABLE:([A-Za-z0-9_]+) -->", text)
@@ -76,7 +76,7 @@ def audit(path: Path | None = None) -> list[str]:
 
 def read_block(name: str, path: Path | None = None) -> str:
     p = path or MANUSCRIPT
-    text = p.read_text()
+    text = p.read_text(encoding="utf-8")
     o, c = _anchors(name)
     if text.count(o) != 1 or text.count(c) != 1:
         raise AnchorError(
@@ -94,7 +94,7 @@ def replace_block(name: str, content: str, path: Path | None = None) -> None:
     searching for something that looks like its table is how §3.3 was lost.
     """
     p = path or MANUSCRIPT
-    text = p.read_text()
+    text = p.read_text(encoding="utf-8")
     o, c = _anchors(name)
     n_o, n_c = text.count(o), text.count(c)
     if n_o != 1 or n_c != 1:
@@ -109,7 +109,7 @@ def replace_block(name: str, content: str, path: Path | None = None) -> None:
     j = text.index(c)
     if j < i:
         raise AnchorError(f"block {name!r}: closing anchor precedes opening")
-    p.write_text(text[:i] + "\n" + content.strip("\n") + "\n" + text[j:])
+    p.write_text(text[:i] + "\n" + content.strip("\n") + "\n" + text[j:], encoding="utf-8")
 
 
 if __name__ == "__main__":

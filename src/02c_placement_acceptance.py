@@ -108,10 +108,10 @@ def main(argv=None) -> int:
     del skin, surf
     print(f"  {len(skin_ras):,} outer-skin voxels\n")
 
-    rows = {r["name"]: r for r in csv.DictReader(a.positions.open())}
+    rows = {r["name"]: r for r in csv.DictReader(a.positions.open(encoding="utf-8"))}
     baseline = {}
     if a.baseline and a.baseline.exists():
-        baseline = {r["name"]: r for r in csv.DictReader(a.baseline.open())}
+        baseline = {r["name"]: r for r in csv.DictReader(a.baseline.open(encoding="utf-8"))}
 
     # ---------------------------------------------------------------- A
     print("=" * 100)
@@ -352,7 +352,7 @@ def main(argv=None) -> int:
     lut = {}
     inv_csv = config.RESULTS / "01_label_inventory.csv"
     if inv_csv.exists():
-        for r in csv.DictReader(inv_csv.open()):
+        for r in csv.DictReader(inv_csv.open(encoding="utf-8")):
             lut[int(r["label"])] = r["name"]
 
     targets = {n: place2.JAW_TARGETS[n]["label"] for n in accepted}
@@ -406,7 +406,7 @@ def main(argv=None) -> int:
 
     if comp_rows:
         out = config.RESULTS / "02_path_composition.csv"
-        with out.open("w", newline="") as fh:
+        with out.open("w", newline="", encoding="utf-8") as fh:
             w2 = csv.DictWriter(fh, fieldnames=list(comp_rows[0].keys()))
             w2.writeheader()
             w2.writerows(comp_rows)
@@ -444,7 +444,7 @@ def main(argv=None) -> int:
                            + (f", {v['region']}" if v["region"] else "")
                            + "), min-distance projection to compartment")
             r["verified"] = "no" if fails else "accepted"
-        with a.positions.open("w", newline="") as fh:
+        with a.positions.open("w", newline="", encoding="utf-8") as fh:
             w = csv.DictWriter(fh, fieldnames=list(next(iter(rows.values())).keys()))
             w.writeheader()
             w.writerows(rows.values())

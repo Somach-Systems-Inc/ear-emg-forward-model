@@ -343,7 +343,7 @@ def phase_analytic(npz: Path, out_txt: Path) -> int:
     say(f"  {sd:.2f} pp. n=2 did not just lack error bars, it landed short.")
 
     out_txt.parent.mkdir(parents=True, exist_ok=True)
-    out_txt.write_text("\n".join(lines) + "\n")
+    out_txt.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     npz_out = out_txt.parent / "electrode_floor_draws.npz"
     np.savez(npz_out, med_mag=med_mag, med_rdm=med_rdm,

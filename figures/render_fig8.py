@@ -68,7 +68,8 @@ SEGMENTED = {lab: name for name, _g, lab, _e in config.MUSCLES if lab}
 
 def _positions():
     pos = {}
-    with (config.RESULTS / "02_electrode_positions.csv").open() as fh:
+    with (config.RESULTS / "02_electrode_positions.csv").open(
+            encoding="utf-8") as fh:
         for r in csv.DictReader(fh):
             if r["R"] and r["R"].replace(".", "").replace("-", "").isdigit():
                 pos[r["name"]] = np.array([float(r["R"]), float(r["A"]),

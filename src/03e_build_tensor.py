@@ -80,7 +80,7 @@ NOT_APPLIED = [m for m in config.FIBRE_PCA_MUSCLES if m not in _SEG]
 def load_sigma():
     sig = {}
     for r in csv.DictReader(
-            (config.RESULTS / "01_table1_conductivities.csv").open()):
+            (config.RESULTS / "01_table1_conductivities.csv").open(encoding="utf-8")):
         lab, val = r.get("mida_label", "").strip(), r.get("sigma_S_per_m", "").strip()
         if lab.isdigit() and val:
             sig[int(lab)] = float(val)

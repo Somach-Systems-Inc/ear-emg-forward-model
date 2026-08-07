@@ -73,7 +73,7 @@ def main() -> int:
     _log = sorted(out.glob("simnibs_simulation*.log"))
     if _log:
         want = f"{pos[INJECT_FROM][0]:.2f}"
-        if want not in _log[-1].read_text(errors="replace"):
+        if want not in _log[-1].read_text(errors="replace", encoding="utf-8"):
             raise RuntimeError(
                 f"the solve did not use {INJECT_FROM}: its R coordinate "
                 f"{want} does not appear in {_log[-1].name}. Refusing to "

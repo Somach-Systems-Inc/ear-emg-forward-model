@@ -149,8 +149,28 @@ def parse_lut(path: Path) -> dict[int, str]:
       - plain:                  <idx><sep><Name>
       - csv/tsv with a header naming an index column and a name column
       - json: {"1": "Name"} or [{"label": 1, "name": "..."}]
+
+    ENCODING. This was `read_text(errors="replace")`: no encoding, so the
+    platform default, and errors="replace" turns any byte the codec rejects
+    into U+FFFD without raising. MIDA v1.0's own LUT is latin-1 -- label 52 is
+    "Skull Diplo\xebe", a single 0xEB byte -- so on a UTF-8 platform that byte
+    is invalid and silently became U+FFFD, while on a cp1252 platform it
+    decoded correctly. A tissue NAME is an identity, and identities must not
+    depend on the machine that read them.
+
+    So: try UTF-8 strictly, then fall back to latin-1, which is total (every
+    byte 0x00-0xFF maps to a character) and therefore cannot silently drop
+    anything. Nothing is ever replaced.
     """
-    text = path.read_text(errors="replace")
+    raw = path.read_bytes()
+    for enc in ("utf-8", "latin-1"):
+        try:
+            text = raw.decode(enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:                                   # pragma: no cover - latin-1 is total
+        raise Stage1Error(f"cannot decode LUT {path} as utf-8 or latin-1")
 
     if path.suffix.lower() == ".json":
         return _parse_lut_json(text)
@@ -336,7 +356,11 @@ def list_labels(volume_path: Path, lut_path: Path | None, out_csv: Path | None) 
 
     if out_csv is not None:
         out_csv.parent.mkdir(parents=True, exist_ok=True)
-        with out_csv.open("w", newline="") as fh:
+        # encoding pinned: without it the file is written in the platform
+        # default (UTF-8 on macOS, cp1252 on Windows), so the same run on two
+        # machines produces two different files and tissue names round-trip
+        # differently.
+        with out_csv.open("w", newline="", encoding="utf-8") as fh:
             writer = csv.DictWriter(fh, fieldnames=["label", "voxels", "volume_mm3", "name"])
             writer.writeheader()
             writer.writerows(sorted(rows, key=lambda r: r["label"]))
@@ -450,21 +474,30 @@ def build_mesh(volume_path: Path, out_mesh: Path, force: bool,
 
     meshmesh = shutil.which("meshmesh")
     if meshmesh is None:
-        # The .pkg adds this to the PATH via ~/.zprofile, which a non-login
-        # shell will not have read. Fall back to the default install location
-        # before giving up, so a plain `python src/01_build_mesh.py` works.
-        default = Path.home() / "Applications/SimNIBS-4.6/bin/meshmesh"
-        if default.is_file():
-            meshmesh = str(default)
+        # The installer adds this to PATH -- via ~/.zprofile on macOS, via the
+        # user PATH on Windows -- and neither is visible to a shell that was
+        # already open. Fall back to the default install locations before
+        # giving up, so a plain `python src/01_build_mesh.py` works.
+        #   macOS: ~/Applications/SimNIBS-4.6/bin/meshmesh
+        #   Windows: %USERPROFILE%\SimNIBS-4.6\bin\meshmesh.cmd
+        defaults = [Path.home() / "Applications/SimNIBS-4.6/bin/meshmesh",
+                    Path.home() / "SimNIBS-4.6/bin/meshmesh.cmd"]
+        for default in defaults:
+            if default.is_file():
+                meshmesh = str(default)
+                break
         else:
+            listed = "\n".join(f"  {d}" for d in defaults)
             raise Stage1Error(
-                "SimNIBS `meshmesh` is not on PATH and is not at\n"
-                f"  {default}\n\n"
-                "Install SimNIBS 4.6.0 from simnibs_installer_macos.pkg (see\n"
-                "README.md -- the pip wheel route does not work). Then verify:\n"
+                "SimNIBS `meshmesh` is not on PATH and is not at any of\n"
+                f"{listed}\n\n"
+                "Install SimNIBS 4.6.0 from the installer for your platform\n"
+                "(simnibs_installer_macos.pkg / simnibs_installer_windows.exe;\n"
+                "see README.md -- the pip wheel route does not work). Then verify:\n"
                 "  meshmesh -h\n"
-                "If it is installed but not found, open a new login shell so\n"
-                "~/.zprofile is read."
+                "If it is installed but not found, open a new shell so the\n"
+                "PATH the installer set is visible (~/.zprofile on macOS, the\n"
+                "user PATH on Windows)."
             )
 
     if out_mesh.exists() and not force:
@@ -506,7 +539,10 @@ def build_mesh(volume_path: Path, out_mesh: Path, force: bool,
 def write_conductivity_map(out_csv: Path) -> Path:
     """Emit label -> conductivity, for stage 3 to bind and for Table 1."""
     out_csv.parent.mkdir(parents=True, exist_ok=True)
-    with out_csv.open("w", newline="") as fh:
+    # encoding pinned: without it the file is written in the platform default
+    # (UTF-8 on macOS, cp1252 on Windows), so the SAME run on two machines
+    # produces two different files and tissue names round-trip differently.
+    with out_csv.open("w", newline="", encoding="utf-8") as fh:
         writer = csv.writer(fh)
         writer.writerow(
             ["mida_label", "muscle", "group", "verified", "pooled_in",

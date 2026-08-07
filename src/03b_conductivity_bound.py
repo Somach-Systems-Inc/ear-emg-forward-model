@@ -62,7 +62,7 @@ AIR_VOID_FILL = "bone_compact"   # they are cavities within the temporal bone
 
 
 def load_table1():
-    rows = list(csv.DictReader(TABLE1.open()))
+    rows = list(csv.DictReader(TABLE1.open(encoding="utf-8")))
     if not rows:
         raise RuntimeError(f"{TABLE1} is empty")
     return rows
@@ -184,7 +184,7 @@ def read_measured_floor():
         raise FileNotFoundError(
             f"{f} missing. Run src/measure_floor_multidraw.py; this verdict is "
             f"reported against the measured floor.")
-    for line in f.read_text().splitlines():
+    for line in f.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line and not line.startswith("#"):
             return float(line.split()[0])
@@ -214,7 +214,7 @@ def main(argv=None) -> int:
 
     pos = {r["name"]: np.array([float(r["R"]), float(r["A"]), float(r["S"])])
            for r in csv.DictReader(
-               (config.RESULTS / "02_electrode_positions.csv").open())
+               (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8"))
            if r.get("verified") != "held" and r["R"] != ""}
     for nm in ELECTRODES + [REFERENCE]:
         if nm not in pos:
@@ -343,7 +343,7 @@ def main(argv=None) -> int:
                   f"(filling the voids RAISES sensitivity where positive)")
 
     a.out.parent.mkdir(parents=True, exist_ok=True)
-    with a.out.open("w", newline="") as fh:
+    with a.out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(out_rows[0].keys()))
         w.writeheader()
         w.writerows(out_rows)

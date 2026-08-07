@@ -51,7 +51,7 @@ def cut_plane(require_mesh_match: bool = True):
             f"{CUT_PLANE_CSV} missing. Run `python src/01d_derive_cut_plane.py`. "
             f"There is no default: the cut plane is derived from the mesh, never "
             f"assumed.")
-    with open(CUT_PLANE_CSV) as fh:
+    with open(CUT_PLANE_CSV, encoding="utf-8") as fh:
         row = next(iter(_csv.DictReader(fh)))
     n = (float(row["nx"]), float(row["ny"]), float(row["nz"]))
     p = (float(row["px"]), float(row["py"]), float(row["pz"]))

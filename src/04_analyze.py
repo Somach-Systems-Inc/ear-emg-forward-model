@@ -68,7 +68,7 @@ def read_floor():
         raise FileNotFoundError(
             f"{f} missing. Every dB claim here is reported against the "
             f"measured per-site floor; run src/measure_electrode_floor.py.")
-    for line in f.read_text().splitlines():
+    for line in f.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line and not line.startswith("#"):
             return float(line.split()[0])

@@ -56,6 +56,11 @@ MESH = config.DATA / "mida_headneck.msh"
 OUT_CSV = config.RESULTS / "03_leadfields.csv"
 WORKDIR = config.RESULTS / "leadfields"
 CALIB_LOG = config.RESULTS / "03_leadfield_calibration.csv"
+# paired_invariants() had this inline. It has to be a module-level name like the
+# others, or --workdir redirects the solve directories and the summary CSV while
+# this one keeps overwriting the committed results/03_paired_invariants.csv --
+# which is exactly what happened the first time --workdir was used.
+PAIRED_CSV = config.RESULTS / "03_paired_invariants.csv"
 
 # MIDA's inferior cut face. Reported per electrode so a reader can see
 # truncation exposure per site instead of taking it on trust.
@@ -74,7 +79,7 @@ def load_positions():
     coordinates pending a physical measurement on Carl's neck, and every
     consumer skips it rather than inventing a placement."""
     rows = list(csv.DictReader(
-        (config.RESULTS / "02_electrode_positions.csv").open()))
+        (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8")))
     pos, held = {}, []
     for r in rows:
         if r.get("verified") == "held" or not r["R"]:
@@ -90,7 +95,7 @@ def load_positions():
 def load_sigma():
     p = config.RESULTS / "01_table1_conductivities.csv"
     sig = {}
-    for r in csv.DictReader(p.open()):
+    for r in csv.DictReader(p.open(encoding="utf-8")):
         lab, val = r.get("mida_label", "").strip(), r.get("sigma_S_per_m", "").strip()
         if lab.isdigit() and val:
             sig[int(lab)] = float(val)
@@ -276,8 +281,8 @@ def paired_invariants(pos, sigma, targets, condition="iso"):
                 lambda: SI.check_reciprocity_symmetry(base_msh, ms, pts))
         rows.append(row)
 
-    out_csv = config.RESULTS / "03_paired_invariants.csv"
-    with out_csv.open("w", newline="") as fh:
+    out_csv = PAIRED_CSV
+    with out_csv.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
@@ -287,7 +292,7 @@ def paired_invariants(pos, sigma, targets, condition="iso"):
 
 def append_row(path: Path, row: dict, fieldnames):
     new = not path.exists()
-    with path.open("a", newline="") as fh:
+    with path.open("a", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=fieldnames)
         if new:
             w.writeheader()
@@ -295,6 +300,10 @@ def append_row(path: Path, row: dict, fieldnames):
 
 
 def main(argv=None) -> int:
+    # Declared up front because the --workdir/--out help strings interpolate
+    # these names, and a `global` after any use of them is a SyntaxError.
+    global WORKDIR, OUT_CSV, CALIB_LOG, PAIRED_CSV
+
     ap = argparse.ArgumentParser(prog="03_leadfields.py")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--conditions", nargs="+", default=["iso"],
@@ -302,7 +311,40 @@ def main(argv=None) -> int:
     ap.add_argument("--paired-only", action="store_true",
                     help="skip the main batch and run invariants 3 and 4 "
                          "against the solves already on disk")
+    ap.add_argument("--electrodes", nargs="+", metavar="NAME",
+                    help="solve only these electrodes instead of all targets. "
+                         "For re-running a single failed site, and for timing "
+                         "or memory measurement without committing to the full "
+                         "batch. Names must exist in 02_electrode_positions.csv "
+                         "and must not be the reference. Does NOT change the "
+                         "default: omit it and every target is solved.")
+    ap.add_argument("--workdir", type=Path, default=None,
+                    help=f"solve directory (default: {WORKDIR}). Every val_*.py "
+                         f"harness already takes one; this did not, so a timing "
+                         f"or re-measurement run had no way to avoid CLEARING "
+                         f"the committed solves under results/leadfields/.")
+    ap.add_argument("--out", type=Path, default=None,
+                    help=f"results CSV (default: {OUT_CSV})")
+    ap.add_argument("--calib-log", type=Path, default=None,
+                    help=f"calibration log (default: {CALIB_LOG})")
     a = ap.parse_args(argv)
+
+    # Rebind the module-level destinations so the helpers that read them write
+    # to the redirected tree too. Redirecting only main() would leave
+    # paired_invariants() still clearing the committed directories.
+    if a.workdir is not None:
+        WORKDIR = a.workdir
+    if a.out is not None:
+        OUT_CSV = a.out
+    if a.calib_log is not None:
+        CALIB_LOG = a.calib_log
+    if a.out is not None:
+        # keep the paired-invariant summary beside the redirected results,
+        # never back in results/ where the committed copy lives
+        PAIRED_CSV = OUT_CSV.parent / "03_paired_invariants.csv"
+    if a.workdir is not None or a.out is not None or a.calib_log is not None:
+        print(f"redirected: workdir={WORKDIR}  out={OUT_CSV}  calib={CALIB_LOG}\n"
+              f"            paired={PAIRED_CSV}")
 
     if not MESH.exists():
         print(f"ERROR: missing mesh {MESH}", file=sys.stderr)
@@ -314,6 +356,27 @@ def main(argv=None) -> int:
               file=sys.stderr)
         return 1
     targets = [e for e in pos if e != config.REFERENCE]
+
+    if a.electrodes:
+        # Fail loudly on a name that is not a target. Silently solving a subset
+        # because a name was misspelled would look exactly like a completed run
+        # and the missing rows would only surface in stage 4.
+        unknown = [e for e in a.electrodes if e not in pos]
+        isref = [e for e in a.electrodes if e == config.REFERENCE]
+        if unknown or isref:
+            if unknown:
+                print(f"ERROR: not in 02_electrode_positions.csv: "
+                      f"{', '.join(sorted(unknown))}", file=sys.stderr)
+            if isref:
+                print(f"ERROR: {config.REFERENCE} is the reference, not a "
+                      f"target; every solve is already against it.",
+                      file=sys.stderr)
+            print(f"  available: {', '.join(sorted(targets))}", file=sys.stderr)
+            return 1
+        targets = [e for e in targets if e in set(a.electrodes)]
+        print(f"--electrodes: SUBSET of {len(targets)} "
+              f"({', '.join(sorted(targets))}) -- this is NOT a full run")
+
     sigma_iso = load_sigma()
 
     muscles = [n for n, _, lab, _ in config.MUSCLES if lab is not None]

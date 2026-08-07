@@ -216,7 +216,7 @@ def main(argv=None) -> int:
     if not rows:
         print("nothing solved", file=sys.stderr)
         return 1
-    with a.out.open("w", newline="") as fh:
+    with a.out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=fields)
         w.writeheader()
         w.writerows(rows)

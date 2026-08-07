@@ -90,7 +90,7 @@ def main(argv=None) -> int:
 
     mont = {}
     for r in csv.DictReader(
-            (config.RESULTS / "02_electrode_positions.csv").open()):
+            (config.RESULTS / "02_electrode_positions.csv").open(encoding="utf-8")):
         if r.get("verified") == "held" or not r["R"]:
             continue
         mont[r["name"]] = r.get("montage", "")
@@ -172,7 +172,7 @@ def main(argv=None) -> int:
     np.savez(npz, **save)
     print(f"wrote {npz}")
 
-    with a.out.open("w", newline="") as fh:
+    with a.out.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
         w.writerows(rows)
