@@ -36,3 +36,6 @@ figures/MOCK_*.png
 # nothing is lost by refusing to track it.
 *.geo
 paper/_build/
+
+# arXiv source tarballs are build outputs of paper/build_submission.py
+paper/*_arxiv.tar.gz
