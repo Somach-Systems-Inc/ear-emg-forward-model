@@ -1,0 +1,11 @@
+muscle,best_site,best_montage,second_site,second_montage,margin_dB,runner_up_crosses_montage,resolved_above_floor,best_other_montage_site,deficit_of_other_montage_dB
+masseter,buccal,jaw,mental,jaw,0.8561,False,True,pre_tragus,-1.0886
+temporalis,cg01,ear,cg02,ear,0.7135,False,True,midjaw,-2.7792
+medial_pterygoid,hyoid,jaw,submaxillary,jaw,0.8794,False,True,cg10,-1.4195
+lateral_pterygoid,pre_tragus,ear,cg10,ear,0.8532,False,True,midjaw,-1.4906
+orbicularis_oris,mental,jaw,buccal,jaw,1.0192,False,True,cg10,-7.9459
+buccinator,mental,jaw,submental_mid,jaw,0.8755,False,True,cg10,-9.055
+mentalis,mental,jaw,submental_mid,jaw,0.2663,False,False,cg10,-20.9831
+depressor_anguli_oris,submental_mid,jaw,mental,jaw,0.1473,False,False,cg10,-13.3186
+platysma,hyoid,jaw,submental_mid,jaw,0.3677,False,False,cg10,-9.9154
+sternocleidomastoid,post_lobule,ear,cg08,ear,0.0303,False,False,hyoid,-1.7896
