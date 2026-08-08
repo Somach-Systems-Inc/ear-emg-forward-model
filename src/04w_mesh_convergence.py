@@ -67,11 +67,27 @@ def main(argv=None) -> int:
     ap.add_argument("--fine", type=Path, required=True,
                     help="03_leadfields.csv produced with --mesh on the second mesh")
     ap.add_argument("--fine-tets", type=int, default=14_633_111)
+    ap.add_argument("--prod", type=Path, default=None,
+                    help="baseline 03_leadfields.csv. MUST come from the SAME "
+                         "machine as --fine: the two hosts build different "
+                         "meshes (12,294,185 vs 12,587,663 tets from the same "
+                         "volume), so a cross-machine baseline mixes "
+                         "discretisation with build nondeterminism.")
+    ap.add_argument("--prod-tets", type=int, default=None,
+                    help="element count of the baseline mesh (default: the "
+                         "Mac's 12,294,185)")
+    ap.add_argument("--control", type=Path, default=None,
+                    help="a SECOND baseline at the same nominal resolution as "
+                         "--prod but from a different mesh build. Without it "
+                         "this script cannot tell a discretisation effect from "
+                         "mesh-realisation noise, and it refuses to call one.")
+    ap.add_argument("--control-tets", type=int, default=None)
     ap.add_argument("--out", type=Path,
                     default=config.RESULTS / "04w_mesh_convergence.csv")
     a = ap.parse_args(argv)
 
-    prod = pd.read_csv(config.RESULTS / "03_leadfields.csv")
+    prod = pd.read_csv(a.prod or config.RESULTS / "03_leadfields.csv")
+    prod_tets = a.prod_tets or PROD_TETS
     fine = pd.read_csv(a.fine)
     muscles = [m for m, _g, lab, _e in config.MUSCLES
                if lab and m in prod.columns and m in fine.columns]
@@ -86,7 +102,7 @@ def main(argv=None) -> int:
         return 1
 
     gp, gf = gaps(prod, muscles), gaps(fine, muscles)
-    lin = (PROD_TETS / a.fine_tets) ** (1 / 3)
+    lin = (prod_tets / a.fine_tets) ** (1 / 3)
 
     rows = []
     for m in muscles:
@@ -104,8 +120,8 @@ def main(argv=None) -> int:
 
     mx = out.abs_delta_dB.max()
     n_flip = int((~out.sign_preserved).sum())
-    print(f"tets      : production {PROD_TETS:,}  refined {a.fine_tets:,}  "
-          f"({a.fine_tets / PROD_TETS:.3f} x elements)")
+    print(f"tets      : baseline {prod_tets:,}  refined {a.fine_tets:,}  "
+          f"({a.fine_tets / prod_tets:.3f} x elements)")
     print(f"lever arm : element size {lin:.3f} x, i.e. "
           f"{100 * (1 - lin):.1f} % smaller LINEARLY")
     print()
@@ -117,7 +133,47 @@ def main(argv=None) -> int:
     print(f"sign flips       : {n_flip} of {len(out)}")
     print(f"wrote {a.out}")
 
+    # THE CONTROL DECIDES WHAT THIS MEANS. Two meshes differing in resolution
+    # also differ in REALISATION: remeshing re-partitions every compartment,
+    # and the reported lead field is a volume-weighted MEDIAN over that
+    # partition (03_leadfields.compartment_medians), so it moves even when the
+    # physics does not. Without a same-resolution rebuild to compare against,
+    # any movement here is unattributable.
+    if a.control is not None:
+        ctl = pd.read_csv(a.control)
+        gc_ = gaps(ctl, muscles)
+        cd = np.array([gc_[m] - gp[m] for m in muscles])
+        c_max = float(np.abs(cd).max())
+        c_lin = 1 - ((a.control_tets or prod_tets) / prod_tets) ** (1 / 3) \
+            if a.control_tets else float("nan")
+        s_lin = 1 - lin
+        print(f"\nCONTROL, same nominal resolution, different build")
+        print(f"  max |delta| {c_max:.4f} dB against the refinement's {mx:.4f} dB")
+        print(f"  signal / noise on the max: {mx / c_max:.2f} x")
+        if abs(c_lin) > 1e-9:
+            print(f"  lever-arm ratio {s_lin / abs(c_lin):.1f} x, movement ratio "
+                  f"{mx / c_max:.2f} x -> movement is "
+                  f"{(s_lin / abs(c_lin)) / (mx / c_max):.1f} x LESS sensitive "
+                  f"to resolution than proportionality predicts")
+        from scipy.stats import spearmanr
+        r, _pv = spearmanr(np.array([gf[m] - gp[m] for m in muscles]), cd)
+        print(f"  rank corr between the two delta sets: rho = {r:+.3f}")
+        print(f"    (both deltas are measured against the SAME baseline, so "
+              f"they share -g_baseline\n     and a strong POSITIVE rho is the "
+              f"signature of realisation noise in that\n     baseline "
+              f"dominating both. A clean resolution trend would give rho ~ 0.)")
+        if mx / c_max < 2.0:
+            print("\n  VERDICT: NOT RESOLVABLE. The refinement moved the gaps no "
+                  "more than a plain\n  rebuild at the same resolution did. This "
+                  "does NOT bound row 1; it measures\n  mesh-realisation noise, "
+                  "which is itself large and was never in the budget.")
+            return 0
+
     print("\nHOW TO READ THIS")
+    if a.control is None:
+        print("  NO CONTROL SUPPLIED. Whatever is printed above is unattributable: "
+              "pass --control\n  with a same-resolution rebuild before calling any "
+              "of it a discretisation effect.")
     if n_flip:
         print("  A SIGN FLIPPED. Discretisation changes a montage assignment, "
               "which is a result, not a bound. Row 1 is not a small term.")

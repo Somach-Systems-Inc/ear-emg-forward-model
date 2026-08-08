@@ -39,3 +39,6 @@ paper/_build/
 
 # arXiv source tarballs are build outputs of paper/build_submission.py
 paper/*_arxiv.tar.gz
+
+# convergence-study intermediates: regenerable from the PC run
+results/conv/

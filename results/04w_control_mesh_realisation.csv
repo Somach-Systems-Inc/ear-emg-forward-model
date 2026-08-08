@@ -1,0 +1,11 @@
+muscle,gap_production_dB,gap_refined_dB,delta_dB,abs_delta_dB,under_floor,under_floor_ci_hi,sign_preserved
+mentalis,23.7614,22.2075,-1.5539,1.5539,False,False,True
+buccinator,11.9354,10.4998,-1.4356,1.4356,False,False,True
+orbicularis_oris,10.9641,9.5969,-1.3672,1.3672,False,False,True
+depressor_anguli_oris,17.0843,15.7466,-1.3377,1.3377,False,False,True
+platysma,10.0779,11.2072,1.1293,1.1293,False,False,True
+sternocleidomastoid,-3.1673,-2.1309,1.0365,1.0365,False,False,True
+masseter,2.6517,1.8035,-0.8483,0.8483,False,False,True
+medial_pterygoid,1.185,1.9391,0.7542,0.7542,False,False,True
+lateral_pterygoid,-1.6921,-1.9904,-0.2983,0.2983,False,True,True
+temporalis,-2.3353,-2.6159,-0.2806,0.2806,False,True,True
