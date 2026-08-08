@@ -434,10 +434,21 @@ subtracts to exactly 0 dB in any site ratio.
 
 ### 2.8 Reproducibility and pre-registration
 
-Everything is reproducible from a clean checkout given MIDA in `data/`; the one
+Everything is reproducible from a clean checkout given MIDA in `data/` **and the mesh that produced these results**; the one
 manual step, downloading MIDA, requires registration and is documented in the
 repository README. MIDA itself cannot be redistributed under its licence and is
 not included.
+
+One qualification, because the claim is otherwise stronger than the repository
+delivers. `data/mida_headneck.msh` is not under version control, and `meshmesh`
+is not deterministic: the same label volume and the same script produced
+12,294,185 tetrahedra on one machine and 12,587,663 on another. A clean checkout
+therefore rebuilds a mesh that is not the one these numbers came from, and the
+cut-plane guard in `config.cut_plane()` will refuse it by design, since the
+plane is fitted to a specific mesh and verified by hash. Reproducing the
+pipeline is possible from a clean checkout; reproducing these exact values needs
+the mesh, and term 10 of the error budget quantifies what that difference is
+worth.
 
 The anatomical prediction was recorded before the model was solved. The
 `expected_at_ear` column of the muscle configuration — predicting strong
@@ -994,6 +1005,20 @@ think they disagree.
 
 ### 4.7 Limitations
 
+**Mesh realisation is wider than four of the reported margins.** Term 10 of the
+error budget is a rebuild of the same nominal mesh, and it moves per-muscle gaps
+by up to 1.554 dB. Four verdicts have envelopes comparable to that: masseter
+(+1.20 to +2.22), medial pterygoid (+0.86 to +1.33), sternocleidomastoid (-2.53
+to -0.97) and lateral pterygoid (-3.61 to -1.53). Medial pterygoid's envelope
+sits inside it entirely, so that verdict in particular should not be relied on
+until the term is characterised over several rebuilds. The five labial verdicts
+span 8.11 to 22.40 dB and are unaffected, so the study's headline result does
+not depend on this term. It is listed as unquantified rather than bounded
+because one realisation pair is not a distribution. The rebuild comparison is
+`results/04w_control_mesh_realisation.csv`, the refinement comparison
+`results/04w_mesh_convergence.csv`, and the estimator check
+`results/04x_estimator_stability.csv`.
+
 **Ten of eighteen muscles are modelled, and the two carrying the strongest
 version of the anatomical argument are not among them.** MIDA does not
 individually segment the suprahyoid group or the tongue. Posterior digastric and
@@ -1109,7 +1134,7 @@ survives into all of them.
 
 | # | Term | What sets it | Affects absolute | Affects ratios | Value |
 |---|---|---|---|---|---|
-| 1 | Discretisation | finite element size | yes | partly — directional, unquantified | not separable from term 6 at current precision |
+| 1 | Discretisation | finite element size | yes | partly — directional, unquantified | not separable from term 6 at current precision, and not separable from term 10 either: a 4.9 % linear refinement moved gaps 1.850 dB against 1.554 dB for a plain rebuild |
 | 2 | Interface proximity | source near a conductivity boundary | yes | yes — directional, unquantified | requires a geometry decoupling eccentricity from interface distance; not measured |
 | 3 | Inferior boundary | MIDA's cut face | yes | yes — jaw sites, not ear; directional, unquantified | unquantified; direction known, magnitude not bounded |
 | 4 | Muscle anisotropy | σ tensor vs scalar | **yes — ~5 dB in medial pterygoid, ~4.5 dB in SCM** | **no — below the floor** | statistic A: largest change to any gap is **−0.085 dB** (SCM); medial pterygoid −0.010, temporalis +0.137, lateral pterygoid +0.036, all under the 0.27 dB floor. The absolute lead field IS affected; the reclassification is specific to ratios. Tensor on 2 of 10 compartments, the rest NOT APPLIED |
@@ -1118,6 +1143,7 @@ survives into all of them.
 | 7 | Single anatomy | MIDA is one subject | yes | unknown — directional, unquantified | not quantifiable from one head |
 | 8 | Delivered current | injected vs requested per solve | yes | **no — corrected, not bounded** | 0.887–1.075 × requested across 22 solves, measured per solve by the tet-patch integral. Each site's lead field is divided by its own delivered current (§2.4), so the term does not enter any reported ratio. It is listed here because it was measured and corrected, not because it remains an uncertainty: the 1.67 dB spread it would otherwise contribute is six times the row-6 floor and could not have been bounded by it |
 | 9 | Adipose conductivity | fat at 0.025 vs muscle 0.355 S/m | yes | **yes — and the SIGN differs by muscle** | Reported **per muscle only** — a population differential across sites has no clean definition under statistic A (the median change over muscles is +0.01 dB and conceals a sign that spans −2.86 to +1.09). Statistic A, per muscle, sign varies: **−1.121 dB** for temporalis (acts against the gap), **+0.411 dB** for sternocleidomastoid and **+0.323 dB** for lateral pterygoid (act with it), **−2.863 to +1.093 dB** across the labial group. No single figure is admissible — the sign differs by muscle. Shares are not quoted here because they are dominated by the denominator; see §4.3. |
+| 10 | Mesh realisation | which tetrahedra `meshmesh` produces from the same label volume | yes | **yes — measured, not bounded** | Rebuilding the mesh at the SAME nominal resolution on a second machine moves per-muscle gaps by up to **1.554 dB**. Reported as unquantified because this is ONE realisation pair, not a distribution; a bound needs several rebuilds. Not an estimator artefact: a volume-weighted mean moves 1.809 dB against the median's 1.850 dB on the same solved fields, so the movement is in the field. Wider than the envelopes of masseter, medial pterygoid, sternocleidomastoid and lateral pterygoid; the five labial verdicts, at 8.11 to 22.40 dB, are unaffected. |
 
 Row 6 is measured by rotating the electrode array and the source points together
 on a fixed mesh, which preserves every source-to-electrode vector (verified to
