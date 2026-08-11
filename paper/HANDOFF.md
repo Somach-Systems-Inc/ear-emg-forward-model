@@ -265,3 +265,33 @@ in substance, with dead entries marked.
    not a defect.
 
 ~~The title.~~ **Resolved 2026-08-05**, see §4.
+
+---
+
+## 9. CHI 2027 build target (added 2026-08-11 UTC)
+
+The paper now has a second render: `paper/build_chi.py` builds
+`paper/PAPER1_chi_submission.pdf` from the SAME `PAPER1_full_manuscript.md`
+(acmart `manuscript,review,anonymous`, figures interleaved, tables 2–3 and cut
+paragraphs routed to appendices, which CHI's word count excludes). CHI 2027
+full papers are due **2026-09-10 AoE** (verified on chi2027.acm.org; PCS opens
+2026-08-13; no abstract deadline).
+
+There is no second manuscript. Cuts are paragraph moves addressed by section
+heading + verbatim prefix; replacements come from `paper/chi/` (shortened
+abstract, anonymized §2.8 pre-registration paragraph and data-availability
+section, one added CHI-positioning passage ending the Introduction). Three
+build-failing guards: prefix must match exactly once; every digit token in the
+output must appear verbatim in the source manuscript; output must contain no
+author/company/repo/commit-hash string. `paper/chi/README.md` is the design
+note.
+
+Open, in order: (1) Carl has not reviewed the `paper/chi/` prose — it is
+draft, not approved wording; (2) countable words ≈ 9,459 by the build's own
+conservative counter (which counts table captions and bodies CHI's rule
+excludes, so the true figure is nearer 9k) against CHI's 5,000–8,000 guidance
+(12,000 is the desk-reject line) — the remaining cut candidates are editorial
+(§4.3, §4.7, §4.8 trims) and are Carl's call; (3) CCS concepts + keywords are
+TODO in the template; (4) the CHI
+render deliberately does not gate on the arXiv submission — but do not let a
+CHI edit leak into the arXiv bundle, which HANDOFF §1–§8 govern.
