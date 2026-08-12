@@ -507,6 +507,22 @@ def main() -> int:
     notes.append(f"rewrote {n_real[0]} \\real column widths to \\dimexpr")
     tex, n_uni = fix_unicode_tex(tex)
     notes.append(f"mapped {n_uni} unicode symbols")
+    # The " — " qualifier construction inside table cells ("yes — per-site")
+    # is a documented AI-writing tell, and the manuscript's humanizer pass
+    # ruled on prose but never touched table cells. Cells only: captions and
+    # body keep whatever punctuation that pass kept deliberately.
+    n_dash = [0]
+
+    def _cells(m: re.Match) -> str:
+        body = m.group(0)
+        n_dash[0] += body.count(" \u2014 ")
+        return body.replace(" \u2014 ", "; ")
+
+    tex = re.sub(r"\\begin\{longtable\}.*?\\end\{longtable\}", _cells, tex,
+                 flags=re.S)
+    if n_dash[0]:
+        notes.append(f"replaced {n_dash[0]} em-dash separators inside table "
+                     f"cells with semicolons")
     guard_anonymity(tex)
     TEX.write_text(tex)
 
