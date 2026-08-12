@@ -349,12 +349,11 @@ measured — from the comparison.
 
 #### 2.5.1 The anatomically-constrained sweep
 
-An unconstrained orientation fraction is conservative to the point of being
-misleading, because orientation space is not uniformly reachable. Temporalis
-demonstrates this: the directions that reverse the montage preference lie
-outside the anatomical fan entirely, so an unconstrained 92 % understates a
-result that is conditional on fibre direction over only 8.5 % of the derived
-fan. Both fractions are taken at the pre-registered cluster
+An unconstrained orientation fraction and an anatomically constrained one
+answer differently posed questions, because orientation space is not uniformly
+reachable. Temporalis demonstrates this: 8.5 % of the derived fan reverses the
+montage preference, close to the unconstrained sweep's 8.0 per cent, but only
+the fan's directions are ones the anatomy can realise. Both fractions are taken at the pre-registered cluster
 [`results/04q_table4_envelope.csv`, `results/04k_fan_fractions.csv`]; the same
 fan read against all fourteen ear sites gives 0.5 %, and pairing fractions
 across those two bases would compare different comparisons. We therefore sweep
@@ -574,8 +573,9 @@ montage. Reported at the unmatched argmax over fourteen sites they would read
 
 **Two favour the jaw robustly across sites but not across orientation.**
 Masseter and medial pterygoid have subsample intervals entirely positive, but
-36.0 and 37.5 per cent of sampled orientations reverse them. A single label
-would discard one axis or the other, so both are reported (Table 4).
+31.5 and 34.5 per cent of sampled orientations reverse them at the published
+cluster [`results/04n_site_set_sensitivity.csv`]. A single label would discard
+one axis or the other, so both are reported (Table 4).
 
 ### 3.2 Anisotropy changes the field but not the comparison
 
