@@ -1,9 +1,11 @@
 # CHI 2027 submission — build design
 
 **One source, two outputs.** The CHI submission is rendered from
-`paper/PAPER1_full_manuscript.md` by `paper/build_chi.py`. There is no second
-manuscript to keep in sync: the arXiv version and the CHI version differ only in
-what the build does to the same source.
+`paper/PAPER1_humanized.md` by `paper/build_chi.py` — the same text the arXiv
+v3 bundle ships, so reviewers at both venues read the same words
+(`--src` overrides for comparison builds). There is no CHI-specific
+manuscript to keep in sync: the two venues differ only in what the build does
+to the shared source.
 
 Deadline: full papers due **2026-09-10 AoE** (verified on
 chi2027.acm.org/authors/papers/, 2026-08-10; no abstract deadline; submission
@@ -31,9 +33,9 @@ below move text to appendices instead of deleting it.
    commit hashes. The `anonymous,review` options of `acmart` mask the author
    block; pdf metadata inherits that.
 4. **Never retypes a number.** Every digit-bearing token in the generated
-   markdown must appear verbatim in `PAPER1_full_manuscript.md`. Insert files
-   are covered by the same check. A number that fails this check is a build
-   error, not a warning.
+   markdown must appear verbatim in the source manuscript
+   (`PAPER1_humanized.md` by default). Insert files are covered by the same
+   check. A number that fails this check is a build error, not a warning.
 5. **Renders with acmart** (`manuscript,review,anonymous` = the single-column
    review format), figures interleaved at first citation using the same
    anchor-then-insert-backwards algorithm as `build_submission.py`, unicode

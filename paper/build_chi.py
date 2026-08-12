@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 r"""
-Build the CHI 2027 submission from PAPER1_full_manuscript.md.
+Build the CHI 2027 submission from PAPER1_humanized.md.
 
 ONE SOURCE, TWO OUTPUTS. The arXiv build and this build read the same
 manuscript; nothing here forks the prose. The CHI render differs in what the
@@ -16,7 +16,8 @@ THE THREE GUARDS, all of which fail the build rather than warn:
      regex, no positional index that drifts silently when the manuscript is
      edited upstream.
   2. **No retyped number.** Every digit-bearing token in the generated
-     markdown must appear verbatim in PAPER1_full_manuscript.md. The insert
+     markdown must appear verbatim in the source manuscript (SRC, default
+     PAPER1_humanized.md — the same text the arXiv submission ships). The insert
      files under paper/chi/ are covered by the same check, so a transcription
      error in a condensed abstract is a build failure, not a latent defect.
   3. **Anonymity.** The final LaTeX must not contain the author's name,
@@ -514,9 +515,11 @@ def main() -> int:
     n_dash = [0]
 
     def _cells(m: re.Match) -> str:
+        # pandoc's smart extension writes the em-dash as "---" in LaTeX, so
+        # both spellings are covered; matching only \u2014 replaced nothing.
         body = m.group(0)
-        n_dash[0] += body.count(" \u2014 ")
-        return body.replace(" \u2014 ", "; ")
+        n_dash[0] += body.count(" \u2014 ") + body.count(" --- ")
+        return body.replace(" \u2014 ", "; ").replace(" --- ", "; ")
 
     tex = re.sub(r"\\begin\{longtable\}.*?\\end\{longtable\}", _cells, tex,
                  flags=re.S)

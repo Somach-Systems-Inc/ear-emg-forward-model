@@ -271,7 +271,9 @@ in substance, with dead entries marked.
 ## 9. CHI 2027 build target (added 2026-08-11 UTC)
 
 The paper now has a second render: `paper/build_chi.py` builds
-`paper/PAPER1_chi_submission.pdf` from the SAME `PAPER1_full_manuscript.md`
+`paper/PAPER1_chi_submission.pdf` from `PAPER1_humanized.md` — the same text
+the arXiv v3 bundle ships (switched from `PAPER1_full_manuscript.md` on
+2026-08-11; `--src` overrides)
 (acmart `manuscript,review,anonymous`, figures interleaved, tables 2–3 and cut
 paragraphs routed to appendices, which CHI's word count excludes). CHI 2027
 full papers are due **2026-09-10 AoE** (verified on chi2027.acm.org; PCS opens
