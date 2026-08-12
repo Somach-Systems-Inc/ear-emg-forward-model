@@ -149,14 +149,22 @@ def main() -> int:
                        else f"{side}, site-robust but orientation-dependent")
         rows.append(dict(muscle=m, cluster4_dB=round(cluster, 4),
                          rand4_lo=round(lo, 4), rand4_hi=round(hi, 4),
+                         # Emitted 2026-08-11: §3.6 quotes the draw median and
+                         # §3.1 the floor-attainment rate, and neither had a
+                         # source cell — the manuscript's −0.534 turned out to
+                         # be a stale draft value precisely because no file
+                         # emitted this number.
+                         rand4_median=round(float(np.median(draws)), 4),
+                         rand4_floor_pct=round(
+                             float(100.0 * np.mean(draws <= draws.min() + 1e-9)), 1),
                          crosses_zero=crosses,
                          orientation_agree_pct=round(agree, 1),
                          below_floor=abs(cluster) < FLOOR_DB,
                          verdict=verdict))
 
     t = pd.DataFrame(rows).sort_values("cluster4_dB", ascending=False)
-    t[["muscle", "cluster4_dB", "rand4_lo", "rand4_hi", "crosses_zero",
-       "verdict"]].to_csv(OUT_H, index=False)
+    t[["muscle", "cluster4_dB", "rand4_lo", "rand4_hi", "rand4_median",
+       "rand4_floor_pct", "crosses_zero", "verdict"]].to_csv(OUT_H, index=False)
     t[["muscle", "cluster4_dB", "rand4_lo", "rand4_hi", "crosses_zero",
        "orientation_agree_pct", "verdict"]].rename(
         columns={"cluster4_dB": "cluster_gap_dB"}).to_csv(OUT_J, index=False)
