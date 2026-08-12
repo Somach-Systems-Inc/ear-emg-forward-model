@@ -40,7 +40,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = ROOT / "paper"
-SRC = PAPER / "PAPER1_full_manuscript.md"
+# The humanized variant is the text the arXiv submission ships, so it is what
+# CHI reviewers should read too. --src overrides for comparison builds.
+SRC = PAPER / "PAPER1_humanized.md"
 CHI = PAPER / "chi"
 BUILD = PAPER / "chi_build"
 TEX = BUILD / "ms_chi.tex"
@@ -80,7 +82,7 @@ SPEC = {
             "Insensitivity to that choice was measured",
         ],
         "insert_after": [(
-            "**Air is a numerical choice, not a physical one.**",
+            "Air is a numerical choice",
             "The measured insensitivity of every reported gap to that choice "
             "is given in Appendix A.",
         )],
@@ -118,10 +120,10 @@ SPEC = {
         ],
         "insert_after": [(
             "**Analytic multilayer sphere.**",
-            "Three further validation layers — reciprocity verified on the "
+            "Three further validation layers (reciprocity verified on the "
             "head mesh itself, four physical invariants computed on every "
             "solve, a mesh-convergence fit, and two guard meta-tests that "
-            "protect the validation machinery — are specified in full in "
+            "protect the validation machinery) are specified in full in "
             "Appendix A.",
         )],
     },
@@ -135,7 +137,7 @@ SPEC = {
     "2.8 Reproducibility and pre-registration": {
         "appendix": [
             "One qualification, because the claim is otherwise stronger",
-            "**A published table with no generating script is not a result yet.**",
+            "A published table with no generating script",
         ],
         "replace": {
             "The anatomical prediction was recorded before the model was solved":
@@ -174,9 +176,9 @@ SPEC = {
     },
     "Tables": {
         "appendix": [
-            "**Table 2 — Tissue layer stack",
+            "Table 2",
             "| Site | Target | Target thickness",
-            "**Table 3 — Error budget.**",
+            "Table 3",
             "| # | Term | What sets it",
             "Row 6 is measured by rotating",
             "Row 7 is deliberately left unquantified",
@@ -218,8 +220,32 @@ ACM_TEMPLATE = r"""\documentclass[manuscript,review,anonymous]{acmart}
 %% suspect). Nothing displays this counter and no longtable here carries a
 %% caption, so defining it is inert.
 \newcounter{none}
-%% TODO before submission: CCS concepts and keywords (PCS requires them in the
-%% form; the PDF should carry matching \ccsdesc and \keywords).
+%% DRAFT CCS concepts and keywords, not yet author-confirmed. The PCS form
+%% must carry the same ones. Codes from dl.acm.org/ccs (2012 CCS).
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10003120.10003138.10003139</concept_id>
+<concept_desc>Human-centered computing~Interaction devices</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10003120.10003138.10003142</concept_id>
+<concept_desc>Human-centered computing~Ubiquitous and mobile computing</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+<concept>
+<concept_id>10010147.10010341</concept_id>
+<concept_desc>Computing methodologies~Modeling and simulation</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+\ccsdesc[500]{Human-centered computing~Interaction devices}
+\ccsdesc[300]{Human-centered computing~Ubiquitous and mobile computing}
+\ccsdesc[300]{Computing methodologies~Modeling and simulation}
+\keywords{silent speech interfaces, surface electromyography, ear-worn devices,
+electrode placement, volume conductor modelling, forward models, cEEGrid}
 \title{%(title)s}
 \author{Anonymous Author(s)}
 \affiliation{\institution{Anonymous}\country{Anonymous}}
@@ -256,7 +282,13 @@ def paras_of(body: str) -> list[str]:
 
 
 def find_one(ps: list[str], prefix: str, where: str) -> int:
-    hits = [i for i, p in enumerate(ps) if p.lstrip().startswith(prefix)]
+    # Leading bold markers are normalised away: the humanized manuscript
+    # strips some in-prose bold that the full manuscript carries, and a prefix
+    # must address the same paragraph in either source.
+    def norm(s: str) -> str:
+        return s.lstrip().lstrip("*").lstrip()
+
+    hits = [i for i, p in enumerate(ps) if norm(p).startswith(norm(prefix))]
     if len(hits) != 1:
         die(f"prefix {prefix!r} matched {len(hits)} paragraphs in {where!r}; "
             f"it must match exactly one. The manuscript has changed shape — "
@@ -395,6 +427,10 @@ def pandoc(md: str, stage: Path) -> str:
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--src", default=str(SRC))
+    globals()["SRC"] = Path(ap.parse_args().src)
     notes: list[str] = []
     BUILD.mkdir(exist_ok=True)
     src_md = SRC.read_text()
