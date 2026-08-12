@@ -5470,3 +5470,63 @@ controls. In-line citations present throughout.
 ρ = −0.955 relationship has none — the data is in `04f_fat_path_vs_share.csv` and
 it is seven points. Adding a seventh figure hours before submission, unreviewed,
 is the kind of change this project has been burned by. Left for Carl.
+
+## 2026-08-12 — pre-submission fan-out review: one stale number, one licence crop, and the fixes that came with them
+
+A 14-agent review before the arXiv post (8 lenses, adversarial verification of
+every blocker) confirmed five defects and refuted one. The record, most
+consequential first.
+
+### §3.6's −0.534 was a stale draft value; the current-data median is −0.498
+
+The lateral-pterygoid random-four-site-draw median was quoted as −0.534 dB and
+the abstract's placement headline as "up to 1.03 dB". No results file emitted a
+draw median, and an exact reproduction of 04h's draw logic (seed 0, 10,000
+draws) matched every published interval endpoint bit-for-bit while giving a
+median of −0.4979. The −0.534 traces to this log's 2026-08-05 table, whose LP
+interval hi was +1.33; the data basis moved to +1.0909 afterwards, §3.1's
+interval was refreshed, and §3.6's median was not. Corrected to −0.498 and
+1.07 dB (−1.564 − (−0.498) = 1.066) in both manuscripts and the CHI abstract.
+The error was conservative: the true advantage is larger than the claim.
+**Fix at source:** `04h_matched_counts.py` now emits `rand4_median` and
+`rand4_floor_pct`, so both prose statistics have source cells; the regenerated
+CSV is identical to the old one on every shared column. SCM's −0.979 and the
+2.2 % floor attainment reproduced exactly and stand.
+
+### Fig 9's sagittal panel violated the licence crop; Fig 8 shared the rule class
+
+`render_fig9.py` blanked only (V > rim) & (U > 0) — the exact above-rim-only
+configuration `render_common.py` documents as insufficient — publishing the
+below-rim anterior face at R = 16 mm. Both figures now route their masks
+through `anonymise_head()` itself, so every figure shares one rule. Rendered
+and inspected visually before trusting.
+
+### Mechanical corrections, both manuscripts
+
+References reflowed one-per-line (pandoc read the hard-wrapped run-on paragraph
+as a 3-item enumerate, relabelling MIDA as "2."), with entries completed from
+CITATIONS.md (De Luca year 2012, Mesin full title, Wand venue, An full title —
+all previously-verified CORRs). The §2.4 equation left a literal
+\textperiodcentered in both PDFs (unicode escape inside a verbatim block); it
+is now display math. Also: §2.3.1 → §2.5.1 (twice-rendered broken pointer);
+Table 1 CSV path gains its 01_ prefix; Figure 1 caption says axial (not
+posterior) and describes the mask actually implemented; §4.5 no longer points
+at Figure 9 for per-muscle fields it does not show; "It was built" → "HArtMuT
+was built" (broken antecedent); cg01–cg10 defined in §2.3 from config's own
+comment; Table 4 minus signs normalised to U+2212; the two Table-4 notes moved
+from after Table 5 to after Table 4, with the duplicated dropping-midjaw clause
+merged; three humanizer-pass punctuation breaks repaired (§3.3, §4.7, §3.6).
+
+### Deliberately NOT corrected — each needs Carl's ruling
+
+(1) §2.5.1's motivating sentence still claims the reversal directions lie
+outside the anatomical fan "entirely", against the cited CSV's 8.5 % — the
+retracted 2026-08-04 claim, resurfaced; rewriting it changes what §2.5.1
+argues. (2) §4.7 still says the per-voxel fan for masseter and lateral
+pterygoid is "untested here"; the 2026-08-06 pre-registration (R1/R5) commits
+the write-up to reporting that test, and R6 reserves the consequences for Carl.
+(3) §4.3's "two regimes remain separated" framing predates the headline;
+WORDING_stale_framing.md carries a replacement whose approval is UNVERIFIED.
+(4) §3.1's 36.0/37.5 % orientation-reversal figures are argmax-14-basis in a
+sentence citing cluster-basis Table 4; the cluster-basis alternatives (31.5,
+34.5 %) exist in 04n. None of these is silent: each is now on this record.

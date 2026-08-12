@@ -47,7 +47,7 @@ third of orientations. Sternocleidomastoid and lateral pterygoid show no
 preference that survives electrode subsampling: their intervals cross zero, so
 the apparent advantage depends on which four sites are available. Electrode
 placement chosen by anatomical target outperforms arbitrary placement around
-the ear by up to 1.03 dB. A control in which every non-muscle soft tissue is
+the ear by up to 1.07 dB. A control in which every non-muscle soft tissue is
 set to a single conductivity reproduces every montage assignment unchanged
 while misstating gap magnitudes by up to 3.27 dB.
 
@@ -100,7 +100,7 @@ jaw and speech activity (Avramidou et al. 2024; An et al. 2025) on a widely
 replicated form factor (Debener et al. 2015). Devices are being designed
 around a coupling nobody has computed.
 
-It was built to answer the opposite question. HArtMuT's muscle sources exist so
+HArtMuT was built to answer the opposite question. Its muscle sources exist so
 that muscle activity can be identified and removed from scalp EEG, and they
 radiate through a homogeneous scalp compartment, a simplification its authors
 state explicitly, and an appropriate one for a model whose purpose is artifact
@@ -265,7 +265,9 @@ for every site.
 
 `pre_tragus` is placed 14 mm anterior to the tragus, over the masseter and the
 temporomandibular joint, as the retroauricular position with the shortest path
-to the mastication group.
+to the mastication group. The ten C-path positions are labelled `cg01`–`cg10`
+after the cEEGrid layout of Debener et al. (2015), at 12–18 mm spacing around
+the pinna; all 22 sites are shown in Figure 1.
 
 One position is withheld. `throat_scm` is recorded as held with blank
 coordinates: MIDA's sternocleidomastoid is truncated at the cut face, which
@@ -281,7 +283,7 @@ Lead fields are computed by reciprocity, not by forward-solving each source. For
 a current dipole at position **r** with moment **p** and a recording pair (A,
 B), the measured potential difference is
 
-    V_AB(r, p) = E_recip(r) · p / I
+$$V_{AB}(\mathbf{r}, \mathbf{p}) = \mathbf{E}_{\mathrm{recip}}(\mathbf{r}) \cdot \mathbf{p} \, / \, I$$
 
 where **E**_recip is the field produced throughout the head by injecting current
 *I* between A and B. The lead field for a source at **r** with unit orientation
@@ -513,7 +515,7 @@ Figure 3.
 
 No articulator favours the ear on both axes. Temporalis is the closest,
 and it does not clear the bar. Over the fibre field derived from the anatomy
-(§2.3.1) it reaches −1.147 dB at the pre-registered four-site cluster, with
+(§2.5.1) it reaches −1.147 dB at the pre-registered four-site cluster, with
 91.5 per cent of fibre directions agreeing, but its matched-count interval is
 **[−1.453, +5.458]** and only **50.5 per cent** of the four-site
 retroauricular subsets favour the ear at all. Whether the ear wins for
@@ -594,7 +596,7 @@ resolution. Absolute lead-field values are a different matter and are affected.
 ### 3.3 The tissue-conductivity contrast is a small term with a muscle-dependent sign
 
 Solving the full montage twice on identical geometry, once with adipose at
-0.025 S/m and once with both adipose compartments set to muscle conductivity —
+0.025 S/m and once with both adipose compartments set to muscle conductivity,
 attributes any difference to material properties alone, since source-to-electrode
 distance is unchanged by construction. The second condition is a counterfactual
 used to decompose mechanism; the gaps reported throughout this paper are the
@@ -693,9 +695,10 @@ Placement chosen by anatomical target outperforms arbitrary placement. The
 four-site retroauricular cluster, above the ear, over the mastoid, behind and
 below the lobule, and anterior to the tragus, was specified by anatomical
 target in the project repository before any solve was run. Compared against
-the median of random four-site draws from the same fourteen candidates; it is
-1.03 dB better for lateral pterygoid (−1.564 against −0.534) and equivalent
-for sternocleidomastoid (−0.973 against −0.979).
+the median of random four-site draws from the same fourteen candidates, it is
+1.07 dB better for lateral pterygoid (−1.564 against −0.498) and equivalent
+for sternocleidomastoid (−0.973 against −0.979)
+[`results/04h_matched_counts.csv`].
 
 Neither of the two sites that won the unmatched argmax for temporalis and
 sternocleidomastoid is in that cluster, which is the same point from the other
@@ -916,10 +919,11 @@ The EEG literature has documented mastoid and retroauricular electromyographic
 contamination for decades as a nuisance to be suppressed [Goncharova et al.
 2003; Yao et al. 2019]. This model says what that contamination consists of. The
 three compartments a retroauricular electrode couples to most strongly, relative
-to the canonical jaw montage, and whose sensitivity fields are shown in Figure 9,
-are temporalis, sternocleidomastoid and lateral
-pterygoid, and their best positions differ, so contamination at `cg01` is not
-the same mixture as contamination at `cg08`.
+to the canonical jaw montage (Figure 2), are temporalis, sternocleidomastoid
+and lateral pterygoid, and their best positions differ, so contamination at
+`cg01` is not the same mixture as contamination at `cg08`. The pooled
+suprahyoid compartment contributes to that mixture as well; its field under
+the retroauricular montage is shown in Figure 9.
 
 That is usable in the rejection direction as well as the sensing one. A spatial
 filter informed by which muscle dominates at which contact is a different object
@@ -1007,8 +1011,8 @@ think they disagree.
 **Mesh realisation is wider than four of the reported margins.** Term 10 of the
 error budget is a rebuild of the same nominal mesh, and it moves per-muscle gaps
 by up to 1.554 dB. Four verdicts have envelopes comparable to that: masseter
-(+1.20 to +2.22), medial pterygoid (+0.86 to +1.33), sternocleidomastoid (-2.53
-to -0.97) and lateral pterygoid (-3.61 to -1.53). Medial pterygoid's envelope
+(+1.20 to +2.22), medial pterygoid (+0.86 to +1.33), sternocleidomastoid (−2.53
+to −0.97) and lateral pterygoid (−3.61 to −1.53). Medial pterygoid's envelope
 sits inside it entirely, so that verdict in particular should not be relied on
 until the term is characterised over several rebuilds. The five labial verdicts
 span 8.11 to 22.40 dB and are unaffected, so the study's headline result does
@@ -1022,7 +1026,7 @@ because one realisation pair is not a distribution. The rebuild comparison is
 version of the anatomical argument are not among them.** MIDA does not
 individually segment the suprahyoid group or the tongue. Posterior digastric and
 stylohyoid, the two muscles that anchor at the mastoid notch and styloid
-process, and that motivated the retroauricular hypothesis in the first place —
+process, and that motivated the retroauricular hypothesis in the first place,
 are therefore absent from the per-muscle comparison. The model is silent exactly
 where the a-priori argument was strongest, the muscles whose attachments most
 directly motivated a retroauricular montage are the ones it cannot test, and the
@@ -1104,7 +1108,7 @@ than is reported.
 conductivity, source (SimNIBS 4.6 default / IT'IS LF v4.2 / judgement),
 frequency, plausible range for judgement rows, volume fraction and minimum
 distance to the nearest electrode. Sorted by volume fraction × proximity.
-[`results/table1_conductivities.csv`]
+[`results/01_table1_conductivities.csv`]
 
 **Table 2, Tissue layer stack beneath each canonical site.** Millimetres per
 MIDA tissue along the ray from each electrode through the full thickness of its
@@ -1179,9 +1183,9 @@ fibre field; see §4.8 and Figure 11.
 | orbicularis oris | +8.11 to +9.02 | yes, all 5 | 100.0 % | **jaw, robust on both axes** |
 | masseter | +1.20 to +2.22 | yes, all 5 | 56.0–68.5 % | **jaw, site-robust but orientation-dependent** |
 | medial pterygoid | +0.86 to +1.33 | yes, all 5 | 59.5–66.5 % | **jaw, site-robust but orientation-dependent** |
-| sternocleidomastoid | -2.53 to -0.97 | 1 of 5 | 60.5–65.0 % | **unstable across subsets** |
-| lateral pterygoid | -3.61 to -1.53 | 1 of 5 | 65.5–72.0 % | **unstable across subsets** |
-| temporalis | -5.42 to -2.57 | yes, all 5 | 92.0–100.0 % | **ear, robust on both axes** |
+| sternocleidomastoid | −2.53 to −0.97 | 1 of 5 | 60.5–65.0 % | **unstable across subsets** |
+| lateral pterygoid | −3.61 to −1.53 | 1 of 5 | 65.5–72.0 % | **unstable across subsets** |
+| temporalis | −5.42 to −2.57 | yes, all 5 | 92.0–100.0 % | **ear, robust on both axes** |
 <!-- /TABLE:two_axis_verdict -->
 
 
@@ -1192,9 +1196,29 @@ every subset, spanning 8.11 to 22.40 dB. One muscle, temporalis, favours the
 retroauricular montage on both axes on this basis, in every subset. That verdict
 does not survive a change of basis. Statistic A takes the median over a uniform
 orientation sweep, and under the per-voxel fibre field derived from the label
-volume the same comparison gives -1.15 dB with an interval of [-1.45, +5.46]
+volume the same comparison gives −1.15 dB with an interval of [−1.45, +5.46]
 that spans zero (§4.8, Figure 11). Under the derived field, no muscle favours the
 retroauricular montage on both axes.
+
+8 muscles return an identical verdict in all 5 subsets. Two do not. Lateral
+pterygoid gives no resolvable preference across four subsets (−1.53 to −1.59 dB)
+and −3.61 dB in the fifth; sternocleidomastoid gives −0.97 to −1.44 dB across
+four and −2.53 dB in the fifth. In both cases the deviating subset is the one
+dropping `midjaw`, and in both cases the deviating value is site-robust but
+orientation-dependent, with agreement of 72.0 and 65.0 per cent against the
+90 per cent required for a robust preference. Neither reaches a retroauricular
+preference on both axes, and neither is among the 5 muscles carrying the jaw
+advantage. `midjaw` has the largest perpendicular clearance to the cut plane of
+any jaw site at 63.76 mm; the instability follows from removing the site
+furthest from the truncation, not one near it.
+
+**Temporalis is reported here under the uniform orientation sweep, for
+comparability with the other nine muscles.** Under the fibre field derived from
+the label volume (§2.5.1) it reads −1.15 dB with a random-4 interval of
+[−1.45, +5.46], which crosses zero, and that is the value the paper's conclusions
+use (§3.1, §4.1). The two treatments disagree; the derived one governs because it
+removes an assumption rather than adding one. This row shows what the
+assumption-free treatment gives, so the dependence is visible, not buried.
 
 **Table 5, Strongest single site for each articulator, and how well resolved it
 is.** For each of the ten segmented articulators, the electrode with the largest
@@ -1223,36 +1247,14 @@ where coupling is strongest and is not a montage recommendation; see §4.4.
 | sternocleidomastoid | post-lobule | ear | cg08 | 0.03 * | no |
 <!-- /TABLE:best_site -->
 
-
-8 muscles return an identical verdict in all 5 subsets. Two do not. Lateral
-pterygoid gives no resolvable preference across four subsets (−1.53 to −1.59 dB)
-and −3.61 dB in the fifth; sternocleidomastoid gives −0.97 to −1.44 dB across
-four and −2.53 dB in the fifth. In both cases the deviating subset is the one
-dropping `midjaw`, and in both cases the deviating value is site-robust but
-orientation-dependent, with agreement of 72.0 and 65.0 per cent against the
-90 per cent required for a robust preference. Neither reaches a retroauricular
-preference on both axes, and neither is among the 5 muscles carrying the jaw
-advantage. The subset that deviates is the one dropping `midjaw`, which has the
-largest perpendicular clearance to the cut plane of any jaw site at 63.76 mm; the
-instability follows from removing the site furthest from the truncation, not one
-near it.
-
-**Temporalis is reported here under the uniform orientation sweep, for
-comparability with the other nine muscles.** Under the fibre field derived from
-the label volume (§2.5.1) it reads −1.15 dB with a random-4 interval of
-[−1.45, +5.46], which crosses zero, and that is the value the paper's conclusions
-use (§3.1, §4.1). The two treatments disagree; the derived one governs because it
-removes an assumption rather than adding one. This row shows what the
-assumption-free treatment gives, so the dependence is visible, not buried.
-
 ---
 
 ## Figure captions
 
 **Figure 1.** MIDA head model with the ten segmented articulator compartments
 highlighted, and all 22 electrode positions shown in lateral, frontal and
-posterior views. The face is masked above the orbital rim in accordance with the
-MIDA licence.
+axial views. The face is removed anterior of the eyes at all heights, in
+accordance with MIDA licence clause 2.3.3.
 
 **Figure 2. Articulator sensitivity matrix.** Median lead field in each
 segmented muscle compartment for each electrode site, in dB relative to that
@@ -1389,42 +1391,23 @@ cited in §2.8 as the pre-registration record.
 
 ## References
 
-1. An, et al. (2025). ID.EARS. *CHI '25*. 2. Avramidou, et al. (2024). From
-Ear-EEG to Ear-ExG: The Jaw Artifact is a Keeper. *DSAI '24*. 3. Debener, S., et
-al. (2015). Unobtrusive ambulatory EEG using a smartphone and flexible printed
-electrodes around the ear. *Sci Rep* 5:16743. 4. De Luca, C. J., et al. (2011).
-Inter-electrode spacing of surface EMG sensors. *J Biomech*. 5. Gaddy, D., &
-Klein, D. (2020). Digital Voicing of Silent Speech. *EMNLP*. 6. Goncharova, I.
-I., et al. (2003). EMG contamination of EEG: spectral and topographical
-characteristics. *Clin Neurophysiol*. 7. Harmening, N., Klug, M., Gramann, K., &
-Miklody, D. (2022). HArtMuT, modeling eye and muscle contributors in
-neuroelectric imaging. *J Neural Eng* 19(6):066041. doi:10.1088/1741-2552/aca8ce
-8. Iacono, M. I., et al. (2015). MIDA: A Multimodal Imaging-Based Detailed
-Anatomical Model of the Human Head and Neck. *PLOS ONE*.
-doi:10.1371/journal.pone.0124126 9. Kappel, S. L., Makeig, S., & Kidmose, P.
-(2019). Ear-EEG Forward Models: Improved Head-Models for Ear-EEG. *Front
-Neurosci* 13:943. doi:10.3389/fnins.2019.00943 10. Kapur, A., Kapur, S., & Maes,
-P. (2018). AlterEgo: A Personalized Wearable Silent Speech Interface. *IUI '18*.
-11. Kuiken, T. A., Lowery, M. M., & Stoykov, N. S. (2003). The effect of
-subcutaneous fat on myoelectric signal amplitude and cross-talk. *Prosthet
-Orthot Int* 27(1):48–54. doi:10.3109/03093640309167976 12. Maksymenko, K.,
-Deslauriers-Gauthier, S., & Farina, D. (2021). Ultra fast and highly realistic
-numerical modelling of surface EMG. *bioRxiv*. 13. Meiser, A., Knoll, J., &
-Bleichner, M. G. (2024). High-density ear-EEG for understanding ear-centered
-EEG. *J Neural Eng* 21(1):016001. doi:10.1088/1741-2552/ad1783 14. Mesin, L.
-(2020). Crosstalk in surface electromyogram: literature review. *Phys Eng Sci
-Med*. doi:10.1007/s13246-020-00868-1 15. Sato, W., & Kochiyama, T. (2023).
-Crosstalk in Facial EMG and Its Reduction Using ICA. *Sensors* 23:2720. 16.
-Saturnino, G. B., Madsen, K. H., & Thielscher, A. (2019). Electric field
-simulations for transcranial brain stimulation using FEM: an efficient
-implementation and error analysis. *J Neural Eng* 16(6):066032.
-doi:10.1088/1741-2552/ab41ba 17. Thielscher, A., Antunes, A., & Saturnino, G. B.
-(2015). Field modeling for transcranial magnetic stimulation: a useful tool to
-understand the physiological effects of TMS? *37th Annual International
-Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)*,
-222–225. doi:10.1109/EMBC.2015.7318340 18. Wand, M., & Schultz, T. (2011).
-Session-Independent EMG-Based Speech Recognition. 19. Yao, D., et al. (2019).
-Which Reference Should We Use for EEG and ERP practice? *Brain Topogr*. 20.
-Yarici, M., Thornton, M., & Mandic, D. P. (2023). Ear-EEG sensitivity modeling
-for neural sources and ocular artifacts. *Front Neurosci* 16:997377.
-doi:10.3389/fnins.2022.997377
+1. An, et al. (2025). ID.EARS: One-Ear EEG Device with Biosignal Noise for Real-Time Gesture Recognition and Various Interactions. *CHI '25*, 1–18. doi:10.1145/3706598.3714185
+2. Avramidou, et al. (2024). From Ear-EEG to Ear-ExG: The Jaw Artifact is a Keeper. *DSAI '24*.
+3. Debener, S., et al. (2015). Unobtrusive ambulatory EEG using a smartphone and flexible printed electrodes around the ear. *Sci Rep* 5:16743. doi:10.1038/srep16743
+4. De Luca, C. J., et al. (2012). Inter-electrode spacing of surface EMG sensors. *J Biomech* 45(3):555–561. doi:10.1016/j.jbiomech.2011.11.010
+5. Gaddy, D., & Klein, D. (2020). Digital Voicing of Silent Speech. *EMNLP*, 5521–5530. doi:10.18653/v1/2020.emnlp-main.445
+6. Goncharova, I. I., et al. (2003). EMG contamination of EEG: spectral and topographical characteristics. *Clin Neurophysiol*.
+7. Harmening, N., Klug, M., Gramann, K., & Miklody, D. (2022). HArtMuT, modeling eye and muscle contributors in neuroelectric imaging. *J Neural Eng* 19(6):066041. doi:10.1088/1741-2552/aca8ce
+8. Iacono, M. I., et al. (2015). MIDA: A Multimodal Imaging-Based Detailed Anatomical Model of the Human Head and Neck. *PLOS ONE*. doi:10.1371/journal.pone.0124126
+9. Kappel, S. L., Makeig, S., & Kidmose, P. (2019). Ear-EEG Forward Models: Improved Head-Models for Ear-EEG. *Front Neurosci* 13:943. doi:10.3389/fnins.2019.00943
+10. Kapur, A., Kapur, S., & Maes, P. (2018). AlterEgo: A Personalized Wearable Silent Speech Interface. *IUI '18*, 43–53. doi:10.1145/3172944.3172977
+11. Kuiken, T. A., Lowery, M. M., & Stoykov, N. S. (2003). The effect of subcutaneous fat on myoelectric signal amplitude and cross-talk. *Prosthet Orthot Int* 27(1):48–54. doi:10.3109/03093640309167976
+12. Maksymenko, K., Deslauriers-Gauthier, S., & Farina, D. (2021). Ultra fast and highly realistic numerical modelling of surface EMG. *bioRxiv*.
+13. Meiser, A., Knoll, J., & Bleichner, M. G. (2024). High-density ear-EEG for understanding ear-centered EEG. *J Neural Eng* 21(1):016001. doi:10.1088/1741-2552/ad1783
+14. Mesin, L. (2020). Crosstalk in surface electromyogram: literature review and some insights. *Phys Eng Sci Med* 43(2):481–492. doi:10.1007/s13246-020-00868-1
+15. Sato, W., & Kochiyama, T. (2023). Crosstalk in Facial EMG and Its Reduction Using ICA. *Sensors* 23:2720.
+16. Saturnino, G. B., Madsen, K. H., & Thielscher, A. (2019). Electric field simulations for transcranial brain stimulation using FEM: an efficient implementation and error analysis. *J Neural Eng* 16(6):066032. doi:10.1088/1741-2552/ab41ba
+17. Thielscher, A., Antunes, A., & Saturnino, G. B. (2015). Field modeling for transcranial magnetic stimulation: a useful tool to understand the physiological effects of TMS? *EMBC 2015*, 222–225. doi:10.1109/EMBC.2015.7318340
+18. Wand, M., & Schultz, T. (2011). Session-Independent EMG-Based Speech Recognition. *BIOSIGNALS 2011*, 295–300. doi:10.5220/0003169702950300
+19. Yao, D., et al. (2019). Which Reference Should We Use for EEG and ERP practice? *Brain Topogr*.
+20. Yarici, M., Thornton, M., & Mandic, D. P. (2023). Ear-EEG sensitivity modeling for neural sources and ocular artifacts. *Front Neurosci* 16:997377. doi:10.3389/fnins.2022.997377
