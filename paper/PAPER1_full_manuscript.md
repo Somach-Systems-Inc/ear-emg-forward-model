@@ -775,10 +775,15 @@ material contribution varies widely within the group: the adipose–muscle
 conductivity contrast accounts for 0.6 per cent of the gap for platysma and
 13.3 per cent for orbicularis oris. The remainder in every case is
 source-to-electrode distance, and the attenuation-against-depth relation that
-produces it is shown in Figure 5. The two regimes remain separated — 0.6 to 13.3
-per cent for the muscles the jaw wins, against 17 to 21 per cent for those the
-ear wins — but the separation is narrower than a single figure would suggest,
-and no muscle in either group is unaffected.
+produces it is shown in Figure 5. The share is largest where the gap is
+smallest, and that is mostly a denominator effect rather than a difference in
+the tissue's role. The absolute contribution of the contrast is of comparable
+size across muscles, 0.03 to 2.86 dB, while the gaps it is measured against
+span an order of magnitude. Expressed as a share it therefore reaches 21 per
+cent for the three muscles whose gaps come closest to zero and falls to 0.6
+per cent for the labial group, where the jaw's advantage is largest. Neither
+figure describes a different mechanism; they describe the same term divided by
+different quantities.
 
 Limb studies cannot make this separation, because adding a fat layer changes
 material properties and source-to-electrode distance together (Kuiken et al.
@@ -1081,9 +1086,15 @@ the remainder do not form a single pending set. Sternocleidomastoid, medial
 pterygoid and mentalis are strap-like with fibres along the compartment long
 axis, and admit it directly. Masseter, lateral pterygoid and depressor anguli
 oris are multi-part or converging — superficial and deep layers at different
-angles, two heads, and a converging triangular sheet respectively — and a
-per-voxel fan toward a common attachment is the appropriate treatment for them,
-untested here. **Orbicularis oris admits it in no form**: it is a sphincter
+angles, two heads, and a converging triangular sheet respectively. The
+per-voxel fan was pre-registered and run for the first two: masseter voids the
+construction, its insertion patch spanning 66 to 89 per cent of the
+compartment on every axis, so voxel-to-insertion is not a fibre model there;
+lateral pterygoid admits it and gives a derived interval of [−5.327, −1.115],
+against a uniform-sweep interval that crosses zero — a basis dependence this
+section discloses rather than resolves, since the construction's validity for
+a two-headed muscle is what it already doubts. Depressor anguli oris remains
+untested. **Orbicularis oris admits it in no form**: it is a sphincter
 whose fibres run in a ring, with no bony insertion, so a principal axis is a
 category error, not a missing measurement. Buccinator blends into that sphincter
 at the modiolus and inherits the same problem. Platysma is a broad sheet.

@@ -163,3 +163,16 @@ failure with its numbers shown and the reason given.
 before it reached the manuscript. Had R4 been written to cover only the
 too-narrow case, which is what it did cover, masseter would have entered §4.7 as
 a retired jaw advantage.
+
+
+---
+
+## R5 executed, 2026-08-12
+
+Carl ruled to execute R5. Section 4.7's "untested here" is replaced in both
+manuscripts: masseter reported as a construction failure under R4b with its
+patch-extent numbers, lateral pterygoid reported with its derived interval
+[−5.327, −1.115] and the basis dependence disclosed. The Amendment's
+no-R2-fire reading (envelope basis) was put to Carl alongside the CSV's
+1001-subset reading before anything shipped; he approved the disclosure
+wording. R6 untouched: no change to title or abstract.

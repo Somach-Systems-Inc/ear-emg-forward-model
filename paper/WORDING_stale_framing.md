@@ -7,6 +7,12 @@
 > an approval nobody confirmed. Nothing here enters the manuscript until Carl
 > re-reads it.
 >
+> **RULED 2026-08-12: Carl approved item 1**, with numbers filled from
+> `04e_fat_contrast_statisticA.csv` (0.03/2.86 dB, 21/0.6 per cent), and it is
+> applied to both manuscripts. Items 2 and 3, found already present in the
+> manuscript, are ratified in place by the same ruling — the text was approved;
+> only the original approval *record* was invented.
+>
 > **Measured against the current manuscript: 3 of 10 prose probes from this
 > file's proposed text are already present (30%).** Text from an unverified file
 > is already applied. That is a defect awaiting Carl's ruling, not a precedent.

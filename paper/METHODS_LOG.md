@@ -5530,3 +5530,13 @@ WORDING_stale_framing.md carries a replacement whose approval is UNVERIFIED.
 (4) §3.1's 36.0/37.5 % orientation-reversal figures are argmax-14-basis in a
 sentence citing cluster-basis Table 4; the cluster-basis alternatives (31.5,
 34.5 %) exist in 04n. None of these is silent: each is now on this record.
+
+
+## 2026-08-12 — all four held rulings made by Carl, applied, and rebuilt
+
+Put to Carl as explicit options; he chose the recommended path on each.
+(1) §4.7: R5 executed — see the execution note in PREREG_fibre_fan_extension.md.
+(2) §2.5.1: rewritten to the measured 8.5 % against the sweep's 8.0.
+(3) §4.3: WORDING_stale_framing item 1 applied with 04e-sourced numbers.
+(4) §3.1: cluster-basis 31.5/34.5 % from 04n replaces the argmax-14 36.0/37.5.
+Both manuscripts, both venue builds.
