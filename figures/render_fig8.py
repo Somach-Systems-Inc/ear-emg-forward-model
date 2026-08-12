@@ -222,9 +222,13 @@ def main(argv=None) -> int:
         panels[key] = _harvest(msh, xyz, o, e1, e2, gu, gv)
 
     # ---- licence crop, applied on TRUE coordinates of each grid point
+    # CORRECTED 2026-08-11: the above-rim-only rule kept the below-rim
+    # chin/lip outline of the oblique plane; route through anonymise_head so
+    # every figure shares the one rule (columns are (R, A, S); A and S used).
     rim = rc.orbital_rim_S()
     P3 = panels["jaw"][4]
-    face = (P3[..., 2] > rim) & (P3[..., 1] > 0)
+    keep = rc.anonymise_head(P3.reshape(-1, 3), mode="crop").reshape(P3.shape[:-1])
+    face = ~keep
     for key in panels:
         img, tg, curve, pm, _p, hi = panels[key]
         panels[key] = (np.where(face, np.nan, img), np.where(face, -1, tg),

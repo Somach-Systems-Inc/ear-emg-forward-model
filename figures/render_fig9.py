@@ -152,8 +152,20 @@ def main(argv=None) -> int:
         # the eyes, the same rule anonymise_head applies to point clouds.
         U, V = np.meshgrid(gu, gv)
         if v == 2 and u == 1:
-            # sagittal: blank anterior of the eyes AND above the orbital rim
-            img = np.where((V > rim) & (U > 0), np.nan, img)
+            # CORRECTED 2026-08-11. The previous rule blanked (V > rim) & (U > 0)
+            # — above the rim only — which published the below-rim anterior
+            # face profile this repo's own licence crop removes everywhere
+            # else (nose, lips, chin all sit BELOW the rim; that is the
+            # documented insufficient configuration in render_common). Route
+            # the mask through anonymise_head itself so this panel and every
+            # point-cloud figure share one rule; columns are (R, A, S) and
+            # the crop reads A and S only.
+            P = np.column_stack([np.zeros(U.size), U.ravel(), V.ravel()])
+            keep = rc.anonymise_head(P, mode="crop").reshape(U.shape)
+            img = np.where(~keep, np.nan, img)
+            # The tissue contours draw from tg, not img; an unmasked tg left
+            # a muscle-outline island in the blanked region on first render.
+            tg = np.where(~keep, -1, tg)
         im = ax.imshow(img, origin="lower", aspect="equal",
                        extent=[gu.min(), gu.max(), gv.min(), gv.max()],
                        cmap=rc.sequential_cmap(), vmin=0, vmax=vmax,
@@ -195,7 +207,7 @@ def main(argv=None) -> int:
         fig.text(0.012, 0.915,
                  f"|E| on 2 mm slabs through MIDA's pooled Muscle (General) "
                  f"compartment   ·   magnitude, NOT the projected lead field   ·  "
-                 f" face cropped above S = {rim:.1f} mm per licence 2.3.3",
+                 f" face removed anterior of the eyes per licence 2.3.3",
                  ha="left", fontsize=6.4, color=rc.INK_SECONDARY)
 
 

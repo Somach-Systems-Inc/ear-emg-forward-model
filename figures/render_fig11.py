@@ -129,7 +129,7 @@ def main(argv=None) -> int:
         ax.text(1.04, i, txt, transform=ax.get_yaxis_transform(), ha="left",
                 va="center", fontsize=7,
                 color=rc.INK_PRIMARY if lo == 100 else rc.INK_SECONDARY)
-        ax.text(1.135, i, f"{int(r.site_robust_subsets)} of "
+        ax.text(1.19, i, f"{int(r.site_robust_subsets)} of "
                           f"{int(r.n_subsets)} subsets",
                 transform=ax.get_yaxis_transform(), ha="left", va="center",
                 fontsize=6.2, color=rc.INK_MUTED)
