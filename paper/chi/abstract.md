@@ -25,4 +25,4 @@ only half of four-site retroauricular subsets favour the ear.
 retroauricular montage loses lip and chin activity entirely and buys no muscle
 back reliably in exchange. What remains a design lever is placement: a
 four-site cluster chosen by anatomical target outperforms arbitrary placement
-around the ear by up to 1.03 dB.
+around the ear by up to 1.07 dB.

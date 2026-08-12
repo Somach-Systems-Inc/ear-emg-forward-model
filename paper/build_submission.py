@@ -142,6 +142,10 @@ def fix_unicode(md: str) -> tuple[str, int]:
 # "-1.15 dB with an interval of [-1.45" into one run-together math blob.
 # Text-mode commands avoid math entirely and give the right glyphs.
 TEX_UNICODE = {
+    # U+00A7 SECTION SIGN: under the tectonic/T1 path a literal \u00a7 reached the
+    # page as '\u011f' (37 occurrences in the 2026-08-11 shipped PDF). \S is
+    # engine-proof.
+    "\u00a7": r"\S{}",
     "\u2212": r"\textminus{}",
     "\u00d7": r"\texttimes{}",
     "\u00b0": r"\textdegree{}",
@@ -514,11 +518,24 @@ def harden_bundle(notes) -> int:
                     return 1
             log = (room2 / (TEX.stem + ".log")).read_text(errors="replace")
             over = log.count("Overfull \\hbox")
+            missing = log.count("Missing character")
             p2 = _pages(room2 / (TEX.stem + ".pdf"))
             notes.append(f"pdflatex compile OK, {p2} pages, {over} overfull "
-                         f"hbox(es); page count may differ from tectonic's "
-                         f"{pages} because the engines break floats "
-                         f"differently, which is not an error")
+                         f"hbox(es), {missing} missing character(s); page "
+                         f"count may differ from tectonic's {pages} because "
+                         f"the engines break floats differently, which is "
+                         f"not an error")
+            # SHIP THE PDFLATEX BUILD as the preview PDF for the arxiv style.
+            # Demonstrated 2026-08-11: tectonic's build of the arxiv style
+            # silently drops math-mode glyphs (sigma, \cdot) that pdflatex --
+            # the engine arXiv actually runs -- renders correctly with zero
+            # Missing-character warnings. The preview must show what arXiv
+            # will produce, not what the local shortcut produces.
+            if STYLE[0] == "arxiv":
+                shutil.copy2(room2 / (TEX.stem + ".pdf"), PDF)
+                notes.append("preview PDF replaced with the pdflatex build "
+                             "(the engine arXiv uses); tectonic's arxiv-style "
+                             "output drops math glyphs")
 
     # --- the tarball arXiv actually wants
     tgz = ROOT / "paper" / f"{PDF.stem}_arxiv.tar.gz"
@@ -627,6 +644,23 @@ def main() -> int:
     tex, n_uni = fix_unicode_tex(tex)
     notes.append(f"mapped {n_uni} unicode symbols to text-mode LaTeX "
                  f"(after every insertion, so the author block is covered too)")
+    # The " — " qualifier construction inside table cells ("yes — per-site")
+    # is a documented AI-writing tell; the humanizer pass ruled on prose and
+    # never touched cells. Cells only — body and caption punctuation is the
+    # manuscript's own. pandoc's smart extension writes the em-dash as ---,
+    # so both spellings are covered.
+    n_dash = [0]
+
+    def _cells(m):
+        body = m.group(0)
+        n_dash[0] += body.count(" \u2014 ") + body.count(" --- ")
+        return body.replace(" \u2014 ", "; ").replace(" --- ", "; ")
+
+    tex = re.sub(r"\\begin\{longtable\}.*?\\end\{longtable\}", _cells, tex,
+                 flags=re.S)
+    if n_dash[0]:
+        notes.append(f"replaced {n_dash[0]} em-dash separators inside table "
+                     f"cells with semicolons")
     TEX.write_text(tex)
     print(f"wrote {TEX}")
 

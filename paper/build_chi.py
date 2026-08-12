@@ -183,7 +183,6 @@ SPEC = {
             "| # | Term | What sets it",
             "Row 6 is measured by rotating",
             "Row 7 is deliberately left unquantified",
-            "8 muscles return an identical verdict",
         ],
     },
     "Figure captions": {
