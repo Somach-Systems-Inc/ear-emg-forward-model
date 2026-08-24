@@ -73,6 +73,7 @@ ARXIV_PREAMBLE = r"""
 \usepackage{array}
 \usepackage{etoolbox}
 \usepackage{float}
+\usepackage{pdflscape}
 \usepackage{placeins}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -330,7 +331,18 @@ def fix_table_widths(tex, notes):
         "Best single site":   [0.20, 0.18, 0.10, 0.18, 0.13, 0.21],  # Table 5
         "As modelled":        [0.22, 0.16, 0.18, 0.14, 0.30],   # fat contrast
         "What sets it":       [0.04, 0.14, 0.19, 0.11, 0.17, 0.35],  # Table 3
+        # Table 1: 116 rows x 11 columns with unbreakable full-precision
+        # conductivity strings ("0.4190548817650446" needs ~76 pt at
+        # footnotesize). No portrait allocation fits, so the table is also
+        # set landscape AND dropped to scriptsize (LANDSCAPE below);
+        # fractions are of the rotated width.
+        "Assigned tissue":    [0.030, 0.140, 0.100, 0.140, 0.040, 0.072,
+                               0.068, 0.155, 0.062, 0.045, 0.148],  # Table 1
     }
+    # Tables whose minimum column widths cannot fit a portrait text block.
+    # pdflscape swaps the text dimensions inside the environment, so the
+    # \linewidth-relative fractions above scale to the rotated width.
+    LANDSCAPE = {"Assigned tissue"}
     for marker, w in WIDTHS.items():
         i = tex.find(marker)
         if i < 0:
@@ -344,6 +356,19 @@ def fix_table_widths(tex, notes):
             f"{2*len(w)}\\tabcolsep) * \\real{{{x:.4f}}}}}" for x in w)
         tex = tex[:start] + spec + tex[end:]
         notes.append(f"re-allocated column widths for the '{marker}' table")
+        if marker in LANDSCAPE:
+            s2 = tex.rfind("\\begin{longtable}", 0, tex.find(marker))
+            e2 = tex.find("\\end{longtable}", s2)
+            if s2 < 0 or e2 < 0:
+                continue
+            e2 += len("\\end{longtable}")
+            # \let is local to the landscape group, so the preamble's
+            # AtBeginEnvironment{longtable}{\footnotesize} hook yields
+            # scriptsize for THIS table only. Full-precision sigma strings
+            # do not fit a rotated page at footnotesize.
+            tex = (tex[:s2] + "\\begin{landscape}\n\\let\\footnotesize\\scriptsize\n"
+                   + tex[s2:e2] + "\n\\end{landscape}" + tex[e2:])
+            notes.append(f"set the '{marker}' table landscape at scriptsize")
     return tex
 
 

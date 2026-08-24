@@ -955,62 +955,6 @@ temporalis-driven gestures", an experiment finding no advantage could be
 explained as insufficient sensitivity rather than as evidence against the model.
 As stated, the null is the prediction and a positive finding is the refutation.
 
-### 4.8 How the retroauricular advantage dissolved
-
-An apparent retroauricular advantage was present at every intermediate stage of
-this analysis and survived to the point of being written into a draft. It did not
-survive the controls, and the way it disappeared is worth reporting because each
-control is individually standard and none was applied in response to the result.
-
-| Stage | Temporalis gap |
-|---|---|
-| field magnitude, best of 14 ear sites | −3.92 dB |
-| projected onto source orientation | −3.31 dB |
-| matched electrode counts, four sites each | −2.57 dB, interval [−3.31, −0.03] |
-| derived per-voxel fibre field | **−1.15 dB, interval [−1.45, +5.46] spans zero** |
-
-Three corrections, each motivated by a different defect, each moving the
-estimate the same way. Reporting the field magnitude instead of the lead field
-projected onto a source orientation overstates coupling, because the magnitude
-is the maximum over orientations. Comparing the best of fourteen candidate sites
-against the best of four rewards electrode density, not placement. And assuming
-a fibre direction rather than deriving one from the label volume permitted a
-claim the derived field does not support.
-
-None of these is exotic. Each is the kind of simplification a forward-modelling
-study makes for defensible reasons, and each individually shifts the estimate by
-around a decibel. Their product is the difference between a 3.92 dB advantage and
-none.
-
-
-Figure 10 draws that cascade with its intervals, and shows what the final one is
-made of. The ear pool holds 14 candidate sites and a montage takes 4, so there
-are exactly 1001 possible retroauricular montages and all of them are
-enumerated: 50.5 per cent favour the ear and 49.5 per cent favour the jaw. The
-advantage did not shrink so much as become a property of which four sites a
-device happens to carry.
-
-Two features of this sequence are worth separating, because only one of them is
-evidence. The **monotone** drift, every correction moving the same way, is
-suggestive but not probative; corrections that each remove an optimistic
-assumption will tend to move one way by construction. What is probative is that
-the **final** step, the one that crosses zero, removes an assumption instead of
-adding one, and was pre-committed (§2.8) before the derived field existed. We do
-not treat an effect as established when the assumption holding it up is one the
-anatomy itself can replace.
-
-We report this because the intermediate results were not obviously wrong. Each
-was internally consistent, cleared its measurement floor, and reproduced an
-a-priori anatomical prediction, the three muscles that appeared to favour the
-ear are the three whose attachments sit at or near the temporal bone, which is
-what one would predict, and which is what made the result convincing.
-
-Figure 11 places temporalis against the other nine muscles on both robustness
-axes at once, and marks the single row where the basis decides the verdict. It
-is worth being explicit about that row, because Table 4 and the title of this
-paper are computed on different bases, and a reader who sees only the table will
-think they disagree.
-
 ### 4.7 Limitations
 
 **Mesh realisation is wider than four of the reported margins.** Term 10 of the
@@ -1111,6 +1055,62 @@ compared from a position closer to the retroauricular sites than any jaw site
 actually used. The direction of that omission is toward a smaller jaw advantage
 than is reported.
 
+### 4.8 How the retroauricular advantage dissolved
+
+An apparent retroauricular advantage was present at every intermediate stage of
+this analysis and survived to the point of being written into a draft. It did not
+survive the controls, and the way it disappeared is worth reporting because each
+control is individually standard and none was applied in response to the result.
+
+| Stage | Temporalis gap |
+|---|---|
+| field magnitude, best of 14 ear sites | −3.92 dB |
+| projected onto source orientation | −3.31 dB |
+| matched electrode counts, four sites each | −2.57 dB, interval [−3.31, −0.03] |
+| derived per-voxel fibre field | **−1.15 dB, interval [−1.45, +5.46] spans zero** |
+
+Three corrections, each motivated by a different defect, each moving the
+estimate the same way. Reporting the field magnitude instead of the lead field
+projected onto a source orientation overstates coupling, because the magnitude
+is the maximum over orientations. Comparing the best of fourteen candidate sites
+against the best of four rewards electrode density, not placement. And assuming
+a fibre direction rather than deriving one from the label volume permitted a
+claim the derived field does not support.
+
+None of these is exotic. Each is the kind of simplification a forward-modelling
+study makes for defensible reasons, and each individually shifts the estimate by
+around a decibel. Their product is the difference between a 3.92 dB advantage and
+none.
+
+
+Figure 10 draws that cascade with its intervals, and shows what the final one is
+made of. The ear pool holds 14 candidate sites and a montage takes 4, so there
+are exactly 1001 possible retroauricular montages and all of them are
+enumerated: 50.5 per cent favour the ear and 49.5 per cent favour the jaw. The
+advantage did not shrink so much as become a property of which four sites a
+device happens to carry.
+
+Two features of this sequence are worth separating, because only one of them is
+evidence. The **monotone** drift, every correction moving the same way, is
+suggestive but not probative; corrections that each remove an optimistic
+assumption will tend to move one way by construction. What is probative is that
+the **final** step, the one that crosses zero, removes an assumption instead of
+adding one, and was pre-committed (§2.8) before the derived field existed. We do
+not treat an effect as established when the assumption holding it up is one the
+anatomy itself can replace.
+
+We report this because the intermediate results were not obviously wrong. Each
+was internally consistent, cleared its measurement floor, and reproduced an
+a-priori anatomical prediction, the three muscles that appeared to favour the
+ear are the three whose attachments sit at or near the temporal bone, which is
+what one would predict, and which is what made the result convincing.
+
+Figure 11 places temporalis against the other nine muscles on both robustness
+axes at once, and marks the single row where the basis decides the verdict. It
+is worth being explicit about that row, because Table 4 and the title of this
+paper are computed on different bases, and a reader who sees only the table will
+think they disagree.
+
 ---
 
 ## Tables
@@ -1120,6 +1120,125 @@ conductivity, source (SimNIBS 4.6 default / IT'IS LF v4.2 / judgement),
 frequency, plausible range for judgement rows, volume fraction and minimum
 distance to the nearest electrode. Sorted by volume fraction × proximity.
 [`results/01_table1_conductivities.csv`]
+
+| # | MIDA structure | Assigned tissue | σ (S/m) | f (Hz) | Source | Assignment | Plausible range (S/m) | Volume fraction | Min. distance (mm) | Note |
+|---|--------------|---------|-------------|----|--------|-------|---------------|------|-----|------------------|
+| 51 | Epidermis/Dermis | skin | 0.465 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.059625 | 0.7 |  |
+| 62 | Subcutaneous Adipose Tissue | fat | 0.025 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.097494 | 1.65 |  |
+| 43 | Adipose Tissue | fat | 0.025 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.11177 | 2.45 |  |
+| 63 | Muscle - Temporalis/Temporoparietalis | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.028682 | 2.55 |  |
+| 40 | Skull | bone_compact | 0.008 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.045984 | 3.94 |  |
+| 38 | Muscle (General) | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.058249 | 5.19 |  |
+| 67 | Muscle - Splenius Capitis | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.008552 | 2.3 |  |
+| 68 | Muscle - Sternocleidomastoid | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.009119 | 2.55 |  |
+| 10 | Brain Gray Matter | grey_matter | 0.275 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.110101 | 11.19 |  |
+| 54 | Skull Outer Table | bone_compact | 0.008 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.020085 | 5.5 | skull outer table is cortical bone |
+| 12 | Brain White Matter | white_matter | 0.126 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.116885 | 14.06 |  |
+| 35 | Ear Auricular Cartilage (Pinna) | cartilage | 0.17 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.001851 | 1.87 |  |
+| 52 | Skull Diploë | bone_cancellous | 0.025 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.02604 | 8.08 | diploe is cancellous bone |
+| 32 | CSF General | csf | 1.79 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.046232 | 10.78 |  |
+| 36 | Mandible | Mandible | 0.00630199709513435 | 100.0 | IT'IS LF v4.2 | lookup | 0.001851851851851852 to 0.0091 | 0.010394 | 5.53 |  |
+| 89 | Parotid Gland | Salivary Gland | 0.5585997222608695 | 100.0 | IT'IS LF v4.2 | lookup | 0.435631853 to 0.743 | 0.011107 | 6.4 |  |
+| 53 | Skull Inner Table | bone_compact | 0.008 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.016097 | 8.03 | skull inner table is cortical bone |
+| 60 | Muscle - Platysma | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.002112 | 3.05 |  |
+| 1 | Dura | Dura | 0.06 | 100.0 | IT'IS LF v4.2 | lookup | 0.0006 to 0.06 | 0.020207 | 9.76 |  |
+| 66 | Muscle - Masseter | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.012406 | 8.27 |  |
+| 72 | Muscle - Depressor Anguli Oris | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.001387 | 4.39 |  |
+| 98 | Tendon - Temporalis Tendon | Tendon\\Ligament | 0.3675772277227722 | 100.0 | IT'IS LF v4.2 | lookup | 0.3675772277227722 to 0.3675772277227722 | 0.001796 | 5.24 |  |
+| 37 | Mucosa | Mucous Membrane | 0.4610075264456888 | 100.0 | IT'IS LF v4.2 | lookup | 0.1 to 0.726 | 0.01077 | 13.51 |  |
+| 2 | Cerebellum Gray Matter | Cerebellum | 0.5766124444444444 | 100.0 | IT'IS LF v4.2 | judgement | 0.48 to 0.646504 | 0.020041 | 19.16 | IT'IS carries one Cerebellum entry, not split into grey and white matter |
+| 25 | Blood Veins | blood | 0.7 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.007009 | 11.89 |  |
+| 31 | Air Internal - Nasal/Pharynx | air | 1e-06 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.010299 | 15.1 |  |
+| 73 | Muscle - Depressor Labii | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000703 | 4.35 |  |
+| 42 | Tongue | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.015368 | 25.5 |  |
+| 41 | Teeth | Tooth | 0.00630199709513435 | 100.0 | IT'IS LF v4.2 | lookup | 0.001851851851851852 to 0.0091 | 0.004493 | 14.68 |  |
+| 65 | Muscle - Lateral Pterygoid | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.004071 | 14.04 |  |
+| 9 | Cerebellum White Matter | Cerebellum | 0.5766124444444444 | 100.0 | IT'IS LF v4.2 | judgement | 0.48 to 0.646504 | 0.011022 | 24.46 | same single Cerebellum entry; MIDA splits it, IT'IS does not |
+| 84 | Muscle - Buccinator | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.00209 | 11.06 |  |
+| 88 | Submandibular Gland | Salivary Gland | 0.5585997222608695 | 100.0 | IT'IS LF v4.2 | lookup | 0.435631853 to 0.743 | 0.007198 | 21.79 |  |
+| 24 | Blood Arteries | blood | 0.7 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.003119 | 14.6 |  |
+| 97 | Air Internal - Oral Cavity | air | 1e-06 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.005035 | 19.7 |  |
+| 71 | Muscle - Mentalis | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000264 | 5.14 |  |
+| 75 | Muscle - Orbicularis Oris | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.002573 | 17.57 |  |
+| 61 | Tendon - Galea Aponeurotica | Tendon\\Ligament | 0.3675772277227722 | 100.0 | IT'IS LF v4.2 | lookup | 0.3675772277227722 to 0.3675772277227722 | 0.009629 | 35.75 |  |
+| 81 | Muscle - Medial Pterygoid | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.004639 | 28.94 |  |
+| 85 | Ear Auditory Canal | air | 1e-06 | 100.0 | SimNIBS 4.6 default | judgement | 1e-06 to 1e-06 | 0.000326 | 7.76 | external auditory canal, air-filled and non-collapsing in a healthy ear. No range: cerumen occlusion has no sourced conductivity and is not modelled. |
+| 83 | Muscles - Risorius | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.001301 | 15.97 |  |
+| 78 | Muscle - Zygomaticus Major | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000877 | 14.11 |  |
+| 90 | Sublingual Gland | Salivary Gland | 0.5585997222608695 | 100.0 | IT'IS LF v4.2 | lookup | 0.435631853 to 0.743 | 0.001167 | 16.47 |  |
+| 44 | Vertebra - C1 (atlas) | Vertebrae | 0.00630199709513435 | 100.0 | IT'IS LF v4.2 | lookup | 0.001851851851851852 to 0.0091 | 0.002563 | 32.04 |  |
+| 80 | Muscle - Levator Scapulae | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.00312 | 37.36 |  |
+| 28 | Air Internal - Maxillary Sinus | air | 1e-06 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.002866 | 38.48 |  |
+| 6 | CSF Ventricles | csf | 1.79 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.002828 | 40.4 |  |
+| 108 | Cranial Nerve V3 - Mandibular Division | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 0.000178 | 10.32 |  |
+| 45 | Vertebra - C2 (axis) | Vertebrae | 0.00630199709513435 | 100.0 | IT'IS LF v4.2 | lookup | 0.001851851851851852 to 0.0091 | 0.003609 | 46.69 |  |
+| 79 | Muscle - Orbicularis Oculi | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.002336 | 42.38 |  |
+| 57 | Eye Vitreous | eye | 1.5 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.003046 | 48.53 |  |
+| 70 | Muscle - Trapezius | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.003802 | 54.53 |  |
+| 8 | Putamen | Brain (Grey Matter) | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | judgement | 0.06 to 0.83 | 0.002291 | 43.71 | deep grey nucleus, no IT'IS entry |
+| 116 | Thalamus | Thalamus | 0.475 | 100.0 | IT'IS LF v4.2 | lookup | 0.475 to 0.475 | 0.003147 | 52.57 |  |
+| 30 | Air Internal - Mastoid | air | 1e-06 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000331 | 17.13 |  |
+| 46 | Vertebra - C3 | Vertebrae | 0.00630199709513435 | 100.0 | IT'IS LF v4.2 | lookup | 0.001851851851851852 to 0.0091 | 0.001957 | 42.31 |  |
+| 47 | Vertebra - C4 | Vertebrae | 0.00630199709513435 | 100.0 | IT'IS LF v4.2 | lookup | 0.001851851851851852 to 0.0091 | 0.001857 | 41.6 |  |
+| 14 | Brainstem Pons | Pons | 0.558392 | 100.0 | IT'IS LF v4.2 | lookup | 0.369 to 0.747784 | 0.003179 | 55.19 |  |
+| 48 | Vertebra - C5 | Vertebrae | 0.00630199709513435 | 100.0 | IT'IS LF v4.2 | lookup | 0.001851851851851852 to 0.0091 | 0.001935 | 44.13 |  |
+| 39 | Nasal Septum (Cartilage) | cartilage | 0.17 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.002536 | 53.87 |  |
+| 86 | Ear Pharyngotympanic Tube | air | 1e-06 | 100.0 | SimNIBS 4.6 default | judgement | 1e-06 to 0.4610075264456888 | 0.000275 | 19.25 | pharyngotympanic tube, normally collapsed and mucosa-lined, so the range spans an open air lumen to a collapsed mucosal one. |
+| 87 | Hyoid Bone | Bone (Cortical) | 0.00630199709513435 | 100.0 | IT'IS LF v4.2 | judgement | 0.001851851851851852 to 0.0091 | 0.000285 | 19.68 | IT'IS has no hyoid entry; hyoid is a small cortical-shelled bone |
+| 11 | Brainstem Midbrain | Midbrain | 0.35 | 100.0 | IT'IS LF v4.2 | lookup | 0.35 to 0.35 | 0.001911 | 52.96 |  |
+| 5 | Hippocampus | Hippocampus | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | lookup | 0.06 to 0.83 | 0.001181 | 42.14 |  |
+| 69 | Muscle - Occipitiofrontalis - Occipital Belly | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.001319 | 48.94 |  |
+| 77 | Muscle - Levator Labii Superioris | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000665 | 39.88 |  |
+| 7 | Caudate Nucleus | Brain (Grey Matter) | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | judgement | 0.06 to 0.83 | 0.001439 | 60.08 | deep grey nucleus, no IT'IS entry |
+| 13 | Spinal Cord | Spinal Cord | 0.6109538492063492 | 100.0 | IT'IS LF v4.2 | lookup | 0.49734388 to 0.781544 | 0.001373 | 59.95 |  |
+| 26 | Air Internal - Ethmoidal Sinus | air | 1e-06 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.0013 | 58.89 |  |
+| 15 | Brainstem Medulla | Medulla Oblongata | 0.357 | 100.0 | IT'IS LF v4.2 | lookup | 0.357 to 0.357 | 0.001147 | 55.96 |  |
+| 4 | Amygdala | Brain (Grey Matter) | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | judgement | 0.06 to 0.83 | 0.000689 | 45.28 | deep grey nucleus, no IT'IS entry |
+| 49 | Intervertebral Discs | Intervertebral Disc | 0.7392595578616339 | 100.0 | IT'IS LF v4.2 | lookup | 0.600084 to 1.433653433962262 | 0.000625 | 43.94 |  |
+| 17 | Globus Pallidus | Brain (Grey Matter) | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | judgement | 0.06 to 0.83 | 0.000701 | 50.98 | deep grey nucleus, no IT'IS entry |
+| 56 | Eye Retina/Choroid/Sclera | eye | 1.5 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000605 | 47.61 |  |
+| 93 | Muscle - Lateral Rectus | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000321 | 43.46 |  |
+| 82 | Muscle - Zygomaticus Minor | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000202 | 34.83 |  |
+| 74 | Muscle - Nasalis | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000502 | 55.05 |  |
+| 64 | Muscle - Occipitiofrontalis - Frontal Belly | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000978 | 79.26 |  |
+| 29 | Air Internal - Sphenoidal Sinus | air | 1e-06 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000422 | 61.16 |  |
+| 92 | Muscle - Medial Rectus | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000348 | 56.19 |  |
+| 27 | Air Internal - Frontal Sinus | air | 1e-06 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000734 | 82.52 |  |
+| 91 | Muscle - Superior Rectus | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000287 | 51.93 |  |
+| 94 | Muscle - Inferior Rectus | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000257 | 51.05 |  |
+| 34 | Ear Semicircular Canals | Cerebrospinal Fluid | 1.878999709695023 | 100.0 | IT'IS LF v4.2 | judgement | 1.13 to 3.186944 | 8.1e-05 | 29.26 | semicircular canal endolymph, as above |
+| 110 | Cranial Nerve VII - Facial | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 3.9e-05 | 24.13 |  |
+| 111 | Cranial Nerve VIII - Vestibulocochlear | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 8.6e-05 | 36.94 |  |
+| 103 | Cranial Nerve II - Optic | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 0.000181 | 53.91 |  |
+| 112 | Cranial Nerve IX - Glossopharyngeal | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 7e-05 | 34.89 |  |
+| 113 | Cranial Nerve X - Vagus | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 7.2e-05 | 35.79 |  |
+| 16 | Nucleus Accumbens | Brain (Grey Matter) | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | judgement | 0.06 to 0.83 | 0.00022 | 63.6 | deep grey nucleus, no IT'IS entry |
+| 59 | Eye Aqueous | eye | 1.5 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000194 | 62.68 |  |
+| 21 | Hypothalamus | Hypothalamus | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | lookup | 0.06 to 0.83 | 0.000234 | 69.16 |  |
+| 95 | Muscle - Superior Oblique | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000162 | 61.72 |  |
+| 96 | Muscle - Inferior Oblique | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.000106 | 51.13 |  |
+| 100 | Cerebral Peduncles | Brain (White Matter) | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | judgement | 0.06435 to 0.85244 | 0.000105 | 55.28 | myelinated tract |
+| 33 | Ear Cochlea | Cerebrospinal Fluid | 1.878999709695023 | 100.0 | IT'IS LF v4.2 | judgement | 1.13 to 3.186944 | 4.5e-05 | 36.44 | cochlear perilymph is CSF-like; IT'IS has no inner-ear fluid entry |
+| 106 | Cranial Nerve V - Trigeminal | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 9.6e-05 | 53.98 |  |
+| 22 | Commissura (Anterior) | Commissura Anterior | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 8.4e-05 | 51.03 |  |
+| 107 | Cranial Nerve V2 - Maxillary Division | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 6e-05 | 46.36 |  |
+| 105 | Cranial Nerve IV - Trochlear | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 7.2e-05 | 51.8 |  |
+| 19 | Hypophysis or Pituitary Gland | Hypophysis | 1.051624 | 100.0 | IT'IS LF v4.2 | lookup | 1.051624 to 1.051624 | 0.000106 | 64.71 |  |
+| 99 | Substantia Nigra | Brain (Grey Matter) | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | judgement | 0.06 to 0.83 | 9.4e-05 | 63.44 | deep grey nucleus, no IT'IS entry |
+| 104 | Cranial Nerve III - Oculomotor | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 5.3e-05 | 50.25 |  |
+| 109 | Cranial Nerve VI - Abducens | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 4.4e-05 | 46.16 |  |
+| 101 | Optic Chiasm | Brain (White Matter) | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | judgement | 0.06435 to 0.85244 | 8.5e-05 | 64.16 | myelinated decussation |
+| 58 | Eye Cornea | eye | 1.5 | 100.0 | SimNIBS 4.6 default | lookup |  | 6.8e-05 | 63.49 |  |
+| 55 | Eye Lens | eye | 1.5 | 100.0 | SimNIBS 4.6 default | lookup |  | 6.6e-05 | 63.59 |  |
+| 76 | Muscles - Procerus | muscle_iso | 0.355 | 100.0 | SimNIBS 4.6 default | lookup |  | 9.9e-05 | 81.49 |  |
+| 18 | Optic Tract | Brain (White Matter) | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | judgement | 0.06435 to 0.85244 | 4.4e-05 | 61.95 | myelinated tract |
+| 102 | Cranial Nerve I - Olfactory | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 3.2e-05 | 64.51 |  |
+| 20 | Mammillary Body | Brain (Grey Matter) | 0.4190548817650446 | 100.0 | IT'IS LF v4.2 | judgement | 0.06 to 0.83 | 3.8e-05 | 71.02 | deep grey nucleus, no IT'IS entry |
+| 114 | Cranial Nerve XI - Accessory | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 1.4e-05 | 45.86 |  |
+| 3 | Pineal Body | Pineal Body | 0.4811 | 100.0 | IT'IS LF v4.2 | lookup | 0.4811 to 0.4811 | 2.6e-05 | 73.79 |  |
+| 115 | Cranial Nerve XII - Hypoglossal | Nerve | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 4e-06 | 52.69 |  |
+| 23 | Commissura (Posterior) | Commissura Posterior | 0.3479543931346832 | 100.0 | IT'IS LF v4.2 | lookup | 0.06435 to 0.85244 | 7e-06 | 75.06 |  |
+| 50 | Background | air | 1e-06 | 100.0 | SimNIBS 4.6 default | lookup |  | 0.0 |  | background, outside the head |
 
 **Table 2, Tissue layer stack beneath each canonical site.** Millimetres per
 MIDA tissue along the ray from each electrode through the full thickness of its

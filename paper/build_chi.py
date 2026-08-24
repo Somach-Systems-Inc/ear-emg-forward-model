@@ -177,6 +177,8 @@ SPEC = {
     },
     "Tables": {
         "appendix": [
+            "Table 1",
+            "| # | MIDA structure",
             "Table 2",
             "| Site | Target | Target thickness",
             "Table 3",
@@ -208,6 +210,7 @@ ACM_TEMPLATE = r"""\documentclass[manuscript,review,anonymous]{acmart}
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{calc}
+\usepackage{pdflscape}
 \usepackage{placeins}
 \providecommand{\tightlist}{%%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -341,7 +344,7 @@ def appendix_md(secs: list[dict], moved: dict[str, list[str]]) -> str:
              "B" if title == "Tables" else "C")
         groups[g].append(title)
     names = {"A": "Appendix A: Extended methods detail",
-             "B": "Appendix B: Tables 2 and 3",
+             "B": "Appendix B: Tables 1, 2 and 3",
              "C": "Appendix C: Extended results and discussion detail"}
     out = []
     for g in "ABC":
