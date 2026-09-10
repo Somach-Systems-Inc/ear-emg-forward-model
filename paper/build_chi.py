@@ -33,6 +33,7 @@ that carries the moved detail names its origin section.
 """
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import subprocess
@@ -60,7 +61,7 @@ from build_submission import FIGURES, fix_table_widths, fix_unicode_tex, latex_e
 # Prefixes are verbatim from the manuscript; the build fails unless each
 # matches exactly one paragraph in its section.
 SPEC = {
-    "Abstract": {"replace_all": "abstract.md"},
+    "Abstract": {"replace_all": os.environ.get("CHI_ABSTRACT", "abstract.md")},  # CHI_ABSTRACT=abstract_150.md for the 150-word cap
     "1. Introduction": {
         "insert_after": [("The result is not a ranking", "intro_chi_positioning.md")],
     },
@@ -439,7 +440,7 @@ def main() -> int:
     src_md = SRC.read_text()
     secs = sections_of(src_md)
 
-    title = next(s["title"] for s in secs if s["level"] == 1)
+    title = os.environ.get("CHI_TITLE") or next(s["title"] for s in secs if s["level"] == 1)  # PCS wants Title Case on the PDF too
     moved = apply_spec(secs)
 
     abstract_md = next(s["body"] for s in secs if s["title"] == "Abstract")

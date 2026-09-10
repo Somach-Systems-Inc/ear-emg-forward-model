@@ -1,0 +1,20 @@
+1. An, et al. (2025). ID.EARS: One-Ear EEG Device with Biosignal Noise for Real-Time Gesture Recognition and Various Interactions. CHI ’25, 1–18. doi:10.1145/3706598.3714185
+2. Avramidou, et al. (2024). From Ear-EEG to Ear-ExG: The Jaw Artifact is a Keeper. DSAI ’24.
+3. Debener, S., et al. (2015). Unobtrusive ambulatory EEG using a smartphone and flexible printed electrodes around the ear. Sci Rep 5:16743. doi:10.1038/srep16743
+4. De Luca, C. J., et al. (2012). Inter-electrode spacing of surface EMG sensors. J Biomech 45(3):555–561. doi:10.1016/j.jbiomech.2011.11.010
+5. Gaddy, D., & Klein, D. (2020). Digital Voicing of Silent Speech. EMNLP, 5521–5530. doi:10.18653/v1/2020.emnlp-main.445
+6. Goncharova, I. I., et al. (2003). EMG contamination of EEG: spectral and topographical characteristics. Clin Neurophysiol.
+7. Harmening, N., Klug, M., Gramann, K., & Miklody, D. (2022). HArtMuT, modeling eye and muscle contributors in neuroelectric imaging. J Neural Eng 19(6):066041. doi:10.1088/1741-2552/aca8ce
+8. Iacono, M. I., et al. (2015). MIDA: A Multimodal Imaging-Based Detailed Anatomical Model of the Human Head and Neck. PLOS ONE. doi:10.1371/journal.pone.0124126
+9. Kappel, S. L., Makeig, S., & Kidmose, P. (2019). Ear-EEG Forward Models: Improved Head-Models for Ear-EEG. Front Neurosci 13:943. doi:10.3389/fnins.2019.00943
+10. Kapur, A., Kapur, S., & Maes, P. (2018). AlterEgo: A Personalized Wearable Silent Speech Interface. IUI ’18, 43–53. doi:10.1145/3172944.3172977
+11. Kuiken, T. A., Lowery, M. M., & Stoykov, N. S. (2003). The effect of subcutaneous fat on myoelectric signal amplitude and cross-talk. Prosthet Orthot Int 27(1):48–54. doi:10.3109/03093640309167976
+12. Maksymenko, K., Deslauriers-Gauthier, S., & Farina, D. (2021). Ultra fast and highly realistic numerical modelling of surface EMG. bioRxiv.
+13. Meiser, A., Knoll, J., & Bleichner, M. G. (2024). High-density ear-EEG for understanding ear-centered EEG. J Neural Eng 21(1):016001. doi:10.1088/1741-2552/ad1783
+14. Mesin, L. (2020). Crosstalk in surface electromyogram: literature review and some insights. Phys Eng Sci Med 43(2):481–492. doi:10.1007/s13246-020-00868-1
+15. Sato, W., & Kochiyama, T. (2023). Crosstalk in Facial EMG and Its Reduction Using ICA. Sensors 23:2720.
+16. Saturnino, G. B., Madsen, K. H., & Thielscher, A. (2019). Electric field simulations for transcranial brain stimulation using FEM: an efficient implementation and error analysis. J Neural Eng 16(6):066032. doi:10.1088/1741-2552/ab41ba
+17. Thielscher, A., Antunes, A., & Saturnino, G. B. (2015). Field modeling for transcranial magnetic stimulation: a useful tool to understand the physiological effects of TMS? EMBC 2015, 222–225. doi:10.1109/EMBC.2015.7318340
+18. Wand, M., & Schultz, T. (2011). Session-Independent EMG-Based Speech Recognition. BIOSIGNALS 2011, 295–300. doi:10.5220/0003169702950300
+19. Yao, D., et al. (2019). Which Reference Should We Use for EEG and ERP practice? Brain Topogr.
+20. Yarici, M., Thornton, M., & Mandic, D. P. (2023). Ear-EEG sensitivity modeling for neural sources and ocular artifacts. Front Neurosci 16:997377. doi:10.3389/fnins.2022.997377.
