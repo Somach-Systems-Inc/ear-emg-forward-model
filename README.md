@@ -1,4 +1,8 @@
-# No speech articulator robustly favours retroauricular electrodes over canonical jaw sites
+# Speech-muscle coupling at jaw and ear electrodes
+
+[![arXiv](https://img.shields.io/badge/arXiv-2610.03723-b31b1b.svg)](https://arxiv.org/abs/2610.03723)
+
+**Preprint:** [arXiv:2610.03723](https://arxiv.org/abs/2610.03723) (cs.HC, eess.SP). This is a computational model, not a human validation study.
 
 A volume-conductor model with orientation and electrode-count controls, answering:
 **which speech muscles can you actually see from behind the ear, and how much do
@@ -135,4 +139,20 @@ Do **not** place thousands of muscle-fibre sources and solve forward for each. U
 - [ ] Electrodes placed
 - [ ] Reciprocity solves
 - [ ] Figures
-- [ ] Draft → arXiv
+- [x] Draft → arXiv: [2610.03723](https://arxiv.org/abs/2610.03723) (public 2026-10-05)
+
+---
+
+## Citation
+
+```bibtex
+@misc{kho2026earemg,
+  title         = {Speech-muscle coupling at jaw and ear electrodes: a volume-conductor model with orientation and electrode-count controls},
+  author        = {Kho, Carl Vincent},
+  year          = {2026},
+  eprint        = {2610.03723},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.HC},
+  url           = {https://arxiv.org/abs/2610.03723}
+}
+```
